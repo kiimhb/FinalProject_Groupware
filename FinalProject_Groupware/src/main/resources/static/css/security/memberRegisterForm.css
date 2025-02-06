@@ -1,0 +1,64 @@
+@charset "UTF-8";
+
+div#divRegisterFrm {
+	text-align: center;
+}
+
+table#tblMemberRegister {
+ /* border: solid 1px red; */  
+	width: 55%;
+	margin: 1% auto;
+}
+
+table#tblMemberRegister th {
+    border: solid 1px gray; 
+}
+
+table#tblMemberRegister th {
+	height: 60px;
+	background-color: silver;
+	font-size: 14pt;
+}
+
+table#tblMemberRegister td {
+	line-height: 200%;
+	padding: 1.2% 0;
+}
+
+span.star {
+	color: red;
+	font-weight: bold;
+	font-size: 13pt;
+}
+
+
+table#tblMemberRegister > tbody > tr > td:first-child {
+	width: 20%;
+	font-weight: bold;
+	text-align: left;
+}
+
+table#tblMemberRegister > tbody > tr > td:nth-child(2) {
+	width: 80%;
+	text-align: left;
+}
+
+img#idcheck, img#zipcodeSearch {
+	cursor: pointer;
+}
+
+span#emailcheck {
+	border: solid 1px gray;
+	border-radius: 5px;
+	font-size: 8pt;
+	display: inline-block;
+	width: 80px;
+	height: 30px;
+	text-align: center;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+span.error {
+	color: red;
+}
