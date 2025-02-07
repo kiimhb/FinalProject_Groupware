@@ -1,0 +1,68 @@
+@charset "UTF-8";
+
+/* 전체 창  */
+#mycontent {
+	min-height:760px;
+	margin-left: 250px;
+	transition: margin-left 0.3s;
+	border: solid 1px red;
+}
+
+#mycontent.full {
+	margin-left: 0;
+}
+
+/* 네비 토글 창 (사이드바 숨기기)  */
+button#toggleBtn{
+	border: solid 1px yellow;
+	margin-right: 1450px;
+}
+
+/* 네비 메뉴바 */
+#myheader > nav > div.navbar_menu{
+	border: solid 1px blue;
+}
+
+#myheader > nav > div > a{
+	border: solid 1px red;
+	padding: auto 30px;
+}
+
+/* 프로필 창 */
+div.profile{
+	margin: 40px;
+	border: solid 1px black;
+}
+
+/* 사이드바 */
+.sidebar {
+	border: solid 1px navy;
+	height:760px;
+	width: 250px;
+	position: absolute; /* 고정되지 않고 페이지 흐름을 따름 */
+	transition: width 0.3s;
+}
+
+.sidebar.hidden {
+	width: 0;
+	overflow: hidden;
+}
+
+.sidebar ul {
+	list-style: none;
+	padding: 0;
+}
+
+.sidebar li {
+	padding: 10px;
+}
+
+.dropdown-item {
+	padding-left: 20px;
+	display: block;
+}
+
+.submenu {
+	display: none; /* 처음에 숨김 */
+}
+

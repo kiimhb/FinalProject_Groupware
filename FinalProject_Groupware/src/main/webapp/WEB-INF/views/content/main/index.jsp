@@ -8,8 +8,11 @@
     //     /myspring
 %>
 
+<%-- 직접 만든 CSS 1 --%>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
+
 <jsp:include page="../../header/header1.jsp" /> 
 
-<div style="height: 700px;"></div>
+
 <jsp:include page="../../footer/footer1.jsp" />    
     

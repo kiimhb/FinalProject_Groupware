@@ -13,7 +13,10 @@
 	String ctxPath = request.getContextPath();
     //     /myspring
 %>    
-    
+<%-- 직접 만든 CSS 1 --%>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
+
+
 <%-- 
 <%
 	String ctxPath = request.getContextPath();
@@ -52,6 +55,8 @@
 		
 		 <button id="toggleBtn">☰</button>
 		
-		<a href="<%=ctxPath%>">알림</a>
-		<a href="<%=ctxPath%>">채팅</a>
+		<div class="navbar_menu">
+			<a href="<%=ctxPath%>" class="navbar_menu1">알림</a>
+			<a href="<%=ctxPath%>" class="navbar_menu1">채팅</a>
+		</div>
 	</nav>
