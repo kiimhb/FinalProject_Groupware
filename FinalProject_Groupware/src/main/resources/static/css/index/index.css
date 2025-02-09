@@ -1,68 +1,76 @@
-@charset "UTF-8";
-
-/* 전체 창  */
+/* 전체 창 (mycontent) */
 #mycontent {
-	min-height:760px;
-	margin-left: 250px;
-	transition: margin-left 0.3s;
-	border: solid 1px red;
+    min-height: 760px;
+    margin-left: 250px;  /* 사이드바가 열렸을 때 */
+    transition: margin-left 0.3s ease-in-out; /* 사이드바와 함께 콘텐츠의 이동을 부드럽게 */
+    border: solid 1px red;
 }
 
 #mycontent.full {
-	margin-left: 0;
-}
-
-/* 네비 토글 창 (사이드바 숨기기)  */
-button#toggleBtn{
-	border: solid 1px yellow;
-	margin-right: 1450px;
+    margin-left: 50px; /* 사이드바가 접히면 margin-left를 적절히 조정 */
 }
 
 /* 네비 메뉴바 */
-#myheader > nav > div.navbar_menu{
-	border: solid 1px blue;
+#myheader > nav > div.navbar_menu {
+    border: solid 1px blue;
 }
 
-#myheader > nav > div > a{
-	border: solid 1px red;
-	padding: auto 30px;
+#myheader > nav > div > a {
+    border: solid 1px red;
+    padding: auto 30px;
 }
 
 /* 프로필 창 */
-div.profile{
-	margin: 40px;
-	border: solid 1px black;
+div.profile {
+    margin: 40px;
+    border: solid 1px black;
 }
 
 /* 사이드바 */
 .sidebar {
-	border: solid 1px navy;
-	height:760px;
-	width: 250px;
-	position: absolute; /* 고정되지 않고 페이지 흐름을 따름 */
-	transition: width 0.3s;
+    border: solid 1px navy;
+    height: 760px;
+    width: 250px; /* 사이드바가 펼쳐졌을 때 */
+    position: absolute; /* 고정되지 않고 페이지 흐름을 따름 */
+    transition: width 0.3s ease-in-out; /* 사이드바가 열리고 닫힐 때 부드러운 전환 */
+    overflow: hidden; /* 사이드바가 좁아질 때 내용이 밖으로 나가지 않게 */
 }
 
+/* 사이드바가 접힐 때 */
 .sidebar.hidden {
-	width: 0;
-	overflow: hidden;
+    width: 50px; /* 사이드바가 접혔을 때 */
 }
 
+/* 메뉴 리스트 */
 .sidebar ul {
-	list-style: none;
-	padding: 0;
+    list-style: none;
+    padding: 0;
 }
 
 .sidebar li {
-	padding: 10px;
+    padding: 10px;
 }
 
 .dropdown-item {
-	padding-left: 20px;
-	display: block;
+    padding-left: 20px;
+    display: block;
 }
 
 .submenu {
-	display: none; /* 처음에 숨김 */
+    display: none; /* 처음에 하위 메뉴는 숨김 */
 }
 
+/* 사이드바 토글 버튼 (사이드바 숨기기) */
+button#toggleBtn {
+    position: absolute;
+    left: 10px;  /* 사이드바 있을 때 버튼 위치 */
+    top: 10px;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+/* 사이드바가 접힐 때 토글 버튼 위치 */
+.sidebar.hidden + #toggleBtn {
+    left: 10px; /* 사이드바가 사라져도 버튼은 유지 */
+}
