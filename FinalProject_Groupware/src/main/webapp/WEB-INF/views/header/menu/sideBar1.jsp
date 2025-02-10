@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.css">
-<script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar/dist/simplebar.min.css">
+<script src="https://cdn.jsdelivr.net/npm/simplebar/dist/simplebar.min.js"></script>
+
 
 <%
 String ctxPath = request.getContextPath();
@@ -15,7 +16,6 @@ String ctxPath = request.getContextPath();
 <script src="https://kit.fontawesome.com/0c69fdf2c0.js" crossorigin="anonymous"></script>
   
 <script type="text/javascript">
-
 $(document).ready(function() {
     // 사이드바 토글 버튼 클릭 시
     $("#toggleBtn").click(function(e) {
@@ -25,19 +25,23 @@ $(document).ready(function() {
     });
 
     // 서브 메뉴 열기/닫기
-    $(".menu-toggle").click(function(e) {
+    $("a.menu-toggle").click(function(e) {
         e.preventDefault(); // 기본 링크 동작 방지
-        $(this).next(".submenu").slideToggle(); // 하위 메뉴 열기/닫기
+        $(this).next("div.submenu").slideToggle(); // 하위 메뉴 열기/닫기
     });
 });
 
-	
+const toggleBtn = document.querySelector("button#toggleBtn");
+toggleBtn.addEventListener("click", function(){
+  const side = document.querySelector("div#sidebar");
+  side.classList.toggle("hidden");
+});
+
 </script>
-	
 	<div data-simplebar id="sidebar" class="sidebar">
 	
-	<button id="toggleBtn">☰</button>
-	 
+	<button type="button" id="toggleBtn">☰</button>
+	
 	<div class="profile">
 		<div>프로필 사진</div>
 		<div>[이름  /직급-부서]</div>
@@ -49,16 +53,12 @@ $(document).ready(function() {
 		<div>
 		<a href="<%=ctxPath%>/member/logout">로그아웃</a>
 		</div>
-		
 	</div>
 
-
-
 	<ul>
-	
 		<li><a href="<%=ctxPath%>"><i class="fa-solid fa-house-chimney"></i> <span>홈화면</span></a>
 	
-		<li><a href="<%=ctxPath%>"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
+		<li><a href="<%=ctxPath%>/commute"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
 	
 		<li>
 		<a href="#" class="menu-toggle"> 
@@ -73,10 +73,10 @@ $(document).ready(function() {
 		<a href="#" class="menu-toggle">
 		<i class="fa-solid fa-file-signature"></i>  <span>원무</span> <i class="fa-solid fa-chevron-down"></i></a>
 			<div class="submenu">
-				<a class="dropdown-item" href="<%=ctxPath%>">환자조회</a>
-				 <a class="dropdown-item" href="<%=ctxPath%>">예약</a>
+				<a class="dropdown-item" href="<%=ctxPath%>/patient">환자조회</a>
+				 <a class="dropdown-item" href="<%=ctxPath%>/register">예약</a>
 				 <a class="dropdown-item" href="<%=ctxPath%>">입원실현황</a> 
-				 <a class="dropdown-item" href="<%=ctxPath%>">수납</a>
+				 <a class="dropdown-item" href="<%=ctxPath%>/pay">수납</a>
 			</div></li>
 			
 			<li><a href="<%=ctxPath%>"><i class="fa-solid fa-users-gear"></i> <span>근무교대 관리</span> </a></li>
@@ -93,7 +93,7 @@ $(document).ready(function() {
 		<li><a href="#" class="menu-toggle">
 		<i class="fa-solid fa-square-poll-horizontal"></i>  <span>전자결재</span> <i class="fa-solid fa-chevron-down"></i></a>
 			<div class="submenu">
-				<a class="dropdown-item" href="<%=ctxPath%>">기안문작성</a> 
+				<a class="dropdown-item" href="<%=ctxPath%>/approval/write">기안문작성</a> 
 				<a class="dropdown-item" href="<%=ctxPath%>">결재상신함</a>
 				<a class="dropdown-item" href="<%=ctxPath%>">임시저장함</a> 
 				<a class="dropdown-item" href="<%=ctxPath%>">결재문서함</a>
@@ -122,10 +122,10 @@ $(document).ready(function() {
 			</div>
 		</li>
 
-		<li><a href="<%=ctxPath%>/community/board" class="menu-toggle">
+		<li><a href="<%=ctxPath%>/board/list" class="menu-toggle">
 		<i class="fa-solid fa-feather"></i> <span>커뮤니티</span><i class="fa-solid fa-chevron-down"></i></a>
 			<div class="submenu">
-				<a class="dropdown-item" href="<%=ctxPath%>/community/board">자유게시판</a>
+				<a class="dropdown-item" href="<%=ctxPath%>/board/list">자유게시판</a>
 				<a class="dropdown-item" href="<%=ctxPath%>/community/myboard">내가 작성한 글 목록</a>
 				<a class="dropdown-item" href="<%=ctxPath%>/community/bookmark">즐겨찾기</a>
 			</div></li>
@@ -146,4 +146,5 @@ $(document).ready(function() {
 				<a class="dropdown-item" href="<%=ctxPath%>/management/ManagementFrom">사원등록</a>
 			</div></li>
 	</ul>
+	
 </div>

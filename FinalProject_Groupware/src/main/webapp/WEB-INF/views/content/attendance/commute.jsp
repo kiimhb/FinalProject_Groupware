@@ -62,21 +62,19 @@ String ctxPath = request.getContextPath();
                     <th rowspan="2">이름</th>
                     <th rowspan="2">기초계</th>
                     <th rowspan="2">사고계</th>
-                    <th colspan="6">사고내역</th>
+                    <th colspan="4">사고내역</th>
                     <th colspan="5">기초항목</th>
                 </tr>
                 <tr>
                     <th>휴가</th>
                     <th>출장</th>
-                    <th>외근</th>
-                    <th>교육</th>
                     <th>기타</th>
                     <th>계</th>
                     
                     <th>정상</th>
                     <th>지각</th>
                     <th>결근</th>
-                    <th>근태이상</th>
+                    <th>조퇴</th>
                     <th>계</th>
                 </tr>
             </thead>
@@ -86,8 +84,6 @@ String ctxPath = request.getContextPath();
                     <td>평간호사</td>
                     <td>홍길동</td>
                     <td>26</td>
-                    <td>0</td>
-                    <td>0</td>
                     <td>0</td>
                     <td>0</td>
                     <td>0</td>

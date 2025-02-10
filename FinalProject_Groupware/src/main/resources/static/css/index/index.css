@@ -33,7 +33,6 @@ div.profile {
     width: 250px; /* 사이드바가 펼쳐졌을 때 */
     position: absolute; /* 고정되지 않고 페이지 흐름을 따름 */
     transition: width 0.3s ease-in-out; /* 사이드바가 열리고 닫힐 때 부드러운 전환 */
-    overflow: hidden; /* 사이드바가 좁아질 때 내용이 밖으로 나가지 않게 */
 }
 
 /* 사이드바가 접힐 때 */
