@@ -8,10 +8,13 @@
     //     /myspring
 %>
 
- <%-- 직접 만든 CSS 1 --%>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
 <jsp:include page="../../header/header1.jsp" /> 
 
-<jsp:include page="../../footer/footer1.jsp" />    
-    
+	<div>
+		환자 조회 페이지 입니다. 
+	</div>
+
+
+<jsp:include page="../../footer/footer1.jsp" />   

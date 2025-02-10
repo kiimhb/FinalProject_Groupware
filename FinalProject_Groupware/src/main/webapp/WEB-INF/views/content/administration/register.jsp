@@ -13,5 +13,9 @@
 
 <jsp:include page="../../header/header1.jsp" /> 
 
-<jsp:include page="../../footer/footer1.jsp" />    
-    
+
+	예약 페이지
+
+
+
+<jsp:include page="../../footer/footer1.jsp" />   

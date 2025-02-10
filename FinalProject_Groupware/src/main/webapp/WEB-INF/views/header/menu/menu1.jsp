@@ -53,10 +53,8 @@
 		<!-- Brand/logo --> 
 		<a class="navbar-brand" href="<%=ctxPath%>/index" >logo</a>
 		
-		 <button id="toggleBtn">☰</button>
-		
 		<div class="navbar_menu">
-			<a href="<%=ctxPath%>" class="navbar_menu1">알림</a>
-			<a href="<%=ctxPath%>" class="navbar_menu1">채팅</a>
+			<a href="<%=ctxPath%>" class="navbar_menu1"><i class="fa-solid fa-bell"></i></a>
+			<a href="<%=ctxPath%>" class="navbar_menu1"><i class="fa-solid fa-comments"></i></a>
 		</div>
 	</nav>
