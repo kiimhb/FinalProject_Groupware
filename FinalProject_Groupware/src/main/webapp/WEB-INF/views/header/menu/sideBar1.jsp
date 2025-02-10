@@ -49,9 +49,9 @@ String ctxPath = request.getContextPath();
 	<ul>
 		<li><a href="#" class="menu-toggle">진료</a>
 			<div class="submenu">
-				<a class="dropdown-item" href="<%=ctxPath%>">대기환자</a> 
-				<a class="dropdown-item" href="<%=ctxPath%>">진료정보입력</a> 
-				<a class="dropdown-item" href="<%=ctxPath%>">처방전 및 수납</a>
+				<a class="dropdown-item" href="<%=ctxPath%>/patient/watingPatient">대기환자</a> 
+				<a class="dropdown-item" href="<%=ctxPath%>/order/enterTreatment">진료정보입력</a> 
+				<a class="dropdown-item" href="<%=ctxPath%>/order/decideTreatment">처방전 및 수납</a>
 			</div></li>
 
 		<li><a href="#" class="menu-toggle">원무</a>
@@ -81,11 +81,11 @@ String ctxPath = request.getContextPath();
 
 		<li><a href="#" class="menu-toggle">메일</a>
 			<div class="submenu">
-				<a class="dropdown-item" href="<%=ctxPath%>">메일쓰기</a> 
-				<a class="dropdown-item" href="<%=ctxPath%>">받은메일함</a>
-				<a class="dropdown-item" href="<%=ctxPath%>">보낸메일함</a>
-			    <a class="dropdown-item" href="<%=ctxPath%>">휴지통</a> 
-				<a class="dropdown-item" href="<%=ctxPath%>">메일보관함</a>
+				<a class="dropdown-item" href="<%=ctxPath%>/mail/mailWrite">메일쓰기</a> 
+				<a class="dropdown-item" href="<%=ctxPath%>/mail/mailReceive">받은메일함</a>
+				<a class="dropdown-item" href="<%=ctxPath%>/mail/mailSend">보낸메일함</a>
+			    <a class="dropdown-item" href="<%=ctxPath%>/mail/mailTrash">휴지통</a> 
+				<a class="dropdown-item" href="<%=ctxPath%>/mail/mailStorage">메일보관함</a>
 			</div></li>
 
 		<li><a href="<%=ctxPath%>/notice/notice">공지사항</a></li>
