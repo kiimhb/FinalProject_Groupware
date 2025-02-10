@@ -50,8 +50,8 @@ String ctxPath = request.getContextPath();
 		<li><a href="#" class="menu-toggle">진료</a>
 			<div class="submenu">
 				<a class="dropdown-item" href="<%=ctxPath%>/patient/watingPatient">대기환자</a> 
-				<a class="dropdown-item" href="<%=ctxPath%>/order/enterTreatment">진료정보입력</a> 
-				<a class="dropdown-item" href="<%=ctxPath%>/order/decideTreatment">처방전 및 수납</a>
+				<a class="dropdown-item" href="<%=ctxPath%>/order/enterOrder">진료정보입력</a> 
+				<a class="dropdown-item" href="<%=ctxPath%>/order/decideOrder">처방전 및 수납</a>
 			</div></li>
 
 		<li><a href="#" class="menu-toggle">원무</a>
