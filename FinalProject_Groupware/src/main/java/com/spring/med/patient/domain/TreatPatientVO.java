@@ -1,6 +1,6 @@
 package com.spring.med.patient.domain;
 
-public class PatientVO {
+public class TreatPatientVO {
 
 	
 	
