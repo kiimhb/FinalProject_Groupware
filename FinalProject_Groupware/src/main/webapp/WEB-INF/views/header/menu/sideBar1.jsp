@@ -17,25 +17,19 @@ String ctxPath = request.getContextPath();
   
 <script type="text/javascript">
 $(document).ready(function() {
-    // 사이드바 토글 버튼 클릭 시
     $("#toggleBtn").click(function(e) {
-        e.preventDefault(); // 기본 링크 동작 방지
-        $("#sidebar").toggleClass("hidden"); // 사이드바 숨기기/보이기 토글
-        $("#mycontent").toggleClass("full"); // mycontent 영역의 margin-left 조정
+        e.preventDefault();
+        $("#sidebar").toggleClass("hidden");
+        $(".profile").toggleClass("hidden");
+        $("#mycontent").toggleClass("full");
     });
 
-    // 서브 메뉴 열기/닫기
     $("a.menu-toggle").click(function(e) {
-        e.preventDefault(); // 기본 링크 동작 방지
-        $(this).next("div.submenu").slideToggle(); // 하위 메뉴 열기/닫기
+        e.preventDefault();
+        $(this).next("div.submenu").slideToggle();
     });
 });
 
-const toggleBtn = document.querySelector("button#toggleBtn");
-toggleBtn.addEventListener("click", function(){
-  const side = document.querySelector("div#sidebar");
-  side.classList.toggle("hidden");
-});
 
 </script>
    <div data-simplebar id="sidebar" class="sidebar">
