@@ -8,20 +8,14 @@
     //     /myspring
 %>
 
-<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/attendance/commute.css" />
+ <%-- 직접 만든 CSS 1 --%>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
 <jsp:include page="../../header/header1.jsp" /> 
 
-	<div class="content">
-		<div class="header">
-			헤더입니다.
-		</div>
-		<div class="time">
-			타이머입니다.
-		</div>
-		<div class="view">
-			자료입니다.
-		</div>
-	</div>
+
+	수납 페이지 
+
+
 
 <jsp:include page="../../footer/footer1.jsp" />   
