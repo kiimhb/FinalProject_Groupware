@@ -1,11 +1,15 @@
 @charset "UTF-8";
 
-.content {
-	border: 1px solid black;
-	width:100%;
-	margin: 1%;
-}
-
-.time {
+.header {
+	border: 1px solid red;
+	height: 100px;
 	
+}
+.time {
+	border: 1px solid yellow;
+	height: 250px;
+}
+.view {
+	border: 1px solid green;
+	height: 407px;
 }

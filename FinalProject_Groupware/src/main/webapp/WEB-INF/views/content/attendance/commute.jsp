@@ -12,16 +12,26 @@
 
 <jsp:include page="../../header/header1.jsp" /> 
 
-	<div class="content">
+<script type="text/javascript">
+
+	function timer() {
+		
+	}
+
+</script>
+
+
 		<div class="header">
-			헤더입니다.
+			이혜연의 출퇴근 기록입니다.
 		</div>
+		
 		<div class="time">
 			타이머입니다.
 		</div>
+		
 		<div class="view">
 			자료입니다.
 		</div>
-	</div>
+
 
 <jsp:include page="../../footer/footer1.jsp" />   
