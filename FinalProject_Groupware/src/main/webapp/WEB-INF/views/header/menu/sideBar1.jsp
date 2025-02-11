@@ -51,6 +51,8 @@ $(document).ready(function() {
 
    <ul>
       <li><a href="<%=ctxPath%>"><i class="fa-solid fa-house-chimney"></i> <span>홈화면</span></a>
+      
+      <li><a href="<%=ctxPath%>/management/login"><i class="fa-solid fa-clipboard-user"></i> <span>로그인</span></a></li>
    
       <li><a href="<%=ctxPath%>/commute"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
    
