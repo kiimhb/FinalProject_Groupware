@@ -100,8 +100,8 @@ function charCount(text, limit) {
 						<td colspan="2">결재정보</td>
 					</tr>
 					<tr>
-						<td>기안자</td>
-						<td>이순신</td>
+						<td>기자</td>
+						<td>이순ㅇㄹㄴㄹㄴㅇㅇ신</td>
 					</tr>
 					<tr>
 						<td>소속</td>
