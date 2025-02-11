@@ -70,7 +70,7 @@ $(document).ready(function(){
 									<div class="modal-content">
 										
 										<div class="modal-header">
-											<h5>결재양식선택</h5>
+											<h5>결재양식선택dfdsf</h5>
 										</div>
 										
 										<div class="modal-body">
