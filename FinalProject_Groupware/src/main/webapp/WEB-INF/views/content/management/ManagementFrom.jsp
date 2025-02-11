@@ -9,7 +9,6 @@ div.subContent {
 	border: solid 1px blue;
 	width: 95%;
 	margin: auto;
-	margin-top: 2%;
 }
 
 div.manag_h3 {
@@ -17,6 +16,37 @@ div.manag_h3 {
 	margin: 30px;
 }
 
+div.mem_profile {
+    border: solid 1px blue;
+    width: 30%;
+    padding: 15px;
+    text-align: center;
+}
+
+div.mem_profile img {
+    border-radius: 10px; /* 이미지 둥글게 */
+    border: solid 1px gray;
+}
+
+div.mem_profile input[type="file"] {
+    margin-top: 10px;
+}
+
+table.manag_table {
+    border: solid 1px blue;
+    width: 60%;
+    border-collapse: collapse;
+}
+
+table.manag_table th, table.manag_table td {
+    border: solid 1px blue;
+    padding: 10px;
+    text-align: left;
+}
+
+table.manag_table th {
+    background-color: #f4f4f4; /* 연한 배경 */
+}
 
 </style>
 
@@ -39,9 +69,17 @@ div.manag_h3 {
 	<div class="manag_h3">
 		<h3>사원등록</h3>
 	</div>
+	
 
 	<form name="memberFrm" enctype="multipart/form-data">
-		<table class="table table-bordered manag_table">
+	
+		<div class="mem_profile">
+			<div><img id="previewimg" width="137" height="176" style="object-fit: cover;" /></div>
+			<input type="file" name="attach" class="img_file"  />
+		</div>
+	
+		<table class="manag_table">
+		
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">성명</th>
 				<td><input type="text" name="member_name"></td>
@@ -100,6 +138,12 @@ div.manag_h3 {
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">입사일자</th>
 				<td><input type="date" name="birth_date" required></td>
+			</tr>
+
+			<tr>
+				<td colspan="2" class="text-center">
+				<input type="button" id="registerbtn" value="사원 등록" onclick="goRegister()" />
+				</td>
 			</tr>
 
 		</table>
