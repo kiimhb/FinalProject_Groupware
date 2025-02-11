@@ -5,7 +5,7 @@
 
 <%
 	String ctxPath = request.getContextPath();
-    //     /myspring
+//     /med-groupware
 %>
 
  <%-- 직접 만든 CSS 1 --%>
