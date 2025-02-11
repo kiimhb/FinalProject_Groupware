@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -24,15 +24,15 @@ public class TreatPatientController {
 	
 	
 	
-	@PostMapping("patientWaiting")
+	@GetMapping("patientWaiting")
 	public ModelAndView selectPatientWaiting(HttpServletRequest request, ModelAndView mav) {
 		
-		List<TreatPatientVO> patientList = null;
+		// List<TreatPatientVO> patientList = null;
 		
 		
 		//patientList = service.selectPatientWaiting();
 
-		mav.addObject(patientList);
+		// mav.addObject(patientList);
 		mav.setViewName("/patient/patientWaiting");
 		
 		return mav;
