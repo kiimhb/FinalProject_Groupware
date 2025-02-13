@@ -20,8 +20,6 @@ public class ManagementVO {
 	private String member_grade;		//등급
 	private String member_workingTime;	//근무시간
 	
-	
-	
 	public String getMember_userid() {
 		return member_userid;
 	}

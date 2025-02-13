@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="management_ga">
+	
+	<select id="parentDeptList" resultType="com.spring.med.management.domain.Parent_deptVO">
+		select parent_dept_no, parent_dept_name
+		from tbl_parent_dept
+	</select>
+	
+	<select id="childDeptList" resultType="com.spring.med.management.domain.Child_deptVO">
+		select child_dept_no, fk_parent_dept_no, child_dept_name
+		from tbl_child_dept
+	</select>
+	
+</mapper>
