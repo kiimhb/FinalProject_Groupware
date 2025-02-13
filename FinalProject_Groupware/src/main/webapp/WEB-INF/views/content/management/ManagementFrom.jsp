@@ -185,8 +185,65 @@ table.manag_table th {
         	    });
         
      		
-       }); 	   
-        	    
+       });
+         
+         
+         $(document).ready(function(){
+        	 
+        	//하위부서 데이터값 불러오기
+             $("select[name='parentDept']").change(function(){
+                 const dept = $(this).val(); // 선택된 상위 부서 값
+                 const childDeptSelect = $("select[name='childDept']");
+                 
+                 // 기존 옵션 초기화
+                 childDeptSelect.empty();
+                 childDeptSelect.append('<option value=""> 하위 부서 선택 </option>');
+
+                 if (dept) { // 부서가 선택되었을 때만 AJAX 요청
+                     $.ajax({
+                         url: "${pageContext.request.contextPath}/management/childDeptJSON",
+                         data: {"dept": dept},
+                         dataType: "json",
+                         success: function(json) {
+
+                        	 json.forEach(function(item, index) {
+                                 childDeptSelect.append('<option value="' + item.child_dept_no + '">' + item.child_dept_name + '</option>');
+                             });
+                         },
+                         error: function(request, status, error) {
+                             alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
+                         }
+                     });
+                 }
+             });
+             
+        	//직급 데이터값 불러오기
+             $("select[name='parentDept']").change(function() {
+                 const parentDept = $(this).val(); // 선택된 상위 부서 값
+                 const positionSelect = $("select[name='position']"); // 직급 select
+
+                 // 기존 옵션 초기화
+                 positionSelect.empty();
+                 positionSelect.append('<option value=""> 직급 선택 </option>');
+
+                 // 특정 부서에 따라 직급 추가
+                 if (parentDept == "1") {
+                     positionSelect.append('<option value="1">전문의</option>');
+                 } 
+                 if (parentDept == "2") {
+                     positionSelect.append('<option value="1">수간호사</option>');
+                     positionSelect.append('<option value="2">평간호사</option>');
+                 } 
+                 if (parentDept == "3") {
+                     positionSelect.append('<option value="1">병원장</option>');
+                     positionSelect.append('<option value="2">부장</option>');
+                     positionSelect.append('<option value="3">차장</option>');
+                     positionSelect.append('<option value="4">과장</option>');
+                     positionSelect.append('<option value="5">주임</option>');
+                 } 
+             });
+         });
+
 </script>
 
 <div class="subContent">
@@ -215,42 +272,29 @@ table.manag_table th {
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">부문</th>
 			<td>
-				<select name="dept">
-	               <c:forEach var="pvo" items="${requestScope.parentDeptList}">
-                        <option value="${pvo.parent_dept_no}">${pvo.parent_dept_name}</option>
-                  </c:forEach>  
-	            </select>
-            </td>
-			</tr>
-			
-			<tr>
-				<th style="width: 15%; background-color: #DDDDDD;">부서</th>
-			<td><c:if test="${param.dept == '1'}">
-   				<select >
-	                <c:forEach var="cvo" items="${requestScope.childDeptList}">
-                        <option value="${cvo.cnum}">${cvo.cname}</option>
-                  </c:forEach>  
-	            </select>
-				</c:if>
+		    <select name="parentDept">
+		        <option value=""> 상위 부서 선택 </option>
+		        <c:forEach var="pvo" items="${requestScope.parentDeptList}">
+		            <option value="${pvo.parent_dept_no}">${pvo.parent_dept_name}</option>
+		        </c:forEach>
+		    </select>
+		</td>
+		
+		<tr>
+		    <th style="width: 15%; background-color: #DDDDDD;">부서</th>
+		    <td>
+		        <select name="childDept">
+		            <option value=""> 하위 부서 선택 </option>
+		        </select>
+		    </td>
+		</tr>
 
-				<c:if test="${param.dept == '2'}">
-				    <select>
-	                <c:forEach var="cvo" items="${requestScope.childDeptList}">
-                        <option value="${cvo.cnum}">${cvo.cname}</option>
-                  </c:forEach>  
-	            	</select>
-				</c:if>
-				
-            </td>
-			</tr>
 			
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">직급</th>
 			<td>
-				<select>
-	                <c:forEach var="cvo" items="${requestScope.categoryList}">
-                        <option value="${cvo.cnum}">${cvo.cname}</option>
-                  </c:forEach>  
+				<select name="position">
+					<option value=""> 직급 선택 </option>
 	            </select>
             </td>
 			</tr>

@@ -11,9 +11,10 @@
 		from tbl_parent_dept
 	</select>
 	
-	<select id="childDeptList" resultType="com.spring.med.management.domain.Child_deptVO">
+	<select id="childDeptJSON"  parameterType="HashMap" resultType="com.spring.med.management.domain.Child_deptVO">
 		select child_dept_no, fk_parent_dept_no, child_dept_name
 		from tbl_child_dept
+		where fk_parent_dept_no = #{dept}
 	</select>
 	
 </mapper>

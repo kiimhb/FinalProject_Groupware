@@ -1,6 +1,7 @@
 package com.spring.med.management.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
@@ -22,11 +23,11 @@ public class ManagementDAO_imple implements ManagementDAO {
 		List<Parent_deptVO> from_parentDeptList = sqlsession.selectList("management_ga.parentDeptList");
 		return from_parentDeptList;
 	}
-
+	
 	@Override
-	public List<Child_deptVO> childDeptList() {
-		List<Child_deptVO> from_childDeptList = sqlsession.selectList("management_ga.childDeptList");
-		return from_childDeptList;
+	public List<Child_deptVO> childDeptJSON(Map<String, Object> paraMap) {
+		List<Child_deptVO> childDeptJSON = sqlsession.selectList("management_ga.childDeptJSON", paraMap);
+		return childDeptJSON;
 	}
 
 }

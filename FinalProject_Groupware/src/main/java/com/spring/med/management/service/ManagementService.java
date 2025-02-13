@@ -14,15 +14,16 @@ public interface ManagementService {
 
 	//상위부서 테이블 가져오기
 	List<Parent_deptVO> parentDeptList();
-
+	
 	//하위부서 테이블 가져오기
-	List<Child_deptVO> childDeptList();
+	List<Child_deptVO> childDeptJSON(Map<String, Object> paraMap);
 
 	//로그인
 	ModelAndView login(ModelAndView mav, HttpServletRequest request, Map<String, String> paraMap);
 
 	//로그아웃
 	ModelAndView logout(ModelAndView mav, HttpServletRequest request);
+
 
 
 }

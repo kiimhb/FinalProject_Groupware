@@ -1,5 +1,7 @@
 package com.spring.med.management.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,14 +38,37 @@ public class ManagementController {
 		//상위부서 테이블 가져오기
 		List<Parent_deptVO> parentDeptList = managService.parentDeptList();
 		
-		//상위부서 테이블 가져오기
-		List<Child_deptVO> childDeptList = managService.childDeptList();
-		
 		request.setAttribute("parentDeptList", parentDeptList);
-		request.setAttribute("childDeptList", childDeptList);
-	
+		
 		return "content/management/ManagementFrom";
 	}
+	
+	// === 하위부서 테이블 가져오기 === //
+	@GetMapping("childDeptJSON")
+	@ResponseBody
+	public List<Map<String, String>> childDeptJSON(@RequestParam String dept) {
+	    Map<String, Object> paraMap = new HashMap<>();
+	    
+	    if (!"".equals(dept)) {
+	        paraMap.put("dept", dept);
+	    }
+	    
+	    List<Child_deptVO> childDeptList = managService.childDeptJSON(paraMap);
+	    List<Map<String, String>> childDeptMapList = new ArrayList<>();
+	    
+	    // Child_deptVO를 Map으로 변환
+	    for (Child_deptVO childDept : childDeptList) {
+	        Map<String, String> childDeptMap = new HashMap<>();
+	        childDeptMap.put("child_dept_no", String.valueOf(childDept.getChild_dept_no()));
+	        childDeptMap.put("fk_parent_dept_no", String.valueOf(childDept.getFk_parent_dept_no()));
+	        childDeptMap.put("child_dept_name", childDept.getChild_dept_name());
+	        childDeptMapList.add(childDeptMap);
+	    }
+	    
+	    return childDeptMapList;
+	}
+
+	
 	
 	
 	@PostMapping("ManagementFrom")
