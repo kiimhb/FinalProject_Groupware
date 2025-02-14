@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.approval.service.ApprovalService;
@@ -88,4 +89,10 @@ public class ApprovalController {
 
 		return mav;
 	}
+	
+	
+	// ==== 결재선지정 버튼 클릭 후 조직도를 가져오기 ==== //
+	//@GetMapping("setApprovalLine")
+	//@ResponseBody
+	//public List<Map<String,String>> 
 }

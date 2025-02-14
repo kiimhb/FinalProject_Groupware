@@ -35,7 +35,7 @@
 			<input type="text" class="form-control" style="display: inline-block; width: 90%; margin-left: 1%;" readonly/>
 		</div>
 		
-		<hr style="border: solid 1px gray; margin: 3% 0.5%;">
+		<hr style="border:0; height:1px; background: #bbb; margin: 3% 0.5%;">
 			
 		<div>
 			<div class="draftInfo">구분</div>

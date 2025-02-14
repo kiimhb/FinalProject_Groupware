@@ -13,6 +13,7 @@
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 
 
 <style>
@@ -57,6 +58,13 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	
+	<%-- 결재양식선택 전엔 상단 버튼 감추기 --%>
+	$("button#btnSaved").hide();
+	$("button#btnLine").hide();
+	$("button#btnRequest").hide();
+	
+	////////////////////////////////////////////////////////////////////////////////
+
 	<%-- [결재양식선택] 클릭 시 모달 띄우기 --%>
 	$("button#btnType").on("click", function(){
 		
@@ -101,6 +109,7 @@ $(document).ready(function(){
 		container.html(modal_popup);
 		$("div#draftType").modal('show');
 		
+		
 		// ==== 양식 선택에 따라 해당 양식의 예시를 보여주는 이벤트 ==== //
 		$("select[name='typeSelect']").on("change", function(){
 			
@@ -126,13 +135,21 @@ $(document).ready(function(){
 						draftFormExample.load("<%= ctxPath%>/approval/businessTripForm");
 						break;
 				}
-
 			}
 			
 		});// end of $("select#typeSelect").on("change", function(){})---------------
 		
+		// 모달 닫힌 후 상단 버튼 보이기
+		$('div#draftType').on('hidden.bs.modal', function () {
+			$("button#btnSaved").show();
+			$("button#btnLine").show();
+			$("button#btnRequest").show();
+		});
+		
 	});// end of $("button#btnType").on("click", function(){})-------
 	
+	////////////////////////////////////////////////////////////////////////////////
+
 	
 });// end of $(document).ready(function(){})----------------
 
@@ -180,13 +197,31 @@ function goWrite() {
 				$("div#draft").html(draftForm);
 			},
 			error: function() {
-				swal('양식 가져오기 실패!',"다시 시도해주세요",'warning');
+				swal('양식 불러오기 실패!',"다시 시도해주세요",'warning');
 			}
 			
 		});
 	}
 	
-}
+}// end of function goWrite() {}------------------------------
+
+
+//==== 결재선지정 버튼 클릭 함수 ==== //
+function setApprovalLine() {
+	
+	<%-- $.ajax({
+		url:"<%=ctxPath%>/approval/setApprovalLine",
+		dataType:"json",
+		type:"get",
+		success: function(result) {
+			alert(result.stringify);
+		},
+		error: function() {
+			swal('결재선 불러오기 실패!',"다시 시도해주세요",'warning');
+		}
+	}); --%>
+	
+}// end of function setApprovalLine() {}------------------------------
 </script>
 
 
@@ -198,7 +233,7 @@ function goWrite() {
 	
 	<span id="btnRight">
 		<button type="button" id="btnSaved">임시저장</button>
-		<button type="button" id="btnLine">결재선지정</button>
+		<button type="button" id="btnLine" onclick="setApprovalLine()">결재선지정</button>
 		<button type="button" id="btnRequest">결재요청</button>
 	</span>
 	

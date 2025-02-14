@@ -7,7 +7,7 @@
 
 <%
 String ctxPath = request.getContextPath();
-//     /myspring
+//     /med-groupware
 %>
 
 <%-- 직접 만든 CSS --%>
@@ -17,25 +17,19 @@ String ctxPath = request.getContextPath();
   
 <script type="text/javascript">
 $(document).ready(function() {
-    // 사이드바 토글 버튼 클릭 시
     $("#toggleBtn").click(function(e) {
-        e.preventDefault(); // 기본 링크 동작 방지
-        $("#sidebar").toggleClass("hidden"); // 사이드바 숨기기/보이기 토글
-        $("#mycontent").toggleClass("full"); // mycontent 영역의 margin-left 조정
+        e.preventDefault();
+        $("#sidebar").toggleClass("hidden");
+        $(".profile").toggleClass("hidden");
+        $("#mycontent").toggleClass("full");
     });
 
-    // 서브 메뉴 열기/닫기
     $("a.menu-toggle").click(function(e) {
-        e.preventDefault(); // 기본 링크 동작 방지
-        $(this).next("div.submenu").slideToggle(); // 하위 메뉴 열기/닫기
+        e.preventDefault();
+        $(this).next("div.submenu").slideToggle();
     });
 });
 
-const toggleBtn = document.querySelector("button#toggleBtn");
-toggleBtn.addEventListener("click", function(){
-  const side = document.querySelector("div#sidebar");
-  side.classList.toggle("hidden");
-});
 
 </script>
    <div data-simplebar id="sidebar" class="sidebar">
@@ -57,6 +51,8 @@ toggleBtn.addEventListener("click", function(){
 
    <ul>
       <li><a href="<%=ctxPath%>"><i class="fa-solid fa-house-chimney"></i> <span>홈화면</span></a>
+      
+      <li><a href="<%=ctxPath%>/management/login"><i class="fa-solid fa-clipboard-user"></i> <span>로그인</span></a></li>
    
       <li><a href="<%=ctxPath%>/commute"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
    
@@ -64,19 +60,20 @@ toggleBtn.addEventListener("click", function(){
       <a href="#" class="menu-toggle"> 
       <i class="fa-solid fa-suitcase-medical"></i> <span>진료</span> <i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>">대기환자</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>">진료정보입력</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>">처방전 및 수납</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/patient/patientReg">환자등록</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/patient/patientWaiting">대기환자</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/order/orderEnter">진료정보입력</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/order/orderEnter">처방전 및 수납</a>
          </div></li>
 
       <li>
       <a href="#" class="menu-toggle">
       <i class="fa-solid fa-file-signature"></i>  <span>원무</span> <i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>/patient">환자조회</a>
-             <a class="dropdown-item" href="<%=ctxPath%>/register">예약</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/patient/list">환자조회</a>
+             <a class="dropdown-item" href="<%=ctxPath%>/register/list">예약</a>
              <a class="dropdown-item" href="<%=ctxPath%>">입원실현황</a> 
-             <a class="dropdown-item" href="<%=ctxPath%>/pay">수납</a>
+             <a class="dropdown-item" href="<%=ctxPath%>/pay/wait">수납</a>
          </div></li>
          
          <li><a href="<%=ctxPath%>"><i class="fa-solid fa-users-gear"></i> <span>근무교대 관리</span> </a></li>
@@ -104,21 +101,21 @@ toggleBtn.addEventListener("click", function(){
       <li><a href="#" class="menu-toggle">
       <i class="fa-solid fa-envelope"></i> <span>메일</span> <i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>">메일쓰기</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>">받은메일함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>">보낸메일함</a>
-             <a class="dropdown-item" href="<%=ctxPath%>">휴지통</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>">메일보관함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailWrite">메일쓰기</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailReceive">받은메일함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailSend">보낸메일함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailTrash">휴지통</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailStorage">메일보관함</a>
+
          </div></li>
 
-      <li><a href="<%=ctxPath%>/notice/notice"><i class="fa-solid fa-bullhorn"></i> <span>공지사항</span></a> </li>
+      <li><a href="<%=ctxPath%>/notice/list"><i class="fa-solid fa-bullhorn"></i> <span>공지사항</span></a>  </li>
       <li><a href="<%=ctxPath%>/organizational/organizational"><i class="fa-solid fa-sitemap"></i> <span>조직도</span></a>
 
-      <li><a href="<%=ctxPath%>/schedule/shareschedule" class="menu-toggle">
+      <li><a href="<%=ctxPath%>/schedule/scheduleManagement" class="menu-toggle">
        <i class="fa-solid fa-calendar-days"></i>  <span>일정관리</span> <i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>/schedule/shareschedule"><span>공유일정</span></a>
-            <a class="dropdown-item" href="<%=ctxPath%>/schedule/oneschedule"><span>개인일정</span></a>
+            <a class="dropdown-item" href="/schedule/scheduleManagement"><span>일정관리</span></a>
          </div>
       </li>
 
@@ -133,7 +130,7 @@ toggleBtn.addEventListener("click", function(){
       <li><a href="<%=ctxPath%>/memo/memo" class="menu-toggle">
       <i class="fa-solid fa-marker"></i> <span>메모</span><i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>/memo/memo">메모장</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/memo/memowrite">메모장</a>
             <a class="dropdown-item" href="<%=ctxPath%>/memo/importantmemo">중요메모</a>
             <a class="dropdown-item" href="<%=ctxPath%>/memo/trash">휴지통</a>
          </div></li>
