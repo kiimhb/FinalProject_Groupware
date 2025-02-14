@@ -90,6 +90,61 @@ table.manag_table th {
         fileReader.readAsDataURL(file);
     }); 
     
+    $(document).ready(function(){
+    	//하위부서 데이터값 불러오기
+         $("select[name='parentDept']").change(function(){
+             const dept = $(this).val(); // 선택된 상위 부서 값
+             const childDeptSelect = $("select[name='childDept']");
+             
+             // 기존 옵션 초기화
+             childDeptSelect.empty();
+             childDeptSelect.append('<option value=""> 하위 부서 선택 </option>');
+
+             if (dept) { // 부서가 선택되었을 때만 AJAX 요청
+                 $.ajax({
+                     url: "${pageContext.request.contextPath}/management/childDeptJSON",
+                     data: {"dept": dept},
+                     dataType: "json",
+                     success: function(json) {
+
+                    	 json.forEach(function(item, index) {
+                             childDeptSelect.append('<option value="' + item.child_dept_no + '">' + item.child_dept_name + '</option>');
+                         });
+                     },
+                     error: function(request, status, error) {
+                         alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
+                     }
+                 });
+             }
+         });
+         
+    	//직급 데이터값 불러오기
+         $("select[name='parentDept']").change(function() {
+             const parentDept = $(this).val(); // 선택된 상위 부서 값
+             const positionSelect = $("select[name='position']"); // 직급 select
+
+             // 기존 옵션 초기화
+             positionSelect.empty();
+             positionSelect.append('<option value=""> 직급 선택 </option>');
+
+             // 특정 부서에 따라 직급 추가
+             if (parentDept == "1") {
+                 positionSelect.append('<option value="1">전문의</option>');
+             } 
+             if (parentDept == "2") {
+                 positionSelect.append('<option value="1">수간호사</option>');
+                 positionSelect.append('<option value="2">평간호사</option>');
+             } 
+             if (parentDept == "3") {
+                 positionSelect.append('<option value="1">병원장</option>');
+                 positionSelect.append('<option value="2">부장</option>');
+                 positionSelect.append('<option value="3">차장</option>');
+                 positionSelect.append('<option value="4">과장</option>');
+                 positionSelect.append('<option value="5">주임</option>');
+             } 
+         });
+     });
+    
 
     	$(document).ready(function () {
     		
@@ -133,116 +188,100 @@ table.manag_table th {
         		    $("#hp_error").hide();
         		});
         	    
+        	    $("input#hp2").on("input", (e) => {
+        		    const input = $(e.target);
+        		    const sanitizedValue = input.val().replace(/[^0-9]/g, ""); // 숫자가 아닌 문자를 제거
+        		    input.val(sanitizedValue); // 필드에 정제된 값 설정
+        	});
+        	$("input#hp3").on("input", (e) => {
+        	    const input = $(e.target);
+        	    const sanitizedValue = input.val().replace(/[^0-9]/g, ""); // 숫자가 아닌 문자를 제거
+        	    input.val(sanitizedValue); // 필드에 정제된 값 설정
+        	});
+        	    
     	});
         	    
-         $("button#registerbtn").click(function(){	
-        	    
-       	    	const name = $("#name").val().trim();
-       	        const regExp_Name = /^[가-힣\s]{2,10}$/;
-       	    	if (name === "" || !regExp_Name.test(name)) { // 이름이 공백이거나 정규식을 통과하지 못한 경우
-       	    		$("#name").focus();
-       	    		return;
-       	        }	
-       	    	if($("#email").val().trim()==""){
-       				$("#email").focus();
-       				return;	
-	       		}
-	       		if($("#hp2").val().trim()==""){
-       				$("#hp2").focus();
-       				return;	
-	       		}
-	       		if($("#hp3").val().trim()==""){
-       				$("#hp3").focus();
-       				return;	
-	       		}	
-        	    	
-        	    const radio_checked_length = $("input:radio[name='gender']:checked").length;
+    	$(document).ready(function () {
+    	    $("button#registerbtn").click(function () {
+    	        
+    	        const name = $("#name").val().trim();
+    	        const regExp_Name = /^[가-힣\s]{2,10}$/;
+    	        if (name === "" || !regExp_Name.test(name)) {
+    	            alert("이름을 올바르게 입력하세요.");
+    	            $("#name").focus();
+    	            return;
+    	        }
 
-        	    if (radio_checked_length == 0) {
-        	        alert("성별을 선택하셔야 합니다.");
-        	        return;
-        	    }
-        	    
-        	    $("input#datepicker, input#start").blur((e) => {
-        	        const dateValue = $(e.target).val().trim();
-        	        if (!dateValue) {
-        	            alert("올바른 날짜를 입력하세요.");
-        	            $(e.target).val("").focus();
-        	            return;
-        	        }
-        	        const parsedDate = new Date(dateValue);
-        	        if (isNaN(parsedDate.getTime())) {
-        	            alert("유효한 날짜 형식을 입력하세요.");
-        	            $(e.target).val("").focus();
-        	        }
-        	    
-	           // 폼(form)을 전송(submit)
-		      const frm = document.memberFrm;
-		      frm.method = "post";
-		      frm.action = "<%= ctxPath%>/ManagementFrom/ManagementFrom";
-		      frm.submit();
-        	
-        	    });
-        
-     		
-       });
-         
-         
-         $(document).ready(function(){
-        	 
-        	//하위부서 데이터값 불러오기
-             $("select[name='parentDept']").change(function(){
-                 const dept = $(this).val(); // 선택된 상위 부서 값
-                 const childDeptSelect = $("select[name='childDept']");
-                 
-                 // 기존 옵션 초기화
-                 childDeptSelect.empty();
-                 childDeptSelect.append('<option value=""> 하위 부서 선택 </option>');
+    	        const parentDept = $("select[name='parentDept']").val();
+    	        if (parentDept == "") {
+    	            alert("상위 부서를 선택하세요.");
+    	            return;
+    	        }
 
-                 if (dept) { // 부서가 선택되었을 때만 AJAX 요청
-                     $.ajax({
-                         url: "${pageContext.request.contextPath}/management/childDeptJSON",
-                         data: {"dept": dept},
-                         dataType: "json",
-                         success: function(json) {
+    	        const childDept = $("select[name='childDept']").val();
+    	        if (childDept == "") {
+    	            alert("하위 부서를 선택하세요.");
+    	            return;
+    	        }
 
-                        	 json.forEach(function(item, index) {
-                                 childDeptSelect.append('<option value="' + item.child_dept_no + '">' + item.child_dept_name + '</option>');
-                             });
-                         },
-                         error: function(request, status, error) {
-                             alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
-                         }
-                     });
-                 }
-             });
-             
-        	//직급 데이터값 불러오기
-             $("select[name='parentDept']").change(function() {
-                 const parentDept = $(this).val(); // 선택된 상위 부서 값
-                 const positionSelect = $("select[name='position']"); // 직급 select
+    	        const position = $("select[name='position']").val();
+    	        if (position == "") {
+    	            alert("직급을 선택하세요.");
+    	            return;
+    	        }
 
-                 // 기존 옵션 초기화
-                 positionSelect.empty();
-                 positionSelect.append('<option value=""> 직급 선택 </option>');
+    	        if ($("#email").val().trim() == "") {
+    	            alert("이메일을 입력하세요.");
+    	            $("#email").focus();
+    	            return;
+    	        }
 
-                 // 특정 부서에 따라 직급 추가
-                 if (parentDept == "1") {
-                     positionSelect.append('<option value="1">전문의</option>');
-                 } 
-                 if (parentDept == "2") {
-                     positionSelect.append('<option value="1">수간호사</option>');
-                     positionSelect.append('<option value="2">평간호사</option>');
-                 } 
-                 if (parentDept == "3") {
-                     positionSelect.append('<option value="1">병원장</option>');
-                     positionSelect.append('<option value="2">부장</option>');
-                     positionSelect.append('<option value="3">차장</option>');
-                     positionSelect.append('<option value="4">과장</option>');
-                     positionSelect.append('<option value="5">주임</option>');
-                 } 
-             });
-         });
+    	        if ($("#hp2").val().trim() == "") {
+    	            alert("전화번호 중간 자리를 입력하세요.");
+    	            $("#hp2").focus();
+    	            return;
+    	        }
+    	        if ($("#hp3").val().trim() == "") {
+    	            alert("전화번호 마지막 자리를 입력하세요.");
+    	            $("#hp3").focus();
+    	            return;
+    	        }
+
+    	        if ($("input:radio[name='gender']:checked").length == 0) {
+    	            alert("성별을 선택하셔야 합니다.");
+    	            return;
+    	        }
+
+    	        const datepicker = $("#datepicker").val().trim();
+    	        if (!datepicker) {
+    	            alert("생년월일을 입력하세요.");
+    	            $("#datepicker").focus();
+    	            return;
+    	        }
+    	        if (isNaN(new Date(datepicker).getTime())) {
+    	            alert("올바른 생년월일을 입력하세요.");
+    	            $("#datepicker").focus();
+    	            return;
+    	        }
+    	        
+    	        const startDate = $("#start").val().trim();
+    	        if (!startDate) {
+    	            alert("입사일을 입력하세요.");
+    	            $("#start").focus();
+    	            return;
+    	        }
+    	        if (isNaN(new Date(startDate).getTime())) {
+    	            alert("올바른 입사일을 입력하세요.");
+    	            $("#start").focus();
+    	            return;
+    	        }
+
+    	        const frm = document.memberFrm;
+    	        frm.method = "post";
+    	        frm.action = "<%= ctxPath%>/management/ManagementFrom";
+    	        frm.submit();
+    	    });
+    	});
 
 </script>
 

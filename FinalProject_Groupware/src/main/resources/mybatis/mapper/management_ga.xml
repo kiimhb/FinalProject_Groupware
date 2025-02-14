@@ -6,15 +6,20 @@
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="management_ga">
 	
-	<select id="parentDeptList" resultType="com.spring.med.management.domain.Parent_deptVO">
+	<select id="parentDeptList" resultType="Parent_deptVO_ga">
 		select parent_dept_no, parent_dept_name
 		from tbl_parent_dept
 	</select>
 	
-	<select id="childDeptJSON"  parameterType="HashMap" resultType="com.spring.med.management.domain.Child_deptVO">
+	<select id="childDeptJSON"  parameterType="HashMap" resultType="Child_deptVO_ga">
 		select child_dept_no, fk_parent_dept_no, child_dept_name
 		from tbl_child_dept
 		where fk_parent_dept_no = #{dept}
 	</select>
+	
+	<insert id="manag_form" parameterType="ManagementVO_ga">
+		insert into tbl_member(member_userid, fk_child_dept_no, member_pwd, member_name, member_mobile, member_email,member_birthday, member_gender, member_start, member_last, member_pro_filename, member_pro_orgfilename, member_pro_filesize,member_yeoncha, member_grade, member_workingTime, member_position, member_sign_filename, member_sign_orgfilename, member_sign_filesize)
+		values(#{member_userid}, #{fk_child_dept_no}, #{member_pwd}, #{member_name}, #{member_mobile}, #{member_email},#{member_birthday}, #{member_gender}, #{member_start}, #{member_last}, #{member_pro_filename}, #{member_pro_orgfilename}, #{member_pro_filesize}, #{member_yeoncha}, #{member_grade}, #{member_workingTime}, #{member_position}, #{member_sign_filename}, #{member_sign_orgfilename}, #{member_sign_filesize}) 
+	</insert>
 	
 </mapper>

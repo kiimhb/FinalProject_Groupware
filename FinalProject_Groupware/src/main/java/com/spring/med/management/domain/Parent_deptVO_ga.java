@@ -1,6 +1,6 @@
 package com.spring.med.management.domain;
 
-public class Parent_deptVO {
+public class Parent_deptVO_ga {
 	
 	private String parent_dept_no;
 	private String parent_dept_name;
