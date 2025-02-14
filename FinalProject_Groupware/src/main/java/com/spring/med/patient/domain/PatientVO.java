@@ -2,8 +2,6 @@ package com.spring.med.patient.domain;
 
 public class PatientVO {
 
-	
-	
 	private String patient_no;				// 환자 번호
 	private String fk_team_no;				// 담당 부서 번호
 	private String patient_name;			// 이름	
@@ -14,12 +12,8 @@ public class PatientVO {
 	private String patient_visitdate;		// 내원일
 	private String patient_wating;			// 진료 대기
 	
-	
-	
-	
-	
-	
-	
+	// select 용
+	private String age;
 	
 	public String getPatient_no() {
 		return patient_no;
@@ -75,7 +69,12 @@ public class PatientVO {
 	public void setPatient_wating(String patient_wating) {
 		this.patient_wating = patient_wating;
 	}
-	
+	public String getAge() {
+		return age;
+	}
+	public void setAge(String age) {
+		this.age = age;
+	}
 	
 	
 }

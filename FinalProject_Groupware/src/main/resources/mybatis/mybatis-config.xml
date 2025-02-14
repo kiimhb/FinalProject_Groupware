@@ -5,7 +5,7 @@
 
 	<!-- domain(VO) package -->
    <typeAliases>
-
+		<typeAlias type="com.spring.med.patient.domain.PatientVO" alias="PatientVO"/>
    </typeAliases>
 
 </configuration>

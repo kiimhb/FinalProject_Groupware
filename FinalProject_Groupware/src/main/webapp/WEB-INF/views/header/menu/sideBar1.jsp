@@ -58,7 +58,7 @@ toggleBtn.addEventListener("click", function(){
    <ul>
       <li><a href="<%=ctxPath%>"><i class="fa-solid fa-house-chimney"></i> <span>홈화면</span></a>
    
-      <li><a href="<%=ctxPath%>/commute"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
+      <li><a href="<%=ctxPath%>/commuteRecord"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
    
       <li>
       <a href="#" class="menu-toggle"> 
@@ -73,10 +73,10 @@ toggleBtn.addEventListener("click", function(){
       <a href="#" class="menu-toggle">
       <i class="fa-solid fa-file-signature"></i>  <span>원무</span> <i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>/patient">환자조회</a>
-             <a class="dropdown-item" href="<%=ctxPath%>/register">예약</a>
+             <a class="dropdown-item" href="<%=ctxPath%>/patient/list">환자조회</a>
+             <a class="dropdown-item" href="<%=ctxPath%>/register/list">예약</a>
              <a class="dropdown-item" href="<%=ctxPath%>">입원실현황</a> 
-             <a class="dropdown-item" href="<%=ctxPath%>/pay">수납</a>
+             <a class="dropdown-item" href="<%=ctxPath%>/pay/wait">수납</a>
          </div></li>
          
          <li><a href="<%=ctxPath%>"><i class="fa-solid fa-users-gear"></i> <span>근무교대 관리</span> </a></li>
@@ -111,7 +111,7 @@ toggleBtn.addEventListener("click", function(){
             <a class="dropdown-item" href="<%=ctxPath%>">메일보관함</a>
          </div></li>
 
-      <li><a href="<%=ctxPath%>/notice/notice"><i class="fa-solid fa-bullhorn"></i> <span>공지사항</span></a> </li>
+      <li><a href="<%=ctxPath%>/notice/list"><i class="fa-solid fa-bullhorn"></i> <span>공지사항</span></a> </li>
       <li><a href="<%=ctxPath%>/organizational/organizational"><i class="fa-solid fa-sitemap"></i> <span>조직도</span></a>
 
       <li><a href="<%=ctxPath%>/schedule/shareschedule" class="menu-toggle">

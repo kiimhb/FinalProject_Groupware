@@ -16,10 +16,10 @@ import jakarta.servlet.http.HttpServletRequest;
 public class CommuteController {
 
 
-	@GetMapping("commute")
+	@GetMapping("commuteRecord")
 	public String index(HttpServletRequest request) {
 	
-		return "content/attendance/commute";
+		return "content/attendance/commuteRecord";
 		// /WEB-INF/views/mycontent1/main/index.jsp 페이지를 만들어야 한다.
 	}
 	
