@@ -18,10 +18,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping(value="/patient/*")
 public class TreatPatientController {
-	
-	//@Autowired  // Type 에 따라 알아서 Bean 을 주입해준다.
-	//private TreatPatientService service;
-	
+	/*
+	@Autowired  // Type 에 따라 알아서 Bean 을 주입해준다.
+	private TreatPatientService service;
+	*/
 	
 	
 	@GetMapping("patientWaiting")
@@ -33,10 +33,11 @@ public class TreatPatientController {
 		//patientList = service.selectPatientWaiting();
 
 		// mav.addObject(patientList);
-		mav.setViewName("/patient/patientWaiting");
+		mav.setViewName("content/patient/patientWaiting");
 		
 		return mav;
 	}
+	
 	
 
 }
