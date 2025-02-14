@@ -1,13 +1,17 @@
 package com.spring.med.aop;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.spring.med.board.service.BoardService;
 import com.spring.med.common.MyUtil;
 
 import jakarta.servlet.RequestDispatcher;
@@ -38,6 +42,8 @@ public class CommonAop {
 		*/
 		
 		HttpSession session = request.getSession();
+
+/*
 		if(session.getAttribute("loginuser") == null) {
 			
 			String message = "먼저 로그인 하세요~~ (AOP Before Advice 활용)";
@@ -57,8 +63,19 @@ public class CommonAop {
 				e.printStackTrace();
 			}	
 		}
+*/		
+		
 	}// end of public void loginCheck(JoinPoint joinpoint) {}-------------------------------------------
 	
-
-
-}
+	
+		
+		
+		
+		// ===== Around Advice(보조업무) 만들기 ====== // 
+		
+		
+		
+		
+		
+		
+	}

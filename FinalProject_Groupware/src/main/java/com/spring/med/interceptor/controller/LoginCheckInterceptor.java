@@ -25,8 +25,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 	        true를 리턴하면 다음 내용(Controller의 동작)을 실행하게 된다.
 		*/
 		
-		
-		// ==== 로그인 여부 검사 ==== //
+/*		
+		// ==== 로그인 여부 검사 ==== //		
 		HttpSession session = request.getSession();
 		
 		if(session.getAttribute("loginuser") == null) {
@@ -43,7 +43,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 			
 			return false;
 		}
-		
+*/				
 		return true;
 	}
 
