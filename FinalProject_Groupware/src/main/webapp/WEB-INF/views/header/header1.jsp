@@ -3,7 +3,7 @@
 
 <%
    String ctxPath = request.getContextPath();
-   //     /myspring 
+//     /med-groupware
 %>      
     
 <!DOCTYPE html>

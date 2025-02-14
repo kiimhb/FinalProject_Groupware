@@ -54,7 +54,7 @@ $(document).ready(function() {
       
       <li><a href="<%=ctxPath%>/management/login"><i class="fa-solid fa-clipboard-user"></i> <span>로그인</span></a></li>
    
-      <li><a href="<%=ctxPath%>/commuteRecord"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
+      <li><a href="<%=ctxPath%>/commute"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
    
       <li>
       <a href="#" class="menu-toggle"> 
@@ -70,11 +70,7 @@ $(document).ready(function() {
       <a href="#" class="menu-toggle">
       <i class="fa-solid fa-file-signature"></i>  <span>원무</span> <i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
-<<<<<<< HEAD
             <a class="dropdown-item" href="<%=ctxPath%>/patient/list">환자조회</a>
-=======
-             <a class="dropdown-item" href="<%=ctxPath%>/patient/list">환자조회</a>
->>>>>>> refs/heads/hyeyeon
              <a class="dropdown-item" href="<%=ctxPath%>/register/list">예약</a>
              <a class="dropdown-item" href="<%=ctxPath%>">입원실현황</a> 
              <a class="dropdown-item" href="<%=ctxPath%>/pay/wait">수납</a>
@@ -113,19 +109,10 @@ $(document).ready(function() {
 
          </div></li>
 
-<<<<<<< HEAD
       <li><a href="<%=ctxPath%>/notice/list"><i class="fa-solid fa-bullhorn"></i> <span>공지사항</span></a>  </li>
-=======
-      <li><a href="<%=ctxPath%>/notice/list"><i class="fa-solid fa-bullhorn"></i> <span>공지사항</span></a> </li>
->>>>>>> refs/heads/hyeyeon
       <li><a href="<%=ctxPath%>/organizational/organizational"><i class="fa-solid fa-sitemap"></i> <span>조직도</span></a>
 
-      <li><a href="<%=ctxPath%>/schedule/scheduleManagement" class="menu-toggle">
-       <i class="fa-solid fa-calendar-days"></i>  <span>일정관리</span> <i class="fa-solid fa-chevron-down"></i></a>
-         <div class="submenu">
-            <a class="dropdown-item" href="/schedule/scheduleManagement"><span>일정관리</span></a>
-         </div>
-      </li>
+      <li><a href="<%=ctxPath%>/schedule/scheduleManagement" > <i class="fa-solid fa-calendar-days"></i>  <span>일정관리</span> </a> </li>
 
       <li><a href="<%=ctxPath%>/board/list" class="menu-toggle">
       <i class="fa-solid fa-feather"></i> <span>커뮤니티</span><i class="fa-solid fa-chevron-down"></i></a>
