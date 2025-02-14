@@ -18,22 +18,36 @@ import jakarta.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping(value="/patient/*")
 public class TreatPatientController {
-	/*
-	@Autowired  // Type 에 따라 알아서 Bean 을 주입해준다.
-	private TreatPatientService service;
-	*/
+	
+	
+	//@Autowired  // Type 에 따라 알아서 Bean 을 주입해준다.
+	//private TreatPatientService service;
+	
 	
 	
 	@GetMapping("patientWaiting")
 	public ModelAndView selectPatientWaiting(HttpServletRequest request, ModelAndView mav) {
 		
-		// List<TreatPatientVO> patientList = null;
-		
-		
+		//List<TreatPatientVO> patientList = null;
+				
 		//patientList = service.selectPatientWaiting();
 
-		// mav.addObject(patientList);
+		//mav.addObject(patientList);
 		mav.setViewName("content/patient/patientWaiting");
+		
+		return mav;
+	}
+	
+	
+	@GetMapping("patientReg")
+	public ModelAndView PatientReg(HttpServletRequest request, ModelAndView mav) {
+		
+		//List<TreatPatientVO> patientList = null;
+				
+		//patientList = service.selectPatientWaiting();
+
+		//mav.addObject(patientList);
+		mav.setViewName("content/patient/patientReg");
 		
 		return mav;
 	}

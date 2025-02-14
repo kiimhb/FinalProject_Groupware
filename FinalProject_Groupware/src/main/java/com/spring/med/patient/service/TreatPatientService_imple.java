@@ -9,18 +9,19 @@ import com.spring.med.patient.model.TreatPatientDAO;
 
 public class TreatPatientService_imple implements TreatPatientService {
 
-	
+	/*
 	@Autowired
-	private TreatPatientDAO dao;
+	private TreatPatientDAO tpdao;
 	
 	
 	// 진료 - 진료대기환자 에서 진료대기환자 리스트 보여주기
 	@Override
 	public List<TreatPatientVO> selectPatientWaiting() {
 
-		List<TreatPatientVO> patientList = dao.selectPatientWaiting();
+		List<TreatPatientVO> patientList = tpdao.selectPatientWaiting();
 
 		return patientList;
 	}
+	*/
 
 }

@@ -43,105 +43,135 @@
 		</table>
 	</div>
 <div id="container" style="width:100%;">	
-	<div id="orderEnter" style="margin:0% 10%; border:solid 1px green; height:570px; overflow-y:scroll;">		
-		<div style="display:flex; justify-content:center; border:solid 1px orange;">
-			<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
-				<span>진료내역</span>
-			</div>
-			<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
-				<span>증상</span>
-			</div>
-			<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
-				<span>캘린더</span>
-			</div>
-		</div>
-		
-		<div style="display:inline-block; width:100%;">
-			<div style="margin: 0% 0.17%; float:left; border:solid 1px black; width:33%; height:450px; overflow:auto;">
-			
-				<li style="list-style-type: none; margin: 5% 0%;">
-				<a href="#" class="menu-toggle"> 
-					<span style="margin:5% 3% ;">이순신</span> 
-					<span>2025/01/02 (7일전)</span> <i class="fa-solid fa-chevron-down"></i>
-				</a>
-			         <div class="submenu">
-			            <a class="dropdown-item" href="">각종</a> 
-			            <a class="dropdown-item" href="">질환과</a> 
-			            <a class="dropdown-item" href="">질병</a>
-			         </div>
-		         </li>
-		         
-		        <li style="list-style-type: none; margin: 5% 0%;">
-				<a href="#" class="menu-toggle"> 
-					<span style="margin:5% 3% ;">이순신</span>
-					<span>2024/12/28 (10일전)</span> <i class="fa-solid fa-chevron-down"></i>
-				</a>
-			         <div class="submenu">
-			            <a class="dropdown-item" href="">각종</a> 
-			            <a class="dropdown-item" href="">질환과</a> 
-			            <a class="dropdown-item" href="">질병</a>
-			         </div>
-		         </li>
-		         
-		         <li style="list-style-type: none; margin: 5% 0%;">
-				<a href="#" class="menu-toggle"> 
-					<span style="margin:5% 3% ;">이순신</span>
-					<span>2024/12/15 (15일전)</span> <i class="fa-solid fa-chevron-down"></i>
-				</a>
-			         <div class="submenu">
-			            <a class="dropdown-item" href="">각종</a> 
-			            <a class="dropdown-item" href="">질환과</a> 
-			            <a class="dropdown-item" href="">질병</a>
-			         </div>
-		         </li>
-		         <li style="list-style-type: none; margin: 5% 0%;">
-				<a href="#" class="menu-toggle"> 
-					<span style="margin:5% 3% ;">이순신</span>
-					<span>2024/12/15 (15일전)</span> <i class="fa-solid fa-chevron-down"></i>
-				</a>
-			         <div class="submenu">
-			            <a class="dropdown-item" href="">각종</a> 
-			            <a class="dropdown-item" href="">질환과</a> 
-			            <a class="dropdown-item" href="">질병</a>
-			         </div>
-		         </li>
-					
+	<div id="enterContainer" style="margin:0% 10%; border:solid 1px green; height:570px; overflow-y:scroll;">
+		<form name="orderEnter">		
+			<div style="display:flex; justify-content:center; border:solid 1px orange;">
+				<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
+					<span>진료내역</span>
+				</div>
+				<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
+					<span>증상</span>
+				</div>
+				<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
+					<span>캘린더</span>
+				</div>
 			</div>
 			
-			<div style="margin: 0% 0.17%; float:left; border:solid 1px blue; width:33%; height:300px;">
-				<textarea style="width: 100%; height:300px; resize:none;">접수시 간단증상</textarea>	
+			<div style="display:inline-block; width:100%;">
+				<div style="margin: 0% 0.17%; float:left; border:solid 1px black; width:33%; height:450px; overflow:auto;">
+				
+					<li style="list-style-type: none; margin: 5% 0%;">
+					<a href="#" class="menu-toggle"> 
+						<span style="margin:5% 3% ;">이순신</span> 
+						<span>2025/01/02 (7일전)</span> <i class="fa-solid fa-chevron-down"></i>
+					</a>
+				         <div class="submenu">
+				            <a class="dropdown-item" href="">각종</a> 
+				            <a class="dropdown-item" href="">질환과</a> 
+				            <a class="dropdown-item" href="">질병</a>
+				         </div>
+			         </li>
+			         
+			        <li style="list-style-type: none; margin: 5% 0%;">
+					<a href="#" class="menu-toggle"> 
+						<span style="margin:5% 3% ;">이순신</span>
+						<span>2024/12/28 (10일전)</span> <i class="fa-solid fa-chevron-down"></i>
+					</a>
+				         <div class="submenu">
+				            <a class="dropdown-item" href="">각종</a> 
+				            <a class="dropdown-item" href="">질환과</a> 
+				            <a class="dropdown-item" href="">질병</a>
+				         </div>
+			         </li>
+			         
+			         <li style="list-style-type: none; margin: 5% 0%;">
+					<a href="#" class="menu-toggle"> 
+						<span style="margin:5% 3% ;">이순신</span>
+						<span>2024/12/15 (15일전)</span> <i class="fa-solid fa-chevron-down"></i>
+					</a>
+				         <div class="submenu">
+				            <a class="dropdown-item" href="">각종</a> 
+				            <a class="dropdown-item" href="">질환과</a> 
+				            <a class="dropdown-item" href="">질병</a>
+				         </div>
+			         </li>
+			         <li style="list-style-type: none; margin: 5% 0%;">
+					<a href="#" class="menu-toggle"> 
+						<span style="margin:5% 3% ;">이순신</span>
+						<span>2024/12/15 (15일전)</span> <i class="fa-solid fa-chevron-down"></i>
+					</a>
+				         <div class="submenu">
+				            <a class="dropdown-item" href="">각종</a> 
+				            <a class="dropdown-item" href="">질환과</a> 
+				            <a class="dropdown-item" href="">질병</a>
+				         </div>
+			         </li>
+						
+				</div>
+				
+				<div style="margin: 0% 0.17%; float:left; border:solid 1px blue; width:33%; height:300px;">
+					<textarea style="width: 100%; height:300px; resize:none;">접수시 간단증상</textarea>	
+				</div>
+				
+				<div style="margin: 0% 0.16%; float:right; border:solid 1px green; width:33%; height:300px;">
+					<div style="height:300px;">달력</div>
+					<div style="float:right; margin-top:1%;">
+						<button>수술 지시</button>
+						<button>입원 지시</button>	
+					</div>		
+				</div>
 			</div>
 			
-			<div style="margin: 0% 0.16%; float:right; border:solid 1px green; width:33%; height:300px;">
-				<div style="height:300px;">달력</div>
-				<div style="float:right; margin-top:1%;">
-					<button>수술 지시</button>
-					<button>입원 지시</button>	
-				</div>		
-			</div>
-		</div>
-		
-		<div id="orderNpay" style="height:630px; border:solid 1px red;">
-		
-			<div id="orderSearch" style="margin:1% 0.1%;">
-				<span>오더 검색</span>
-				<input type="text" style="width: 600px; border: none; border-bottom: 1px solid black;"></input>
-			</div>
-			<div style="border:solid 1px red; height:150px; margin:0% 0.1%;">
+			<div id="orderNpay" style="height:630px; border:solid 1px red;">
+			
+				<div id="orderSearch" style="margin:1% 0.1%;">
+					<span>오더 검색</span>
+					<input type="text" style="width: 600px; border: none; border-bottom: 1px solid black;"></input>
+				</div>
+				<div style="border:solid 1px red; height:150px; margin:0% 0.1%;">
+				
+				</div>
 							
-			
+				
+				<div id="medicineSearch" style="margin:1% 0.1%;">
+					<span>약 검색</span>
+					<input type="text" style="width: 600px; border: none; border-bottom: 1px solid black;"></input>
+				</div>
+				<div style="border:solid 1px red; height:100px; margin:0% 0.1%;">
+					<span>트리메부틴 말레산염</span> &nbsp;&nbsp;&nbsp;
+					<button type="button" class="btn btn-light ml-1">아침</button>
+					<button type="button" class="btn btn-light ml-1">점심</button>
+					<button type="button" class="btn btn-light ml-1">저녁</button>
+					
+					
+					<label for="before">식전</label>
+					<input type="radio" name="beforeafter" value="식전" id="before" />
+					<label for="after" >식후</label>
+					<input type="radio" name="beforeafter" value="식후" id="after" />
+					
+					
+					
+					<button type="button" style="float:right;">등록</button>
+				</div>
+				
+				<div id="pay" style="margin:1% 0.1%; border:solid 1px blue; height:150px;">
+					<span style="margin:1% 0.1%;">수납 내역</span>
+					<div class="row">
+					    <div class="col-md-4" style="text-align:center;">감기약</div>
+					    <div class="col-md-4 offset-md-4" style="text-align:center;">20000원</div>
+					</div>
+					<div class="row">
+					    <div class="col-md-4" style="text-align:center;">타이레놀</div>
+					    <div class="col-md-4 offset-md-4" style="text-align:center;">10000원</div>
+					</div>				
+					<div class="row">
+					    <div class="col-md-4" style="">총액</div>
+					    <div class="col-md-4 offset-md-4" style="text-align:center;">30000원</div>
+					</div>
+				</div>
 			</div>
-			
-			<div id="medicineSearch" style="border:solid 1px black; height:150px;">
-				<span>오더 검색</span>
-				<input type="text" style="width: 600px; border: none; border-bottom: 1px solid black;"></input>
-			</div>
-		
-		
-		</div>
-		
+		</form>			
 	</div> <%-- end of orderEnter --%>
-	
 </div>
 
 

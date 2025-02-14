@@ -15,11 +15,11 @@
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 
-<div style="font-size:28pt; text-align:center; border:solid 1px red; margin: 4% 20%; background-color:#b3d6d2;"><span>진료대기환자</span></div>
+<div style="font-size:28pt; text-align:center; border:solid 1px red; margin: 4% 10%; background-color:#b3d6d2;"><span>진료대기환자</span></div>
 
 
 <div style="border:solid 1px blue;">	
-	<div style="border:solid 1px green; margin:0 20% 2% 20%;"class="">
+	<div style="border:solid 1px green; margin:0 10% 2% 10%;"class="">
 		<table class="table text-center" id="patientWaiting">
 			<tr>
 				<th style="border:solid 1px black">이름</th>
