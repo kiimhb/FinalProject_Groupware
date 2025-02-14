@@ -1,15 +1,112 @@
 @charset "UTF-8";
 
+/* 상단 */
 .header {
-	border: 1px solid red;
-	height: 100px;
-	
+	margin: 0 auto;
+	width: 70%;
+ 	/*border-bottom: 1px solid black; */
+	height: 60px;
+	display: flex;
+	align-items: flex-end;  /* 하단에 배치하기 */
 }
+.header > div.record {
+	/* border-left: 5px solid #006769;	 */
+	/* padding-left: 1%; */
+	font-size: 25px;
+	margin: 0 auto;
+}
+span.name {
+	font-weight: bold;
+	font-size: 20pt;
+	color: #f68b1f;
+}
+
+
+/* 중간 */
 .time {
-	border: 1px solid yellow;
+	width: 70%;
+	border: 1px solid #ccc;
 	height: 250px;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	justify-content: center;
+	margin: 1% auto;
+	border-radius: 10px;
+	color: #4c4d4f;
 }
+.time > div.today {
+	display: block;
+	font-size: 60px;
+	font-weight: bold;
+	margin-bottom: 5%;
+}
+.time > div#clock {
+	display: block;
+	font-weight: bold;
+	font-size: 30px;
+}
+
+
+/* 하단 */
 .view {
-	border: 1px solid green;
+	width: 70%;
+	/*border: 1px solid black;*/
 	height: 407px;
+	margin: 0 auto;
 }
+div.recordbtn {
+/* 	border : 1px solid red; */
+	height: 50px;
+	width:100%;
+	display:flex;
+}
+span.subtitle {
+	color:#4c4d4f;
+}
+div.startbtn,
+div.endbtn {
+	/* border: 1px solid black; */
+	width:50%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+button.sbtn, button.ebtn {
+	width: 200px;
+	height: 35px;
+	background-color: #006769;
+	color:white;
+	font-weight: bold;
+} 
+div.recordlist {
+	width: 100%;
+	height:357px;
+	display: flex;
+}
+div.start,
+div.end {
+	border: 1px solid gray;
+	width: 50%;
+	overflow-y: scroll;
+}
+table tr {
+	border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+span.day,
+span.times,
+span.status  {
+	width: 240px;
+	height: 50px;
+	display: inline-block;
+	line-height: 50px;s
+}
+span.status {
+	width: 50px;
+}
+span.recordText {
+	color:#509d9c;
+	font-weight: bold;
+	font-size:12pt;
+}
+

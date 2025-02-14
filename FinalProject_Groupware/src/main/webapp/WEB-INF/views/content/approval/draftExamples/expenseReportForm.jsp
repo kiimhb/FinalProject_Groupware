@@ -46,7 +46,7 @@
 			<input type="text" class="form-control" style="display: inline-block; width: 90%; margin-left: 1%;" readonly/>
 		</div>
 		
-		<hr style="border: solid 1px gray; margin: 3% 0.5%;">
+		<hr style="border:0; height:1px; background: #bbb; margin: 3% 0.5%;">
 		
 		<div class="input_margin">
 			<div class="draftInfo">지출사유</div>
