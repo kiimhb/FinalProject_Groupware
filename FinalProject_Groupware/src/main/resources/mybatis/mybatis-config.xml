@@ -5,7 +5,9 @@
 
 	<!-- domain(VO) package -->
    <typeAliases>
-
+		<typeAlias type="com.spring.med.board.domain.BoardVO" alias="BoardVO"/>
+		<typeAlias type="com.spring.med.memo.domain.MemoVO" alias="MemoVO"/>
+ 		<typeAlias type="com.spring.med.schedule.domain.Calendar_small_category_VO" alias="Calendar_small_category_VO"/> 
    </typeAliases>
 
 </configuration>

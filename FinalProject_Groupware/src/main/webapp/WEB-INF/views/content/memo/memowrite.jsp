@@ -3,7 +3,6 @@
     
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -63,15 +62,15 @@ function saveMemo() {
 function importantmemo(button) {
 	  const icon = button.querySelector("i");
 	  if (icon.classList.contains("fa-star-o")) {
-	    // 비어 있는 별 -> 채워진 별
+	    // 비어 있는 별 -> 채워진 별로 변경
 	    icon.classList.remove("fa-star-o");
 	    icon.classList.add("fa-star");
-	    icon.style.color = "gold";
+	    icon.style.color = "gold"; // 채워진 별의 색상 변경
 	  } else {
-	    // 채워진 별 -> 비어 있는 별
+	    // 채워진 별 -> 비어 있는 별로 변경
 	    icon.classList.remove("fa-star");
 	    icon.classList.add("fa-star-o");
-	    icon.style.color = "gray";
+	    icon.style.color = "gray"; // 비어있을 때 기본 색상
 	  }
 }
 </script>
@@ -82,7 +81,7 @@ function importantmemo(button) {
 <div style="display: flex;">
 	<div style="margin: auto; padding-left: 3%;">
 
-		<h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">중요메모장</h2>
+		<h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">메모장</h2>
 
 		<table style="width: 1200px" class="table">
 			<tbody>
@@ -100,8 +99,6 @@ function importantmemo(button) {
 						<p class="card-text" style="text-align: right;">2025.02.12</p>
 					</div>
 				</div>
-
-
 			</tbody>
 		</table>
 
