@@ -9,12 +9,94 @@
 %>
 
  <%-- 직접 만든 CSS 1 --%>
-<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/administration/register.css" />
 
 <jsp:include page="../../header/header1.jsp" /> 
+<script type="text/javascript">
+$(document).ready(function(){  
+	
+	
+});
 
 
-	예약 페이지
+</script>
+
+
+
+	<div class="content">
+	
+		<div class="surgery">
+			
+	  		<div class="title">
+	  			수술대기
+	  		</div>
+	  		<div class="list">
+	  			<table class="table">
+	  				<thead class="bg-light">
+	  					<tr>
+	  						<th>차트번호</th>
+	  						<th>진료일자</th>
+	  						<th>진료과</th>
+	  						<th>이름</th>
+	  						<th>성별</th>
+	  						<th>주민번호</th>
+	  						<th>예약</th>
+	  					</tr>
+	  				</thead>
+	  				<tbody>
+	  					<tr>
+		  					<td>1010</td>
+		  					<td>2025-01-01</td>
+		  					<td>호흡기내과</td>
+		  					<td>이혜연</td>
+		  					<td>여</td>
+		  					<td>020106-*******</td>
+		  					<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/surgery'"><span>예약</span></button></td>
+	  					</tr>
+	  				</tbody>
+	  			</table>
+	  		</div>
+			<div class="pageBar">
+	  			페이지바
+	  		</div>
+	    </div>
+	    
+	    <div class="hospitalized">
+			
+	  		<div class="title">
+	  			입원대기
+	  		</div>
+			<div class="list">
+	  			<table class="table">
+	  				<thead class="bg-light">
+	  					<tr>
+	  						<th>차트번호</th>
+	  						<th>진료일자</th>
+	  						<th>진료과</th>
+	  						<th>이름</th>
+	  						<th>성별</th>
+	  						<th>주민번호</th>
+	  						<th>예약</th>
+	  					</tr>
+	  				</thead>
+	  				<tbody>
+	  					<tr>
+		  					<td>1010</td>
+		  					<td>2025-01-01</td>
+		  					<td>호흡기내과</td>
+		  					<td>이혜연</td>
+		  					<td>여</td>
+		  					<td>020106-*******</td>
+		  					<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/hospitalization'"><span>예약</span></button></td>
+	  					</tr>
+	  				</tbody>
+	  			</table>
+	  		</div>
+			<div class="pageBar">
+	  			페이지바
+	  		</div>
+	    </div>
+	</div>
 
 
 

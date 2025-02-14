@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+.header, .content, .reservation {
+	margin: 0 auto;
+	width: 80%;
+}
+
+/* 상단 */
+.content {
+	/*border: 1px solid red;*/
+	margin: 0 auto;
+	width: 80%;
+	padding-top: 2%;
+}
+div.title {
+	border-left: 5px solid #006769;	
+	padding-left: 1%;
+	font-size: 20px;
+	margin-bottom: 1%;
+	color: #4c4d4f;
+	font-weight: bold;
+}
+div.surgery,
+div.hospitalized {
+	border: 1px solid black;
+	height: 350px;
+	margin-bottom:1%;
+}
+div.list {
+	border: 1px solid black; 
+	height:270px;
+}
+button.btn {
+	background-color: #006769;
+	color: white;
+	height:30px;
+	font-size: 10pt;
+}
+button > span {
+	position: relative;
+	top:-2.5px;
+}
