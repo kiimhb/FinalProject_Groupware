@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="minji_memo">
+	
+	<!-- 메모 전체 목록 조회 -->
+    <select id="selectAllMemo" resultType="MemoVO">
+        SELECT memo_no, fk_member_userid, memo_title, memo_contents, memo_importance, 
+               memo_deletestatus, memo_registerday, memo_trash_deleteday
+        FROM tbl_memo
+        WHERE memo_deletestatus = 0
+        ORDER BY memo_registerday DESC
+    </select>	
+	
+	
+	<insert id="insertMemo" parameterType="MemoVO">
+	    insert into tbl_memo (memo_no, fk_member_userid, memo_title, memo_contents, memo_importance, memo_deletestatus, memo_registerday, memo_trash_deleteday) 
+	    values (seq_memo_no.nextval, #{fk_member_userid}, #{memo_title},      #{memo_contents},   #{memo_importance},  #{memo_deletestatus} ,default, #{memo_trash_deleteday})
+	</insert>
+
+   
+</mapper>

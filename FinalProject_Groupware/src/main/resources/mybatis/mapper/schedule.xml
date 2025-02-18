@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="schedule">
+
+	<!-- 사내 캘린더에 캘린더 소분류 명 조회 -->
+	<select id="existComCalendar" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_calendar_small_category
+		where fk_large_category_no = 2 and small_category_name = #{com_small_category_name}  
+	</select>
+
+
+    <!-- 사내 캘린더에 캘린더 소분류 추가하기 --> 
+	<insert id="addComCalendar" parameterType="HashMap">
+		insert into tbl_calendar_small_category(small_category_no, fk_large_category_no, small_category_name, fk_member_userid)
+		values(seq_small_category_no.nextval, 2, #{com_small_category_name}, #{fk_member_userid})
+	</insert>
+	
+	
+	<!-- 내 캘린더에 캘린더 소분류 명 조회 -->
+	<select id="existMyCalendar" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_calendar_small_category
+		where fk_large_category_no = 1 and fk_member_userid = #{fk_member_userid} and small_category_name = #{my_small_category_name}  
+	</select>
+
+
+    <!-- 내 캘린더에 캘린더 소분류 추가하기 --> 
+	<insert id="addMyCalendar" parameterType="HashMap">
+		insert into tbl_calendar_small_category(small_category_no, fk_large_category_no, small_category_name, fk_member_userid)
+		values(seq_small_category_no.nextval, 1, #{my_small_category_name}, #{fk_member_userid})
+	</insert>	
+	
+	
+	<!-- 사내 캘린더에서 사내캘린더 소분류  보여주기  com.spring.app.schedule.domain. -->
+	<select id="showCompanyCalendar" resultType="Calendar_small_category_VO">
+		select small_category_no, fk_large_category_no, small_category_name
+		from tbl_calendar_small_category
+		where fk_large_category_no = 2
+		order by small_category_no asc
+	</select>
+	
+	
+	<!-- 내 캘린더에서 내캘린더 소분류  보여주기  com.spring.app.schedule.domain. -->
+	<select id="showMyCalendar" resultType="Calendar_small_category_VO">
+		select small_category_no, fk_large_category_no, small_category_name
+		from tbl_calendar_small_category
+		where fk_large_category_no = 1
+		and fk_member_userid = #{fk_member_userid} 
+		order by small_category_no asc
+	</select>
+
+
+    <!-- 일정 등록시 내캘린더,사내캘린더 선택에 따른 서브캘린더 종류를 알아오기 -->
+    <select id="selectSmallCategory" parameterType="HashMap" resultType="com.spring.med.schedule.domain.Calendar_small_category_VO">
+    	select small_category_no, fk_large_category_no, small_category_name
+		from tbl_calendar_small_category
+		where fk_large_category_no = #{fk_large_category_no} and fk_member_userid= #{fk_member_userid}
+		order by small_category_no asc
+    </select>
+    
+    
+    <!-- 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기 -->
+    <select id="searchJoinUserList" parameterType="String" resultType="com.spring.med.management.domain.ManagementVO_ga">
+    	select member_userid, member_name
+		from tbl_member
+		where lower(member_name) like '%'|| lower(#{schedule_joinuserName}) ||'%' 
+    </select> <!-- joinUserName 이게 어떤 걸로 수정해야 하는 걸까...? -->
+
+    
+    <!-- 일정 등록하기 -->
+    <insert id="registerSchedule_end" parameterType="HashMap">
+    	insert into tbl_calendar_schedule(schedule_no, schedule_startdate, schedule_enddate, schedule_subject, schedule_color, schedule_place, schedule_joinuser, schedule_content, fk_small_category_no, fk_large_category_no, fk_member_userid) 
+    	values(seq_schedule_no.nextval, to_date(#{schedule_startdate}, 'yyyymmddhh24miss'), to_date(#{schedule_enddate}, 'yyyymmddhh24miss'), #{schedule_subject}, #{schedule_color}, #{schedule_place}, #{schedule_joinuser}, #{schedule_content}, #{fk_small_category_no}, #{fk_large_category_no}, #{fk_member_userid})  
+    </insert>
+
+
+    <!-- 등록된 일정에 대한 정보(달력에 표시됨)-->
+	<select id="selectSchedule" resultType="com.spring.med.schedule.domain.Calendar_schedule_VO" parameterType="String">
+		select schedule_no, schedule_startdate, schedule_enddate, schedule_subject, schedule_color, schedule_place, schedule_joinuser, schedule_content, fk_small_category_no, fk_large_category_no, fk_member_userid 
+		from tbl_calendar_schedule
+		where fk_member_userid = #{fk_member_userid} OR
+		fk_large_category_no = 2 OR
+		(fk_large_category_no != 2 AND lower(schedule_joinuser) like '%'|| lower(#{fk_member_userid}) ||'%')
+		order by schedule_no asc
+	</select>
+	
+	
+	<!-- 일정 상세 보기 -->
+	<resultMap type="HashMap" id="detailSchedule_Map">
+		<result property="SCHEDULE_NO" 				column="schedule_no" 			javaType="String" />
+		<result property="SCHEDULE_STARTDATE" 		column="schedule_startdate" 	javaType="String" />
+		<result property="SCHEDULE_ENDDATE" 		column="schedule_enddate" 		javaType="String" />
+		<result property="SCHEDULE_SUBJECT" 		column="schedule_subject" 		javaType="String" />
+		<result property="SCHEDULE_COLOR" 			column="schedule_color" 		javaType="String" />
+		<result property="SCHEDULE_PLACE" 			column="schedule_place" 		javaType="String" />
+		<result property="SCHEDULE_JOINUSER" 		column="schedule_joinuser" 		javaType="String" />
+		<result property="SCHEDULE_CONTENT" 		column="schedule_content" 		javaType="String" />
+		<result property="FK_SMALL_CATEGORY_NO" 	column="fk_small_category_no" 	javaType="String" />
+		<result property="FK_LARGE_CATEGORY_NO"	 	column="fk_large_category_no" 	javaType="String" />
+		<result property="FK_MEMBER_USERID" 		column="fk_member_userid" 		javaType="String" />
+		<result property="MEMBER_NAME" 				column="member_name" 			javaType="String" />
+		<result property="SMALL_CATEGORY_NAME" 		column="small_category_name" 	javaType="String" />
+	</resultMap>
+	<select id="detailSchedule" parameterType="String" resultMap="detailSchedule_Map">
+		select SD.schedule_no
+		     , to_char(SD.schedule_startdate,'yyyy-mm-dd hh24:mi') as schedule_startdate
+		     , to_char(SD.schedule_enddate,'yyyy-mm-dd hh24:mi') as schedule_enddate  
+		     , SD.schedule_subject
+		     , SD.schedule_color
+		     , nvl(SD.schedule_place,'-') as schedule_place
+		     , nvl(SD.schedule_joinuser,'공유자가 없습니다.') as schedule_joinuser
+		     , nvl(SD.schedule_content,'') as schedule_content
+		     , SD.fk_small_category_no
+		     , SD.fk_large_category_no
+		     , SD.fk_member_userid
+		     , M.member_name
+		     , SC.small_category_name
+		from tbl_calendar_schedule SD 
+		JOIN tbl_member M
+		ON SD.fk_member_userid = M.member_userid
+		JOIN tbl_calendar_small_category SC
+		ON SD.fk_small_category_no = SC.small_category_no
+		where SD.schedule_no = #{schedule_no}
+	</select>
+	
+	
+	<!-- 일정삭제하기 -->
+	<delete id="deleteSchedule" parameterType="String">
+		delete from tbl_calendar_schedule 
+		where schedule_no = #{schedule_no} 
+	</delete>
+	
+	
+	<!-- 일정수정하기 -->
+	<update id="editSchedule_end" parameterType="com.spring.med.schedule.domain.Calendar_schedule_VO">
+		update tbl_calendar_schedule set schedule_startdate = to_date(#{schedule_startdate}, 'yyyymmddhh24miss')
+		                               , schedule_enddate = to_date(#{schedule_enddate}, 'yyyymmddhh24miss')
+		                               , schedule_subject = #{schedule_subject}
+		                               , fk_large_category_no = #{fk_large_category_no}
+		                               , fk_small_category_no = #{fk_small_category_no}
+		                               , schedule_color = #{schedule_color}
+		                               , schedule_place = #{schedule_place}
+		                               , schedule_joinuser = #{schedule_joinuser}
+		                               , schedule_content = #{schedule_content}
+		where schedule_no = #{schedule_no} 
+	</update>
+	
+	
+	<!-- (사내캘린더 또는 내캘린더)속의  소분류 카테고리인 서브캘린더 삭제하기   -->
+	<delete id="deleteSubCalendar" parameterType="String">
+		delete from tbl_calendar_small_category
+		where small_category_no = #{small_category_no}
+	</delete>
+	
+	
+	<!-- 수정된 (사내캘린더 또는 내캘린더)속의 소분류 카테고리명이 이미 해당 사용자가 만든 소분류 카테고리명으로 존재하는지 유무 알아오기 -->
+	<select id="existsCalendar" parameterType="HashMap" resultType="int">
+	    select count(*)
+		from tbl_calendar_small_category
+		where fk_large_category_no = #{caltype} 
+		and fk_member_userid = #{member_userid} 
+		and small_category_name = #{small_category_name}
+	</select>
+	<!-- caltype 무엇 ? -->
+	
+	
+	<!-- (사내캘린더 또는 내캘린더)속의 소분류 카테고리인 서브캘린더 수정하기    -->
+	<update id="editCalendar" parameterType="HashMap">
+		update tbl_calendar_small_category set small_category_name = #{small_category_name}
+		where small_category_no = #{small_category_no}
+	</update>
+	
+	
+	<!-- 총 일정 검색 건수(totalCount) -->
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">
+		select count(*) 
+		from tbl_calendar_schedule
+		where ( to_char(schedule_startdate,'YYYY-MM-DD') between #{schedule_startdate} and #{schedule_enddate} )
+		and   ( to_char(schedule_enddate,'YYYY-MM-DD') between #{schedule_startdate} and #{schedule_enddate} ) 
+		
+		<if test='fk_large_category_no == "" and searchWord == "" and searchType == "" '>  <!-- 모든캘린더이고 검색대상이 없을 경우 -->
+		    and ( fk_large_category_no = 2 OR fk_member_userid = #{fk_member_userid} OR 
+		          ( fk_member_userid != #{fk_member_userid} and lower(schedule_joinuser) like '%'||lower(#{fk_member_userid})||'%' ) ) <!-- 사내캘린더 와 자신이 작성한 내캘린더 와 공유받은 캘린더만 조회되도록 한다. -->
+		</if>
+		
+		<if test='fk_large_category_no == "2" and searchWord == "" and searchType == "" '>  <!-- 사내캘린더이고 검색대상이 없을 경우 -->
+		    and ( fk_large_category_no = 2 )                                                <!-- 사내캘린더만 조회되도록 한다. -->
+		</if>
+		
+		<if test='fk_large_category_no == "1" and searchWord == "" and searchType eq "" '>  <!-- 내캘린더이고 검색대상이 없을 경우 -->
+		    and ( fk_large_category_no = 1 AND fk_member_userid = #{fk_member_userid} )     <!-- 내캘린더만 조회되도록 한다. -->
+		</if>
+			
+		<if test='searchWord != "" and searchType eq "schedule_joinuser" '>  				<!-- 검색대상을 공유자로 검색할 경우 -->
+			and fk_large_category_no = 1                                     				<!-- 내캘린더 -->
+			and fk_member_userid = #{fk_member_userid}                            			<!-- 로그인한 사용자가 작성한 것을 다른 사용자에게 공유 한것 -->
+			and lower(schedule_joinuser) like '%'||lower(#{searchWord})||'%' 				<!-- 검색대상 및 검색어 -->
+		</if>
+		
+		<if test='searchWord != "" and searchType neq "" and searchType neq "schedule_joinuser" '>  <!-- 검색대상을 공유자가 아닌 다른 것으로 검색할 경우 -->
+			and lower(${searchType}) like '%'||lower(#{searchWord})||'%' 							<!-- 검색대상 및 검색어 -->
+			<choose>
+				<when test='fk_large_category_no == "1" '>                       					<!-- 내캘린더내에서만 검색할 경우  -->
+					and fk_large_category_no = 1 
+					and fk_member_userid = #{fk_member_userid}                         				<!-- 로그인한 사용자가 작성한 것 -->
+				</when>
+				
+				<when test='fk_large_category_no == "2" '>                       					<!-- 사내캘린더내에서만 검색할 경우  -->
+					and fk_large_category_no = 2 
+				</when>
+			</choose>			
+		</if>
+	</select>
+	
+	
+	<!-- 페이징 처리한 캘린더 가져오기(검색어가 없다라도 날짜범위 검색은 항시 포함된 것임) -->
+	<resultMap type="HashMap" id="scheduleListSearchWithPaging_Map">
+		<result property="SCHEDULE_NO" 				column="schedule_no" 			javaType="String" />
+		<result property="SCHEDULE_STARTDATE" 		column="schedule_startdate" 	javaType="String" />
+		<result property="SCHEDULE_ENDDATE" 		column="schedule_enddate" 		javaType="String" />
+		<result property="SMALL_CATEGORY_NAME" 		column="small_category_name" 	javaType="String" />
+		<result property="LARGE_CATEGORY_NAME" 		column="large_category_name" 	javaType="String" />
+		<result property="MEMBER_NAME" 				column="member_name" 			javaType="String" />
+		<result property="SCHEDULE_SUBJECT" 		column="schedule_subject" 		javaType="String" />
+		<result property="SCHEDULE_CONTENT" 		column="schedule_content" 		javaType="String" />
+	</resultMap>
+
+	<select id="scheduleListSearchWithPaging" parameterType="HashMap" resultMap="scheduleListSearchWithPaging_Map">  
+		select schedule_no 
+		     , schedule_startdate, schedule_enddate
+		     , small_category_name, large_category_name, member_name
+		     , schedule_subject, schedule_content 
+		from 
+		(
+			select  row_number() over(order by SD.schedule_no desc) as rno 
+			      , SD.schedule_no
+			      , to_char(SD.schedule_startdate, 'yyyy-mm-dd hh24:mi') as schedule_startdate
+			      , to_char(SD.schedule_enddate, 'yyyy-mm-dd hh24:mi') as schedule_enddate
+			      , SC.small_category_name, LC.large_category_name, M.member_name 
+			      , SD.schedule_subject, SD.schedule_content 
+			from tbl_calendar_schedule SD 
+			JOIN tbl_member M 
+			ON SD.fk_member_userid = M.member_userid
+			JOIN tbl_calendar_small_category SC 
+			ON SD.fk_small_category_no = SC.small_category_no
+			JOIN tbl_calendar_large_category LC 
+			ON SD.fk_large_category_no = LC.large_category_no 
+			
+			where ( to_char(SD.schedule_startdate,'YYYY-MM-DD') between #{schedule_startdate} and #{schedule_enddate} )
+			AND   ( to_char(SD.schedule_enddate,'YYYY-MM-DD') between #{schedule_startdate} and #{schedule_enddate} ) 
+			
+			<if test='fk_large_category_no == "" and searchWord == "" and searchType == "" '> 				 <!-- 모든캘린더이고 검색대상이 없을 경우 -->
+			    and ( SD.fk_large_category_no = 2 OR SD.fk_member_userid = #{fk_member_userid} OR
+			          ( SD.fk_member_userid != #{fk_member_userid} and lower(SD.schedule_joinuser) like '%'||lower(#{fk_member_userid})||'%' ) )  <!-- 사내캘린더 와 자신이 작성한 내캘린더 와 공유받은 캘린더만 조회되도록 한다. -->
+			</if>
+			
+			<if test='fk_large_category_no == "2" and searchWord == "" and searchType == "" '> 		 <!-- 사내캘린더이고 검색대상이 없을 경우 -->
+			    and ( SD.fk_large_category_no = 2 )                                             	 <!-- 사내캘린더만 조회되도록 한다. -->
+			</if>
+			
+			<if test='fk_large_category_no == "1" and searchWord == "" and searchType eq "" '>  	 <!-- 내캘린더이고 검색대상이 없을 경우 -->
+			    and ( SD.fk_large_category_no = 1 AND SD.fk_member_userid = #{fk_member_userid} )    <!-- 내캘린더만 조회되도록 한다. -->
+			</if>
+			
+			<if test='searchWord != "" and searchType eq "schedule_joinuser" '>     				 <!-- 검색대상을 공유자로 검색할 경우 -->
+				and SD.fk_large_category_no = 1                                    					 <!-- 내캘린더 -->
+				and SD.fk_member_userid = #{fk_member_userid}                           			 <!-- 로그인한 사용자가 작성한 것을 다른 사용자에게 공유 한것 -->
+				and lower(SD.schedule_joinuser) like '%'||lower(#{searchWord})||'%' 				 <!-- 검색대상 및 검색어 -->
+			</if>
+			
+			<if test='searchWord != "" and searchType neq "" and searchType neq "schedule_joinuser" '>   <!-- 검색대상을 공유자가 아닌 다른 것으로 검색할 경우 -->
+				and lower(${searchType}) like '%'||lower(#{searchWord})||'%' 							 <!-- 검색대상 및 검색어 -->
+				<choose>
+					<when test='fk_large_category_no == "1" '>                       					 <!-- 내캘린더내에서만 검색할 경우  -->
+						and SD.fk_large_category_no = 1 
+						and SD.fk_member_userid = #{fk_member_userid}                      				 <!-- 로그인한 사용자가 작성한 것 -->
+					</when>
+					
+					<when test='fk_large_category_no == "2" '>                       					 <!-- 사내캘린더내에서만 검색할 경우  -->
+						and SD.fk_large_category_no = 2 
+					</when>
+				</choose>			
+			</if>
+		) V 
+		where V.rno between #{startRno} and #{endRno}
+	</select>
+	
+</mapper>
+
+
+

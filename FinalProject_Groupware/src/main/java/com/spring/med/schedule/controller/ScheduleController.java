@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-// import com.spring.med.member.domain.MemberVO;
+import com.spring.med.management.domain.ManagementVO_ga;
 import com.spring.med.common.MyUtil;
 import com.spring.med.schedule.domain.Calendar_schedule_VO;
 import com.spring.med.schedule.domain.Calendar_small_category_VO;
@@ -137,9 +137,10 @@ public class ScheduleController {
 		
 		// form 에서 받아온 날짜
 		String chooseDate = request.getParameter("chooseDate");
+		// System.out.println("확인용~ : " + chooseDate); 
 		
 		mav.addObject("chooseDate", chooseDate);
-		mav.setViewName("content/community/schedule/chooseDate");
+		mav.setViewName("content/schedule/insertSchedule");
 		
 		return mav;
 	}
@@ -175,7 +176,6 @@ public class ScheduleController {
 	
 	
 	// === 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기 ===
-/*	
 	@ResponseBody
 	@GetMapping(value="insertSchedule/searchJoinUserList", produces="text/plain;charset=UTF-8")
 	public String searchJoinUserList(HttpServletRequest request) {
@@ -183,14 +183,14 @@ public class ScheduleController {
 		String joinUserName = request.getParameter("joinUserName");
 		
 		// 사원 명단 불러오기
-		List<MemberVO> joinUserList = service.searchJoinUserList(joinUserName);
+		List<ManagementVO_ga> joinUserList = service.searchJoinUserList(joinUserName);
 
 		JSONArray jsonArr = new JSONArray();
 		if(joinUserList != null && joinUserList.size() > 0) {
-			for(MemberVO mvo : joinUserList) {
+			for(ManagementVO_ga mvo : joinUserList) {
 				JSONObject jsObj = new JSONObject();
-				jsObj.put("userid", mvo.getUserid());
-				jsObj.put("name", mvo.getName());
+				jsObj.put("fk_member_userid", mvo.getMember_userid());
+				jsObj.put("member_name", mvo.getMember_name());
 				
 				jsonArr.put(jsObj);
 			}
@@ -199,7 +199,7 @@ public class ScheduleController {
 		return jsonArr.toString();
 		
 	}
-*/	
+	
 	
 	// === 일정 등록하기 ===
 	@PostMapping("registerSchedule_end")
@@ -260,7 +260,7 @@ public class ScheduleController {
 	
 	// === 모든 캘린더(사내캘린더, 내캘린더, 공유받은캘린더)를 불러오는것 ===
 	@ResponseBody
-	@GetMapping(value="selectSchedule", produces="text/plain;charset=UTF-8")
+	@GetMapping(value="selectSchedule")
 	public String selectSchedule(HttpServletRequest request) {
 		
 		// 등록된 일정 가져오기
@@ -314,9 +314,9 @@ public class ScheduleController {
 			Integer.parseInt(schedule_no);
 			Map<String,String> map = service.detailSchedule(schedule_no);
 			mav.addObject("map", map);
-			mav.setViewName("content/community/schedule/detailSchedule");
+			mav.setViewName("content/schedule/detailSchedule");
 		} catch (NumberFormatException e) {
-			mav.setViewName("redirect:/schedule/scheduleManagement"); // OR content/community/schedule/scheduleManagement
+			mav.setViewName("redirect:/schedule/scheduleManagement"); 
 		}
 		
 		return mav;
@@ -341,8 +341,7 @@ public class ScheduleController {
 	
 	
 	
-	// === 일정 수정하기 ===
-/*	
+	// === 일정 수정하기 ===	
 	@PostMapping("editSchedule")
 	public ModelAndView editSchedule(ModelAndView mav, HttpServletRequest request) {
 		
@@ -354,11 +353,13 @@ public class ScheduleController {
 			String gobackURL_detailSchedule = request.getParameter("gobackURL_detailSchedule");
 			
 			HttpSession session = request.getSession();
-			MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-			
+			// ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+			String loginuser = "1";  // 로그인 기능 만들어지면 이 코드 삭제하고 위의 주석 사용
+			// System.out.println("확인~~~" + loginuser);
 			Map<String,String> map = service.detailSchedule(schedule_no);
 			
-			if( !loginuser.getMember_userid().equals( map.get("FK_MEMBER_USERID") ) ) {
+			//if( !loginuser.getMember_userid().equals( map.get("FK_MEMBER_USERID") ) ) {
+			if( !loginuser.equals( map.get("FK_MEMBER_USERID") ) ) {  // 로그인 기능 만들어지면 이 코드 삭제하고 위의 주석 사용
 				String message = "다른 사용자가 작성한 일정은 수정이 불가합니다.";
 				String loc = "javascript:history.back()";
 				
@@ -370,7 +371,7 @@ public class ScheduleController {
 				mav.addObject("map", map);
 				mav.addObject("gobackURL_detailSchedule", gobackURL_detailSchedule);
 				
-				mav.setViewName("content/community/schedule/editSchedule");
+				mav.setViewName("content/schedule/editSchedule");
 			}
 		} catch (NumberFormatException e) {
 			mav.setViewName("redirect:/schedule/scheduleManagement");
@@ -379,7 +380,7 @@ public class ScheduleController {
 		return mav;
 		
 	}
-*/	
+	
 	
 	
 	// === 일정 수정 완료하기 ===
@@ -387,9 +388,11 @@ public class ScheduleController {
 	public ModelAndView editSchedule_end(Calendar_schedule_VO svo, HttpServletRequest request, ModelAndView mav) {
 		
 		try {
+			 // System.out.println("확인1");
 			 int n = service.editSchedule_end(svo);
-			 
+			 // System.out.println("확인2");
 			 if(n==1) {
+				 
 				 mav.addObject("message", "일정을 수정하였습니다.");
 				 mav.addObject("loc", request.getContextPath()+"/schedule/scheduleManagement");
 			 }
@@ -430,12 +433,17 @@ public class ScheduleController {
 	@ResponseBody
 	@PostMapping("editCalendar")
 	public String editComCalendar(HttpServletRequest request) throws Throwable {
-		
+		// System.out.println("확인11");
 		String small_category_no = request.getParameter("small_category_no");
 		String small_category_name = request.getParameter("small_category_name");
 		String member_userid = request.getParameter("member_userid");
 		String caltype = request.getParameter("caltype");
-		
+		/*
+			System.out.println("small_category_no" + small_category_no);
+			System.out.println("small_category_name" + small_category_name);
+			System.out.println("member_userid" + member_userid);
+			System.out.println("caltype" + caltype);
+		*/
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("small_category_no", small_category_no);
 		paraMap.put("small_category_name", small_category_name);
@@ -443,7 +451,7 @@ public class ScheduleController {
 		paraMap.put("caltype", caltype);
 		
 		int n = service.editCalendar(paraMap);
-		
+		// System.out.println("확인22");
 		JSONObject jsObj = new JSONObject();
 		jsObj.put("n", n);
 			
@@ -512,7 +520,10 @@ public class ScheduleController {
 	    // 총 일정 검색 건수(totalCount)
 	    totalCount = service.getTotalCount(paraMap);
 	//  System.out.println("~~~ 확인용 총 일정 검색 건수 totalCount : " + totalCount);
-      
+    //    System.out.println("~~~ 확인용 searchType : "+searchType);
+    //    System.out.println("~~~ 확인용 searchWord : "+searchWord);
+    //    System.out.println("~~~ 확인용 fk_member_userid : "+fk_member_userid);
+	    
 	    totalPage = (int)Math.ceil((double)totalCount/sizePerPage); 
 
 		if(str_currentShowPageNo == null) {

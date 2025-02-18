@@ -6,7 +6,7 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
-// import com.spring.med.member.domain.MemberVO;
+import com.spring.med.management.domain.ManagementVO_ga;
 import com.spring.med.schedule.domain.Calendar_schedule_VO;
 import com.spring.med.schedule.domain.Calendar_small_category_VO;
 
@@ -21,8 +21,8 @@ public class ScheduleDAO_imple implements ScheduleDAO {
 	
 	// 사내 캘린더에 캘린더 소분류 명 존재 여부 알아오기
 	@Override
-	public int existComCalendar(String com_smcatgoname) {
-		int m = sqlsession.selectOne("schedule.existComCalendar", com_smcatgoname);
+	public int existComCalendar(String com_small_category_name) {
+		int m = sqlsession.selectOne("schedule.existComCalendar", com_small_category_name);
 		return m;
 	}
 	
@@ -74,12 +74,12 @@ public class ScheduleDAO_imple implements ScheduleDAO {
 
 	
 	// 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기
-	/*
-	 * @Override public List<MemberVO> searchJoinUserList(String joinUserName) {
-	 * List<MemberVO> joinUserList =
-	 * sqlsession.selectList("schedule.searchJoinUserList", joinUserName); return
-	 * joinUserList; }
-	 */
+	@Override public List<ManagementVO_ga> searchJoinUserList(String joinUserName) {
+		List<ManagementVO_ga> joinUserList =
+		sqlsession.selectList("schedule.searchJoinUserList", joinUserName); 
+		return joinUserList; 
+	}
+	 
 
 	
 	// 일정 등록하기
@@ -160,7 +160,7 @@ public class ScheduleDAO_imple implements ScheduleDAO {
 		List<Map<String,String>> scheduleList = sqlsession.selectList("schedule.scheduleListSearchWithPaging", paraMap);
 		return scheduleList;
 	}
-	
+
 	
 	
 }
