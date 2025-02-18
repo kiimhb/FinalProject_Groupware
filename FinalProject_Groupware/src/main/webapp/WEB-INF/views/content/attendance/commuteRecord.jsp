@@ -15,20 +15,25 @@ $(document).ready(function(){
 	// 타이머 표시
 	clock();
 	
+	// 출근하기 버튼 
 	$("button.sbtn").on("click", function(){
-		alert("출근클릭");
+		
+		
 		
 	});
 	
+	
+	// 퇴근하기 버튼 
 	$("button.ebtn").on("click", function(){
-		alert("퇴근클릭");
+		
+		
 		
 	});
 	
 	
 });
 
-
+// 현재 시간 타이머 
 function clock() {
 	
  	const now = new Date();
@@ -58,8 +63,34 @@ function clock() {
 	document.getElementById('clock').textContent = timeString;
 }
 
-	// 1 초마다 타이머 업데이트
-	setInterval(clock, 1000); 
+// 1 초마다 타이머 업데이트
+setInterval(clock, 1000); 
+
+// 현재 날짜
+function nowday() {
+	const currentDate = new Date();
+			
+	const year = currentDate.getFullYear();
+	const month = currentDate.getMonth() + 1;
+	const day = currentDate.getDate();
+	
+	const nowday = `\${year}-\${String(month).padStart(2, '0')}-\${String(day).padStart(2, '0')}`;	
+	return `\${nowday}`
+}
+
+// 현재시간
+function nowtime() {
+	const currentDate = new Date();
+			
+	const hours = currentDate.getHours();
+	const minutes = currentDate.getMinutes();
+	const seconds = currentDate.getSeconds();
+	
+	const time = `\${String(hours).padStart(2, '0')}:\${String(minutes).padStart(2, '0')}:\${String(seconds).padStart(2, '0')}`;
+	
+	return `\${time}`
+}
+
 
 </script>
 <body>
@@ -104,70 +135,7 @@ function clock() {
 			      			<span class="times">08:59:00</span>
 			      			<span class="status">출근</span>
 						</td>
-					</tr>
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-			      			<span class="times">08:59:00</span>
-			      			<span class="status">출근</span>
-						</td>
-					</tr>		
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-							<span class="times">08:59:00</span>
-							<span class="status">출근</span>
-						</td>
-					</tr>		
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-							<span class="times">08:59:00</span>
-							<span class="status">출근</span>
-						</td>
-					</tr>		
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-							<span class="times">08:59:00</span>
-							<span class="status">출근</span>
-						</td>
-					</tr>		
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-							<span class="times">08:59:00</span>
-							<span class="status">출근</span>
-						</td>
-					</tr>		
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-							<span class="times">08:59:00</span>
-							<span class="status">출근</span>
-						</td>
-					</tr>		
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-							<span class="times">08:59:00</span>
-							<span class="status">출근</span>
-						</td>
-					</tr>		
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-							<span class="times">08:59:00</span>
-							<span class="status">출근</span>
-						</td>
-					</tr>		
-					<tr>	
-						<td>
-							<span class="day pl-3">2024-12-12</span>
-							<span class="times">08:59:00</span>
-							<span class="status">출근</span>
-						</td>
-					</tr>																			
+					</tr>																	
 				</table>
       		</div>
       		

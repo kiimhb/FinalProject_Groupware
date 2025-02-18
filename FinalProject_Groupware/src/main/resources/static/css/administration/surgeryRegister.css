@@ -41,6 +41,9 @@ div.input {
 	/* display: flex; */
 	margin-bottom: 3%;
 }
+div.read > input {
+	background-color: #eee;
+}
 div.text {
 	width:200px;
 	margin-bottom: 1% ;
@@ -49,6 +52,22 @@ input {
 	width: 620px;
 	height: 35px ;
 	border: 1px solid #ccc;
+	padding-left: 1%;
+}
+select {
+	width: 620px;
+	height: 35px ;
+	border: 1px solid #ccc;
+	padding-left: 1%;
+}
+div.div_surgerydate {
+	display: flex;
+}
+input.surgerydate {
+	width:47%;
+}
+select.surgerydate {
+	width:47%;
 }
 div.form {
 	height: 600px;
@@ -56,6 +75,9 @@ div.form {
 	margin-top: 2%;
 	border-top:1px solid black;
 	
+}
+select.surgeryenddate {
+	width:96.5%;
 }
 div#calendar {
 	/* border: 1px solid #ccc;  */

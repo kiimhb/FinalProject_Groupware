@@ -67,6 +67,17 @@ public class SurgeryVO {
 		this.surgery_status = surgery_status;
 	}
 	 
-	 
+	// toString() 오버라이드
+    @Override
+    public String toString() {
+        return "SurgeryVO{" +
+                "surgery_surgeryroom_name='" + surgery_surgeryroom_name + '\'' +
+                ", surgery_reserve_date=" + surgery_reserve_date +
+                ", surgery_day=" + surgery_day +
+                ", surgery_start_time=" + surgery_start_time +
+                ", surgery_end_time=" + surgery_end_time +
+                ", surgery_description='" + surgery_description + '\'' +
+                '}';
+    }
 	
 }
