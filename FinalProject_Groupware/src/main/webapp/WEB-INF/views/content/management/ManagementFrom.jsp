@@ -446,7 +446,7 @@ table.manag_table th {
 				<th style="width: 15%; background-color: #DDDDDD;"><label class="labelName">성별</label></th>
 				<td><input type="radio" name="member_gender" value="남" id="male" class="requiredInfo_radio" />
 				<label for="male" style="margin-left: 1.5%;">남자</label> 
-				<input type="radio" name="member_gender" value="녀" id="female" class="requiredInfo_radio" style="margin-left: 10%;" />
+				<input type="radio" name="member_gender" value="여" id="female" class="requiredInfo_radio" style="margin-left: 10%;" />
 				<label for="female" style="margin-left: 1.5%;">여자</label></td>
 			</tr>
 
