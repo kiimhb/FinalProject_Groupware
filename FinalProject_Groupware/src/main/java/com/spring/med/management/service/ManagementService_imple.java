@@ -109,7 +109,7 @@ public class ManagementService_imple implements ManagementService {
 		session.invalidate();
 		
 		String message = "로그아웃 되었습니다.";
-		String loc = request.getContextPath()+"/login";
+		String loc = request.getContextPath()+"/management/login";
 		
 		mav.addObject("message", message);
 		mav.addObject("loc", loc);
