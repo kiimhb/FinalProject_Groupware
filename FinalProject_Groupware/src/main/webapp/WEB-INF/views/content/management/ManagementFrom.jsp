@@ -129,36 +129,45 @@ table.manag_table th {
 
              // 특정 부서에 따라 직급 추가
              if (parentDept == "1") {
-                 positionSelect.append('<option value="1">전문의</option>');
+                 positionSelect.append('<option value="전문의">전문의</option>');
              } 
              if (parentDept == "2") {
-                 positionSelect.append('<option value="1">수간호사</option>');
-                 positionSelect.append('<option value="2">평간호사</option>');
+                 positionSelect.append('<option value="수간호사">수간호사</option>');
+                 positionSelect.append('<option value="평간호사">평간호사</option>');
              } 
              if (parentDept == "3") {
-                 positionSelect.append('<option value="1">병원장</option>');
-                 positionSelect.append('<option value="2">부장</option>');
-                 positionSelect.append('<option value="3">차장</option>');
-                 positionSelect.append('<option value="4">과장</option>');
-                 positionSelect.append('<option value="5">주임</option>');
+                 positionSelect.append('<option value="병원장">병원장</option>');
+                 positionSelect.append('<option value="부장">부장</option>');
+                 positionSelect.append('<option value="차장">차장</option>');
+                 positionSelect.append('<option value="과장">과장</option>');
+                 positionSelect.append('<option value="주임">주임</option>');
              } 
          });
     	
+         let member_yeoncha;
+ 	     let member_grade;
+    	
          $("select[name='member_position']").change(function() {
-             const selectedPosition = $(this).val(); // 선택된 직급 값
-             // 연차, 등급 설정
-                if (selectedPosition == "1" || selectedPosition == "2") { // 수간호사, 병원장
-			            member_yeoncha = 20;
-			            member_grade = 1;
-			        } else { // 나머지 직급
-			            member_yeoncha = 15;
-			            member_grade = 2;
-			        }
-         });
-     });
-    
+        	    const selectedPosition = $(this).val(); // 선택된 직급 값
+        	    const parentDept = $("select[name='parentDept']").val(); // 선택된 부서 값
 
-    	$(document).ready(function () {
+        	    // 연차, 등급 설정
+        	    if (
+        	        (parentDept == "1" && selectedPosition == "전문의") ||
+        	        (parentDept == "2" && selectedPosition == "수간호사") ||
+        	        (parentDept == "3" && (selectedPosition == "병원장" || selectedPosition == "부장"))
+        	    ) {
+        	        member_yeoncha = 20;
+        	        member_grade = 1;
+        	    } else {
+        	        member_yeoncha = 15;
+        	        member_grade = 2;
+        	    }
+
+        	   // console.log("연차:", member_yeoncha, "등급:", member_grade);
+        	    
+        	  
+        	});
     		
         	$("span.error").hide();
         	
@@ -268,10 +277,8 @@ table.manag_table th {
   		$('input#toDate').datepicker('setDate', '+3D'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
   	});
         	    
-    	});
-    	
+  
         	    
-    	$(document).ready(function () {
     	    $("button#registerbtn").click(function () {
     	        
     	        const name = $("#name").val().trim();
@@ -351,12 +358,14 @@ table.manag_table th {
     	        }
     	        
     	        const member_mobile = $('#hp1').val() + '-' + $('#hp2').val() + '-' + $('#hp3').val();
+    	        const member_workingTime = "day";
 
     	        const frm = document.ManagementFrom;
     	        $('#member_mobile').val(member_mobile); 
     	        $('#member_yeoncha').val(member_yeoncha); 
     	        $('#member_grade').val(member_grade); 
     	        $('#member_workingTime').val(member_workingTime); 
+
     	        frm.method = "post";
     	        frm.action = "<%= ctxPath%>/management/ManagementFrom";
     	        frm.submit();
@@ -435,9 +444,9 @@ table.manag_table th {
 			
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;"><label class="labelName">성별</label></th>
-				<td><input type="radio" name="member_gender" value="1" id="male" class="requiredInfo_radio" />
+				<td><input type="radio" name="member_gender" value="남" id="male" class="requiredInfo_radio" />
 				<label for="male" style="margin-left: 1.5%;">남자</label> 
-				<input type="radio" name="member_gender" value="2" id="female" class="requiredInfo_radio" style="margin-left: 10%;" />
+				<input type="radio" name="member_gender" value="녀" id="female" class="requiredInfo_radio" style="margin-left: 10%;" />
 				<label for="female" style="margin-left: 1.5%;">여자</label></td>
 			</tr>
 
@@ -465,7 +474,7 @@ table.manag_table th {
 					
 					<input type="hidden" id="member_grade" name="member_grade" />
 					
-					<input type="hidden" id="member_workingTime" name="member_workingTime" value="day" />
+					<input type="hidden" id="member_workingTime" name="member_workingTime" />
 	</form>
 </div>
 

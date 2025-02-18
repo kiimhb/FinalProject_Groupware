@@ -19,7 +19,7 @@
 	
 	<insert id="manag_form" parameterType="ManagementVO_ga">
 		insert into tbl_member(member_userid, fk_child_dept_no, member_pwd, member_name, member_mobile, member_email,member_birthday, member_gender, member_start, member_last, member_pro_filename, member_pro_orgfilename, member_pro_filesize,member_yeoncha, member_grade, member_workingTime, member_position, member_sign_filename, member_sign_orgfilename, member_sign_filesize)
-		values(#{member_userid}, to_Number(#{fk_child_dept_no}), #{member_pwd}, #{member_name}, #{member_mobile}, #{member_email},#{member_birthday}, #{member_gender}, #{member_start, jdbcType=DATE}, #{member_last, jdbcType=VARCHAR}, #{member_pro_filename}, #{member_pro_orgfilename}, #{member_pro_filesize}, #{member_yeoncha}, #{member_grade}, #{member_workingTime}, #{member_position}, #{member_sign_filename, jdbcType=VARCHAR}, #{member_sign_orgfilename, jdbcType=VARCHAR}, #{member_sign_filesize, jdbcType=VARCHAR}) 
+		values(#{member_userid}, #{fk_child_dept_no}, #{member_pwd}, #{member_name}, #{member_mobile}, #{member_email},#{member_birthday}, #{member_gender}, #{member_start, jdbcType=DATE}, #{member_last, jdbcType=VARCHAR}, #{member_pro_filename}, #{member_pro_orgfilename}, #{member_pro_filesize}, #{member_yeoncha}, #{member_grade}, #{member_workingTime}, #{member_position}, #{member_sign_filename, jdbcType=VARCHAR}, #{member_sign_orgfilename, jdbcType=VARCHAR}, #{member_sign_filesize, jdbcType=VARCHAR}) 
 	</insert>
 	
 	  <select id="getLoginMember" resultType="ManagementVO_ga" parameterType="HashMap">

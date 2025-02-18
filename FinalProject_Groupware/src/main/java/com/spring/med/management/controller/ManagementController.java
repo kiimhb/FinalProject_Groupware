@@ -83,8 +83,7 @@ public class ManagementController {
 
 		// 아이디와 비밀번호 랜덤 생성 (8자리 숫자)
 	    String randomidAndPwd = randomidAndPwd(8);  
-	    System.out.println(">>> [DEBUG] 컨트롤러에서 받은 member_mobile: " + paraMap.get("member_mobile"));
-
+	 
 		managementVO_ga.setMember_userid(randomidAndPwd);
 	    managementVO_ga.setMember_pwd(randomidAndPwd);  
 	    
@@ -101,7 +100,7 @@ public class ManagementController {
 			
 //			System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
 			
-			String path =  root+"resources"+File.separator+"files"; 
+			String path =  root+"resources"+File.separator+"profile"; 
 			
 			String newFileName = "";
 			// WAS(톰캣)의 디스크에 저장될 파일명

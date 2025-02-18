@@ -50,17 +50,12 @@ public class ManagementService_imple implements ManagementService {
 	@Override
 	public int manag_form(ManagementVO_ga managementVO_ga, Map<String, String> paraMap) {
 	
-		  String randomidAndPwd = Sha256.encrypt(paraMap.get("randomidAndPwd"));
-		  paraMap.put("randomidAndPwd", randomidAndPwd);
+		 String member_pwd = Sha256.encrypt(String.valueOf(paraMap.get("randomidAndPwd")));
+		 
+		  managementVO_ga.setMember_pwd(member_pwd);
+		  paraMap.put("randomidAndPwd", member_pwd);
 		  
-		try {
-			 String member_mobile = aes.encrypt(paraMap.get("member_mobile"));
-	         paraMap.put("member_mobile", member_mobile);
-		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
-			e.printStackTrace();
-		} 
-		
-		int n = manaDAO.manag_form(managementVO_ga); 
+		  int n = manaDAO.manag_form(managementVO_ga); 
 		
 		return n;
 	}
@@ -73,19 +68,6 @@ public class ManagementService_imple implements ManagementService {
 		paraMap.put("member_pwd", Sha256.encrypt(paraMap.get("member_pwd"))); // 비밀번호를 암호화 시키기 
 		
 		ManagementVO_ga loginuser = manaDAO.getLoginMember(paraMap);
-		
-		if(loginuser != null) {
-			try {
-				String member_email = aes.decrypt(loginuser.getMember_email());   // 이메일 복호화
-				String member_mobile = aes.decrypt(loginuser.getMember_mobile()); // 휴대폰 복호화
-				
-				loginuser.setMember_email(member_email);
-				loginuser.setMember_mobile(member_mobile);
-				
-			} catch (UnsupportedEncodingException | GeneralSecurityException e) {
-				e.printStackTrace();
-			}
-		}
 		
 		if(loginuser == null) { // 로그인 실패시
         	String message = "아이디 또는 암호가 틀립니다.";
