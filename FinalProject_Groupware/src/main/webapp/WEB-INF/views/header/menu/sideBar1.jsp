@@ -3,7 +3,7 @@
    
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar/dist/simplebar.min.css">
 <script src="https://cdn.jsdelivr.net/npm/simplebar/dist/simplebar.min.js"></script>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
 String ctxPath = request.getContextPath();
@@ -35,10 +35,10 @@ $(document).ready(function() {
    <div data-simplebar id="sidebar" class="sidebar">
    
    <button type="button" id="toggleBtn">☰</button>
-   
+ <c:if test="${not empty sessionScope.loginuser}">  
    <div class="profile">
       <div>프로필 사진</div>
-      <div>[이름  /직급-부서]</div>
+      <div>[${sessionScope.loginuser.member_name} /${sessionScope.loginuser.child_dept_name}-${sessionScope.loginuser.member_position}]</div>
       
       <div>
       <a href="<%=ctxPath%>/mypage/mypage">마이페이지</a> 
@@ -48,13 +48,13 @@ $(document).ready(function() {
       <a href="<%=ctxPath%>/member/logout">로그아웃</a>
       </div>
    </div>
-
+ </c:if>
    <ul>
       <li><a href="<%=ctxPath%>"><i class="fa-solid fa-house-chimney"></i> <span>홈화면</span></a>
       
       <li><a href="<%=ctxPath%>/management/login"><i class="fa-solid fa-clipboard-user"></i> <span>로그인</span></a></li>
    
-      <li><a href="<%=ctxPath%>/commute"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
+      <li><a href="<%=ctxPath%>/commuteRecord"><i class="fa-solid fa-clipboard-user"></i> <span>출퇴근 관리</span></a></li>
    
       <li>
       <a href="#" class="menu-toggle"> 

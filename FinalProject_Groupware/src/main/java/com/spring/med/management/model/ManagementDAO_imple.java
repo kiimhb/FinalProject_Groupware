@@ -6,6 +6,7 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.app.member.domain.MemberVO;
 import com.spring.med.management.domain.Child_deptVO_ga;
 import com.spring.med.management.domain.ManagementVO_ga;
 import com.spring.med.management.domain.Parent_deptVO_ga;
@@ -38,6 +39,15 @@ public class ManagementDAO_imple implements ManagementDAO {
 	public int manag_form(ManagementVO_ga managementVO_ga) {
 		int n = sqlmanag.insert("management_ga.manag_form", managementVO_ga);
 		return n;
+	}
+
+	//로그인 처리
+	@Override
+	public ManagementVO_ga getLoginMember(Map<String, String> paraMap) {
+		
+		ManagementVO_ga loginuser = sqlmanag.selectOne("management_ga.getLoginMember", paraMap);
+		return loginuser;
+		
 	}
 
 }

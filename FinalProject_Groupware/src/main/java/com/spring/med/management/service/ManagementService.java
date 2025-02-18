@@ -25,7 +25,7 @@ public interface ManagementService {
 	//로그아웃
 	ModelAndView logout(ModelAndView mav, HttpServletRequest request);
 
-	int manag_form(ManagementVO_ga managementVO_ga);
+	int manag_form(ManagementVO_ga managementVO_ga, Map<String, String> paraMap);
 
 
 

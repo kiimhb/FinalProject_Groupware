@@ -18,4 +18,6 @@ public interface ManagementDAO {
 	//사원등록 폼
 	int manag_form(ManagementVO_ga managementVO_ga);
 
+	ManagementVO_ga getLoginMember(Map<String, String> paraMap);
+
 }

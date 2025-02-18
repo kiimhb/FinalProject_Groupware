@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ManagementVO_ga {
 	
 	private String member_userid;				//사번
-	private String fk_position_no;				//직급번호
+	private String fk_child_dept_no;			//하위부서번호
 	private String member_pwd;					//비밀번호 (SHA-256 암호화 대상)
 	private String member_name;					//성명
 	private String member_mobile;				//휴대전화
@@ -18,7 +18,7 @@ public class ManagementVO_ga {
 	private String member_pro_filename;			//프로필사진 
 	private String member_pro_orgfilename;		//프로필사진 오리지널명
 	private String member_pro_filesize;			//파일 사이즈 체크
-	
+	private String member_position;				//직급
 	private String member_yeoncha;				//연차
 	private String member_grade;				//등급
 	private String member_workingTime;			//근무시간
@@ -26,6 +26,8 @@ public class ManagementVO_ga {
 	private String member_sign_filename;		//서명이미지 
 	private String member_sign_orgfilename;		//서명이미지 오리지널명
 	private String member_sign_filesize;		//서명이미지 사이즈 체크
+	
+	private String child_dept_name;
 	
 	
 	private MultipartFile attach;
@@ -35,16 +37,19 @@ public class ManagementVO_ga {
     */
 	
 	public ManagementVO_ga() {}
+	
+	
+	
 
-	public ManagementVO_ga(String member_userid, String fk_position_no, String member_pwd, String member_name,
+	public ManagementVO_ga(String member_userid, String fk_child_dept_no, String member_pwd, String member_name,
 			String member_mobile, String member_email, String member_birthday, String member_gender,
 			String member_start, String member_last, String member_pro_filename, String member_pro_orgfilename,
-			String member_pro_filesize, String member_yeoncha, String member_grade,
+			String member_pro_filesize, String member_position, String member_yeoncha, String member_grade,
 			String member_workingTime, String member_sign_filename, String member_sign_orgfilename,
 			String member_sign_filesize, MultipartFile attach) {
 		super();
 		this.member_userid = member_userid;
-		this.fk_position_no = fk_position_no;
+		this.fk_child_dept_no = fk_child_dept_no;
 		this.member_pwd = member_pwd;
 		this.member_name = member_name;
 		this.member_mobile = member_mobile;
@@ -56,6 +61,7 @@ public class ManagementVO_ga {
 		this.member_pro_filename = member_pro_filename;
 		this.member_pro_orgfilename = member_pro_orgfilename;
 		this.member_pro_filesize = member_pro_filesize;
+		this.member_position = member_position;
 		this.member_yeoncha = member_yeoncha;
 		this.member_grade = member_grade;
 		this.member_workingTime = member_workingTime;
@@ -65,6 +71,9 @@ public class ManagementVO_ga {
 		this.attach = attach;
 	}
 
+
+
+
 	public String getMember_userid() {
 		return member_userid;
 	}
@@ -73,12 +82,12 @@ public class ManagementVO_ga {
 		this.member_userid = member_userid;
 	}
 
-	public String getFk_position_no() {
-		return fk_position_no;
+	public String getFk_child_dept_no() {
+		return fk_child_dept_no;
 	}
 
-	public void setFk_position_no(String fk_position_no) {
-		this.fk_position_no = fk_position_no;
+	public void setFk_child_dept_no(String fk_child_dept_no) {
+		this.fk_child_dept_no = fk_child_dept_no;
 	}
 
 	public String getMember_pwd() {
@@ -169,6 +178,14 @@ public class ManagementVO_ga {
 		this.member_pro_filesize = member_pro_filesize;
 	}
 
+	public String getMember_position() {
+		return member_position;
+	}
+
+	public void setMember_position(String member_position) {
+		this.member_position = member_position;
+	}
+
 	public String getMember_yeoncha() {
 		return member_yeoncha;
 	}
@@ -224,13 +241,28 @@ public class ManagementVO_ga {
 	public void setAttach(MultipartFile attach) {
 		this.attach = attach;
 	}
-	
-	
+
+
+
+
+	public String getChild_dept_name() {
+		return child_dept_name;
+	}
+
+
+
+
+	public void setChild_dept_name(String child_dept_name) {
+		this.child_dept_name = child_dept_name;
+	}
+
+
+
+
 	
 
 	
-	
-	
+
 	
 
 }

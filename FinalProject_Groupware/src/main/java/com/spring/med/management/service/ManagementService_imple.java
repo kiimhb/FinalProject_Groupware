@@ -1,7 +1,10 @@
 package com.spring.med.management.service;
 
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ public class ManagementService_imple implements ManagementService {
 	@Autowired
 	private ManagementDAO manaDAO;
 	
+	@Autowired
 	private AES256 aes;
 	
 
@@ -44,8 +48,20 @@ public class ManagementService_imple implements ManagementService {
 	
 	//사원등록 폼태그
 	@Override
-	public int manag_form(ManagementVO_ga managementVO_ga) {
+	public int manag_form(ManagementVO_ga managementVO_ga, Map<String, String> paraMap) {
+	
+		  String randomidAndPwd = Sha256.encrypt(paraMap.get("randomidAndPwd"));
+		  paraMap.put("randomidAndPwd", randomidAndPwd);
+		  
+		try {
+			 String member_mobile = aes.encrypt(paraMap.get("member_mobile"));
+	         paraMap.put("member_mobile", member_mobile);
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		} 
+		
 		int n = manaDAO.manag_form(managementVO_ga); 
+		
 		return n;
 	}
 
@@ -53,6 +69,52 @@ public class ManagementService_imple implements ManagementService {
 	// ==== 로그인 처리 ==== //
 	@Override
 	public ModelAndView login(ModelAndView mav, HttpServletRequest request, Map<String, String> paraMap) {
+		
+		paraMap.put("member_pwd", Sha256.encrypt(paraMap.get("member_pwd"))); // 비밀번호를 암호화 시키기 
+		
+		ManagementVO_ga loginuser = manaDAO.getLoginMember(paraMap);
+		
+		if(loginuser != null) {
+			try {
+				String member_email = aes.decrypt(loginuser.getMember_email());   // 이메일 복호화
+				String member_mobile = aes.decrypt(loginuser.getMember_mobile()); // 휴대폰 복호화
+				
+				loginuser.setMember_email(member_email);
+				loginuser.setMember_mobile(member_mobile);
+				
+			} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(loginuser == null) { // 로그인 실패시
+        	String message = "아이디 또는 암호가 틀립니다.";
+        	String loc = "javascript:history.back()";
+        	
+        	mav.addObject("message", message);
+        	mav.addObject("loc", loc);
+        	
+        	mav.setViewName("msg");
+        	//  /WEB-INF/views/msg.jsp  파일을 생성한다.
+        }
+		else { // 암호를 마지막으로 변경한 것이 3개월 이내인 경우
+			
+			HttpSession session = request.getSession();
+    		// 메모리에 생성되어져 있는 session 을 불러온다.
+    		
+    		session.setAttribute("loginuser", loginuser);
+
+			String goBackURL = (String) session.getAttribute("goBackURL"); 
+			
+			if(goBackURL != null) {
+				mav.setViewName("redirect:"+goBackURL);
+				session.removeAttribute("goBackURL"); // 세션에서 반드시 제거해주어야 한다. 
+			}
+			else {
+				mav.setViewName("redirect:/index"); // 시작페이지로 이동 
+			}
+			
+		}
 		
 		return mav;
 	}
@@ -74,6 +136,7 @@ public class ManagementService_imple implements ManagementService {
 		
 		return mav;
 	}
+
 
 
 

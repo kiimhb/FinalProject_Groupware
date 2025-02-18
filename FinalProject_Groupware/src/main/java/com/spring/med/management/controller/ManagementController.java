@@ -66,7 +66,7 @@ public class ManagementController {
 		    
 		    for (Child_deptVO_ga childDept : childDeptList) {
 		        Map<String, String> childDeptMap = new HashMap<>();
-		        childDeptMap.put("child_dept_no", String.valueOf(childDept.getChild_dept_no()));
+		        childDeptMap.put("fk_child_dept_no", String.valueOf(childDept.getChild_dept_no()));
 		        childDeptMap.put("fk_parent_dept_no", String.valueOf(childDept.getFk_parent_dept_no()));
 		        childDeptMap.put("child_dept_name", childDept.getChild_dept_name());
 		        childDeptMapList.add(childDeptMap);
@@ -79,13 +79,16 @@ public class ManagementController {
 	
 	
 	@PostMapping("ManagementFrom")
-	public ModelAndView ManagementFrom_post(Map<String, String> paraMap,  ModelAndView mav, ManagementVO_ga managementVO_ga,  MultipartHttpServletRequest mrequest) {
-		
+	public ModelAndView ManagementFrom_post(@RequestParam Map<String, String> paraMap,  ModelAndView mav, ManagementVO_ga managementVO_ga,  MultipartHttpServletRequest mrequest) {
+
 		// 아이디와 비밀번호 랜덤 생성 (8자리 숫자)
 	    String randomidAndPwd = randomidAndPwd(8);  
+	    System.out.println(">>> [DEBUG] 컨트롤러에서 받은 member_mobile: " + paraMap.get("member_mobile"));
 
-		managementVO_ga.setMember_userid(randomidAndPwd);       
-		managementVO_ga.setMember_pwd(randomidAndPwd);    
+		managementVO_ga.setMember_userid(randomidAndPwd);
+	    managementVO_ga.setMember_pwd(randomidAndPwd);  
+	    
+	    paraMap.put("randomidAndPwd", randomidAndPwd);
 		
 		MultipartFile attach = managementVO_ga.getAttach(); 
 		
@@ -137,8 +140,8 @@ public class ManagementController {
 		}
 		
 		int n = 0;
-
-		n = managService.manag_form(managementVO_ga);
+		
+		n = managService.manag_form(managementVO_ga, paraMap);
 
 		if (n == 1) {
 		    mav.setViewName("redirect:/management/managFromDetail");

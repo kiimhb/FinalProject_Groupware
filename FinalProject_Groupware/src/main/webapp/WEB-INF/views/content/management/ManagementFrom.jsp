@@ -94,7 +94,7 @@ table.manag_table th {
     	//하위부서 데이터값 불러오기
          $("select[name='parentDept']").change(function(){
              const dept = $(this).val(); // 선택된 상위 부서 값
-             const childDeptSelect = $("select[name='childDept']");
+             const childDeptSelect = $("select[name='fk_child_dept_no']");
              
              // 기존 옵션 초기화
              childDeptSelect.empty();
@@ -108,7 +108,7 @@ table.manag_table th {
                      success: function(json) {
 
                     	 json.forEach(function(item, index) {
-                             childDeptSelect.append('<option value="' + item.child_dept_no + '">' + item.child_dept_name + '</option>');
+                             childDeptSelect.append('<option value="' + item.fk_child_dept_no + '">' + item.child_dept_name + '</option>');
                          });
                      },
                      error: function(request, status, error) {
@@ -121,7 +121,7 @@ table.manag_table th {
     	//직급 데이터값 불러오기
          $("select[name='parentDept']").change(function() {
              const parentDept = $(this).val(); // 선택된 상위 부서 값
-             const positionSelect = $("select[name='position']"); // 직급 select
+             const positionSelect = $("select[name='member_position']"); // 직급 select
 
              // 기존 옵션 초기화
              positionSelect.empty();
@@ -142,6 +142,18 @@ table.manag_table th {
                  positionSelect.append('<option value="4">과장</option>');
                  positionSelect.append('<option value="5">주임</option>');
              } 
+         });
+    	
+         $("select[name='member_position']").change(function() {
+             const selectedPosition = $(this).val(); // 선택된 직급 값
+             // 연차, 등급 설정
+                if (selectedPosition == "1" || selectedPosition == "2") { // 수간호사, 병원장
+			            member_yeoncha = 20;
+			            member_grade = 1;
+			        } else { // 나머지 직급
+			            member_yeoncha = 15;
+			            member_grade = 2;
+			        }
          });
      });
     
@@ -198,8 +210,66 @@ table.manag_table th {
         	    const sanitizedValue = input.val().replace(/[^0-9]/g, ""); // 숫자가 아닌 문자를 제거
         	    input.val(sanitizedValue); // 필드에 정제된 값 설정
         	});
+        	
+        	$("input#member_birthday").datepicker(	 {
+  	          dateFormat: 'yy-mm-dd'  //Input Display Format 변경
+  	         ,showOtherMonths: true   //빈 공간에 현재월의 앞뒤월의 날짜를 표시
+  	         ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
+  	         ,changeYear: true        //콤보박스에서 년 선택 가능
+  	         ,changeMonth: true       //콤보박스에서 월 선택 가능
+  	     //  ,showOn: "both"          //button:버튼을 표시하고,버튼을 눌러야만 달력 표시됨. both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시됨.  
+  	     //  ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
+  	     //  ,buttonImageOnly: true   //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
+  	     //  ,buttonText: "선택"       //버튼에 마우스 갖다 댔을 때 표시되는 텍스트
+  	         ,yearSuffix: "년"         //달력의 년도 부분 뒤에 붙는 텍스트
+  	         ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
+  	         ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
+  	         ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
+  	         ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
+  	     //  ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
+  	     //  ,maxDate: "+1M" //최대 선택일자(+1D:하루후, +1M:한달후, +1Y:일년후)
+  	 });
+  	 
+  	 // 초기값을 오늘 날짜로 설정
+  	 // $('input#datepicker').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
+  	 
+  	 
+  	 // === 전체 datepicker 옵션 일괄 설정하기 ===  
+  	 //     한번의 설정으로 $("input#fromDate"), $('input#toDate')의 옵션을 모두 설정할 수 있다.
+       $(function() {
+  		//모든 datepicker에 대한 공통 옵션 설정
+  		$.datepicker.setDefaults({
+          	dateFormat: 'yy-mm-dd' //Input Display Format 변경
+  			,showOtherMonths: true //빈 공간에 현재월의 앞뒤월의 날짜를 표시
+  			,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
+  			,changeYear: true //콤보박스에서 년 선택 가능
+  			,changeMonth: true //콤보박스에서 월 선택 가능                
+  			// ,showOn: "both" //button:버튼을 표시하고,버튼을 눌러야만 달력 표시됨. both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시됨.  
+  			// ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
+  			// ,buttonImageOnly: true //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
+  			// ,buttonText: "선택" //버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
+  			,yearSuffix: "년" //달력의 년도 부분 뒤에 붙는 텍스트
+  			,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
+  			,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
+  			,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
+  			,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
+  			// ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
+  			// ,maxDate: "+1M" //최대 선택일자(+1D:하루후, -1M:한달후, -1Y:일년후)                    
+  		});
+           
+  		// input을 datepicker로 선언
+  		$("input#fromDate").datepicker();                    
+  		$("input#toDate").datepicker();
+  		
+  		// From의 초기값을 오늘 날짜로 설정
+  		$('input#fromDate').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
+           
+  		// To의 초기값을 3일후로 설정
+  		$('input#toDate').datepicker('setDate', '+3D'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
+  	});
         	    
     	});
+    	
         	    
     	$(document).ready(function () {
     	    $("button#registerbtn").click(function () {
@@ -218,13 +288,13 @@ table.manag_table th {
     	            return;
     	        }
 
-    	        const childDept = $("select[name='childDept']").val();
+    	        const childDept = $("select[name='fk_child_dept_no']").val();
     	        if (childDept == "") {
     	            alert("하위 부서를 선택하세요.");
     	            return;
     	        }
 
-    	        const position = $("select[name='position']").val();
+    	        const position = $("select[name='member_position']").val();
     	        if (position == "") {
     	            alert("직급을 선택하세요.");
     	            return;
@@ -235,51 +305,62 @@ table.manag_table th {
     	            $("#email").focus();
     	            return;
     	        }
-
     	        if ($("#hp2").val().trim() == "") {
     	            alert("전화번호 중간 자리를 입력하세요.");
     	            $("#hp2").focus();
     	            return;
+    	        } else {
+    	            $('#hp_error').hide();  
     	        }
     	        if ($("#hp3").val().trim() == "") {
     	            alert("전화번호 마지막 자리를 입력하세요.");
     	            $("#hp3").focus();
     	            return;
+    	        } else {
+    	            $('#hp_error').hide();  
     	        }
 
-    	        if ($("input:radio[name='gender']:checked").length == 0) {
+    	        if ($("input:radio[name='member_gender']:checked").length == 0) {
     	            alert("성별을 선택하셔야 합니다.");
     	            return;
     	        }
 
-    	        const datepicker = $("#datepicker").val().trim();
-    	        if (!datepicker) {
-    	            alert("생년월일을 입력하세요.");
-    	            $("#datepicker").focus();
+    	        const birthday = $("input#member_birthday").val().trim();
+
+    	        if (birthday == "") {
+    	            alert("생년월일을 입력하셔야 합니다.");
     	            return;
     	        }
-    	        if (isNaN(new Date(datepicker).getTime())) {
+    	       
+    	        if (isNaN(new Date(birthday).getTime())) {
     	            alert("올바른 생년월일을 입력하세요.");
-    	            $("#datepicker").focus();
+    	            $("#member_birthday").focus();
     	            return;
     	        }
     	        
-    	        const startDate = $("#start").val().trim();
+    	        const startDate = $("#member_start").val().trim();
     	        if (!startDate) {
     	            alert("입사일을 입력하세요.");
-    	            $("#start").focus();
+    	            $("#member_start").focus();
     	            return;
     	        }
     	        if (isNaN(new Date(startDate).getTime())) {
     	            alert("올바른 입사일을 입력하세요.");
-    	            $("#start").focus();
+    	            $("#member_start").focus();
     	            return;
     	        }
+    	        
+    	        const member_mobile = $('#hp1').val() + '-' + $('#hp2').val() + '-' + $('#hp3').val();
 
-    	        const frm = document.memberFrm;
+    	        const frm = document.ManagementFrom;
+    	        $('#member_mobile').val(member_mobile); 
+    	        $('#member_yeoncha').val(member_yeoncha); 
+    	        $('#member_grade').val(member_grade); 
+    	        $('#member_workingTime').val(member_workingTime); 
     	        frm.method = "post";
     	        frm.action = "<%= ctxPath%>/management/ManagementFrom";
     	        frm.submit();
+
     	    });
     	});
 
@@ -292,7 +373,7 @@ table.manag_table th {
 	</div>
 	
 
-	<form name="memberFrm" enctype="multipart/form-data">
+	<form name="ManagementFrom" enctype="multipart/form-data">
 	
 		<div class="mem_profile">
 			<div><img id="previewimg" width="137" height="176" style="object-fit: cover;" /></div>
@@ -322,7 +403,7 @@ table.manag_table th {
 		<tr>
 		    <th style="width: 15%; background-color: #DDDDDD;">부서</th>
 		    <td>
-		        <select name="childDept">
+		        <select name="fk_child_dept_no">
 		            <option value=""> 하위 부서 선택 </option>
 		        </select>
 		    </td>
@@ -332,7 +413,7 @@ table.manag_table th {
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">직급</th>
 			<td>
-				<select name="position">
+				<select name="member_position">
 					<option value=""> 직급 선택 </option>
 	            </select>
             </td>
@@ -354,20 +435,21 @@ table.manag_table th {
 			
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;"><label class="labelName">성별</label></th>
-				<td><input type="radio" name="gender" value="1" id="male" class="requiredInfo_radio" />
+				<td><input type="radio" name="member_gender" value="1" id="male" class="requiredInfo_radio" />
 				<label for="male" style="margin-left: 1.5%;">남자</label> 
-				<input type="radio" name="gender" value="2" id="female" class="requiredInfo_radio" style="margin-left: 10%;" />
+				<input type="radio" name="member_gender" value="2" id="female" class="requiredInfo_radio" style="margin-left: 10%;" />
 				<label for="female" style="margin-left: 1.5%;">여자</label></td>
 			</tr>
 
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">생년월일</th>
-				<td><input type="date" name="birthday" id="datepicker" maxlength="10" /></td>
+				<td> <input type="text" name="member_birthday" id="member_birthday" maxlength="10" />
+                       <span class="error">생년월일은 마우스로만 클릭하세요.</span></td>
 			</tr>
 			
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">입사일자</th>
-				<td><input type="date" name="start_date" id="start"></td>
+				<td><input type="date" name="member_start" id="member_start"></td>
 			</tr>
 
 			<tr>
@@ -375,8 +457,16 @@ table.manag_table th {
 				<button type="button" id="registerbtn">사원 등록</button>
 				</td>
 			</tr>
-
+	
 		</table>
+					<input type="hidden" id="member_mobile" name="member_mobile" />
+					
+					<input type="hidden" id="member_yeoncha" name="member_yeoncha" />
+					
+					<input type="hidden" id="member_grade" name="member_grade" />
+					
+					<input type="hidden" id="member_workingTime" name="member_workingTime" value="day" />
 	</form>
 </div>
+
 <jsp:include page="../../footer/footer1.jsp" />    
