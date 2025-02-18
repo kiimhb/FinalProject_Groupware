@@ -4,13 +4,75 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
-<mapper namespace="patient">
-	<!-- 
-	<select id="selectList" resultType="TreatPatientVO">
-		select P.patient_name, P.patient_gender, P.patient_jubun, P.patient_symptom, D.child_dept_name
+<mapper namespace="seonggon_patient">
+	 
+	 
+		<!-- 진료대기중인 모든 환자 수 알아오기 -->
+	<select id="totalCount" parameterType="HashMap" resultType="int">
+			select count(*)
+			from
+			(
+			select  patient_name, patient_gender, patient_jubun, patient_symptom, patient_status, patient_waiting, child_dept_name
+			from tbl_patient a join tbl_child_dept b
+			on a.fk_child_dept_no = b.child_dept_no
+			where patient_waiting = 1
+			)
+	</select>
+	
+	
+	
+	 
+	 
+	<resultMap id="PatientListMap" type="HashMap">
+	    <result property="patient_name" 		column="patient_name" 		javaType="String" />	    
+	    <result property="patient_gender"   	column="patient_gender" 	javaType="String" />
+	    <result property="patient_jubun" 		column="patient_jubun"    	javaType="String" />
+	    <result property="patient_symptom"    	column="patient_symptom" 	javaType="String" />
+	    <result property="patient_status" 		column="patient_status" 	javaType="String" />
+	    <result property="patient_waiting" 		column="patient_waiting" 	javaType="String" />
+	   	<result property="child_dept_name"  	column="child_dept_name" 	javaType="String" />
+	</resultMap>
+	
+	<select id="selectPatientWaiting" parameterType="HashMap" resultMap="PatientListMap">
+		select *
+		from
+		(
+		select rownum as rno, patient_name, patient_gender, patient_jubun, patient_symptom, patient_status, patient_waiting, child_dept_name
+		from 
+		(
+		select P.patient_name, P.patient_gender, P.patient_jubun, P.patient_symptom, P.patient_status, P.patient_waiting, D.child_dept_name
 		from tbl_patient P LEFT JOIN tbl_child_dept D
 		on P.fk_child_dept_no = D.child_dept_no
-		order by P.patient_no desc
+		where P.patient_waiting = 1
+		order by P.patient_name desc
+		) a
+		) b
+		WHERE b.RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
-	 -->	
+	
+	
+	
+	
+	<!-- === #92. 검색어 입력시 자동글 완성하기 6 === -->
+     <select id="wordSearchShow" parameterType="HashMap" resultType="String">
+			select patient_jubun
+			from tbl_patient
+			where patient_waiting = 0
+			and patient_status like 1
+			and lower(patient_jubun) like '%'||lower(#{searchWord})||'%'
+     </select>
+     
+     
+     <select id="existPatientShow" parameterType="HashMap" resultType="TreatPatientVO">
+     	select P.patient_name, P.patient_gender, P.patient_jubun, P.patient_symptom, D.child_dept_name
+		from tbl_patient P LEFT JOIN tbl_child_dept D
+		on P.fk_child_dept_no = D.child_dept_no
+		where P.patient_waiting = 0
+		and P.patient_status like 1
+		and P.patient_jubun like #{patient_jubun}
+		order by P.patient_no desc
+     </select>
+	
+	
+		
 </mapper>
