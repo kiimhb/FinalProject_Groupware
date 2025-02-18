@@ -5,7 +5,7 @@ public class TreatPatientVO {
 	
 	
 	private String patient_no;				// 환자 번호
-	private String fk_team_no;				// 담당 부서 번호
+	private String fk_child_dept_no;		// 담당 부서 번호
 	private String patient_name;			// 이름	
 	private String patient_jubun;			// 주민번호
 	private String patient_gender;			// 성별
@@ -13,12 +13,7 @@ public class TreatPatientVO {
 	private String patient_status;			// 초진 재진
 	private String patient_visitdate;		// 내원일
 	private String patient_wating;			// 진료 대기
-	
-	
-	
-	
-	
-	
+
 	
 	
 	public String getPatient_no() {
@@ -27,11 +22,11 @@ public class TreatPatientVO {
 	public void setPatient_no(String patient_no) {
 		this.patient_no = patient_no;
 	}
-	public String getFk_team_no() {
-		return fk_team_no;
+	public String getFk_child_dept_no() {
+		return fk_child_dept_no;
 	}
-	public void setFk_team_no(String fk_team_no) {
-		this.fk_team_no = fk_team_no;
+	public void setFk_child_dept_no(String fk_child_dept_no) {
+		this.fk_child_dept_no = fk_child_dept_no;
 	}
 	public String getPatient_name() {
 		return patient_name;
@@ -75,6 +70,24 @@ public class TreatPatientVO {
 	public void setPatient_wating(String patient_wating) {
 		this.patient_wating = patient_wating;
 	}
+	
+	
+	
+	
+	
+	private String child_dept_name;		// 담당 부서 이름
+
+
+
+	public String getChild_dept_name() {
+		return child_dept_name;
+	}
+	public void setChild_dept_name(String child_dept_name) {
+		this.child_dept_name = child_dept_name;
+	}
+
+
+	
 	
 	
 	

@@ -12,6 +12,9 @@
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/administration/register.css" />
 
 <jsp:include page="../../header/header1.jsp" /> 
+
+
+
 <script type="text/javascript">
 $(document).ready(function(){  
 	
