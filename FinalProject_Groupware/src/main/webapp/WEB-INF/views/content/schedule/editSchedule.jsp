@@ -275,7 +275,7 @@
 								var member_name = item.member_name;
 								if(member_name.includes(joinUserName)){ // name 이라는 문자열에 joinUserName 라는 문자열이 포함된 경우라면 true , 
 									                             // name 이라는 문자열에 joinUserName 라는 문자열이 포함되지 않은 경우라면 false 
-								   joinUserArr.push(name+"("+item.member_userid+")");
+								   joinUserArr.push(member_name+"("+item.member_userid+")");
 								}
 							});
 							
