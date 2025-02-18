@@ -50,7 +50,6 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css"> 
 
 <script type="text/javascript">
-
 	$(document).ready(function(){
 		
 		// 검색할 때 필요한 datepicker
@@ -71,20 +70,17 @@
 	    $("input#fromDate").datepicker();                    
 	    $("input#toDate").datepicker(); 
 		    
-	 // From의 초기값을 한달전 날짜로 설정
+		// From의 초기값을 한달 전 날짜로 설정
 	    $('input#fromDate').datepicker('setDate', '-1M'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
 	    
-	    // To의 초기값을 오늘 날짜로 설정
-	//  $('input#toDate').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)	
-		
-	    // To의 초기값을 한달후 날짜로 설정
+	    // To의 초기값을 한달 후 날짜로 설정
 	    $('input#toDate').datepicker('setDate', '+1M'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)	
 		    
-		    
+		// 일정 목록의 행 클릭 시 상세 보기 이동
 		$("tr.infoSchedule").click(function(){
-		//	console.log($(this).html());
-			var scheduleno = $(this).children(".schedule_no").text();
-			goDetail(scheduleno);
+			// console.log($(this).html());
+			var schedule_no = $(this).children(".schedule_no").text();
+			goDetail(schedule_no);
 		});
 		
 		// 검색 할 때 엔터를 친 경우
@@ -94,7 +90,8 @@
 		   }
 	    });
 	      
-	    if(${not empty requestScope.paraMap}){
+	    // 검색 필드 초기화
+	    if (${not empty requestScope.paraMap}) {
 	    	  $("input[name=schedule_startdate]").val("${requestScope.paraMap.schedule_startdate}");
 	    	  $("input[name=schedule_enddate]").val("${requestScope.paraMap.schedule_enddate}");
 			  $("select#searchType").val("${requestScope.paraMap.searchType}");
@@ -108,38 +105,36 @@
 	
 	// ~~~~~~~ Function Declartion ~~~~~~~
 	
-	function goDetail(scheduleno){
+	function goDetail(schedule_no) { 
 		var frm = document.goDetailFrm;
-		frm.schedule_no.value = schedule_no;
+		frm.schedule_no.value = schedule_no; 
 		
-		frm.method="get";
-		frm.action="<%= ctxPath%>/schedule/detailSchedule";
+		frm.method = "get";
+		frm.action = "<%= ctxPath%>/schedule/detailSchedule";
 		frm.submit();
-	} // end of function goDetail(scheduleno){}-------------------------- 
-			
-
+	} // end of function goDetail(schedule_no){}-------------------------- 
+				
 	// 검색 기능
-	function goSearch(){
-		
-		if( $("#fromDate").val() > $("#toDate").val() ) {
+	function goSearch() {
+		if ($("#fromDate").val() > $("#toDate").val()) {
 			alert("검색 시작날짜가 검색 종료날짜 보다 크므로 검색할 수 없습니다.");
 			return;
 		}
-	    
-		if( $("select#searchType").val()=="" && $("input#searchWord").val()!="" ) {
+		    
+		if ($("select#searchType").val() == "" && $("input#searchWord").val() != "") {
 			alert("검색대상 선택을 해주세요!!");
 			return;
 		}
-		
-		if( $("select#searchType").val()!="" && $("input#searchWord").val()=="" ) {
+			
+		if ($("select#searchType").val() != "" && $("input#searchWord").val() == "") {
 			alert("검색어를 입력하세요!!");
 			return;
 		}
-		
+			
 		var frm = document.searchScheduleFrm;
-        frm.method="get";
-        frm.action="<%= ctxPath%>/schedule/searchSchedule";
-        frm.submit();
+		frm.method = "get";
+		frm.action = "<%= ctxPath%>/schedule/searchSchedule";
+		frm.submit();
 	}
 
 </script>
@@ -152,7 +147,7 @@
 			<form name="searchScheduleFrm">
 				<div>
 					<input type="text" id="fromDate" name="schedule_startdate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp; 
-	            -&nbsp;&nbsp; <input type="text" id="toDate" name="endschedule_enddatedate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp;
+	            -&nbsp;&nbsp; <input type="text" id="toDate" name="schedule_enddate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp;
 	            	<select id="fk_large_category_no" name="fk_large_category_no" style="height: 30px;">
 						<option value="">모든캘린더</option>
 						<option value="1">내 캘린더</option>
@@ -160,9 +155,9 @@
 					</select>&nbsp;&nbsp;	
 					<select id="searchType" name="searchType" style="height: 30px;">
 						<option value="">검색대상선택</option>
-						<option value="subject">제목</option>
-						<option value="content">내용</option>
-						<option value="joinuser">공유자</option>
+						<option value="schedule_subject">제목</option>
+						<option value="schedule_content">내용</option>
+						<option value="schedule_joinuser">공유자</option>
 					</select>&nbsp;&nbsp;	
 					<input type="text" id="searchWord" value="${requestScope.searchWord}" style="height: 30px; width:120px;" name="searchWord"/> 
 					&nbsp;&nbsp;
@@ -172,7 +167,7 @@
 						<option value="15">15</option>
 						<option value="20">20</option>
 					</select>&nbsp;&nbsp;
-					<input type="hidden" name="fk_member_userid" value="이순신"/>
+					<input type="hidden" name="fk_member_userid" value="1" /> <%-- ${sessionScope.loginuser.member_userid} --%>
 					<button type="button" class="btn_normal" style="display: inline-block;" onclick="goSearch()">검색</button>
 				</div>
 			</form>
@@ -199,7 +194,7 @@
 			<c:if test="${not empty requestScope.scheduleList}">
 				<c:forEach var="map" items="${requestScope.scheduleList}">
 					<tr class="infoSchedule">
-						<td style="display: none;" class="scheduleno">${map.SCHEDULE_NO}</td>
+						<td style="display: none;" class="schedule_no">${map.SCHEDULE_NO}</td>
 						<td>${map.SCHEDULE_STARTDATE} - ${map.SCHEDULE_ENDDATE}</td>
 						<td>${map.LARGE_CATEGORY_NAME} - ${map.SMALL_CATEGORY_NAME}</td>
 						<td>${map.MEMBER_NAME}</td>  <%-- 캘린더 작성자명 --%>
@@ -221,4 +216,3 @@
 </form> 
 
 <jsp:include page="../../footer/footer1.jsp" />
-      

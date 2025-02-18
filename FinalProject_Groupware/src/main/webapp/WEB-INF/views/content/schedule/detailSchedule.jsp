@@ -151,10 +151,10 @@
 				<th style="vertical-align: middle;">캘린더종류</th>
 				<td>
 				<c:if test="${requestScope.map.FK_LARGE_CATEGORY_NO eq '2'}">
-					사내 캘린더 - ${requestScope.map.FK_SMALL_CATEGORY_NO}
+					사내 캘린더 - ${requestScope.map.SMALL_CATEGORY_NAME}
 				</c:if>
 				<c:if test="${requestScope.map.FK_LARGE_CATEGORY_NO eq '1'}">
-					내 캘린더 - ${requestScope.map.FK_SMALL_CATEGORY_NO}
+					내 캘린더 - ${requestScope.map.SMALL_CATEGORY_NAME}
 				</c:if></td>
 			</tr>
 			<tr>
@@ -176,12 +176,12 @@
 			</tr>
 		</table>
 	
-	<input type="hidden" value="${sessionScope.loginuser.member_name}" />
+	<input type="hidden" value="${sessionScope.loginuser.member_userid}" />
 	<input type="hidden" value="${requestScope.map.fk_large_category_no}" />
 	
 	<c:set var="v_fk_member_userid" value="${requestScope.map.FK_MEMBER_USERID}" />
 	<c:set var="v_fk_large_category_no" value="${requestScope.map.FK_LARGE_CATEGORY_NO}"/>
-	<c:set var="v_loginuser_member_userid" value="${sessionScope.loginuser.member_userid}"/>
+	<c:set var="v_loginuser_member_userid" value="1"/>
 
 	<div style="float: right;">
 		<c:if test="${not empty requestScope.listgobackURL_schedule}">
@@ -190,12 +190,12 @@
 	        <c:if test="${v_fk_lgcatgono eq '2' && sessionScope.loginuser.fk_pcode =='3' && sessionScope.loginuser.fk_dcode == '4' }">  
 	    --%>
 			<c:if test="${v_fk_large_category_no eq '2' && sessionScope.loginuser.gradelevel == 10 }">
-				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
-				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
+				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
 			<c:if test="${v_fk_large_category_no eq '1' && v_fk_member_userid eq v_loginuser_member_userid}">
-				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
-				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
+				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
 				<button type="button" id="cancel" class="btn_normal" style="margin-right: 0px;" onclick="javascript:location.href='<%= ctxPath%>${requestScope.listgobackURL_schedule}'">취소</button> 
 		</c:if>
@@ -206,12 +206,12 @@
 	        <c:if test="${v_fk_lgcatgono eq '2' && sessionScope.loginuser.fk_pcode =='3' && sessionScope.loginuser.fk_dcode == '4' }">  
 	    --%>
 	        <c:if test="${v_fk_large_category_no eq '2' && sessionScope.loginuser.gradelevel == 10 }">
-				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
-				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
+				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
-			<c:if test="${v_fk_large_category_no eq '1' && v_fk_member_userid eq v_loginuser_member_userid}">
-				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
-				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+			<c:if test="${v_fk_large_category_no eq '1' && v_fk_member_userid eq 1}"> <%-- v_loginuser_member_userid --%>
+				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
+				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
 				<button type="button" id="cancel" class="btn_normal" style="margin-right: 0px; background-color: #990000;" onclick="javascript:location.href='<%= ctxPath%>/schedule/detailSchedule'">취소</button> 
 		</c:if>

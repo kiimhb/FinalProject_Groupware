@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// import com.spring.med.member.domain.MemberVO;
+import com.spring.med.management.domain.ManagementVO_ga;
 import com.spring.med.schedule.domain.*;
 import com.spring.med.schedule.model.*;
 
@@ -22,10 +22,10 @@ public class ScheduleService_imple implements ScheduleService {
 	public int addComCalendar(Map<String, String> paraMap) throws Throwable {
 		
 		int n=0;
-		String com_smcatgoname = paraMap.get("com_smcatgoname");
+		String com_small_category_name = paraMap.get("com_small_category_name");
 		
 		// 사내 캘린더에 캘린더 소분류 명 존재 여부 알아오기
-		int m = dao.existComCalendar(com_smcatgoname);
+		int m = dao.existComCalendar(com_small_category_name);
 		
 		if(m==0) {
 			n = dao.addComCalendar(paraMap);
@@ -62,8 +62,8 @@ public class ScheduleService_imple implements ScheduleService {
 
 	// 내 캘린더에서 내캘린더 소분류  보여주기
 	@Override
-	public List<Calendar_small_category_VO> showMyCalendar(String fk_userid) {
-		List<Calendar_small_category_VO> calendar_small_category_VO_MyList = dao.showMyCalendar(fk_userid); 
+	public List<Calendar_small_category_VO> showMyCalendar(String fk_member_userid) {
+		List<Calendar_small_category_VO> calendar_small_category_VO_MyList = dao.showMyCalendar(fk_member_userid); 
 		return calendar_small_category_VO_MyList;
 	}
 
@@ -76,13 +76,13 @@ public class ScheduleService_imple implements ScheduleService {
 	}
 
 
-	/*
-	 * // 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기
-	 * 
-	 * @Override public List<MemberVO> searchJoinUserList(String joinUserName) {
-	 * List<MemberVO> joinUserList = dao.searchJoinUserList(joinUserName); return
-	 * joinUserList; }
-	 */
+	
+   // 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기
+   @Override public List<ManagementVO_ga> searchJoinUserList(String joinUserName) {
+	   List<ManagementVO_ga> joinUserList = dao.searchJoinUserList(joinUserName); return
+	   joinUserList; 
+   }
+	 
 
 
 	// 일정 등록하기
@@ -95,24 +95,24 @@ public class ScheduleService_imple implements ScheduleService {
 
 	// 등록된 일정 가져오기
 	@Override
-	public List<Calendar_schedule_VO> selectSchedule(String fk_userid) {
-		List<Calendar_schedule_VO> scheduleList = dao.selectSchedule(fk_userid);
+	public List<Calendar_schedule_VO> selectSchedule(String fk_member_userid) {
+		List<Calendar_schedule_VO> scheduleList = dao.selectSchedule(fk_member_userid);
 		return scheduleList;
 	}
 
 
 	// 일정 상세 보기 
 	@Override
-	public Map<String,String> detailSchedule(String scheduleno) {
-		Map<String,String> map = dao.detailSchedule(scheduleno);
+	public Map<String,String> detailSchedule(String schedule_no) {
+		Map<String,String> map = dao.detailSchedule(schedule_no);
 		return map;
 	}
 
 
 	// 일정삭제하기 
 	@Override
-	public int deleteSchedule(String scheduleno) throws Throwable {
-		int n = dao.deleteSchedule(scheduleno);
+	public int deleteSchedule(String schedule_no) throws Throwable {
+		int n = dao.deleteSchedule(schedule_no);
 		return n;
 	}
 
@@ -127,8 +127,8 @@ public class ScheduleService_imple implements ScheduleService {
 
 	// (사내캘린더 또는 내캘린더)속의  소분류 카테고리인 서브캘린더 삭제하기 
 	@Override
-	public int deleteSubCalendar(String smcatgono) throws Throwable {
-		int n = dao.deleteSubCalendar(smcatgono);
+	public int deleteSubCalendar(String small_category_no) throws Throwable {
+		int n = dao.deleteSubCalendar(small_category_no);
 		return n;
 	}
 

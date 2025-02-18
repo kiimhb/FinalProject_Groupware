@@ -19,14 +19,14 @@ public class BoardDAO_imple implements BoardDAO  {
 	// === #05. 파일첨부가 없는 글쓰기 ===
 	@Override
 	public int add(BoardVO boardvo) {
-		int n = sqlsession.insert("board.add", boardvo);
+		int n = sqlsession.insert("minji.add", boardvo);
 		return n;
 	}
 
 	// 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 
 	@Override
 	public List<BoardVO> boardListNoSearch() {
-		List<BoardVO> boardList = sqlsession.selectList("board.boardListNoSearch");
+		List<BoardVO> boardList = sqlsession.selectList("minji.boardListNoSearch");
 		return boardList;
 	}
 

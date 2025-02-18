@@ -3,7 +3,7 @@ package com.spring.med.schedule.service;
 import java.util.List;
 import java.util.Map;
 
-//import com.spring.med.member.domain.MemberVO;
+import com.spring.med.management.domain.ManagementVO_ga;
 import com.spring.med.schedule.domain.*;
 
 public interface ScheduleService {
@@ -24,7 +24,7 @@ public interface ScheduleService {
 	List<Calendar_small_category_VO> selectSmallCategory(Map<String, String> paraMap);
 
 	// 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기 
-//	List<MemberVO> searchJoinUserList(String joinUserName);
+	List<ManagementVO_ga> searchJoinUserList(String joinUserName);
 
 	// 일정 등록하기
 	int registerSchedule_end(Map<String, String> paraMap) throws Throwable;

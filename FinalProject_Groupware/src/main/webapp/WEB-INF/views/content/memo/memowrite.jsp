@@ -39,42 +39,54 @@ div.card {font-weight: bold;}
 
 
 <script type="text/javascript">
+
 function saveMemo() {
     const title = document.getElementById('memoTitle').value;
     const content = document.getElementById('memoContent').value;
 
+    // 유효성 검사
     if (title.trim() === '' || content.trim() === '') {
-      alert('제목과 내용을 입력해주세요.');
-      return;
+        alert('제목과 내용을 입력해주세요.');
+        return;
     }
 
-    // 여기에서 제목과 내용을 저장하는 로직을 추가하세요 (예: AJAX 요청).
-    // console.log('저장된 메모:', { title, content });
+    // 메모 추가 로직
+    const memoList = document.getElementById('memoList'); // 메모 목록 영역
+    const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '.'); // 현재 날짜
+
+    const newMemo = `
+        <div class="card border-info mb-3" style="max-width: 18rem;">
+            <div class="card-header d-flex align-items-center">
+                <!-- 즐겨찾기 버튼 -->
+                <button type="button" class="btn btn-link p-0 no-outline" onclick="importantmemo(this)" style="font-size: 1.5rem; color: gray; margin-right: 8px;">
+                    <i class="fa fa-star-o" aria-hidden="true"></i>
+                </button>
+                <span>${title}</span>
+            </div>
+            <div class="card-body text-dark">
+                <p class="card-text">${content}</p>
+                <p class="card-text" style="text-align: right;">${currentDate}</p>
+            </div>
+        </div>
+    `;
+
+    // 새 메모를 목록에 추가
+    memoList.insertAdjacentHTML('beforeend', newMemo);
 
     // 모달 닫기
     $('#memoModal').modal('hide');
 
     // 입력 필드 초기화
     document.getElementById('memoForm').reset();
-  }
-  
-//즐겨찾기 토글 함수
-function importantmemo(button) {
-	  const icon = button.querySelector("i");
-	  if (icon.classList.contains("fa-star-o")) {
-	    // 비어 있는 별 -> 채워진 별로 변경
-	    icon.classList.remove("fa-star-o");
-	    icon.classList.add("fa-star");
-	    icon.style.color = "gold"; // 채워진 별의 색상 변경
-	  } else {
-	    // 채워진 별 -> 비어 있는 별로 변경
-	    icon.classList.remove("fa-star");
-	    icon.classList.add("fa-star-o");
-	    icon.style.color = "gray"; // 비어있을 때 기본 색상
-	  }
-}
-</script>
 
+    // 폼(form)을 전송(submit)
+    const frm = document.memoFrm;
+    frm.method = "post";
+    frm.action = "<%= ctxPath %>/memo/memowrite";
+    frm.submit();
+}
+
+</script>
 
 
 
@@ -82,24 +94,37 @@ function importantmemo(button) {
 	<div style="margin: auto; padding-left: 3%;">
 
 		<h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">메모장</h2>
+<form name="memoFrm">
+		<!-- 메모 쓰기 버튼 -->
+        <div style="margin-bottom: 20px;">
+            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#memoModal">
+                메모 쓰기
+            </button>
+        </div>
 
 		<table style="width: 1200px" class="table">
 			<tbody>
-				<div class="card border-info mb-3" style="max-width: 18rem;">
-					<div class="card-header d-flex align-items-center">
-						<!-- 즐겨찾기 버튼 -->
-						<button type="button" class="btn btn-link p-0 no-outline" onclick="importantmemo(this)" style="font-size: 1.5rem; color: gray; margin-right: 8px;">
-							<i class="fa fa-star-o" aria-hidden="true"></i>
-							<!-- 비어있는 별 , 채워진 별 : fa-star -->
-						</button>
-						<span>가족여행 일정짜기</span>
-					</div>
-					<div class="card-body text-dark">
-						<p class="card-text">어디로 가지</p>
-						<p class="card-text" style="text-align: right;">2025.02.12</p>
+				<!-- 메모 리스트 -->
+	        	<div id="memoList">
+					<div class="card border-info mb-3" style="max-width: 18rem;">
+						<div class="card-header d-flex align-items-center">
+							<!-- 즐겨찾기 버튼 -->
+							<button type="button" class="btn btn-link p-0 no-outline" onclick="importantmemo(this)" style="font-size: 1.5rem; color: gray; margin-right: 8px;">
+								<i class="fa fa-star-o" aria-hidden="true"></i>
+								<!-- 비어있는 별 , 채워진 별 : fa-star -->
+							</button>
+							<span>가족여행 일정짜기</span>
+						</div>
+						<div class="card-body text-dark">
+							<p class="card-text">어디로 가지</p>
+							<p class="card-text" style="text-align: right;">2025.02.12</p>
+						</div>
 					</div>
 				</div>
 			</tbody>
+			
+			
+			
 		</table>
 
 		<!-- 모달 -->
@@ -132,7 +157,7 @@ function importantmemo(button) {
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary"
 							data-dismiss="modal">닫기</button>
-						<button type="button" class="btn btn-primary" onclick="saveMemo()">저장</button>
+						<button type="button" class="btn btn-primary" id="memoWrite" onclick="saveMemo()">저장</button>
 					</div>
 				</div>
 			</div>

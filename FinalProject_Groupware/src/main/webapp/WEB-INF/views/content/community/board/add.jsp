@@ -11,8 +11,24 @@
 <jsp:include page="../../../header/header1.jsp" /> 
 
 <style type="text/css">
+table {
+    margin: auto; /* 테이블을 화면 가운데로 정렬 */
+}
 
-</style>    
+th {
+    text-align: center; /* th 내부 텍스트 가운데 정렬 */
+    vertical-align: middle; /* 텍스트 수직 정렬 */
+}
+
+.find-btn{
+	text-align: center;
+}
+.find-btn1{
+	display :inline-block;
+}
+
+
+</style> 
 
 <script type="text/javascript">
 
@@ -25,7 +41,7 @@
 	    //스마트에디터 프레임생성
 	    nhn.husky.EZCreator.createInIFrame({
 	        oAppRef: obj,
-	        elPlaceHolder: "content",
+	        elPlaceHolder: "board_content",
 	        sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
 	        htParams : {
 	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
@@ -44,7 +60,7 @@
 		  
 		  <%-- === 스마트 에디터 구현 시작 === --%>
 		   // id가 content인 textarea에 에디터에서 대입
-	       obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+	       obj.getById["board_content"].exec("UPDATE_CONTENTS_FIELD", []);
 		  <%-- === 스마트 에디터 구현 끝 === --%>
 		  
 		  // === 글제목 유효성 검사 === 
@@ -56,12 +72,12 @@
 	      }	
 		  
 		  // === 글내용 유효성 검사(스마트 에디터를 사용할 경우) ===
-		  let content_val = $("textarea[name='board_content']").val().trim();
+		  let board_content_val = $("textarea[name='board_content']").val().trim();
 		  
 	  //  alert(content_val);  // content 에 공백만 여러개를 입력하여 쓰기할 경우 알아보는 것.
 	  //  <p>&nbsp; &nbsp; &nbsp; &nbsp;</p> 이라고 나온다.
 	  
-	      content_val = content_val.replace(/&nbsp;/gi, "");  // 공백(&nbsp;)을 "" 으로 변환
+	      board_content_val = board_content_val.replace(/&nbsp;/gi, "");  // 공백(&nbsp;)을 "" 으로 변환
 	      /*    
 		         대상문자열.replace(/찾을 문자열/gi, "변경할 문자열");
 			   ==> 여기서 꼭 알아야 될 점은 나누기(/)표시안에 넣는 찾을 문자열의 따옴표는 없어야 한다는 점입니다. 
@@ -73,22 +89,22 @@
 	   // alert(content_val);
 	   // <p>                                      </p>
 	   
-	      content_val = content_val.substring(content_val.indexOf("<p>")+3);
+	      board_content_val = board_content_val.substring(board_content_val.indexOf("<p>")+3);
 	   // alert(content_val);
 		  //                                       </p>
 		  
-	      content_val = content_val.substring(0, content_val.indexOf("</p>"));
+	      board_content_val = board_content_val.substring(0, board_content_val.indexOf("</p>"));
 	   // alert(content_val);
 	     
-	      if(content_val.trim().length == 0) {
+	      if(board_content_val.trim().length == 0) {
 	    	  alert("글내용을 입력하세요!!");
 	    	  return; // 종료
 	      }
 	      
 	      
-	      // === 글암호 유효성 검사 === 
-	      const pw = $("input:board_pw[name='board_pw']").val();	  
-	      if(pw == "") {
+	   	  // === 글암호 유효성 검사 === 
+	      const board_pw = $("input:password[name='board_pw']").val();	  
+	      if(board_pw == "") {
 	    	  alert("글암호를 입력하세요!!");
 	    	  return; // 종료
 	      }	  
@@ -111,11 +127,11 @@
 	<h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">글쓰기</h2>
 
 	<form name="addFrm">
-	   		<table style="width: 1200px" class="table">
+	   		<table style="width: 1200px" class="table table-bordered">
 				 <tr>
 					<th style="width: 15%; background-color: #00000; ">성명</th>
 				    <td>
-				       <input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.fk_member_userid}" />
+				       <input type="hidden" name="fk_member_userid" value="leess" />
 				       <input type="text" name="board_name" value="이순신" readonly>
 				    </td>	
 	   		     </tr>
@@ -144,9 +160,9 @@
 				 </tr>
 	   		</table>
 	   		
-	   		<div style="margin: 20px;">
-	            <button type="button" class="btn btn-secondary btn-sm mr-3" id="btnWrite">글쓰기</button>
-	            <button type="button" class="btn btn-secondary btn-sm" onclick="javascript:history.back()">취소</button>  
+	   		<div class="find-btn" style="margin: 20px;">
+	            <button type="button" class="btn btn-outline-success" id="btnWrite">글쓰기</button>
+	            <button type="button" class="btn btn-outline-danger" onclick="javascript:history.back()">취소</button>  
 	        </div>
 	   		
 	 </form>

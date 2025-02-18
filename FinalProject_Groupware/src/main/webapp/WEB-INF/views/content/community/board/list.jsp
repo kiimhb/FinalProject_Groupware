@@ -61,7 +61,7 @@ function importantmemo(button) {
 		<table style="width: 1200px" class="table">
 			<thead>
 				<tr>
-					<th style="width: 70px; text-align: center;">번호</th>
+					<th style="width: 70px; text-align: center;">글번호</th>
 					<th style="width: 300px; text-align: center;">제목</th>
 					<th style="width: 70px; text-align: center;">작성자</th>
 					<th style="width: 150px; text-align: center;">작성일자</th>
@@ -69,17 +69,35 @@ function importantmemo(button) {
 					<th style="width: 60px; text-align: center;">즐겨찾기</th>
 				</tr>
 			</thead>
+			
 			<tbody>
-				<tr>
+				<c:if test="${not empty requestScope.boardList}">
+					<c:forEach var="boardvo" items="${requestScope.boardList}"
+						varStatus="status">
+						<td>${pvo.patient_no}</td>
+						<td>${pvo.patient_visitdate}</td>
+						<td>${pvo.child_dept_name}</td>
+						<td>${pvo.patient_name}</td>
+						<td>${pvo.patient_gender}</td>
+						<td>${pvo.patient_jubun}</td>
+						</tr>
+					</c:forEach>
+				</c:if>
+				<c:if test="${empty requestScope.boardList}">
+					<tr>
+						<td colspan="6" style="text-align: center">데이터가 없습니다.</td>
+					</tr>
+				</c:if>
+				<!-- <tr>
 					<td>1</td>
 					<td>안녕하세요</td>
 					<td>엄정화</td>
 					<td>2025.02.10</td>
 					<td>10</td>
-					<td><!-- 즐겨찾기 버튼 -->
+					<td>즐겨찾기 버튼
 						<button type="button" class="btn btn-link p-0 no-outline" onclick="importantmemo(this)" style="font-size: 1.5rem; color: gray; margin-right: 8px;">
 							<i class="fa fa-star-o" aria-hidden="true"></i>
-							<!-- 비어있는 별 -->
+							비어있는 별
 						</button></td>
 				</tr>
 				<tr>
@@ -88,17 +106,23 @@ function importantmemo(button) {
 					<td>이순신</td>
 					<td>2025.02.11</td>
 					<td>5</td>
-					<td><!-- 즐겨찾기 버튼 -->
+					<td>즐겨찾기 버튼
 						<button type="button" class="btn btn-link p-0 no-outline" onclick="importantmemo(this)" style="font-size: 1.5rem; color: gray; margin-right: 8px;">
 							<i class="fa fa-star-o" aria-hidden="true"></i>
-							<!-- 비어있는 별 -->
+							비어있는 별
 						</button></td>
-				</tr>
+				</tr> -->
 			</tbody>
 			<div class="button">
 				<button type="button" class="btn btn-outline-primary" onclick="javascript:location.href='<%= ctxPath %>/board/add'" style="margin-bottom: 10px;">글쓰기</button>
 			</div>
+			
 		</table>
+		
+		<%-- 페이지바 === --%>
+	    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+	    	${requestScope.pageBar}
+	    </div>
 		
 		<%-- === #82. 글검색 폼 추가하기 : 글제목, 글내용, 글제목+글내용, 글쓴이로 검색을 하도록 한다. --%>
     <form name="searchFrm" style="margin-top: 20px; text-align: center;">
