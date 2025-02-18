@@ -147,25 +147,36 @@ $(document).ready(function(){
 					
 					v_html = ``;
 					
+					if(json.length > 0){
+					
 					$.each(json, function(index, item){
 						
 						v_html += `	<tr>
-										<td>\${item.patient_name}</td>
-										<td>\${item.patient_gender}</td>
-										<td>\${item.patient_jubun}</td>
-										<td>\${item.child_dept_name}</td>
+										<td style="border:solid 1px black">\${item.patient_name}</td>
+										<td style="border:solid 1px black">\${item.patient_gender}</td>
+										<td style="border:solid 1px black">\${item.patient_jubun}</td>
+										<td style="border:solid 1px black">\${item.child_dept_name}</td>
 									</tr>
 						`;
+						
+						v_html += ` <textarea></textarea>
+						
+						
+						
+									`;
 												
 					$("tbody#searchShow").html(v_html);
+					});
 					
+					}
+					else{
+						v_html += `	<tr>
+										<td colspan=4>일치하는 환자 정보가 없습니다.</td>	
+									</tr>
+								  `;
+					$("tbody#searchShow").html(v_html)
 					
-					
-					
-					})
-					
-						
-
+					}
 				},
 				error: function(request, status, error){
 					   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -363,8 +374,6 @@ $(document).ready(function(){
 </div>
 </div>
 
-
-
 <!-- 기존환자 등록 및 접수 모달 -->
 <div id="modalContainer2" class="hidden" >
 	<div id="modalContent2">
@@ -389,15 +398,15 @@ $(document).ready(function(){
 							
 				<div style="margin:1% 5%;">
 					<table style="width:100%; text-align:center;">
-						<thead>
+						<thead style="height:50px;">
 							<tr>
-								<th style="border:solid 1px black;">성함</th>
-								<th style="border:solid 1px black;">성별</th>
-								<th style="border:solid 1px black;">주민번호</th>
-								<th style="border:solid 1px black;">진료구분</t>														
+								<th style="border:solid 1px black; width:20%;">성함</th>
+								<th style="border:solid 1px black; width:20%;">성별</th>
+								<th style="border:solid 1px black; width:30%;">주민번호</th>
+								<th style="border:solid 1px black; width:30%;">진료구분</t>														
 							</tr>	
 						</thead>	
-						<tbody id="searchShow" style="position:relative;"></tbody>									
+						<tbody id="searchShow" style="position:relative; height:50px;"></tbody>									
 					</table>								
 				</div> 
 							 
