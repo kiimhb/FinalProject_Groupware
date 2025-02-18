@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.med.organization.model.OrganDAO">
+	
+	<!-- ==== 조직도 배열을 만들기 위해 전체 데이터 불러오기 ==== -->
+	<select id="selectAllOrg">
+		select parent_dept_no, parent_dept_name
+		     , child_dept_no, child_dept_name
+		     , member_userid, member_name, member_pro_filename
+		from tbl_parent_dept p join tbl_child_dept c
+		on p.parent_dept_no = c.fk_parent_dept_no
+		left join tbl_member m
+		on c.child_dept_no = m.fk_child_dept_no
+	</select>
+	
+	
+	<!-- ==== 조직도 상위 부서 불러오기 ==== -->
+	<select id="getparentDeptList" resultType="OrganVO">
+		select parent_dept_no, parent_dept_name
+		from tbl_parent_dept
+	</select>
+	
+	
+	<!-- ==== 조직도 하위 부서 불러오기 ==== -->
+	<select id="getchildDeptList" parameterType="String">
+		select child_dept_no, child_dept_name, fk_parent_dept_no
+		from tbl_child_dept
+		where fk_parent_dept_no = #{fk_parent_dept_no}
+	</select>
+	
+	
+	<!-- ==== 조직도에서 클릭한 직원의 상세정보 불러오기 ==== -->
+	<select id="selectOneMemberInfo" parameterType="String" resultType="OrganVO">
+		select member_name, parent_dept_name, child_dept_name
+		     , member_mobile, member_email, member_start, member_pro_filename 
+		from tbl_parent_dept p join tbl_child_dept c
+		on p.parent_dept_no = c.fk_parent_dept_no
+		left join tbl_member m
+		on c.child_dept_no = m.fk_child_dept_no
+		where member_userid = to_number(#{member_userid})
+	</select>
+	
+
+</mapper>

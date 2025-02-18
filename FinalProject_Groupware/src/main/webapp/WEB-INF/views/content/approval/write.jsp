@@ -13,7 +13,11 @@
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+<%-- jsTree --%>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/themes/proton/style.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 
 <style>
@@ -151,6 +155,7 @@ $(document).ready(function(){
 	////////////////////////////////////////////////////////////////////////////////
 
 	
+	
 });// end of $(document).ready(function(){})----------------
 
 
@@ -208,6 +213,48 @@ function goWrite() {
 
 //==== 결재선지정 버튼 클릭 함수 ==== //
 function setApprovalLine() {
+
+	// 모달을 띄울 위치
+	const container = $("div#approvalLine");
+	
+	// 모달 구조
+	const modal_popup = `
+						<div class="modal fade" id="selectApprovalLine">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+									
+									<div class="modal-header">
+										<h5>결재선지정</h5>
+									</div>
+									
+									<div class="modal-body" style="border: solid 1px red; display: flex; flex-wrap: wrap;">
+										<div id="tree" style="border: solid 1px gray; border-radius: 3px; flex: 4;"></div>
+										<div id="selectMember" style="flex: 6;">
+											<div id="modal_rightTop" >
+												<h5>결재선</h5>
+												<div id="approvalLineMember" style="border: solid 1px gray; border-radius: 3px;"></div>
+											</div>
+											<div id="modal_rightBottom">
+												<h5>참조자</h5>
+												<div id="referenceMember" style="border: solid 1px gray; border-radius: 3px;"></div>
+											</div>
+										<div>
+									</div>
+									
+									<div class="modal-footer">
+										<button type="button" class="btn btn-primary" onclick="goWrite()">작성하기</button>
+										<button type="button" class="btn btn-secondary" id="btn_cancel" data-dismiss="modal">취소</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						`;
+	
+	// 모달 띄우기
+	container.html(modal_popup);
+	$("div#selectApprovalLine").modal('show');
+	
+	$("div#tree").load("<%=request.getContextPath()%>/organization/selectApprovalLine");
 	
 	<%-- $.ajax({
 		url:"<%=ctxPath%>/approval/setApprovalLine",
@@ -238,6 +285,7 @@ function setApprovalLine() {
 	</span>
 	
 	<div id="modalDraftType"></div>
+	<div id="approvalLine"></div>
 	
 	<div id="draft" style="margin: auto;"></div>
 	

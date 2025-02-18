@@ -7,7 +7,10 @@
     //     /med-groupware
 %>
 
-<jsp:include page="../../header/header1.jsp" />
+
+<!DOCTYPE html>
+<html>
+
 
 <%-- 직접 만든 CSS 1 --%>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
@@ -51,52 +54,6 @@
 	    margin-left: 5%;
 	}
 	
-	<%-- 사원정보 테이블 --%>
-	div#memberInfo {
-		width: 90%;
-		margin: 10% auto 3% auto;
-	}
-	
-	table {
-	    width: 100%;
-	    border-collapse: separate; /* 셀 간 경계를 분리하여 테두리와 border-radius가 적용되도록 */
-	    border: none; /* 테이블 외부 테두리 제거 */
-	}
-	
-	th, td {
-	    border: 1px solid black; /* th와 td에만 테두리 적용 */
-	    border-radius: 3px; /* 각 셀에 둥근 테두리 적용 */
-	    padding: 10px; /* 셀 안의 여백 */
-	}
-	
-	span.tableSpan {
-		display: inline-block;
-		margin-left: 30%;
-	}
-	
-	span.tableSpanHriedate {
-		display: inline-block;
-		margin-left: 26%;
-	}
-	
-
-	<%-- 채팅/메일 버튼 --%>
-	div#memberBtns {
-		display: flex;
-		margin-right: 10%;
-		margin-bottom: 5%;
-	}
-	
-	button#chatBtn {
-		margin-left: auto;
-		margin-right: 3%;
-		width: 13%;
-	}
-	
-	button#mailBtn {
-		width: 13%;
-		height: 40px;
-	}
 
 </style>
 
@@ -104,10 +61,7 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	
-	<%-- 채팅/메일 버튼 숨기기 --%> 
-	$("div#memberBtns").hide();
-	
+
 	<%-- show 버튼을 누르면 모든 노드를 펼치기 --%>
 	$("button#btnShow").click(function() {
         $('#tree').jstree("open_all");
@@ -185,75 +139,7 @@ $(document).ready(function(){
 		}
 	});
 	
-	
-	<%-- 특정 사원 클릭 시 우측에 해당 사원의 정보 보여주기 --%>
-	$("div#tree").on("select_node.jstree", function(e, data) {
-		
-		var memberData = data.node.data;	// 클릭한 사원의 "data" 객체
-		
-		if(memberData && memberData.member_userid) {
-			// memberData가 null 이 아니고 해당 객체에 member_userid 가 있을 경우
-			
-			var member_userid = memberData.member_userid;
-			//alert(member_userid);
-			
-			// 사원 정보 가져오기
-			$.ajax({
-				url: "<%= ctxPath%>/organization/selectOneMemberInfo",	
-				type: "post",
-				data: {member_userid: member_userid},
-				success: function(json) {
-					//console.log(json);
-					//console.log(JSON.stringify(json));
-					
-					let html = `<div id="memberInfo">
-									<h3>\${json.member_name}&nbsp;님 정보</h3>
-									<table  id="memberInfotable" style="table-layout: fixed; width: 100%;">
-										<tbody>
-											<tr>
-												<td rowspan="3" style="width:40%;">사진</td>
-												<td style="width:50%;">성명<span class="tableSpan">\${json.member_name}</span></td>
-											</tr>
-											<tr>
-												<td style="width:50%;">부서<span class="tableSpan">\${json.parent_dept_name}</span></td>
-											</tr>
-											<tr>
-												<td style="width:50%;">직책<span class="tableSpan">\${json.child_dept_name}</span></td>
-											</tr>
-											<tr>
-												<td colspan="2">핸드폰<span class="tableSpan">\${json.member_mobile}</span></td>
-											</tr>
-											<tr>
-												<td colspan="2">이메일<span class="tableSpan">\${json.member_email}</span></td>
-											</tr>
-											<tr>
-												<td colspan="2">입사일자<span class="tableSpanHriedate">\${json.member_start}</span></td>
-											</tr>
-										</tbody>
-						            </table>
-					            </div>`;
-					            
-					// html 태그를 보여주기
-					$("div#memberInfo").html(html);
-					
-					$("div#memberInfoBorder").css({"border":"solid 1px gray"});
-									
-					
-					// 채팅 및 메일 버튼 보이기
-					$("div#memberBtns").show();
-					
-				},
-				error: function() {
-					swal('사원정보 불러오기 실패!',"다시 시도해주세요",'warning');
-				}
-			});
-			
-		}
-		
-	});// end of $("div#tree").on("select_node.jstree", function(e, data) {})------------------
-	
-	
-	
+
 	<%-- 사원명 검색시 해당 노드만 펼쳐지는 이벤트 --%>
 	$("input:text[name='member_name']").on("keyup", function(e){
 		
@@ -298,7 +184,7 @@ function jsTreeView(jsonData) {
 </script>
 
 <%-- ===================================================================== --%>
-
+<body>
 <div class="orgContainer">
 	<h2>조직도</h2>
 	
@@ -316,20 +202,9 @@ function jsTreeView(jsonData) {
 			<div id="tree"></div>
 		</div>
 		
-		<div id="orgRight" style="border:solid 0px green; flex: 5.5; height: 600px;">
-			<div id="memberInfoBorder" style="border: solid 0px gray; margin: 8%; border-radius: 3px;">
-				<div id="memberInfo" ></div>
-				<div id="memberBtns">
-					<button type="button" id="chatBtn"><i class="fa-regular fa-comments fa-xl"></i></button>
-					<button type="button" id="mailBtn"><i class="fa-regular fa-envelope fa-xl"></i></button>
-				</div>
-			</div>
-		</div>
-
-		
 	</div>
 	
 </div>
 
-
-<jsp:include page="../../footer/footer1.jsp" />    
+</body>
+</html>
