@@ -1,0 +1,55 @@
+-- ************** 환자조회 테이블 INDEX 활용 (최적화 하기) ************** --
+CREATE INDEX idx_patient_waiting_visitdate 
+ON tbl_patient (patient_waiting, patient_visitdate DESC);
+/*
+    patient_waiting: WHERE 조건 (patient_waiting = 1) 최적화
+    patient_visitdate DESC: ORDER BY patient_visitdate DESC 최적화
+    -- 인덱스를 사용하면 불필요한 전체 테이블 스캔을 줄이고, 필요한 데이터만 빠르게 조회할 수 있음
+*/
+
+SELECT *
+FROM (
+    SELECT ROWNUM AS rno, patient_no, child_dept_name, patient_name,
+           patient_jubun, patient_gender, patient_visitdate
+    FROM (
+        SELECT patient_no, child_dept_name, patient_name,
+               patient_jubun, patient_gender, patient_visitdate
+        FROM tbl_patient a 
+        JOIN tbl_child_dept b 
+        ON a.fk_child_dept_no = b.child_dept_no
+        WHERE a.patient_waiting = 1 
+        ORDER BY a.patient_visitdate DESC
+    )
+    WHERE ROWNUM <= 10 -- 상위 10개까지만 가져오도록 제한
+)
+WHERE rno BETWEEN 1 AND 10; -- 원하는 범위 필터링
+
+-- 실행 계획 확인하기 
+EXPLAIN PLAN FOR
+SELECT *
+FROM (
+    SELECT rno, patient_no, child_dept_name, patient_name,
+           patient_jubun, patient_gender, patient_visitdate
+    FROM (
+        SELECT ROWNUM AS rno, patient_no, child_dept_name, patient_name,
+               patient_jubun, patient_gender, patient_visitdate
+        FROM (
+            SELECT patient_no, child_dept_name, patient_name,
+                   patient_jubun, patient_gender, patient_visitdate
+            FROM tbl_patient a 
+            JOIN tbl_child_dept b
+            ON a.fk_child_dept_no = b.child_dept_no
+            WHERE patient_waiting = 1  
+            ORDER BY patient_visitdate DESC
+        ) 
+        WHERE ROWNUM <= 20  
+    ) 
+) 
+WHERE rno BETWEEN 11 AND 20;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+-- ************** 환자조회 테이블 INDEX 활용 (최적화 하기) 끝 ************** --
+
+
+
+desc tbl_work;

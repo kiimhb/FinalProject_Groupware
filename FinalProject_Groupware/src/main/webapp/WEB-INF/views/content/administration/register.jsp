@@ -20,9 +20,7 @@ $(document).ready(function(){
 
 
 </script>
-
-
-
+	
 	<div class="content">
 	
 		<div class="surgery">
@@ -44,21 +42,27 @@ $(document).ready(function(){
 	  					</tr>
 	  				</thead>
 	  				<tbody>
-	  					<tr>
-		  					<td>1010</td>
-		  					<td>2025-01-01</td>
-		  					<td>호흡기내과</td>
-		  					<td>이혜연</td>
-		  					<td>여</td>
-		  					<td>020106-*******</td>
-		  					<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/surgery'"><span>예약</span></button></td>
+	  				<c:forEach var="rvo" items="${requestScope.register_list}">
+	  					<tr class="clicktr">
+		  					<td>${rvo.fk_order_no}</td>
+		  					<td>${rvo.patient_visitdate}</td>
+		  					<td>${rvo.child_dept_name}</td>
+		  					<td>${rvo.patient_name}</td>
+		  					<td>${rvo.patient_gender}</td>
+		  					<td>${rvo.patient_jubun}</td>
+		  					<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/surgery/${rvo.fk_order_no}'"><span>예약</span></button></td>
 	  					</tr>
+	  				</c:forEach>
+	  					
 	  				</tbody>
 	  			</table>
 	  		</div>
-			<div class="pageBar">
-	  			페이지바
-	  		</div>
+	  		
+			<%-- 페이지바 === --%>
+		    <div id="pageBar" align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		    	${requestScope.pageBar}
+		    </div>
+		    
 	    </div>
 	    
 	    <div class="hospitalized">

@@ -22,13 +22,13 @@ div.title {
 }
 div.surgery,
 div.hospitalized {
-	border: 1px solid black;
-	height: 350px;
+/* 	border: 1px solid black; */
+	height: 435px;
 	margin-bottom:1%;
 }
 div.list {
 	border: 1px solid black; 
-	height:270px;
+	height:325px;
 }
 button.btn {
 	background-color: #006769;
@@ -39,4 +39,13 @@ button.btn {
 button > span {
 	position: relative;
 	top:-2.5px;
+}
+tr.clicktr {
+	height:10px;
+}
+
+
+/* 페이지바 */
+div#pageBar a {
+	color:black;
 }

@@ -49,11 +49,7 @@ a:hover,
 }
 </style>
 
-
-
 <jsp:include page="../../header/header1.jsp" /> 
-
-
 
 <!-- full calendar에 관련된 script -->
 <script src='<%=ctxPath%>/fullcalendar_5.10.1/main.min.js'></script>
@@ -65,10 +61,21 @@ a:hover,
 <script type="text/javascript">
 $(document).ready(function(){  
 	
+	// ***** 예약일자 (오늘) 입력하기 시작 ***** //
+	const today = new Date();
+	const year = today.getFullYear();
+ 	const month = (today.getMonth()+1).toString().padStart(2, '0');
+ 	const day = today.getDate().toString().padStart(2, '0')
+ 	
+ 	const timeString = `\${year} \${month} \${day}`
 	
-var calendarEl = document.getElementById('calendar'); // div#calendar 위치 (보여줄 위치임)
+	$("input.today").val(timeString);
+ 	// ***** 예약일자 (오늘) 입력하기 끝 ***** //
 	
-	/* 캘린더 띄움 시작 */
+ 	
+ 	// ****** 캘린더 띄움 시작 ******//
+	var calendarEl = document.getElementById('calendar'); // div#calendar 위치 (보여줄 위치임)
+	
 	var calendar = new FullCalendar.Calendar(calendarEl, {
 		
 		initialView: 'dayGridMonth',
@@ -96,11 +103,86 @@ var calendarEl = document.getElementById('calendar'); // div#calendar 위치 (�
       	    alert("상세일정내용");
       	  }
 	});
-	/* 캘린더 띄움 끝 */
 	
 	calendar.render();  // 풀캘린더 보여주기
+	// ****** 캘린더 띄움 끝 ******//
+	
+	 // ****** 시간선택 옵션 시작 ******//
+	
+	// select 요소 보여주기 // 
+	/*
+	var startTime = document.getElementById("surgery_start_time");
+	var endTime = document.getElementById("surgery_end_time");
+	
+	for(var hour=9; hour<18; hour++) {
+		for(var min=0; min<60; min+=30) {
+			
+			var option = document.createElement("option");
+			var formatHour = (hour < 10 ? "0" : "") + hour;
+			var formatMin = (min === 0 ? "00" : "30");
+			option.value = formatHour + ":" + formatMin;
+			option.text = formatHour + ":" + formatMin;
+			
+			// 복제하기 
+			var optionClone = option.cloneNode(true);
+			
+			startTime.appendChild(option); 	  // 시작시간
+			endTime.appendChild(optionClone); // 종료시간
+		}
+	}
+	*/
+	
+	$("select#surgery_surgeryroom_name, input#surgery_day").on("change", function(){
+		
+		let room = $("select#surgery_surgeryroom_name").val();
+		let day = $("input#surgery_day").val();
+	
+		if (room && day) {
+
+			$.ajax({
+					 url:"<%= ctxPath%>/register/oktime",
+					 type: "GET", 
+					 data:{"surgeryroom_no":room, 
+						   "surgery_day":day},
+					 dataType: "json",
+		    	     success:function(availableTimes){
+		    	    	
+						let selectbox = $("select#surgery_start_time")
+						
+						selectbox.empty(); // 비우기
+						selectbox.append('<option value="">시작시간</option>');
+						
+						availableTimes.forEach(time => {
+							selectbox.append(`<option value="\${time}">\${time}</option>`);
+						});
+
+		    	     },
+		  	    	    error: function(request, status, error){
+					   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					 }
+				}); // end of $.ajax
+		}
+		
+	});
+	
+	// ****** 시간선택 옵션 끝 ******// 
+	
+	
+	
+	
 	
 });
+
+// 예약버튼 누름
+function registerSurgery() {
+	
+	// 폼(form)을 전송(submit)
+    const frm = document.surgeryRegisterFrm;
+    frm.method = "post";
+    frm.action = "<%= ctxPath%>/register/success";
+    frm.submit();
+}
+
 </script>
 
 	<div class="content">
@@ -116,37 +198,53 @@ var calendarEl = document.getElementById('calendar'); // div#calendar 위치 (�
   			
 	  		
 	  		<div class="form">
-	  			<div class="input">
-	  				<div class="text">차트번호</div>
-	  				<input type="text" />
-	  			</div>
-	  			<div class="input">
-	  				<div class="text">환자명</div>
-	  				<input type="text" />
-	  			</div>
-	  			<div class="input">
-	  				<div class="text">예약일자</div>
-	  				<input type="text" />
-	  			</div>
-	  			<div class="input">
-	  				<div class="text">수술일 *</div>
-	  				<input type="text" />
-	  			</div>
-	  			<div class="input">
-	  				<div class="text">담당의 *</div>
-	  				<input type="text" />
-	  			</div>
-	  			<div class="input">
-	  				<div class="text">수술일자 *</div>
-	  				<input type="text" />
-	  			</div>
-	  			<div class="input">
-	  				<div class="text">수술종료시간 (예상) *</div>
-	  				<input type="text" />
-	  			</div>
+		  		<form name="surgeryRegisterFrm">
+		  		
+		  			<div class="input read">
+		  				<div class="text">차트번호</div>
+		  				<input type="text" value="${requestScope.order_no}" readonly/>
+		  			</div>
+		  			<div class="input read">
+		  				<div class="text">환자명</div>
+		  				<input type="text" value="${requestScope.name}" readonly/>
+		  			</div>
+		  			<div class="input read">
+		  				<div class="text">예약일자</div>
+		  				<input type="text" class="today" name="surgery_day" readonly/>
+		  			</div>
+		  			<div class="input">
+		  				<div class="text">수술실 *</div>
+	  					<select name="surgery_surgeryroom_name" id="surgery_surgeryroom_name">
+	  					<c:forEach var="surgeryvo" items="${requestScope.surgeryroom}">
+	  						<option value="${surgeryvo.surgeryroom_no}">${surgeryvo.surgeryroom_name}</option>
+ 						</c:forEach>
+	  					</select>	
+		  			</div>
+		  			
+		  			<div class="input">
+		  				<div class="text">수술일자 / 시작시간 *</div>
+		  				<div class="div_surgerydate">
+			  				<input type="date" name="surgery_day" id="surgery_day" class="surgerydate mr-3" />
+			  				<select name="surgery_start_time" id="surgery_start_time" class="surgeryStartdate">
+			  					<option value="">시작시간</option>
+			  				</select>
+		  				</div>
+		  			</div>
+		  			
+		  			<div class="input">
+		  				<div class="text" >수술종료시간 (예상) *</div>
+		  				<select name="surgery_end_time" id="surgery_end_time" class="surgeryenddate">
+		  					<option value="">종료시간</option>
+		  				</select>
+		  			</div>
+		  			<div class="input">
+		  				<div class="text">수술설명 *</div>
+		  				<input type="text" name="surgery_description"/>
+		  			</div>	
+				</form>
 	  		</div>
 	    </div>
-	    
+		   
 	    <div class="middle" style="width:50px;"></div>
 	    
 	    <div class="right">
@@ -166,7 +264,7 @@ var calendarEl = document.getElementById('calendar'); // div#calendar 위치 (�
 	</div>
 	   
     <div class="button">
-    	<button type="button" class="btn">예약완료</button>
+    	<button type="button" class="btn" onclick="registerSurgery()">예약완료</button>
     	<button type="reset" class="btn" onclick="javascript:location.href='<%= ctxPath%>/register/list'">목록으로</button>
     </div>
 	

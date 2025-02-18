@@ -6,6 +6,7 @@
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="hyeyeon">
 	
+	<!-- **************************** 환자관련 mapper **************************** -->
 	<!-- 총 진료 기록이 있는 환자 건수 (검색이 있음 / 검색이 없음) -->
 	<select id="totalCount" parameterType="HashMap" resultType="int">
 			select count(*)
@@ -24,7 +25,7 @@
 	</select>
 	
 
-	<!--  진료기록이 있는 환자 목록 -->
+	<!--  진료기록이 있는 환자 목록 (최적화했음(인덱싱페이징): 나중에 대용량 데이터 넣고 성능 확인하기) -->
 	<resultMap id="PatientListMap" type="HashMap">
 	    <result property="patient_no" 			column="patient_no" 		javaType="String" />
 	    <result property="child_dept_name"  	column="child_dept_name" 	javaType="String" />
@@ -43,7 +44,8 @@
 		    (
 		        select  patient_no, child_dept_name, patient_name,
 		                patient_jubun, patient_gender, patient_visitdate
-		        from tbl_patient a join tbl_child_dept b
+		        from tbl_patient a 
+		        join tbl_child_dept b
 		        on a.fk_child_dept_no = b.child_dept_no
 		        where patient_waiting = 1  
 		        <choose>
@@ -52,9 +54,10 @@
 			    	</when>
 			    </choose>
 			    order by patient_visitdate desc
-		    ) a
-		) b
-		WHERE b.RNO BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+		    ) 
+		    where rownum &lt;= #{endRno}
+		) 
+		where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
 
 	<!-- 주민번호로 환자를 식별해야 하기 때문에 주민번호를 찾는다. -->
@@ -106,6 +109,96 @@
 		on a.fk_child_dept_no = b.child_dept_no
 		order by patient_visitdate desc
 	</select>
+	<!-- **************************** 환자관련 mapper 끝 **************************** -->
+	
+	
+	
+	<!-- **************************** 수술예약관련 mapper **************************** -->	
+	<select id="registerListCnt" resultType="int">
+		select count(*)
+		from 
+		(
+		    with
+		    a as
+		    (
+		        select surgery_no, fk_order_no, fk_patient_no, order_issurg
+		        from tbl_surgery a join tbl_order b
+		        on a.fk_order_no = b.order_no
+		        where order_issurg = 1 and surgery_status = 0 
+		    ),
+		    b as
+		    (
+		        select patient_no, fk_child_dept_no, patient_name, patient_visitdate, child_dept_name,
+		               patient_gender, patient_jubun
+		        from tbl_patient a join tbl_child_dept b
+		        on a.fk_child_dept_no = b.child_dept_no
+		    )
+		    select fk_order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
+		    from a join b
+		    on a.fk_patient_no = b.patient_no
+		)
+	</select>
+	
+	
+	
+	<resultMap id="registerList_map" type="HashMap">
+	    <result property="fk_order_no" 		 	column="fk_order_no" 		  javaType="String" />
+	    <result property="patient_visitdate"  	column="patient_visitdate" 	  javaType="String" />
+	    <result property="child_dept_name" 	 	column="child_dept_name" 	  javaType="String" />
+    	<result property="patient_name" 		column="patient_name"    	  javaType="String" />
+	    <result property="patient_gender"   	column="patient_gender" 	  javaType="String" />
+	    <result property="patient_jubun" 		column="patient_jubun" 		  javaType="String" />
+	</resultMap>
+	<select id="registerList" parameterType="HashMap" resultMap="registerList_map">
+		select *
+		from 
+		(
+		    with
+		    a as
+		    (
+		        select surgery_no, fk_order_no, fk_patient_no, order_issurg
+		        from tbl_surgery a join tbl_order b
+		        on a.fk_order_no = b.order_no
+		        where order_issurg = 1 and surgery_status = 0 
+		    ),
+		    b as
+		    (
+		        select patient_no, fk_child_dept_no, patient_name, patient_visitdate, child_dept_name,
+		               patient_gender, patient_jubun
+		        from tbl_patient a join tbl_child_dept b
+		        on a.fk_child_dept_no = b.child_dept_no
+		    )
+		    select rownum as rno, fk_order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
+		    from a join b
+		    on a.fk_patient_no = b.patient_no
+		)
+		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	<select id="getName" resultType="String" parameterType="String">		
+		select patient_name
+		from tbl_order a join tbl_patient b
+		on a.fk_patient_no = b.patient_no
+		where order_no = #{order_no}
+	</select>
+	
+	<!-- 수술실 목록 불러오기 -->
+	<select id="getRoom" resultType="SurgeryroomVO">
+		select surgeryroom_no, surgeryroom_name
+		from tbl_surgeryroom
+	</select>
+	
+	<!-- 예약된 수술시간 가져오기 -->
+	<select id="reservedTime" resultType="String" parameterType	="map">
+		select to_char(surgery_start_time, 'HH24:MI') as surgery_start_time
+		from tbl_surgery
+		where surgery_surgeryroom_name = #{surgery_surgeryroom_name} and surgery_day = to_date(#{surgery_day}, 'yyyy-mm-dd')
+	</select>
+	
+	
+	<!-- **************************** 수술예약관련 mapper 끝 **************************** -->
+	
+	
 	
 	
 </mapper>
