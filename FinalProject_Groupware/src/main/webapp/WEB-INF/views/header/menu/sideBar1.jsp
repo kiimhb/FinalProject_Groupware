@@ -110,7 +110,7 @@ $(document).ready(function() {
          </div></li>
 
       <li><a href="<%=ctxPath%>/notice/list"><i class="fa-solid fa-bullhorn"></i> <span>공지사항</span></a>  </li>
-      <li><a href="<%=ctxPath%>/organizational/organizational"><i class="fa-solid fa-sitemap"></i> <span>조직도</span></a>
+      <li><a href="<%=ctxPath%>/organization/orgChart"><i class="fa-solid fa-sitemap"></i> <span>조직도</span></a>
 
       <li><a href="<%=ctxPath%>/schedule/scheduleManagement" > <i class="fa-solid fa-calendar-days"></i>  <span>일정관리</span> </a> </li>
 
