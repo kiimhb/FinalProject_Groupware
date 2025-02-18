@@ -51,6 +51,7 @@ public class RegisterDAO_imple implements RegisterDAO {
 	@Override
 	public List<String> reservedTime(Map<String, String> paraMap) {
 		List<String> reservedTime = sqlsession.selectList("hyeyeon.reservedTime", paraMap);	
+		System.out.println("reservedTime"+reservedTime);
 		return reservedTime;
 	}
 
