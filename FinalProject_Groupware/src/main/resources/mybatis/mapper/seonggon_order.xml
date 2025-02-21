@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="seonggon_order">
+
+
+
+<!-- // === 환자 클릭하지않고 바로 진료 정보 입력 들어갔을시 첫 대기 환자 정보 select하기 === // -->
+<resultMap id="firstPatient" type="HashMap">    
+	    <result property="patient_name"   		column="patient_name" 		javaType="String" />
+	    <result property="age" 					column="age"    			javaType="String" />
+	    <result property="patient_gender"    	column="patient_gender" 	javaType="String" />
+	    <result property="patient_status" 		column="patient_status" 	javaType="String" />	   	
+</resultMap>
+
+
+<select id="orderEnterandView" parameterType="HashMap" resultMap="firstPatient">
+	select *
+	from
+	(
+	select patient_name, patient_gender, func_age(patient_jubun) AS age, patient_status, rank() over(order by patient_visitdate desc) AS rank
+	from tbl_patient
+	where patient_waiting = 1
+	)
+	where rank = 1
+</select>	
+		
+
+<resultMap id="clickPatient" type="HashMap">
+		<result property="patient_no"   		column="patient_no" 		javaType="String" />    
+	    <result property="patient_name"   		column="patient_name" 		javaType="String" />
+	    <result property="age" 					column="age"    			javaType="String" />
+	    <result property="patient_gender"    	column="patient_gender" 	javaType="String" />
+	    <result property="patient_status" 		column="patient_status" 	javaType="String" />
+	    <result property="patient_symptom" 		column="patient_symptom" 	javaType="String" />	   	
+</resultMap>
+
+<select id="orderClickEnterandView" parameterType="HashMap" resultMap="clickPatient">
+	select patient_no, patient_name, patient_gender, func_age(patient_jubun) AS age, patient_status, patient_symptom
+	from tbl_patient
+	where patient_waiting = 1
+	and patient_no like #{patient_no}
+</select>	
+
+
+
+<resultMap id="orderMapList" type="HashMap">
+		<result property="timediff"   					column="timediff" 			javaType="String" />
+		<result property="patient_no"   				column="patient_no" 			javaType="String" />    
+	    <result property="order_desease_name"   		column="order_desease_name" 	javaType="String" />
+	    <result property="order_symptom_detail" 		column="order_symptom_detail"   javaType="String" />
+	    <result property="order_surgeryType_name"    	column="order_surgeryType_name" javaType="String" />
+	    <result property="order_howlonghosp" 			column="order_howlonghosp" 		javaType="String" />
+	    <result property="order_ishosp" 				column="order_ishosp" 			javaType="String" />
+	    <result property="order_createTime" 			column="order_createTime" 		javaType="String" />
+	    <result property="patient_name" 				column="patient_name" 			javaType="String" />
+	    <result property="child_dept_name" 				column="child_dept_name" 		javaType="String" />
+	    <result property="order_createTime" 			column="order_createTime" 		javaType="String" />	   	
+</resultMap>
+
+<select id="orderList" parameterType="HashMap" resultMap="orderMapList">
+	select patient_no, order_desease_name, order_symptom_detail, order_howlonghosp, 
+    order_surgeryType_name, order_ishosp, patient_name, child_dept_name, to_char(order_createTime, 'yyyy-mm-dd')AS order_createTime,((Round(sysdate-order_createTime))||'일전') AS timediff
+	from
+	(
+	select order_no, order_howlonghosp, order_desease_name, order_symptom_detail, order_surgeryType_name, order_ishosp, order_createTime, patient_no, patient_name, fk_child_dept_no
+	from tbl_patient P JOIN tbl_order O
+	on P.patient_no = O.fk_patient_no
+	where patient_no = #{patient_no}
+	) A JOIN tbl_child_dept B
+	on A.fk_child_dept_no = B.child_dept_no
+	order by order_createTime asc
+</select>
+
+
+		
+		
+		
+</mapper>
