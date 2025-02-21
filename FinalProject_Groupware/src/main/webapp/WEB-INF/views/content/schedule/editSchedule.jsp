@@ -486,8 +486,8 @@
 							<option value="2">사내 캘린더</option>
 						</c:when>
 						--%> 
-                        <%-- 일정 등록 시 사내 캘린더 등록은 loginuser.gradelevel == '10'인 사용자만 등록이 가능하도록 한다. --%>
-                        <c:when test="${loginuser.gradelevel == '10'}"> 
+                        <%-- 일정 등록 시 사내 캘린더 등록은 loginuser.member_grade == '1'인 사용자만 등록이 가능하도록 한다. --%>
+                        <c:when test="${loginuser.member_grade == '1'}"> 
                             <option value="">선택하세요</option>
                             <option value="1">내 캘린더</option>
                             <option value="2">사내 캘린더</option>
@@ -530,7 +530,7 @@
             </td>
         </tr>
     </table>
-    <input type="hidden" value="${sessionScope.loginuser.fk_member_userid}" name="fk_member_userid" />
+    <input type="hidden" value="${sessionScope.loginuser.member_userid}" name="fk_member_userid" />
     <input type="hidden" value="${requestScope.map.SCHEDULE_NO}" name="schedule_no" />
 </form>
 

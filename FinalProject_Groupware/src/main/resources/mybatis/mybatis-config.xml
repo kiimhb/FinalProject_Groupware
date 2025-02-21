@@ -15,6 +15,7 @@
       <typeAlias type="com.spring.med.organization.domain.OrganVO" alias="OrganVO"/>      
       <typeAlias type="com.spring.med.surgery.domain.SurgeryroomVO" alias="SurgeryroomVO"/>
       <typeAlias type="com.spring.med.patient.domain.TreatPatientVO" alias="TreatPatientVO"/>
+      <typeAlias type="com.spring.med.board.domain.CommentVO" alias="CommentVO"/>
    </typeAliases>
 
 </configuration>

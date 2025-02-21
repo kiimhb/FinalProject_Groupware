@@ -189,7 +189,7 @@ public class ScheduleController {
 		if(joinUserList != null && joinUserList.size() > 0) {
 			for(ManagementVO_ga mvo : joinUserList) {
 				JSONObject jsObj = new JSONObject();
-				jsObj.put("fk_member_userid", mvo.getMember_userid());
+				jsObj.put("member_userid", mvo.getMember_userid());
 				jsObj.put("member_name", mvo.getMember_name());
 				
 				jsonArr.put(jsObj);
@@ -353,13 +353,12 @@ public class ScheduleController {
 			String gobackURL_detailSchedule = request.getParameter("gobackURL_detailSchedule");
 			
 			HttpSession session = request.getSession();
-			// ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
-			String loginuser = "1";  // 로그인 기능 만들어지면 이 코드 삭제하고 위의 주석 사용
+			ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+			// String loginuser = "1";  // 로그인 기능 만들어지면 이 코드 삭제하고 위의 주석 사용
 			// System.out.println("확인~~~" + loginuser);
 			Map<String,String> map = service.detailSchedule(schedule_no);
 			
-			//if( !loginuser.getMember_userid().equals( map.get("FK_MEMBER_USERID") ) ) {
-			if( !loginuser.equals( map.get("FK_MEMBER_USERID") ) ) {  // 로그인 기능 만들어지면 이 코드 삭제하고 위의 주석 사용
+			if( !loginuser.getMember_userid().equals( map.get("FK_MEMBER_USERID") ) ) {
 				String message = "다른 사용자가 작성한 일정은 수정이 불가합니다.";
 				String loc = "javascript:history.back()";
 				
