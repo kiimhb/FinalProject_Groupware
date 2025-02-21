@@ -90,7 +90,7 @@ $(document).ready(function() {
       <i class="fa-solid fa-square-poll-horizontal"></i>  <span>전자결재</span> <i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/approval/write">기안문작성</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>">결재상신함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/test">결재상신함</a>
             <a class="dropdown-item" href="<%=ctxPath%>">임시저장함</a> 
             <a class="dropdown-item" href="<%=ctxPath%>">결재문서함</a>
             <a class="dropdown-item" href="<%=ctxPath%>">참조문서함</a> 

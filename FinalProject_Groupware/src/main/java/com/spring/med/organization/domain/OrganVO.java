@@ -15,36 +15,14 @@ public class OrganVO {
 	private String member_mobile;		// 휴대폰번호
 	private String member_email;		// 이메일
 	private String member_start;		// 입사일
-	private String member_pro_filename;	// 프로필_첨부파일명
+	private String member_pro_filename;	// 프로필_첨부파일
+	private String member_position;		// 직급
 
 	
 	private String type;				// 상위부서/하위부서/사원 을 구분하기 위한 필드
 	
 	
-	public String getChild_dept_no() {
-		return child_dept_no;
-	}
-	public void setChild_dept_no(String child_dept_no) {
-		this.child_dept_no = child_dept_no;
-	}
-	public String getParent_dept_no() {
-		return parent_dept_no;
-	}
-	public void setParent_dept_no(String parent_dept_no) {
-		this.parent_dept_no = parent_dept_no;
-	}
-	public String getFk_parent_dept_no() {
-		return fk_parent_dept_no;
-	}
-	public void setFk_parent_dept_no(String fk_parent_dept_no) {
-		this.fk_parent_dept_no = fk_parent_dept_no;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
+	
 	// === Method === //
 	public String getMember_userid() {
 		return member_userid;
@@ -94,5 +72,34 @@ public class OrganVO {
 	public void setMember_pro_filename(String member_pro_filename) {
 		this.member_pro_filename = member_pro_filename;
 	}
-	
+	public String getChild_dept_no() {
+		return child_dept_no;
+	}
+	public void setChild_dept_no(String child_dept_no) {
+		this.child_dept_no = child_dept_no;
+	}
+	public String getParent_dept_no() {
+		return parent_dept_no;
+	}
+	public void setParent_dept_no(String parent_dept_no) {
+		this.parent_dept_no = parent_dept_no;
+	}
+	public String getFk_parent_dept_no() {
+		return fk_parent_dept_no;
+	}
+	public void setFk_parent_dept_no(String fk_parent_dept_no) {
+		this.fk_parent_dept_no = fk_parent_dept_no;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getMember_position() {
+		return member_position;
+	}
+	public void setMember_position(String member_position) {
+		this.member_position = member_position;
+	}
 }

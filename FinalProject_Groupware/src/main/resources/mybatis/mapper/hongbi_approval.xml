@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.med.approval.model.ApprovalDAO">
+
+	<!-- ==== 결재선 목록에 선택한 사원 추가하기 ==== -->
+	<select id="insertToApprovalLine" parameterType="String" resultType="ApprovalVO">
+		select parent_dept_name, child_dept_name, member_position, member_name
+			from tbl_parent_dept p join tbl_child_dept c
+		on p.parent_dept_no = c.fk_parent_dept_no
+		left join tbl_member m
+		on c.child_dept_no = m.fk_child_dept_no
+		where member_userid = #{member_userid}
+	</select>
+	
+	
+	<!-- ==== 결재선 결재순위 지정 ==== -->
+	<resultMap type="HashMap" id="orderByApprovalStep_Map">
+		<result property="member_step" 	column="member_step" 		javaType="String" />
+		<result property="member_position" 	column="member_position" 	javaType="String" />
+		<result property="child_dept_name" 	column="child_dept_name" 	javaType="String" />
+		<result property="member_name" 		column="member_name" 		javaType="String" />
+		<result property="member_userid" 	column="member_userid" 		javaType="String" />
+	</resultMap>
+	<select id="orderByApprovalStep" resultMap="orderByApprovalStep_Map" parameterType="String">
+		select DENSE_RANK() over (order by member_grade desc, member_start desc) as member_step
+		     , member_position
+		     , child_dept_name
+		     , member_name
+		     , member_userid
+		from  tbl_child_dept c join tbl_member m
+		on c.child_dept_no = m.fk_child_dept_no 
+		where member_userid in
+		<foreach collection="arr_approvalLineMembers" index="i" open="(" separator="," close=")">
+			${arr_approvalLineMembers[i]}
+		</foreach>
+	</select>
+	
+	
+	<!-- ==== 기존에 추가했던 결재선 사원을 목록에 불러오기 ==== -->
+	<select id="insertToApprovalLine_Arr" parameterType="String" resultType="ApprovalVO">
+		select parent_dept_name, child_dept_name, member_position, member_name
+			from tbl_parent_dept p join tbl_child_dept c
+		on p.parent_dept_no = c.fk_parent_dept_no
+		left join tbl_member m
+		on c.child_dept_no = m.fk_child_dept_no
+		where member_userid in
+		<foreach collection="arr_member_userid" index="i" open="(" separator="," close=")">
+			${arr_member_userid[i]}
+		</foreach>
+	</select>
+	
+</mapper>
