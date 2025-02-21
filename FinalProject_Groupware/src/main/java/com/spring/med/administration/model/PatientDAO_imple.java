@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.spring.med.patient.domain.PatientVO;
+import com.spring.med.surgery.domain.SurgeryroomVO;
 
 @Repository
 public class PatientDAO_imple implements PatientDAO {
@@ -51,6 +52,20 @@ public class PatientDAO_imple implements PatientDAO {
 	public List<Map<String, String>> order_list(String jubun) {
 		List<Map<String, String>> order_list = sqlsession.selectList("hyeyeon.order_list", jubun);
 		return order_list;
+	}
+
+	// 개인별 환자 수술기록
+	@Override
+	public List<Map<String, Object>> surgery_list(String jubun) {
+		List<Map<String, Object>> surgery_list = sqlsession.selectList("hyeyeon.surgery_list", jubun);
+		return surgery_list;
+	}
+
+	// 수술실 목록 불러오기
+	@Override
+	public List<SurgeryroomVO> getSurgeryRoom() {
+		List<SurgeryroomVO> room = sqlsession.selectList("hyeyeon.getRoom");
+		return room;
 	}
 
 

@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.administration.service.PatientService;
 import com.spring.med.patient.domain.PatientVO;
+import com.spring.med.surgery.domain.SurgeryroomVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -78,7 +79,7 @@ public class PatientController {
 		String pageBar = "<ul style='list-style:none;'>";
 		String url = "list";
 		
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?patientname="+patientname+"&currentShowPageNo=1'>[맨처음]</a></li>";
+		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?patientname="+patientname+"&currentShowPageNo=1'><<</a></li>";
 		
 		if(pageNo != 1) {
 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?patientname="+patientname+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>"; 
@@ -88,7 +89,7 @@ public class PatientController {
 		while( !(loop > blockSize || pageNo > totalPage) ) {
 			
 			if(pageNo == Integer.parseInt(currentShowPageNo)) {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>"; 
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; padding:2px 4px;'>"+pageNo+"</li>"; 
 			}
 			else {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?patientname="+patientname+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>"; 
@@ -104,7 +105,7 @@ public class PatientController {
 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?patientname="+patientname+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
 		}
 		
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?patientname="+patientname+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+		pageBar += "<li style='display:inline-block; width:70px;  font-size:12pt;'><a href='"+url+"?patientname="+patientname+"&currentShowPageNo="+totalPage+"'>>></a></li>";
 					
 		pageBar += "</ul>";	
 		
@@ -127,17 +128,26 @@ public class PatientController {
 	// 환자상세조회 
 	@GetMapping("detail/{seq}")
 	public ModelAndView detail_patient(HttpServletRequest request, ModelAndView mav,
-									   @PathVariable String seq) {
+									   @PathVariable String seq) { // seq = 환자번호 patient_no
 		
 		String jubun = service.getJubun(seq); // 주민번호로 환자 구분 하기위함
 		
 		Map<String, String> detail_patient = service.detail_patient(seq); // 환자 기본 정보
 		List<Map<String, String>> order_list = service.order_list(jubun); // 개인별 환자 진료목록
-
+		List<Map<String, Object>> surgery_list = service.surgery_list(jubun); // 환자 수술기록
+		List<SurgeryroomVO> surgeryroom = service.getSurgeryRoom(); // 수술실 목록 불러오기 (select)
 		
+		
+		if (surgery_list == null || surgery_list.isEmpty()) {
+	        mav.addObject("surgeryMessage", "수술 기록이 없습니다.");
+	    }
+			
 		mav.addObject("detail_patient", detail_patient);
 		mav.addObject("order_list", order_list);
-
+		mav.addObject("surgery_list", surgery_list);
+		mav.addObject("surgeryroom", surgeryroom);
+		mav.addObject("patient_no", seq);
+		
 		mav.setViewName("content/administration/detailPatient");
 		return mav;
 	}

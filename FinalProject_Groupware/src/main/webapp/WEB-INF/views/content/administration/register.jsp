@@ -29,7 +29,7 @@ $(document).ready(function(){
 		<div class="surgery">
 			
 	  		<div class="title">
-	  			수술대기
+	  			수술대기 ( ${requestScope.totalCount} )
 	  		</div>
 	  		<div class="list">
 	  			<table class="table">
@@ -45,18 +45,24 @@ $(document).ready(function(){
 	  					</tr>
 	  				</thead>
 	  				<tbody>
-	  				<c:forEach var="rvo" items="${requestScope.register_list}">
-	  					<tr class="clicktr">
-		  					<td>${rvo.fk_order_no}</td>
-		  					<td>${rvo.patient_visitdate}</td>
-		  					<td>${rvo.child_dept_name}</td>
-		  					<td>${rvo.patient_name}</td>
-		  					<td>${rvo.patient_gender}</td>
-		  					<td>${rvo.patient_jubun}</td>
-		  					<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/surgery/${rvo.fk_order_no}'"><span>예약</span></button></td>
-	  					</tr>
-	  				</c:forEach>
-	  					
+					<c:if test="${not empty requestScope.register_list}">
+		  				<c:forEach var="rvo" items="${requestScope.register_list}">
+		  					<tr class="clicktr">
+			  					<td>${rvo.order_no}</td>
+			  					<td>${rvo.patient_visitdate}</td>
+			  					<td>${rvo.child_dept_name}</td>
+			  					<td>${rvo.patient_name}</td>
+			  					<td>${rvo.patient_gender}</td>
+			  					<td>${rvo.patient_jubun}</td>
+			  					<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/surgery/${rvo.order_no}'"><span>예약</span></button></td>
+		  					</tr>
+		  				</c:forEach>
+					</c:if>
+					
+					<c:if test="${empty requestScope.register_list}">
+						<tr>수술 대기 환자가 없습니다.</tr>
+					</c:if>	
+					
 	  				</tbody>
 	  			</table>
 	  		</div>
@@ -71,7 +77,7 @@ $(document).ready(function(){
 	    <div class="hospitalized">
 			
 	  		<div class="title">
-	  			입원대기
+	  			입원대기 ( ${requestScope.totalCount2} )
 	  		</div>
 			<div class="list">
 	  			<table class="table">
@@ -87,21 +93,29 @@ $(document).ready(function(){
 	  					</tr>
 	  				</thead>
 	  				<tbody>
-	  					<tr>
-		  					<td>1010</td>
-		  					<td>2025-01-01</td>
-		  					<td>호흡기내과</td>
-		  					<td>이혜연</td>
-		  					<td>여</td>
-		  					<td>020106-*******</td>
-		  					<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/hospitalization'"><span>예약</span></button></td>
-	  					</tr>
+	  					<c:if test="${not empty requestScope.hospitalize_list}">
+		  				<c:forEach var="hvo" items="${requestScope.hospitalize_list}">
+		  					<tr class="clicktr">
+			  					<td>${hvo.order_no}</td>
+			  					<td>${hvo.patient_visitdate}</td>
+			  					<td>${hvo.child_dept_name}</td>
+			  					<td>${hvo.patient_name}</td>
+			  					<td>${hvo.patient_gender}</td>
+			  					<td>${hvo.patient_jubun}</td>
+								<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/hospitalization/${hvo.order_no}'"><span>예약</span></button></td>		  					</tr>
+		  				</c:forEach>
+					</c:if>
+					
+					<c:if test="${empty requestScope.register_list}">
+						<tr>입원 대기 환자가 없습니다.</tr>
+					</c:if>	
 	  				</tbody>
 	  			</table>
 	  		</div>
-			<div class="pageBar">
-	  			페이지바
-	  		</div>
+			<div id="pageBar2" align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		    	${requestScope.pageBar2}
+		    </div>
+		    
 	    </div>
 	</div>
 

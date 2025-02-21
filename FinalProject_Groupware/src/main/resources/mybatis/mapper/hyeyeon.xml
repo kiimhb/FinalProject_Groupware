@@ -12,16 +12,19 @@
 			select count(*)
 			from 
 			(
-			    select  patient_no, child_dept_name, patient_name,
-			            patient_jubun, patient_gender, patient_visitdate
-			    from tbl_patient a join tbl_child_dept b
-			    on a.fk_child_dept_no = b.child_dept_no
+			    SELECT patient_no, child_dept_name, patient_name,
+		               patient_jubun, patient_gender, patient_visitdate
+		        FROM tbl_patient a 
+		        JOIN tbl_child_dept b 
+		        ON a.fk_child_dept_no = b.child_dept_no 
 			    <choose>
 				    <when test='patientname != ""  '>
 				    	where patient_name like '%'|| #{patientname} ||'%' 
 			    	</when>
-			    </choose>
-			) 
+		    	</choose>
+			) a join tbl_order b
+		    on a.patient_no = b.fk_patient_no 
+		    where order_no is not null
 	</select>
 	
 
@@ -42,20 +45,20 @@
 		       patient_jubun, patient_gender, patient_visitdate
 		from 
 		    (
-		        select  patient_no, child_dept_name, patient_name,
-		                patient_jubun, patient_gender, patient_visitdate
-		        from tbl_patient a 
-		        join tbl_child_dept b
-		        on a.fk_child_dept_no = b.child_dept_no
-		        where patient_waiting = 1  
+		        SELECT patient_no, child_dept_name, patient_name,
+		               patient_jubun, patient_gender, patient_visitdate
+		        FROM tbl_patient a 
+		        JOIN tbl_child_dept b 
+		        ON a.fk_child_dept_no = b.child_dept_no 
 		        <choose>
 				    <when test='patientname != ""  '>
-				    	and patient_name like '%'|| #{patientname} ||'%' 
+				    	where patient_name like '%'|| #{patientname} ||'%' 
 			    	</when>
 			    </choose>
 			    order by patient_visitdate desc
-		    ) 
-		    where rownum &lt;= #{endRno}
+		    )a join tbl_order b
+		    on a.patient_no = b.fk_patient_no 
+		    where order_no is not null and rownum &lt;= #{endRno}
 		) 
 		where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
@@ -109,6 +112,49 @@
 		on a.fk_child_dept_no = b.child_dept_no
 		order by patient_visitdate desc
 	</select>
+	
+	<!-- 수술 목록 가져오기  -->
+	<resultMap id="surgeryMap" type="HashMap">
+		<result property="order_no" 					column="order_no" 					javaType="String" />
+		<result property="order_surgeryType_name" 		column="order_surgeryType_name" 	javaType="String" />
+		<result property="member_name" 					column="member_name" 				javaType="String" />
+		<result property="surgery_surgeryroom_name" 	column="surgery_surgeryroom_name" 	javaType="String" />
+		<result property="surgery_day" 					column="surgery_day" 				javaType="String" />
+		<result property="surgery_start_time" 			column="surgery_start_time" 		javaType="String" />
+		<result property="surgery_end_time" 			column="surgery_end_time" 			javaType="String" />
+	</resultMap>
+	<select id="surgery_list" parameterType="String" resultMap = "surgeryMap">
+		with
+		a as
+		(
+		    select order_no, order_surgeryType_name, member_name, fk_patient_no
+		    from tbl_order a join tbl_member b
+		    on a.fk_member_userid = b.member_userid
+		    where order_issurg = 1
+		),
+		b as
+		(
+		    select patient_no, patient_jubun
+		    from tbl_patient
+		    where patient_jubun = #{jubun}
+		),
+		c as
+		(
+		    select fk_order_no, surgery_surgeryroom_name, surgery_day, surgery_start_time, surgery_end_time
+		    from tbl_surgery
+		    where surgery_status = 1
+		    order by surgery_day asc
+		)
+		select order_no, order_surgeryType_name, member_name, surgery_surgeryroom_name,
+		       to_char(surgery_day, 'yyyy-mm-dd') as surgery_day,
+		       to_char(surgery_start_time, 'HH24:mi') as surgery_start_time, 
+		       to_char(surgery_end_time, 'HH24:mi') as surgery_end_time
+		from a join b
+		on a.fk_patient_no = b.patient_no
+		join c
+		on a.order_no = c.fk_order_no
+	</select>
+
 	<!-- **************************** 환자관련 mapper 끝 **************************** -->
 	
 	
@@ -121,10 +167,10 @@
 		    with
 		    a as
 		    (
-		        select surgery_no, fk_order_no, fk_patient_no, order_issurg
-		        from tbl_surgery a join tbl_order b
-		        on a.fk_order_no = b.order_no
-		        where order_issurg = 1 and surgery_status = 0 
+		        select order_no, fk_patient_no, order_issurg
+		        from tbl_order a join tbl_surgery b
+		        on a.order_no = b.fk_order_no
+		        where order_issurg = 1 and surgery_status = 0
 		    ),
 		    b as
 		    (
@@ -132,8 +178,9 @@
 		               patient_gender, patient_jubun
 		        from tbl_patient a join tbl_child_dept b
 		        on a.fk_child_dept_no = b.child_dept_no
+		        order by patient_visitdate asc
 		    )
-		    select fk_order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
+    		select rownum as rno, order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
 		    from a join b
 		    on a.fk_patient_no = b.patient_no
 		)
@@ -142,12 +189,13 @@
 	
 	
 	<resultMap id="registerList_map" type="HashMap">
-	    <result property="fk_order_no" 		 	column="fk_order_no" 		  javaType="String" />
-	    <result property="patient_visitdate"  	column="patient_visitdate" 	  javaType="String" />
-	    <result property="child_dept_name" 	 	column="child_dept_name" 	  javaType="String" />
-    	<result property="patient_name" 		column="patient_name"    	  javaType="String" />
-	    <result property="patient_gender"   	column="patient_gender" 	  javaType="String" />
-	    <result property="patient_jubun" 		column="patient_jubun" 		  javaType="String" />
+	    <result property="order_no" 		 		column="order_no" 		  	  javaType="String" />
+    	<result property="patient_visitdate"  		column="patient_visitdate" 	  javaType="String" />
+	    <result property="child_dept_name" 	 		column="child_dept_name" 	  javaType="String" />
+    	<result property="patient_name" 			column="patient_name"    	  javaType="String" />
+	    <result property="patient_gender"   		column="patient_gender" 	  javaType="String" />
+	    <result property="patient_jubun" 			column="patient_jubun" 		  javaType="String" />
+	    <result property="surgery_description" 		column="surgery_description"  javaType="String" />
 	</resultMap>
 	<select id="registerList" parameterType="HashMap" resultMap="registerList_map">
 		select *
@@ -156,10 +204,10 @@
 		    with
 		    a as
 		    (
-		        select surgery_no, fk_order_no, fk_patient_no, order_issurg
-		        from tbl_surgery a join tbl_order b
-		        on a.fk_order_no = b.order_no
-		        where order_issurg = 1 and surgery_status = 0 
+		        select order_no, fk_patient_no, order_issurg
+		        from tbl_order a join tbl_surgery b
+		        on a.order_no = b.fk_order_no
+		        where order_issurg = 1 and surgery_status = 0
 		    ),
 		    b as
 		    (
@@ -167,19 +215,28 @@
 		               patient_gender, patient_jubun
 		        from tbl_patient a join tbl_child_dept b
 		        on a.fk_child_dept_no = b.child_dept_no
+		        order by patient_visitdate asc
 		    )
-		    select rownum as rno, fk_order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
+    		select rownum as rno, order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
 		    from a join b
 		    on a.fk_patient_no = b.patient_no
 		)
 		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
 	
+	<!-- 환자 이름 가져오기 -->
 	<select id="getName" resultType="String" parameterType="String">		
 		select patient_name
 		from tbl_order a join tbl_patient b
 		on a.fk_patient_no = b.patient_no
 		where order_no = #{order_no}
+	</select>
+	
+	<!-- 수술 설명 가져오기 -->
+	<select id="surgery_description" resultType="String" parameterType="String">
+		select surgery_description
+		from tbl_surgery
+		where fk_order_no = #{order_no}
 	</select>
 	
 	<!-- 수술실 목록 불러오기 -->
@@ -189,16 +246,174 @@
 	</select>
 	
 	<!-- 예약된 수술시간 가져오기 -->
-	<select id="reservedTime" resultType="String" parameterType	="map">
-		select to_char(surgery_start_time, 'HH24:MI') as surgery_start_time
+	<resultMap type="HashMap" id="reservedTime">
+		<result property="surgery_start_time" 		column="surgery_start_time"	  javaType="String" />
+    	<result property="surgery_end_time"  		column="surgery_end_time" 	  javaType="String" />
+	</resultMap>
+	<select id="reservedTime"  parameterType="HashMap" resultMap="reservedTime">
+		select to_char(surgery_start_time, 'HH24:MI') as surgery_start_time,
+			   to_char(surgery_end_time, 'HH24:MI') as surgery_end_time
 		from tbl_surgery
 		where surgery_surgeryroom_name = #{surgery_surgeryroom_name} and surgery_day = to_date(#{surgery_day}, 'yyyy-mm-dd')
 	</select>
 	
 	
+	<select id="existingSurgery" resultType="SurgeryVO" parameterType="map">
+			select * 
+			from tbl_surgery
+			where surgery_surgeryroom_name = #{surgery_surgeryroom_name}
+			and surgery_day = to_date(#{surgery_day}, 'yyyy-mm-dd')
+			and surgery_start_time = to_date(#{surgery_start_time},'HH24:MI') 
+			for update  
+	</select>
+	
+	<!-- 수술 예약하기 -->
+	<update id="insertSurgery" parameterType="SurgeryVO">
+		update tbl_surgery
+		set surgery_surgeryroom_name = #{surgery_surgeryroom_name},
+		    surgery_reserve_date = sysdate,
+		    surgery_day = to_date(#{surgery_day}, 'yyyy-mm-dd'),
+		    surgery_start_time = to_date(#{surgery_start_time},'HH24:MI'),
+		    surgery_end_time = to_date(#{surgery_end_time},'HH24:MI'),
+		    surgery_description = #{surgery_description},
+		    surgery_status = 1
+		where fk_order_no = #{fk_order_no}
+	</update>
+	
+	<update id="surgeryUpdate" parameterType="map">
+		update tbl_surgery
+		set surgery_surgeryroom_name = #{surgery_surgeryroom_name},
+		    surgery_reserve_date = sysdate,
+		    surgery_day = to_date(#{surgery_day}, 'yyyy-mm-dd'),
+		    surgery_start_time = to_date(#{surgery_start_time},'HH24:MI'),
+		    surgery_end_time = to_date(#{surgery_end_time},'HH24:MI'),
+		    surgery_status = 1
+		where fk_order_no = #{fk_order_no}
+	</update>
+	
 	<!-- **************************** 수술예약관련 mapper 끝 **************************** -->
 	
 	
+	<!-- **************************** 입원예약관련 mapper 시작 **************************** -->	
+	<!-- 입원 대기자 목록 총 개수 -->
+	<select id="hospitalize_list_cnt" resultType="int">
+		select count(*)
+		from 
+		(
+		    with 
+		    a as
+		    (
+		        select order_no, fk_patient_no, order_howlonghosp
+		        from tbl_order a join tbl_hospitalize b
+		        on a.order_no = b.fk_order_no
+		        where order_ishosp = 1 and hospitalize_status = 0
+		    ),
+		    b as
+		    (
+		         select patient_no, fk_child_dept_no, patient_name, patient_visitdate, child_dept_name,
+		                patient_gender, patient_jubun
+		         from tbl_patient a join tbl_child_dept b
+		         on a.fk_child_dept_no = b.child_dept_no
+		         order by patient_visitdate asc
+		    )
+		select rownum as rno, order_no, patient_visitdate, child_dept_name, child_dept_name, patient_name, patient_gender, patient_jubun
+		from a join b
+		on a.fk_patient_no = b.patient_no
+		)
+	</select>
+	
+	
+	<resultMap type="HashMap" id="hospitalize_list_map">
+		<result property="order_no" 				column="order_no" 			javaType="String" />
+		<result property="patient_visitdate" 		column="patient_visitdate" 	javaType="String" />
+		<result property="child_dept_name" 			column="child_dept_name" 	javaType="String" />
+		<result property="patient_name" 			column="patient_name" 		javaType="String" />
+		<result property="patient_gender" 			column="patient_gender" 	javaType="String" />
+		<result property="patient_jubun" 			column="patient_jubun" 		javaType="String" />
+	</resultMap>
+	<select id="hospitalize_list" parameterType="HashMap" resultMap="hospitalize_list_map">
+		select *
+		from 
+		(
+		    with 
+		    a as
+		    (
+		        select order_no, fk_patient_no, order_howlonghosp
+		        from tbl_order a join tbl_hospitalize b
+		        on a.order_no = b.fk_order_no
+		        where order_ishosp = 1 and hospitalize_status = 0
+		    ),
+		    b as
+		    (
+		         select patient_no, fk_child_dept_no, patient_name, patient_visitdate, child_dept_name,
+		                patient_gender, patient_jubun
+		         from tbl_patient a join tbl_child_dept b
+		         on a.fk_child_dept_no = b.child_dept_no
+		         order by patient_visitdate asc
+		    )
+		    select rownum as rno, order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
+		    from a join b
+		    on a.fk_patient_no = b.patient_no
+		)
+		WHERE rno BETWEEN to_number(#{startRno2}) AND to_number(#{endRno2})
+	</select>
+	
+	<!-- 입원일수  -->
+	<select id="order_howlonghosp" resultType="String" parameterType="String">
+		select order_howlonghosp
+		from tbl_order
+		where order_no = #{order_no}
+	</select>
+	
+	<!-- 입원실 목록 4인실  -->
+	<select id="hospitalizeroom" resultType="HospitalizeroomVO">
+		select hospitalizeroom_no, hospitalizeroom_capacity
+		from tbl_hospitalizeroom
+		where hospitalizeroom_capacity = 4
+	</select>
+	
+	<!-- 입원실 목록 2인실  -->
+	<select id="hospitalizeroom_2" resultType="HospitalizeroomVO">
+		select hospitalizeroom_no, hospitalizeroom_capacity
+		from tbl_hospitalizeroom
+		where hospitalizeroom_capacity = 2
+	</select>
+	
+	
+	<resultMap type="HashMap" id="okSeat_map">
+		<result property="hospitalizeroom_no" 	column="hospitalizeroom_no" 	javaType="String" />
+		<result property="ok_seat" 				column="ok_seat" 				javaType="String" />
+	</resultMap>
+	<select id="okSeat" resultMap="okSeat_map">
+		with 
+		a as
+		(
+		    select to_number(count(*)) as reserved_cnt, fk_hospitalizeroom_no
+		    from tbl_hospitalize 
+		    group by fk_hospitalizeroom_no
+		),
+		b as
+		(
+		    select hospitalizeroom_no, to_number(hospitalizeroom_capacity) as hospitalizeroom_capacity
+		    from tbl_hospitalizeroom
+		)
+		select hospitalizeroom_no, hospitalizeroom_capacity, nvl(reserved_cnt, 0) as reserved_cnt, 
+		       nvl((hospitalizeroom_capacity - reserved_cnt), hospitalizeroom_capacity) as ok_seat
+		from a right join b
+		on a.fk_hospitalizeroom_no = b.hospitalizeroom_no
+	</select>
+	
+	<!-- 입원 예약하기 -->
+	<update id="hospitalizeRegister" parameterType="HospitalizeVO">
+		update tbl_hospitalize
+		set fk_hospitalizeroom_no = #{fk_hospitalizeroom_no},
+		    hospitalize_reserve_date = sysdate,
+		    hospitalize_start_day =  to_date(#{hospitalize_start_day}, 'yyyy-mm-dd'),
+		    hospitalize_end_day = to_date(#{hospitalize_end_day}, 'yyyy-mm-dd'),
+		    hospitalize_status = 1
+		where fk_order_no = #{fk_order_no}
+	</update>
+	<!-- **************************** 입원예약관련 mapper 끝 **************************** -->	
 	
 	
 </mapper>

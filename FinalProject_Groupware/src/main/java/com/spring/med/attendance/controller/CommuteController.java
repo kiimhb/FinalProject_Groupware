@@ -18,9 +18,11 @@ public class CommuteController {
 
 	@GetMapping("commuteRecord")
 	public String index(HttpServletRequest request) {
-	
+		
 		return "content/attendance/commuteRecord";
 		// /WEB-INF/views/mycontent1/main/index.jsp 페이지를 만들어야 한다.
 	}
+	
+	
 	
 }

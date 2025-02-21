@@ -70,8 +70,25 @@ public class SurgeryVO {
 	// toString() 오버라이드
     @Override
     public String toString() {
+    	
+
+    	if("1".equals(surgery_surgeryroom_name)) {
+    		surgery_surgeryroom_name = "roomA";
+    	}
+    	else if("2".equals(surgery_surgeryroom_name)) {
+			surgery_surgeryroom_name = "roomB";
+		}
+    	else if("3".equals(surgery_surgeryroom_name)) {
+			surgery_surgeryroom_name = "roomC";
+		}
+		else if("4".equals(surgery_surgeryroom_name)) {
+			surgery_surgeryroom_name = "roomD";
+		}
+    	
+    	
         return "SurgeryVO{" +
-                "surgery_surgeryroom_name='" + surgery_surgeryroom_name + '\'' +
+                "fk_order_no='" + fk_order_no + '\'' +
+                 "surgery_surgeryroom_name='" + surgery_surgeryroom_name + '\'' +
                 ", surgery_reserve_date=" + surgery_reserve_date +
                 ", surgery_day=" + surgery_day +
                 ", surgery_start_time=" + surgery_start_time +

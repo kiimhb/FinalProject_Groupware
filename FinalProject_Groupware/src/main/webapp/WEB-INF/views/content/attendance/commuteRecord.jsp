@@ -144,7 +144,7 @@ function nowtime() {
 				<table>
 					<tr>	
 						<td>
-							<span class="day pl-2">2024-12-12</span>
+							<span class="day pl-3">2024-12-12</span>
 			      			<span class="times">18:00:00</span>
 			      			<span class="status">퇴근</span>
 						</td>
