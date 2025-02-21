@@ -12,9 +12,13 @@
       <typeAlias type="com.spring.med.management.domain.Parent_deptVO_ga" alias="Parent_deptVO_ga"/>
       <typeAlias type="com.spring.med.management.domain.Child_deptVO_ga" alias="Child_deptVO_ga"/>
       <typeAlias type="com.spring.med.management.domain.ManagementVO_ga" alias="ManagementVO_ga"/>
-      <typeAlias type="com.spring.med.organization.domain.OrganVO" alias="OrganVO"/>      
+      <typeAlias type="com.spring.med.organization.domain.OrganVO" alias="OrganVO"/>
       <typeAlias type="com.spring.med.surgery.domain.SurgeryroomVO" alias="SurgeryroomVO"/>
+      <typeAlias type="com.spring.med.surgery.domain.SurgeryVO" alias="SurgeryVO"/>
       <typeAlias type="com.spring.med.patient.domain.TreatPatientVO" alias="TreatPatientVO"/>
+      <typeAlias type="com.spring.med.approval.domain.ApprovalVO" alias="ApprovalVO"/>
+      <typeAlias type="com.spring.med.hospitalize.domain.HospitalizeroomVO" alias="HospitalizeroomVO"/>
+      <typeAlias type="com.spring.med.hospitalize.domain.HospitalizeroomVO" alias="HospitalizeVO"/>
    </typeAliases>
 
 </configuration>

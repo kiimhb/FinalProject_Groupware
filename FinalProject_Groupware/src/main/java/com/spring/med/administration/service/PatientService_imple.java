@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.med.administration.model.PatientDAO;
 import com.spring.med.patient.domain.PatientVO;
+import com.spring.med.surgery.domain.SurgeryroomVO;
 
 
 @Service
@@ -49,6 +50,20 @@ public class PatientService_imple implements PatientService {
 	public List<Map<String, String>> order_list(String jubun) {
 		List<Map<String, String>> order_list = dao.order_list(jubun);
 		return order_list;
+	}
+
+	// 개인별 환자 수술기록
+	@Override
+	public List<Map<String, Object>> surgery_list(String jubun) {
+		List<Map<String, Object>> surgery_list = dao.surgery_list(jubun);
+		return surgery_list;
+	}
+
+	// 수술실 목록 불러오기
+	@Override
+	public List<SurgeryroomVO> getSurgeryRoom() {
+		List<SurgeryroomVO> room = dao.getSurgeryRoom();
+		return room;
 	}
 
 	

@@ -27,8 +27,8 @@ div.hospitalized {
 	margin-bottom:1%;
 }
 div.list {
-	border: 1px solid black; 
-	height:325px;
+	border: 1px solid #eee; 
+	height:322px;
 }
 button.btn {
 	background-color: #006769;
@@ -46,6 +46,14 @@ tr.clicktr {
 
 
 /* 페이지바 */
-div#pageBar a {
-	color:black;
+div#pageBar a,
+div#pageBar2 a  {
+	color: #509d9c;
+	cursor: pointer;
+}
+#pageBar > ul > li,
+#pageBar2 > ul > li {
+	color: #006769;
+	font-weight: bold;
+	cursor: pointer;
 }

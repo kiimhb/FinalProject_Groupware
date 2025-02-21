@@ -49,6 +49,19 @@ input {
 	width: 620px;
 	height: 35px ;
 	border: 1px solid #ccc;
+	padding: 1%;
+}
+input.date {
+	width:300px;
+	height: 35px ;
+	border: 1px solid #ccc;
+	padding: 1%;
+}
+select {
+	width: 620px;
+	height: 35px;
+	border: 1px solid #ccc;
+	padding: 1%;
 }
 div.form {
 	height: 600px;

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.med.patient.domain.PatientVO;
+import com.spring.med.surgery.domain.SurgeryroomVO;
 
 public interface PatientService {
 
@@ -21,6 +22,12 @@ public interface PatientService {
 
 	// 개인별 환자 진료목록
 	List<Map<String, String>> order_list(String jubun);
+
+	// 개인별 환자 수술기록
+	List<Map<String, Object>> surgery_list(String seq);
+
+	// 수술실 목록 불러오기
+	List<SurgeryroomVO> getSurgeryRoom();
 
 
 

@@ -107,35 +107,14 @@ $(document).ready(function(){
 	calendar.render();  // 풀캘린더 보여주기
 	// ****** 캘린더 띄움 끝 ******//
 	
-	 // ****** 시간선택 옵션 시작 ******//
 	
-	// select 요소 보여주기 // 
-	/*
-	var startTime = document.getElementById("surgery_start_time");
-	var endTime = document.getElementById("surgery_end_time");
 	
-	for(var hour=9; hour<18; hour++) {
-		for(var min=0; min<60; min+=30) {
-			
-			var option = document.createElement("option");
-			var formatHour = (hour < 10 ? "0" : "") + hour;
-			var formatMin = (min === 0 ? "00" : "30");
-			option.value = formatHour + ":" + formatMin;
-			option.text = formatHour + ":" + formatMin;
-			
-			// 복제하기 
-			var optionClone = option.cloneNode(true);
-			
-			startTime.appendChild(option); 	  // 시작시간
-			endTime.appendChild(optionClone); // 종료시간
-		}
-	}
-	*/
-	
+	// ****** 예약 가능한 시간선택 옵션 시작 ******//
+	// 수술실과 날짜를 고려한 수술 가능한 시간 구하기
 	$("select#surgery_surgeryroom_name, input#surgery_day").on("change", function(){
 		
-		let room = $("select#surgery_surgeryroom_name").val();
-		let day = $("input#surgery_day").val();
+		let room = $("select#surgery_surgeryroom_name").val(); // 수술실 이름
+		let day = $("input#surgery_day").val();	// 수술 할 날짜 
 	
 		if (room && day) {
 
@@ -147,15 +126,14 @@ $(document).ready(function(){
 					 dataType: "json",
 		    	     success:function(availableTimes){
 		    	    	
-						let selectbox = $("select#surgery_start_time")
+						let startTime = $("select#surgery_start_time")
 						
-						selectbox.empty(); // 비우기
-						selectbox.append('<option value="">시작시간</option>');
+						startTime.empty(); // 비우기
+						startTime.append('<option value="" disabled>시작시간</option>');
 						
 						availableTimes.forEach(time => {
-							selectbox.append(`<option value="\${time}">\${time}</option>`);
+							startTime.append(`<option value="\${time}">\${time}</option>`);
 						});
-
 		    	     },
 		  	    	    error: function(request, status, error){
 					   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -163,24 +141,109 @@ $(document).ready(function(){
 				}); // end of $.ajax
 		}
 		
+	}); // end of $("select#surgery_surgeryroom_name, input#surgery_day").on("change", function())
+
+	
+	// 시작 시간이 선택 되어지면 종료시간 선택이 가능하도록 해야됨 (가능한 시간 고려하기) 
+	$("select#surgery_start_time").on("change", function(){
+		
+		let room = $("select#surgery_surgeryroom_name").val(); // 수술실 이름
+		let day = $("input#surgery_day").val();	// 수술 할 날짜
+		let startTime = $(this).val();
+		let endTimeSelect = $("select#surgery_end_time");
+		
+		// 기존 예약되어진 일정 가져오기 -> 예약 시간이 있다면 or 예약 시간이 없다면 조건 
+		$.ajax({
+			url:"<%= ctxPath%>/register/reservedTime",
+			type: "POST",
+			data:{"surgeryroom_no":room, 
+				  "surgery_day":day},
+		    dataType: "json",
+		    success:function(reservedTime) {   	
+		    	// console.log("예약된 시간 목록:", reservedTime);
+				
+				let availableEndTimes = getAvaliableEndTime(startTime, reservedTime); // 종료시간 구하는 함수
+				
+				endTimeSelect.empty().append('<option value="" disabled>종료시간</option>'); // 종료시간초기화
+				
+				availableEndTimes.forEach(time => {
+					endTimeSelect.append(`<option value="\${time}">\${time}</option>`);
+				});
+				
+				
+		    },  error: function(request, status, error){
+		   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+			
+		}); // end of $.ajax({
 	});
-	
-	// ****** 시간선택 옵션 끝 ******// 
-	
-	
-	
-	
+	// ****** 예약 가능한 시간선택 옵션 시작 끝 ******// 
 	
 });
+
+
+// 종료 가능한 시간 선택하기 (동일 시간대 동일 수술실 중복 피하기)
+function getAvaliableEndTime(startTime, reservedTime) {
+	
+	let allTimes = [
+        "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+        "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+        "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"
+	]; // 종료 예약이 가능한 모든 시간 출력하기 
+
+	let avaliabledEndTimes = []; // 종료 가능한 시간 담기 배열
+	let startIndex = allTimes.indexOf(startTime);
+	
+	if(startIndex !== -1) {
+		let earliestReservedStart = null;
+		
+		reservedTime.forEach(reserved => {
+			
+			let reservedStartIndex = allTimes.indexOf(reserved.surgery_start_time);
+			
+			if(reservedStartIndex > startIndex) {
+				if(!earliestReservedStart || reservedStartIndex < earliestReservedStart) {
+					earliestReservedStart = reservedStartIndex;
+				}
+			}
+			
+		});
+		
+		if(earliestReservedStart) {
+			avaliabledEndTimes = allTimes.slice(startIndex + 1, earliestReservedStart); // 예약된 시간 전까지만 허용
+		} else {
+			avaliabledEndTimes = allTimes.slice(startIndex + 1); // 예약 없으면 끝까지 가능
+		}
+	}
+	return avaliabledEndTimes;
+}
+
 
 // 예약버튼 누름
 function registerSurgery() {
 	
 	// 폼(form)을 전송(submit)
     const frm = document.surgeryRegisterFrm;
-    frm.method = "post";
-    frm.action = "<%= ctxPath%>/register/success";
-    frm.submit();
+	const formData = new FormData(frm); // 폼데이터 직렬화
+	
+	const orderno = $("input#fk_order_no").val();
+	console.log(orderno);
+	$.ajax({
+		 url:"<%= ctxPath%>/register/success",
+		 type:"POST", 
+		 data:formData,
+		 processData: false, // FormData 객체를 사용할 때는 processData를 false로 설정
+         contentType: false, // FormData 객체를 사용할 때는 contentType을 false로 설정
+		 dataType: "json",
+	     success:function(response){
+			alert(response.message);
+			window.location.href = "<%= ctxPath%>/register/list";
+		 },
+	     error: function(request, status, error){
+	   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	 	}
+
+	});
 }
 
 </script>
@@ -198,11 +261,12 @@ function registerSurgery() {
   			
 	  		
 	  		<div class="form">
+				
 		  		<form name="surgeryRegisterFrm">
 		  		
 		  			<div class="input read">
 		  				<div class="text">차트번호</div>
-		  				<input type="text" value="${requestScope.order_no}" readonly/>
+		  				<input type="text" name="fk_order_no" value="${requestScope.order_no}" readonly/>
 		  			</div>
 		  			<div class="input read">
 		  				<div class="text">환자명</div>
@@ -210,7 +274,7 @@ function registerSurgery() {
 		  			</div>
 		  			<div class="input read">
 		  				<div class="text">예약일자</div>
-		  				<input type="text" class="today" name="surgery_day" readonly/>
+		  				<input type="text" class="today" name="surgery_reserve_date" readonly/>
 		  			</div>
 		  			<div class="input">
 		  				<div class="text">수술실 *</div>
@@ -232,14 +296,14 @@ function registerSurgery() {
 		  			</div>
 		  			
 		  			<div class="input">
-		  				<div class="text" >수술종료시간 (예상) *</div>
+		  				<div class="text">수술종료시간 (예상) *</div>
 		  				<select name="surgery_end_time" id="surgery_end_time" class="surgeryenddate">
 		  					<option value="">종료시간</option>
 		  				</select>
 		  			</div>
 		  			<div class="input">
 		  				<div class="text">수술설명 *</div>
-		  				<input type="text" name="surgery_description"/>
+		  				<input type="text" name="surgery_description" value="${requestScope.surgery_description}"/>
 		  			</div>	
 				</form>
 	  		</div>

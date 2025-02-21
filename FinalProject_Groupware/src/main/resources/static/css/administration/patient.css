@@ -19,7 +19,7 @@
 	display: flex;
 	align-items: center;
 }
-.header > div.search > input {
+div.search > input {
 	height: 30px;
 	width: 300px;
 }
@@ -42,5 +42,16 @@ div.patientList {
 	margin: 0 auto;
 }
 tr.patientList {
+	cursor: pointer;
+}
+
+/* 페이지바 */
+div#pageBar a {
+	color: #509d9c;
+	cursor: pointer;
+}
+#pageBar > ul > li {
+	color: #006769;
+	font-weight: bold;
 	cursor: pointer;
 }

@@ -17,6 +17,7 @@ $(document).ready(function(){
 	
 
 });
+
 function nameSearch() {
    const frm = document.searchFrm;
 	     frm.submit();
@@ -68,7 +69,7 @@ function nameSearch() {
 		</table>
 		
 		<%-- 페이지바 === --%>
-	    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+	    <div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 	    	${requestScope.pageBar}
 	    </div>
 	    
