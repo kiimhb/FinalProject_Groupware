@@ -60,9 +60,9 @@ public class RegisterService_imple  implements RegisterService {
 		
 		// 예약된 시간 가져오기 
 		List<String> reservedTime = dao.reservedTime(paraMap);
-		System.out.println("예약된 시간"+reservedTime);
+		// System.out.println("예약된 시간"+reservedTime);
 		
-		if(reservedTime.isEmpty()) {
+		if(reservedTime.isEmpty()) { // 예약된 시간이 없다면 모든 시간대를 출력해라 
 			return alltime;
 		}
 		

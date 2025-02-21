@@ -151,7 +151,7 @@ public class RegisterController {
 		if(surgeryroom_no == 3) {
 			surgery_surgeryroom_name = "roomC";
 		}
-		else {
+		else if(surgeryroom_no == 4) {
 			surgery_surgeryroom_name = "roomD";
 		}
 	
@@ -168,7 +168,7 @@ public class RegisterController {
 	// 예약하기 
 	@PostMapping("/success")
 	public ResponseEntity<String> registerSuccess(@ModelAttribute SurgeryVO surgeryvo) {
-		System.out.println(surgeryvo.toString());
+		// System.out.println(surgeryvo.toString());
 		
 		//service.surgeryRegister(surgeryvo); // 예약하기 insert
 		
