@@ -126,7 +126,7 @@ function goEdit(member_userid) {
                                 <h5 class="modal-title" id="EditViewLabel">모달 제목</h5>
                             </div>
                             <div class="modal-body">
-                                <input type="text" name="member_userid" id="member_userid" value="${member_userid}" readonly />
+                                <input type="text" name="member_userid" id="member_userid" value="${response.member_userid}" readonly />
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>

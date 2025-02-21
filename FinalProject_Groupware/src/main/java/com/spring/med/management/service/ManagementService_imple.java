@@ -140,7 +140,6 @@ public class ManagementService_imple implements ManagementService {
 	// === 인사관리 회원수정 한명의 멤버 조회 === //
 	@Override
 	public ManagementVO_ga getView_member_one(Map<String, String> paraMap) {
-	
 		ManagementVO_ga member_one = manaDAO.getView_member_one(paraMap);
 		return member_one;
 	}
