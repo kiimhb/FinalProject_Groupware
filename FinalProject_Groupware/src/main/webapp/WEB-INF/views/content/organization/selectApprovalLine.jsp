@@ -11,13 +11,20 @@
 <!DOCTYPE html>
 <html>
 
+<%-- Optional JavaScript --%>
+<script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="<%=ctxPath%>/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js" ></script>
+<script type="text/javascript" src="<%=ctxPath%>/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
 
 <%-- 직접 만든 CSS 1 --%>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
+<%-- alert 창 --%>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-
+<%-- Bootstrap CSS --%>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/bootstrap-4.6.2-dist/css/bootstrap.min.css" >
+  
 <%-- jsTree --%>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/themes/proton/style.min.css" />
@@ -27,34 +34,40 @@
 <style>
 	div.orgContainer {
 		border: solid 0px red;
-		width: 95%;
+		
 		margin: auto;
 		margin-top: 2%;
 	}
 	
-	h2 {
-		margin-left: 2%;
-		margin-top: 1%;
-		margin-bottom: 3%;
-	}
-	
+
 	<%-- show/hide/검색 --%>
 	div#orgTop {
-		margin: 5% 5% 2% 5%;		
+		margin: 3% 3% 1% 3%;		
 	}
 	
 	<%-- show/hide 버튼 --%>
 	button {
 		border-radius: 5px;
+		font-size: 10pt;
 	}
 	
 	<%-- 조직도 --%>
 	#tree {
-	    margin-top: 5%;
-	    margin-left: 5%;
+	    margin-top: 3%;
+	    margin-left: 3%;
 	}
 	
-
+	<%-- 검색창 --%>
+	input#member_name {
+	  width: 500px;
+	  height: 32px;
+	  font-size: 15px;
+	  border: 0;
+	  border-radius: 15px;
+	  outline: none;
+	  padding-left: 10px;
+	  background-color: rgb(233, 233, 233);
+	}
 </style>
 
 
@@ -122,7 +135,7 @@ $(document).ready(function(){
 	            if (row.member_name) {
 	                childDeptNode.children.push({
 	                    "text": row.member_name,
-	                    "icon": row.member_pro_filename,
+	                    "icon": 'fa-solid fa-user',
 	                    "data": { "member_userid": row.member_userid }
 	                });
 	            }
@@ -186,16 +199,15 @@ function jsTreeView(jsonData) {
 <%-- ===================================================================== --%>
 <body>
 <div class="orgContainer">
-	<h2>조직도</h2>
-	
+
 	<div style="display: flex; flex-wrap: wrap; margin: 2%;">
 	
-		<div style="border:solid 1px gray; border-radius: 3px; flex: 4.5; height: 600px; overflow: auto;">
+		<div style="border-radius: 3px; flex: 4.5; overflow: auto;">
 			<div id="orgTop">
 				<button type="button" id="btnShow">Show</button>
 				<button type="button" id="btnHide">Hide</button>
-				<span style="float: right;">
-					<input name="member_name" type="text" style="width: 160px;" placeholder="사원명 입력" />
+				<span >
+					<input id="member_name" name="member_name" type="text" style="width: 90px; margin-left: 3%; font-size: 10pt;" placeholder="사원명 입력" />
 					<!-- <button type="button" id="btnSearch">검색</button> -->
 				</span>
 			</div>

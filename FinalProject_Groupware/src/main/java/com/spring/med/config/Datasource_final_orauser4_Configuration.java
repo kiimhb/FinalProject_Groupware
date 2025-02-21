@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement 
-@MapperScan(basePackages={"com.spring.med.organization.model"}, sqlSessionFactoryRef="sqlSessionFactory")
+@MapperScan(basePackages={"com.spring.med.organization.model","com.spring.med.approval.model"}, sqlSessionFactoryRef="sqlSessionFactory")
 public class Datasource_final_orauser4_Configuration {
 
 	@Value("${mybatis.mapper-locations}")  // *.yml 파일에 있는 설정값 내 mapper 파일의 위치를 알려주는 것이다.

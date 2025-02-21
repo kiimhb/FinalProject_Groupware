@@ -39,7 +39,6 @@
 	<%-- 테이블 --%>
 	body table tr {
 		height: 20px;
-		
 	}
 	
 	.table_header {
@@ -62,7 +61,7 @@
 	.table_approval tr td,
 	.table-bordered tr td{
 		text-align: center;
-	} #table_approval > tbody > tr:nth-child(3) > td:nth-child(2)
+	}
 	
 	
 </style>
@@ -70,11 +69,6 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	
-	
-	
-	
-	
 	
 	////////////////////////////////////////////////////////////////////////////////
 	// ===== (Drag & Drop) 첨부파일 추가 이벤트 ===== //
@@ -207,7 +201,7 @@ function charCount(text, limit) {
 						</tr>
 						<tr>
 							<td class="table_title">소속</td>
-							<td>간호부</td>
+							<td id="testdata">간호부</td>
 						</tr>
 						<tr>
 							<td class="table_title">기안일</td>
@@ -223,48 +217,49 @@ function charCount(text, limit) {
 				<div style="border: solid 0px green; flex: 3;">
 					<div style="border: solid 0px orange; float: right; width: 85%;">
 						<div class="table_header">결재선</div>
-						<table class="table-bordered table_approval" class="table-bordered" style=" float: right; width: 100%;">	
-							<tr>
-								<td class="table_title">순서</td>
+						<div id="undesignated_line" style="width: 100%; height: 100px; background-color: #eee"></div>
+						<table id="designated_line_Table" class="table-bordered table_approval table-bordered" style="display: none; float: right; width: 100%;">	
+							<tr id="approvalLine_1">
+<!-- 							<td class="table_title">순서</td>
 								<td>1</td>
 								<td>2</td>
-								<td>3</td>	
+								<td>3</td> -->	
 							</tr>
-							<tr>
-								<td class="table_title">소속</td>	
+							<tr id="approvalLine_2">
+<!-- 								<td class="table_title">직책</td>	
 								<td>의사</td>
 								<td>의사</td>
-								<td>의사</td>
+								<td>의사</td> -->
 							</tr>
-							<tr>
-								<td class="table_title">부서</td>
+							<tr id="approvalLine_3">
+								<!-- <td class="table_title">부문</td>
 								<td>순환기내과</td>
 								<td>순환기내과</td>
-								<td>순환기내과</td>
+								<td>순환기내과</td> -->
 							</tr>
-							<tr>
-								<td class="table_title">성명</td>		
+							<tr id="approvalLine_4">
+								<!-- <td class="table_title">성명</td>		
 								<td>강감찬</td>
 								<td>강감찬</td>
-								<td>강감찬</td>
+								<td>강감찬</td> -->
 							</tr>
-							<tr>
-								<td class="table_title">결재상태</td>
+							<tr id="approvalLine_5">
+								<!-- <td class="table_title">결재상태</td>
 								<td><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>
 								<td><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>
-								<td><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>
+								<td><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td> -->
 							</tr>
 						</table>
 					</div>
 					
 					<div style="border: solid 0px orange; float: right; width: 80%; margin-top: 8%;">
 						<div class="table_header">참조자</div>
-						<table class="table-bordered" style="width: 100%;">
+						<div id="undesignated_refer" style="width: 100%; height: 60px; background-color: #eee"></div>
+						<table id="undesignated_refer_Table" class="table-bordered" style="width: 100%; display:none;">
 							<tr>
 								<td class="table_title">소속</td>
 								<td class="table_title">직급</td>
 								<td class="table_title">성명</td>
-								
 							</tr>
 							<tr>
 								<td>간호부</td>

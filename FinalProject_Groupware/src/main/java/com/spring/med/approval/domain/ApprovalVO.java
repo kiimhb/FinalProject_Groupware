@@ -13,10 +13,41 @@ public class ApprovalVO {
 	private String approver_feedback;   // 결재 or 반려 의견
 	private String approver_date;		// 결재일자
 	
+	private String parent_dept_name;	// 결재자의 부문(상위부서)
+	private String child_dept_name;		// 결재자의 부서(하위부서)
+	private String member_position;		// 결재자의 직급
+	private String member_name;			// 결재자의 이름
+	private String member_userid;		// 결재자의 아이디
+	
 
+	
 	// === Method === //
 	public String getApproval_no() {
 		return approval_no;
+	}
+	public String getParent_dept_name() {
+		return parent_dept_name;
+	}
+	public void setParent_dept_name(String parent_dept_name) {
+		this.parent_dept_name = parent_dept_name;
+	}
+	public String getChild_dept_name() {
+		return child_dept_name;
+	}
+	public void setChild_dept_name(String child_dept_name) {
+		this.child_dept_name = child_dept_name;
+	}
+	public String getMember_position() {
+		return member_position;
+	}
+	public void setMember_position(String member_position) {
+		this.member_position = member_position;
+	}
+	public String getMember_name() {
+		return member_name;
+	}
+	public void setMember_name(String member_name) {
+		this.member_name = member_name;
 	}
 	public void setApproval_no(String approval_no) {
 		this.approval_no = approval_no;
@@ -57,7 +88,12 @@ public class ApprovalVO {
 	public void setApprover_date(String approver_date) {
 		this.approver_date = approver_date;
 	}
-	
+	public String getMember_userid() {
+		return member_userid;
+	}
+	public void setMember_userid(String member_userid) {
+		this.member_userid = member_userid;
+	}
 	
 	
 

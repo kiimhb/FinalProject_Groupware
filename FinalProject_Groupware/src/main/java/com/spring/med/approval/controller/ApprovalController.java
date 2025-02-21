@@ -1,13 +1,18 @@
 package com.spring.med.approval.controller;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.med.approval.domain.ApprovalVO;
 import com.spring.med.approval.service.ApprovalService;
 
 import jakarta.security.auth.message.callback.PrivateKeyCallback.Request;
@@ -20,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class ApprovalController {
 	
 	@Autowired
-	private ApprovalService service;
+	private ApprovalService approvalService;
 	
 	
 	// ==== 기안문작성 폼페이지 요청 ==== //
@@ -91,8 +96,48 @@ public class ApprovalController {
 	}
 	
 	
-	// ==== 결재선지정 버튼 클릭 후 조직도를 가져오기 ==== //
-	//@GetMapping("setApprovalLine")
-	//@ResponseBody
-	//public List<Map<String,String>> 
+	// ==== 결재선 목록에 선택한 사원 추가하기 ==== //
+	@PostMapping("insertToApprovalLine")
+	@ResponseBody
+	public ApprovalVO insertToApprovalLine(@RequestParam String member_userid) {
+
+		ApprovalVO member = approvalService.insertToApprovalLine(member_userid);
+		
+		return member;
+	}
+	
+	
+	// ==== 참조자 목록에 선택한 사원 추가하기 ==== //
+	@PostMapping("insertToReference")
+	@ResponseBody
+	public ApprovalVO insertToReference(@RequestParam String member_userid) {
+
+		ApprovalVO member = approvalService.insertToApprovalLine(member_userid);
+		
+		return member;
+	}
+	
+	
+	// ==== 결재선 결재순위 지정 ==== // 
+	@PostMapping("orderByApprovalStep")
+	@ResponseBody
+	public List<HashMap<String, String>> orderByApprovalStep(@RequestParam String[] arr_approvalLineMembers) {
+		
+		List<HashMap<String, String>> memberList = approvalService.orderByApprovalStep(arr_approvalLineMembers);
+
+		return memberList;
+	}
+	
+	
+	// ==== 기존에 추가했던 결재선 사원을 목록에 불러오기 ==== //
+	@PostMapping("insertToApprovalLine_Arr")
+	@ResponseBody
+	public List<ApprovalVO> insertToApprovalLine_Arr(@RequestParam String[] arr_member_userid) {
+
+		List<ApprovalVO> memberList = approvalService.insertToApprovalLine_Arr(arr_member_userid);
+		
+		return memberList;
+	}
+	
+
 }

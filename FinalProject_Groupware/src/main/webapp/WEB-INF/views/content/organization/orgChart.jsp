@@ -51,6 +51,9 @@
 	    margin-left: 5%;
 	}
 	
+	<%-- employee-icon 클래스로 아이콘을 설정 --%>
+
+	
 	<%-- 사원정보 테이블 --%>
 	div#memberInfo {
 		width: 90%;
@@ -163,15 +166,18 @@ $(document).ready(function(){
 	                };
 	                parentDeptNode.children.push(childDeptNode);
 	            }
-	
+				
+	         	
 	            // 직원 추가
 	            if (row.member_name) {
+	                // 노드 추가
 	                childDeptNode.children.push({
 	                    "text": row.member_name,
-	                    "icon": row.member_pro_filename,
+	                    "icon": 'fa-solid fa-user',  // 직원 이미지 아이콘 설정
 	                    "data": { "member_userid": row.member_userid }
 	                });
 	            }
+
 	        });
 	
 	        // 트리구조 배열 확인
@@ -181,7 +187,7 @@ $(document).ready(function(){
 	        jsTreeView(treeData);
 	    },
 	    error: function() {
-			swal('조직도 불러오기 실패!',"다시 시도해주세요",'warning');
+			swal('조직도 불러오기 실패!',"다시 시도해주세요",'error');
 		}
 	});
 	
@@ -211,14 +217,17 @@ $(document).ready(function(){
 									<table  id="memberInfotable" style="table-layout: fixed; width: 100%;">
 										<tbody>
 											<tr>
-												<td rowspan="3" style="width:40%;">사진</td>
+												<td rowspan="4" style="width:40%; text-align:center;"><img width="137" height="176" src="<%= ctxPath%>/resources/profile/\${json.member_pro_filename}" / ></td>
 												<td style="width:50%;">성명<span class="tableSpan">\${json.member_name}</span></td>
 											</tr>
 											<tr>
-												<td style="width:50%;">부서<span class="tableSpan">\${json.parent_dept_name}</span></td>
+												<td style="width:50%;">부문<span class="tableSpan">\${json.parent_dept_name}</span></td>
 											</tr>
 											<tr>
-												<td style="width:50%;">직책<span class="tableSpan">\${json.child_dept_name}</span></td>
+												<td style="width:50%;">부서<span class="tableSpan">\${json.child_dept_name}</span></td>
+											</tr>
+											<tr>
+												<td style="width:50%;">직급<span class="tableSpan">\${json.member_position}</span></td>
 											</tr>
 											<tr>
 												<td colspan="2">핸드폰<span class="tableSpan">\${json.member_mobile}</span></td>
@@ -244,7 +253,7 @@ $(document).ready(function(){
 					
 				},
 				error: function() {
-					swal('사원정보 불러오기 실패!',"다시 시도해주세요",'warning');
+					swal('사원정보 불러오기 실패!',"다시 시도해주세요",'error');
 				}
 			});
 			
@@ -273,24 +282,22 @@ $(document).ready(function(){
 <%-- 배열을 이용해 트리 구조 생성하기 --%>
 function jsTreeView(jsonData) {
 	$('#tree').jstree({
-		'plugins': ["wholerow"],
-		'core' : {
-			'data' : jsonData,
-			'state': {
-				'opened' : true
-			},
-			'themes' : {
-				'name' : 'proton',
-				'responsive' : true
-			}
-		},
-        'plugins' : ["search"],
-        "search": {
-        	"case_sensitive": false,	// 대소문자 구분하지 않음
-        	"show_only_matches": true,	// 일치하는 노드만 검색
-        	"search_leaves_only": true	// 리프노드만 검색
-        }
-
+	    'plugins': ["wholerow", "search", "html"], // 플러그인 배열 합침
+	    'core': {
+	        'data': jsonData,
+	        'state': {
+	            'opened': true
+	        },
+	        'themes': {
+	            'name': 'proton',
+	            'responsive': true
+	        }
+	    },
+	    "search": {
+	        "case_sensitive": false,  // 대소문자 구분하지 않음
+	        "show_only_matches": true,  // 일치하는 노드만 검색
+	        "search_leaves_only": true  // 리프노드만 검색
+	    }
 	});
 }
 
