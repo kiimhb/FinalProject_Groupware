@@ -44,5 +44,19 @@ public class TreatPatientService_imple implements TreatPatientService {
 		List<TreatPatientVO> existPatientList = tpdao.existPatientShow(paraMap);
 		return existPatientList;
 	}
+
+	// === 기존환자 조회에서 등록 및 접수 update 하기
+	@Override
+	public int submitNcheck2(Map<String, String> paraMap) {
+		int n = tpdao.submitNcheck2(paraMap);
+		return n;
+	}
+
+	// === 신규환자 정보 입력하여 등록 및 접수 insert 하기
+	@Override
+	public int submitNcheck1(TreatPatientVO tpvo) {
+		int n = tpdao.submitNcheck1(tpvo);
+		return n;
+	}
 	
 }

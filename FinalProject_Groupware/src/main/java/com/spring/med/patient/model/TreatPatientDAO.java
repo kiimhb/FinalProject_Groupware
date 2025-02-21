@@ -19,5 +19,11 @@ public interface TreatPatientDAO {
 
 	// === 진료- 기존환자 조회에서 검색된 주민번호로 환자 정보 보여주기
 	List<TreatPatientVO> existPatientShow(Map<String, String> paraMap);
+
+	// === 기존환자 조회에서 등록 및 접수 update 하기
+	int submitNcheck2(Map<String, String> paraMap);
+
+	// === 신규환자 정보 입력하여 등록 및 접수 insert 하기
+	int submitNcheck1(TreatPatientVO tpvo);
 	
 }
