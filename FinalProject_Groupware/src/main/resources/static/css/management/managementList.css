@@ -1,0 +1,12 @@
+@charset "UTF-8";
+
+div.subContent {
+	border: solid 1px blue;
+	width: 95%;
+	margin: auto;
+}
+
+div.manag_h3 {
+	border-bottom: solid 2px gray;
+	margin: 30px;
+}

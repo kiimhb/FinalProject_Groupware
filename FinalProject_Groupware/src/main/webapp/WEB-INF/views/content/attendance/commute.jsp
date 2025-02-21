@@ -4,40 +4,16 @@
 String ctxPath = request.getContextPath();
 //     /myspring
 %>
-
+<%-- 직접 만든 CSS 1 --%>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/attendance/commute.css" />
 <jsp:include page="../../header/header1.jsp" />
 
-    <title>근태 현황</title>
-    
-    <style>
-      
-        .search-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .search-bar input, .search-bar select, .search-bar button {
-            padding: 5px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th, td {
-            padding: 10px;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-    </style>
-</head>
-<body>
-        <h2>근태 현황</h2>
+<div class="subContent">
+
+       <div class="manag_h3">
+		 <h3>근태관리 <근태현황> </h3>
+	   </div>
+		
         <div class="search-bar">
             <label>조회기간:</label>
             <input type="date" id="start-date"> ~ <input type="date" id="end-date">
@@ -99,7 +75,5 @@ String ctxPath = request.getContextPath();
             </tbody>
         </table>
        
-</body>
-</html>
-
+</div>
 <jsp:include page="../../footer/footer1.jsp" />  

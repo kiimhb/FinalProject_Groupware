@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.common.MyUtil;
 import com.spring.med.common.ManagFileManager;
 import com.spring.med.management.domain.Child_deptVO_ga;
 import com.spring.med.management.domain.ManagementVO_ga;
@@ -39,15 +40,15 @@ public class ManagementController {
 	private ManagFileManager managfileManager; 
 	
 	// === 사원등록 폼 페이지 요청 시작 === //
-	@GetMapping("ManagementFrom")
-	public String ManagementFrom_get(HttpServletRequest request) {
+	@GetMapping("ManagementForm")
+	public String ManagementForm_get(HttpServletRequest request) {
 		
 		//상위부서 테이블 가져오기
 		List<Parent_deptVO_ga> parentDeptList = managService.parentDeptList();
 		
 		request.setAttribute("parentDeptList", parentDeptList);
 		
-		return "content/management/ManagementFrom";
+		return "content/management/ManagementForm";
 	}
 	
 
@@ -78,8 +79,10 @@ public class ManagementController {
 	
 	
 	
-	@PostMapping("ManagementFrom")
-	public ModelAndView ManagementFrom_post(@RequestParam Map<String, String> paraMap,  ModelAndView mav, ManagementVO_ga managementVO_ga,  MultipartHttpServletRequest mrequest) {
+	@PostMapping("ManagementForm")
+	public ModelAndView ManagementForm_post(@RequestParam Map<String, String> paraMap,
+											ModelAndView mav, ManagementVO_ga managementVO_ga,
+											MultipartHttpServletRequest mrequest, HttpServletRequest request) {
 
 		// 아이디와 비밀번호 랜덤 생성 (8자리 숫자)
 	    String randomidAndPwd = randomidAndPwd(8);  
@@ -143,29 +146,34 @@ public class ManagementController {
 		n = managService.manag_form(managementVO_ga, paraMap);
 
 		if (n == 1) {
-		    mav.setViewName("redirect:/management/managFromDetail");
+	        mav.setViewName("content/management/managFormDetail");
 		} else {
-		    mav.setViewName("mycontent1/management/management");
+		    mav.setViewName("content/management/managementForm");
 		}
 
 		return mav;
 	}
 	
 
-	// 8자리 랜덤 숫자 생성 메서드
+	// 8자리 랜덤 숫자 생성 메서드(첫자리는 1~9, 뒷자리부터는 0~9)
 	private String randomidAndPwd(int length) {
 	    Random random = new Random();
 	    StringBuilder sb = new StringBuilder();
-	    
-	    for (int i = 0; i < length; i++) {
-	        sb.append(random.nextInt(10));  // 0~9 사이의 숫자를 추가
+
+	    sb.append(random.nextInt(9) + 1); 
+
+	    for (int i = 1; i < length; i++) {
+	        sb.append(random.nextInt(10));
 	    }
-	    
+
 	    return sb.toString();
 	}
 	
+	@GetMapping("managFormDetail")
+	public String managFormDetail(ManagementVO_ga managementVO_ga, HttpServletRequest request) {
 		
-		
+		return "content/management/managFormDetail";	
+	}
 	// === 사원등록 폼 페이지 요청 끝 === //
 	
 	
@@ -205,10 +213,154 @@ public class ManagementController {
 	
 	// === 사원목록 페이지 조회 요청 시작 === //
 	@GetMapping("ManagementList")
-	public String ManagementList(HttpServletRequest request) {
-	
-		return "content/management/ManagementList";
+	public ModelAndView ManagementList(ModelAndView mav, HttpServletRequest request,
+										@RequestParam(defaultValue = "") String searchType,
+							            @RequestParam(defaultValue = "") String searchWord,
+							            @RequestParam(defaultValue = "1") String currentShowPageNo) {
+		
+		List<ManagementVO_ga> Manag_List = null;
+		
+		searchWord = searchWord.trim();
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		int totalCount = 0;          // 총 게시물 건수
+		int sizePerPage = 10;        // 한 페이지당 보여줄 게시물 건수
+		int totalPage = 0;           // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
+		
+		int n_currentShowPageNo = 0; 
+		
+		// 총 게시물 건수 (totalCount)
+		totalCount = managService.getTotalCount(paraMap);
+		//System.out.println("~~~ 확인용 totalCount : " + totalCount);
+		
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+		
+		try {
+			  n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+		
+			  if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+				  
+				  n_currentShowPageNo = 1;
+			  }
+			  
+		} catch(NumberFormatException e) {
+			n_currentShowPageNo = 1;
+		}
+		
+		 int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1; // 시작 행번호
+		 int endRno = startRno + sizePerPage - 1; // 끝 행번호 
+		 
+		 paraMap.put("startRno", String.valueOf(startRno)); 
+		 paraMap.put("endRno", String.valueOf(endRno));    
+		 
+		 paraMap.put("currentShowPageNo", currentShowPageNo);
+		 
+		 Manag_List = managService.Manag_List(paraMap);
+		
+		 mav.addObject("Manag_List", Manag_List);
+		
+		 if("child".equals(searchType) || 
+		    "position".equals(searchType) ||
+		    "name".equals(searchType)) { 
+
+			 paraMap.put("searchType", searchType);
+			 paraMap.put("searchWord", searchWord);
+			 
+			 mav.addObject("paraMap", paraMap);	
+		 }
+		 int blockSize = 10;
+		 
+		 int loop = 1;
+		 
+		 int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
+			  
+		 String pageBar = "<ul style='list-style:none;'>";
+		 String url = "ManagementList";
+			
+			// === [맨처음][이전] 만들기 === //
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'>[맨처음]</a></li>";
+			
+			if(pageNo != 1) {
+				pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>"; 
+			}
+			
+			
+			while( !(loop > blockSize || pageNo > totalPage) ) {
+				
+				if(pageNo == Integer.parseInt(currentShowPageNo)) {
+					pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>"; 
+				}
+				else {
+					pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>"; 
+				}
+				
+				loop++;
+				pageNo++;
+			}// end of while-------------------------------
+			
+			
+			// === [다음][마지막] 만들기 === //
+			if(pageNo <= totalPage) {
+				pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
+			}
+			
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+						
+			pageBar += "</ul>";	
+			
+			mav.addObject("pageBar", pageBar);
+		
+			mav.addObject("totalCount", totalCount);   // 페이징 처리시 보여주는 순번을 나타내기 위한 것임.
+			mav.addObject("currentShowPageNo", currentShowPageNo); // 페이징 처리시 보여주는 순번을 나타내기 위한 것임.
+			mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것임.
+			
+			String currentURL = MyUtil.getCurrentURL(request);
+		//	System.out.println("~~~ 확인용 currentURL : " + currentURL);
+
+			mav.addObject("goBackURL", currentURL);
+			
+			mav.setViewName("content/management/ManagementList");
+			
+			return mav;
 	}
+	
+	// === 검색어 조회 === //
+	@GetMapping("wordSearchShow")
+	@ResponseBody
+	public List<Map<String, String>> wordSearchShow(@RequestParam Map<String, String> paraMap) {
+		
+		List<String> wordList = managService.wordSearchShow(paraMap); 
+		
+		List<Map<String, String>> mapList = new ArrayList<>();
+		
+		if(wordList != null) {
+			for(String word : wordList) {
+				Map<String, String> map = new HashMap<>();
+				map.put("word", word);
+				mapList.add(map);
+			}// end of for-------------
+		}
+		
+		return mapList;
+	}
+	
+	// === 인사관리 회원수정 한명의 멤버 조회 === //
+	@PostMapping("managementEdit")
+	public ModelAndView view(ModelAndView mav, HttpServletRequest request) {
+		String member_userid = request.getParameter("member_userid");
+		//System.out.println(member_userid);
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("member_userid", member_userid);
+		
+		ManagementVO_ga managvo = managService.getView_member_one(paraMap);
+		mav.addObject("managvo", managvo);
+		
+		return mav;
+	}
+	
 	// === 사원목록 페이지 조회 요청 끝 === //
 
 }

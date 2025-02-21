@@ -1,17 +1,14 @@
 package com.spring.med.management.service;
 
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.common.Sha256;
-import com.spring.med.common.AES256;
 import com.spring.med.management.domain.Child_deptVO_ga;
 import com.spring.med.management.domain.ManagementVO_ga;
 import com.spring.med.management.domain.Parent_deptVO_ga;
@@ -27,10 +24,6 @@ public class ManagementService_imple implements ManagementService {
 	@Autowired
 	private ManagementDAO manaDAO;
 	
-	@Autowired
-	private AES256 aes;
-	
-
 	//상위부서 테이블 가져오기
 	@Override
 	public List<Parent_deptVO_ga> parentDeptList() {
@@ -51,9 +44,11 @@ public class ManagementService_imple implements ManagementService {
 	public int manag_form(ManagementVO_ga managementVO_ga, Map<String, String> paraMap) {
 	
 		 String member_pwd = Sha256.encrypt(String.valueOf(paraMap.get("randomidAndPwd")));
+		 String member_start = String.valueOf(paraMap.get("member_start"));
 		 
 		  managementVO_ga.setMember_pwd(member_pwd);
 		  paraMap.put("randomidAndPwd", member_pwd);
+		  paraMap.put("member_start", member_start);
 		  
 		  int n = manaDAO.manag_form(managementVO_ga); 
 		
@@ -118,6 +113,41 @@ public class ManagementService_imple implements ManagementService {
 		
 		return mav;
 	}
+
+	// ==== 사원 전체조회 ==== //
+	@Override
+	public List<ManagementVO_ga> Manag_List(Map<String, String> paraMap) {
+		List<ManagementVO_ga> Manag_List = manaDAO.Manag_List(paraMap);
+		return Manag_List;
+	}
+
+	// 총 사원수 구하기 --> 검색이 있을 때와 검색이 없을때 로 나뉜다.
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount = manaDAO.getTotalCount(paraMap);
+		return totalCount;
+	}
+
+	// 검색어 입력시 자동글 완성하기
+	@Override
+	public List<String> wordSearchShow(Map<String, String> paraMap) {
+		List<String> wordList = manaDAO.wordSearchShow(paraMap);
+		return wordList;
+	}
+
+
+
+	// === 인사관리 회원수정 한명의 멤버 조회 === //
+	@Override
+	public ManagementVO_ga getView_member_one(Map<String, String> paraMap) {
+	
+		ManagementVO_ga member_one = manaDAO.getView_member_one(paraMap);
+		return member_one;
+	}
+
+
+	
+
 
 
 

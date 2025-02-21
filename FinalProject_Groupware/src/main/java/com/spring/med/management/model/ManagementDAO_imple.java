@@ -6,7 +6,6 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.spring.app.member.domain.MemberVO;
 import com.spring.med.management.domain.Child_deptVO_ga;
 import com.spring.med.management.domain.ManagementVO_ga;
 import com.spring.med.management.domain.Parent_deptVO_ga;
@@ -40,7 +39,7 @@ public class ManagementDAO_imple implements ManagementDAO {
 		int n = sqlmanag.insert("management_ga.manag_form", managementVO_ga);
 		return n;
 	}
-
+	
 	//로그인 처리
 	@Override
 	public ManagementVO_ga getLoginMember(Map<String, String> paraMap) {
@@ -49,5 +48,36 @@ public class ManagementDAO_imple implements ManagementDAO {
 		return loginuser;
 		
 	}
+
+	//사원 전체조회
+	@Override
+	public List<ManagementVO_ga> Manag_List(Map<String, String> paraMap) {
+		List<ManagementVO_ga> Manag_List = sqlmanag.selectList("management_ga.Manag_List", paraMap);
+		return Manag_List;
+	}
+	
+	// 총 사원수 구하기 --> 검색이 있을 때와 검색이 없을때 로 나뉜다.
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount = sqlmanag.selectOne("management_ga.getTotalCount", paraMap);
+		return totalCount;
+	}
+
+	// 검색어 입력시 자동글 완성하기
+	@Override
+	public List<String> wordSearchShow(Map<String, String> paraMap) {
+		List<String> wordList = sqlmanag.selectList("management_ga.wordSearchShow", paraMap);
+		return wordList;
+	}
+
+	// 인사관리 회원수정 한명의 멤버 조회 
+	@Override
+	public ManagementVO_ga getView_member_one(Map<String, String> paraMap) {
+		ManagementVO_ga member_one = sqlmanag.selectOne("management_ga.getView_member_one", paraMap);
+		return member_one;
+	}
+
+	
+
 
 }

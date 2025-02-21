@@ -6,54 +6,9 @@
 String ctxPath = request.getContextPath();
 //     /med-groupware
 %>
+<%-- 직접 만든 CSS 1 --%>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/management/managementForm.css" />
 <jsp:include page="../../header/header1.jsp" />
-
-<style type="text/css">
-div.subContent {
-	border: solid 1px blue;
-	width: 95%;
-	margin: auto;
-}
-
-div.manag_h3 {
-	border-bottom: solid 2px gray;
-	margin: 30px;
-}
-
-div.mem_profile {
-    border: solid 1px blue;
-    width: 30%;
-    padding: 15px;
-    text-align: center;
-}
-
-div.mem_profile img {
-    border-radius: 10px; /* 이미지 둥글게 */
-    border: solid 1px gray;
-}
-
-div.mem_profile input[type="file"] {
-    margin-top: 10px;
-}
-
-table.manag_table {
-     border: solid 1px blue;
-    width: 65%; /* 테이블이 더 넓게 차지하도록 설정 */
-    border-collapse: collapse;
-    flex-grow: 1; /* 가능한 공간 차지 */
-}
-
-table.manag_table th, table.manag_table td {
-    border: solid 1px blue;
-    padding: 10px;
-    text-align: left;
-}
-
-table.manag_table th {
-    background-color: #f4f4f4; /* 연한 배경 */
-}
-
-</style>
 
 <script type="text/javascript">
     // 이미지 미리보기
@@ -152,16 +107,24 @@ table.manag_table th {
         	    const parentDept = $("select[name='parentDept']").val(); // 선택된 부서 값
 
         	    // 연차, 등급 설정
-        	    if (
-        	        (parentDept == "1" && selectedPosition == "전문의") ||
-        	        (parentDept == "2" && selectedPosition == "수간호사") ||
-        	        (parentDept == "3" && (selectedPosition == "병원장" || selectedPosition == "부장"))
-        	    ) {
+        	    if ((parentDept == "3" && (selectedPosition == "병원장"))) {
         	        member_yeoncha = 20;
         	        member_grade = 1;
-        	    } else {
-        	        member_yeoncha = 15;
+        	    } else  if 
+        	    ((parentDept == "3" && (selectedPosition == "부장")) || (parentDept == "1" && (selectedPosition == "전문의"))) {
+        	        member_yeoncha = 18;
         	        member_grade = 2;
+        	    } else  if 
+        	    ((parentDept == "3" && (selectedPosition == "차장")) || (parentDept == "2" && (selectedPosition == "수간호사"))) {
+        	        member_yeoncha = 17;
+        	        member_grade = 3;
+        	    }  else  if 
+        	    ((parentDept == "3" && (selectedPosition == "과장")) ) {
+        	        member_yeoncha = 15;
+        	        member_grade = 4;
+        	    } else{
+        	    	member_yeoncha = 15;
+        	        member_grade = 5;
         	    }
 
         	   // console.log("연차:", member_yeoncha, "등급:", member_grade);
@@ -367,7 +330,7 @@ table.manag_table th {
     	        $('#member_workingTime').val(member_workingTime); 
 
     	        frm.method = "post";
-    	        frm.action = "<%= ctxPath%>/management/ManagementFrom";
+    	        frm.action = "<%= ctxPath%>/management/ManagementForm";
     	        frm.submit();
 
     	    });
@@ -378,7 +341,7 @@ table.manag_table th {
 <div class="subContent">
 
 	<div class="manag_h3">
-		<h3>사원등록</h3>
+		<h3>인사관리 <사원등록> </h3>
 	</div>
 	
 

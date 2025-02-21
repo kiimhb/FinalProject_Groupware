@@ -17,7 +17,19 @@ public interface ManagementDAO {
 
 	//사원등록 폼
 	int manag_form(ManagementVO_ga managementVO_ga);
-
+	
+	//로그인
 	ManagementVO_ga getLoginMember(Map<String, String> paraMap);
 
+	// 총 사원수 구하기 --> 검색이 있을 때와 검색이 없을때 로 나뉜다.
+	int getTotalCount(Map<String, String> paraMap);
+	
+	//사원 전체조회
+	List<ManagementVO_ga> Manag_List(Map<String, String> paraMap);
+	
+	// 검색어 입력시 자동글 완성하기
+	List<String> wordSearchShow(Map<String, String> paraMap);
+
+	// 인사관리 회원수정 한명의 멤버 조회 
+	ManagementVO_ga getView_member_one(Map<String, String> paraMap);
 }

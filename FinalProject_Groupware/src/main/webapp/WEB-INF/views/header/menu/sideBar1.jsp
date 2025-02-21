@@ -9,11 +9,10 @@
 String ctxPath = request.getContextPath();
 //     /med-groupware
 %>
-
+<%-- 아이콘 --%>
+<script src="https://kit.fontawesome.com/1e8b6a814a.js" crossorigin="anonymous"></script>
 <%-- 직접 만든 CSS --%>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
-<%-- 아이콘 --%>
-<script src="https://kit.fontawesome.com/0c69fdf2c0.js" crossorigin="anonymous"></script>
   
 <script type="text/javascript">
 $(document).ready(function() {
@@ -135,7 +134,7 @@ $(document).ready(function() {
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/management/">근태내역집계</a>
             <a class="dropdown-item" href="<%=ctxPath%>/management/ManagementList">사원목록</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/management/ManagementFrom">사원등록</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/management/ManagementForm">사원등록</a>
          </div></li>
    </ul>
    

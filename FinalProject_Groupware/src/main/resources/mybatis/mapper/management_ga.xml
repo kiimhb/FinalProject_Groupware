@@ -5,31 +5,152 @@
 
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="management_ga">
-	
+
 	<select id="parentDeptList" resultType="Parent_deptVO_ga">
-		select parent_dept_no, parent_dept_name
+		select parent_dept_no,
+		parent_dept_name
 		from tbl_parent_dept
 	</select>
-	
-	<select id="childDeptJSON"  parameterType="HashMap" resultType="Child_deptVO_ga">
+
+	<select id="childDeptJSON" parameterType="HashMap"
+		resultType="Child_deptVO_ga">
 		select child_dept_no, fk_parent_dept_no, child_dept_name
 		from tbl_child_dept
 		where fk_parent_dept_no = #{dept}
 	</select>
-	
+
 	<insert id="manag_form" parameterType="ManagementVO_ga">
-		insert into tbl_member(member_userid, fk_child_dept_no, member_pwd, member_name, member_mobile, member_email,member_birthday, member_gender, member_start, member_last, member_pro_filename, member_pro_orgfilename, member_pro_filesize,member_yeoncha, member_grade, member_workingTime, member_position, member_sign_filename, member_sign_orgfilename, member_sign_filesize)
-		values(#{member_userid}, #{fk_child_dept_no}, #{member_pwd}, #{member_name}, #{member_mobile}, #{member_email},#{member_birthday}, #{member_gender}, #{member_start, jdbcType=DATE}, #{member_last, jdbcType=VARCHAR}, #{member_pro_filename}, #{member_pro_orgfilename}, #{member_pro_filesize}, #{member_yeoncha}, #{member_grade}, #{member_workingTime}, #{member_position}, #{member_sign_filename, jdbcType=VARCHAR}, #{member_sign_orgfilename, jdbcType=VARCHAR}, #{member_sign_filesize, jdbcType=VARCHAR}) 
+		insert into
+		tbl_member(member_userid, fk_child_dept_no, member_pwd, member_name,
+		member_mobile, member_email,member_birthday, member_gender,
+		member_start, member_pro_filename, member_pro_orgfilename,
+		member_pro_filesize,member_yeoncha, member_grade, member_workingTime,
+		member_position)
+		values(#{member_userid}, #{fk_child_dept_no},
+		#{member_pwd}, #{member_name}, #{member_mobile},
+		#{member_email},#{member_birthday}, #{member_gender}, #{member_start},
+		#{member_pro_filename}, #{member_pro_orgfilename},
+		#{member_pro_filesize}, #{member_yeoncha}, #{member_grade},
+		#{member_workingTime}, #{member_position})
 	</insert>
-	
-	  <select id="getLoginMember" resultType="ManagementVO_ga" parameterType="HashMap">
-	  SELECT member_userid, fk_child_dept_no, child_dept_name ,member_pwd, member_name, member_mobile, member_email,member_birthday, 
-	  member_gender, member_start, member_last, member_pro_filename, member_pro_orgfilename, member_pro_filesize,
-	  member_yeoncha, member_grade, member_workingTime, member_position, member_sign_filename, member_sign_orgfilename, member_sign_filesize    
-   	  from tbl_member m
-      JOIN TBL_CHILD_DEPT c
-      ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
-      where member_userid = #{member_userid} and member_pwd = #{member_pwd} 
-   </select>
-	
+
+	<select id="getLoginMember" resultType="ManagementVO_ga"
+		parameterType="HashMap">
+		SELECT member_userid, fk_child_dept_no, child_dept_name ,
+		member_name, member_mobile, member_email,member_birthday,
+		member_gender, member_start, member_last, member_pro_filename,
+		member_pro_orgfilename, member_pro_filesize,
+		member_yeoncha, member_grade, member_workingTime, member_position,
+		member_sign_filename, member_sign_orgfilename, member_sign_filesize
+		from tbl_member m
+		JOIN TBL_CHILD_DEPT c
+		ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
+		where member_userid = #{member_userid}
+	</select>
+
+	<!-- === 총 사원수 구하기 검색이 있을 때와 검색이 없을때 로 나뉜다. === -->
+	<select id="getTotalCount" parameterType="HashMap"
+		resultType="int">
+		select count(*)
+		from tbl_member m
+		JOIN TBL_CHILD_DEPT c ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
+		<choose>
+			<when test='searchType == "child" and searchWord != ""'>
+				where lower(child_dept_name) like '%'|| lower(#{searchWord}) ||'%'
+			</when>
+			<when test='searchType == "position" and searchWord != ""'>
+				where lower(member_position) like '%'|| lower(#{searchWord}) ||'%'
+			</when>
+			<when test='searchType == "name" and searchWord != ""'>
+				where lower(member_name) like '%'|| lower(#{searchWord}) ||'%'
+			</when>
+			<otherwise></otherwise>
+		</choose>
+	</select>
+
+	<!-- === 사원 전체조회 === -->
+	<select id="Manag_List" parameterType="HashMap"
+		resultType="ManagementVO_ga">
+		SELECT *
+		FROM
+		(
+		SELECT ROW_NUMBER() OVER (ORDER BY m.MEMBER_START DESC) AS RNO,
+		m.member_userid, m.MEMBER_START, m.fk_child_dept_no,
+		c.child_dept_name, m.member_name,
+		m.member_gender, m.member_pro_filename, m.member_position
+		FROM tbl_member m
+		JOIN TBL_CHILD_DEPT c ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
+		<choose>
+			<when test='searchType == "child" and searchWord != ""'>
+				where lower(child_dept_name) like '%'|| lower(#{searchWord}) ||'%'
+			</when>
+			<when test='searchType == "position" and searchWord != ""'>
+				where lower(member_position) like '%'|| lower(#{searchWord}) ||'%'
+			</when>
+			<when test='searchType == "name" and searchWord != ""'>
+				where lower(member_name) like '%'|| lower(#{searchWord}) ||'%'
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		) V
+		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+
+	<!-- === 검색어 입력시 자동글 완성하기 6 === -->
+	<select id="wordSearchShow" parameterType="HashMap"
+		resultType="String">
+		<choose>
+			<when test='searchType == "child"'>
+				SELECT child_dept_name
+			</when>
+			<when test='searchType == "position"'>
+				SELECT member_position
+			</when>
+			<otherwise>
+				SELECT member_name
+			</otherwise>
+		</choose>
+		FROM tbl_member
+		JOIN TBL_CHILD_DEPT
+		ON fk_CHILD_DEPT_NO = CHILD_DEPT_NO
+		WHERE 1=1
+		<choose>
+			<when test='searchType == "child" and searchWord != ""'>
+				AND lower(child_dept_name) LIKE '%' || lower(#{searchWord}) || '%'
+			</when>
+			<when test='searchType == "position" and searchWord != ""'>
+				AND lower(member_position) LIKE '%' || lower(#{searchWord}) || '%'
+			</when>
+			<otherwise>
+				AND lower(member_name) LIKE '%' || lower(#{searchWord}) || '%'
+			</otherwise>
+		</choose>
+		<choose>
+			<when test='searchType == "child"'>
+				ORDER BY MEMBER_START ASC
+			</when>
+			<when test='searchType == "position"'>
+				ORDER BY MEMBER_START ASC
+			</when>
+			<otherwise>
+				ORDER BY member_name ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- === 인사관리 회원수정 한명의 멤버 조회 === -->
+	<select id="getView_member_one" resultType="ManagementVO_ga" parameterType="HashMap">
+	SELECT  member_userid, fk_child_dept_no, child_dept_name ,
+			member_name, member_mobile, member_email,member_birthday,
+			member_gender, member_start, member_last, member_pro_filename,
+			member_pro_orgfilename, member_pro_filesize,
+			member_yeoncha, member_grade, member_workingTime, member_position
+			from tbl_member m
+			JOIN TBL_CHILD_DEPT c
+			ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
+			where member_userid = #{member_userid}
+	</select>
+
+
+
 </mapper>
