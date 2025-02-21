@@ -1,5 +1,6 @@
 package com.spring.med.patient.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,16 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.med.common.MyUtil;
+import com.spring.med.management.domain.ManagementVO_ga;
 import com.spring.med.patient.domain.TreatPatientVO;
 import com.spring.med.patient.service.TreatPatientService;
 
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(value="/patient/*")
@@ -31,11 +38,24 @@ public class TreatPatientController {
 	
 	// 접수 후 대기하고 있는 환자 리스트 페이징 하여 보기
 	@GetMapping("patientWaiting")
-	public ModelAndView selectPatientWaiting(HttpServletRequest request, ModelAndView mav,@RequestParam(defaultValue = "1") String currentShowPageNo) {
+	public ModelAndView selectPatientWaiting(HttpServletRequest request, HttpServletResponse response, ModelAndView mav,@RequestParam(defaultValue = "1") String currentShowPageNo) {
+						
+		HttpSession session = request.getSession();		
+		// System.out.println("세션 : "+session.getAttribute("loginuser"));
+						
+		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
 		
-		// List<PatientVO> patientList = null;
+		if(session.getAttribute("loginuser") == null) {
+			
+			mav.setViewName("content/management/login");
+		}
+		else {				
+		
+		String member_userid = loginuser.getMember_userid();
 	
 		Map<String, String> paraMap = new HashMap<>();
+		
+		paraMap.put("member_userid", member_userid);
 		
 		int totalCount = 0;          // 총 게시물 건수
 		int sizePerPage = 10;        // 한 페이지당 보여줄 게시물 건수
@@ -125,17 +145,31 @@ public class TreatPatientController {
 		mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것임.
 		
 		
-		mav.setViewName("content/patient/patientWaiting"); 
+		mav.setViewName("content/patient/patientWaiting");
+		}
 		return mav;
 	}
 	
 	
+	// === 신규, 기존환자 등록및 접수 페이지 보여주기 
 	@GetMapping("patientReg")
 	public ModelAndView patientReg(HttpServletRequest request, ModelAndView mav, String patient_jubun) {
-				
+		
+		
+		HttpSession session = request.getSession();		
+		// System.out.println("세션 : "+session.getAttribute("loginuser"));						
+		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+		
+		if(session.getAttribute("loginuser") == null) {
+
+			
+			mav.setViewName("content/management/login");
+		}
+		else {
 	
 		mav.setViewName("content/patient/patientReg");
-						
+		}
+		
 		return mav;
 	}
 	
@@ -172,14 +206,66 @@ public class TreatPatientController {
 		
 		paraMap.put("patient_jubun", patient_jubun);
 		
-		System.out.println(paraMap);
+		// System.out.println(paraMap);
 		
 		List<TreatPatientVO> existPatientList = service.existPatientShow(paraMap);		
 		
-		System.out.println(existPatientList);
+		// System.out.println(existPatientList);
 				
 		return existPatientList;
 	}
+	
+	
+	// === 기존환자 조회에서 등록 및 접수 update 하기
+	@PostMapping("submitNcheck2")
+	@ResponseBody
+	public void submitNcheck2 (HttpServletRequest request) {
+		
+		String patient_symptom = request.getParameter("patient_symptom");
+		String patient_no = request.getParameter("patient_no");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		
+		paraMap.put("patient_symptom", patient_symptom);
+		paraMap.put("patient_no", patient_no);
+		
+		// System.out.println(paraMap);
+		
+		int n = service.submitNcheck2(paraMap);
+		
+		if(n==1) {
+			System.out.println("데이터 전송 성공");
+		}
+
+	}
+	
+	// === 신규환자 정보 입력하여 등록 및 접수 insert 하기
+	@PostMapping("submitNcheck1")
+	@ResponseBody
+	public Map<String, Object> submitNcheck1(TreatPatientVO tpvo) {
+		
+	
+		int n = service.submitNcheck1(tpvo);
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("patient_name", tpvo.getPatient_name());
+		map.put("patient_jubun", tpvo.getPatient_jubun());
+		map.put("fk_child_dept_no", tpvo.getFk_child_dept_no());
+		map.put("patient_gender", tpvo.getPatient_gender());
+		map.put("patient_symptom", tpvo.getPatient_symptom());
+
+		
+		System.out.println(map);
+		
+		return map;
+		
+		
+	
+	}
+	
+	
+	
+	
 	
 	
 

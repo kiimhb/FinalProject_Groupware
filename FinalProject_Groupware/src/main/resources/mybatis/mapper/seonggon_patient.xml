@@ -22,7 +22,7 @@
 	
 	
 	 
-	 
+	 <!-- 대기중인 환자 리스트 select 하여 보여주기 
 	<resultMap id="PatientListMap" type="HashMap">
 	    <result property="patient_name" 		column="patient_name" 		javaType="String" />	    
 	    <result property="patient_gender"   	column="patient_gender" 	javaType="String" />
@@ -31,27 +31,71 @@
 	    <result property="patient_status" 		column="patient_status" 	javaType="String" />
 	    <result property="patient_waiting" 		column="patient_waiting" 	javaType="String" />
 	   	<result property="child_dept_name"  	column="child_dept_name" 	javaType="String" />
+	   	
 	</resultMap>
 	
 	<select id="selectPatientWaiting" parameterType="HashMap" resultMap="PatientListMap">
 		select *
 		from
 		(
-		select rownum as rno, patient_name, patient_gender, patient_jubun, patient_symptom, patient_status, patient_waiting, child_dept_name
+		select rownum as rno, patient_name, patient_gender, patient_jubun, patient_symptom, patient_status, patient_waiting, to_char(patient_visitdate, 'yyyy-mm-dd hh24:mi:ss'), child_dept_name
 		from 
 		(
-		select P.patient_name, P.patient_gender, P.patient_jubun, P.patient_symptom, P.patient_status, P.patient_waiting, D.child_dept_name
+		select P.patient_name, P.patient_gender, P.patient_jubun, P.patient_symptom, P.patient_status, P.patient_waiting, P.patient_visitdate, D.child_dept_name
 		from tbl_patient P LEFT JOIN tbl_child_dept D
 		on P.fk_child_dept_no = D.child_dept_no
 		where P.patient_waiting = 1
-		order by P.patient_name desc
+		order by P.patient_visitdate desc
 		) a
 		) b
 		WHERE b.RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
+-->
+
+
+	<!-- 로그인한 의사 담당 진료과에 따른 대기중인 환자 리스트 select 하여 보여주기 -->
+	<resultMap id="PatientListMap" type="HashMap">
+		<result property="patient_no" 			column="patient_no" 		javaType="String" />
+	    <result property="patient_name" 		column="patient_name" 		javaType="String" />	    
+	    <result property="patient_gender"   	column="patient_gender" 	javaType="String" />
+	    <result property="age" 					column="age"    			javaType="String" />
+	    <result property="patient_symptom"    	column="patient_symptom" 	javaType="String" />
+	    <result property="patient_status" 		column="patient_status" 	javaType="String" />
+	    <result property="patient_waiting" 		column="patient_waiting" 	javaType="String" />
+	   	<result property="child_dept_name"  	column="child_dept_name" 	javaType="String" />
+	   	<result property="child_dept_name"  	column="child_dept_name" 	javaType="String" />
+	   	<result property="rno"  				column="rno" 				javaType="String" />
+	</resultMap>
 	
+	<select id="selectPatientWaiting" parameterType="HashMap" resultMap="PatientListMap">
+		select *
+		from
+		( 
+		select rownum as rno, patient_no, patient_name, patient_gender, (func_age(patient_jubun)||'세') AS age, patient_symptom, Patient_visitdate, child_dept_name
+		from
+		( 
+		select P.patient_no, P.patient_name, P.patient_gender, P.patient_jubun, A.child_dept_name, P.patient_symptom, to_char(P.patient_visitdate, 'yyyy-mm-dd hh24:mi:ss') AS Patient_visitdate
+		from
+		(
+		select fk_child_dept_no, D.child_dept_name
+		from tbl_member M LEFT JOIN tbl_child_dept D
+		ON M.fk_child_dept_no = D.child_dept_no
+		where member_userid = #{member_userid}
+		) A LEFT JOIN tbl_patient P
+		ON A.fk_child_dept_no = P.fk_child_dept_no
+		WHERE A.fk_child_dept_no = (
+		                            select M.fk_child_dept_no AS dept_no
+		                            from tbl_member M LEFT JOIN tbl_child_dept D
+		                            ON M.fk_child_dept_no = D.child_dept_no
+		                            where member_userid = #{member_userid}
+		                            )
+		AND patient_waiting = 1
+		order by patient_visitdate desc ) B
+		) C
+		WHERE C.RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
 	
-	
+
 	
 	<!-- === #92. 검색어 입력시 자동글 완성하기 6 === -->
      <select id="wordSearchShow" parameterType="HashMap" resultType="String">
@@ -62,9 +106,9 @@
 			and lower(patient_jubun) like '%'||lower(#{searchWord})||'%'
      </select>
      
-     
+     <!-- === 기존 환자 조회시 정보 보여주기 -->
      <select id="existPatientShow" parameterType="HashMap" resultType="TreatPatientVO">
-     	select P.patient_name, P.patient_gender, P.patient_jubun, P.patient_symptom, D.child_dept_name
+     	select P.patient_no, P.patient_name, P.patient_gender, P.patient_jubun, P.patient_symptom, D.child_dept_name
 		from tbl_patient P LEFT JOIN tbl_child_dept D
 		on P.fk_child_dept_no = D.child_dept_no
 		where P.patient_waiting = 0
@@ -72,6 +116,25 @@
 		and P.patient_jubun like #{patient_jubun}
 		order by P.patient_no desc
      </select>
+     
+     
+     <!-- // === 기존환자 조회에서 등록 및 접수 update 하기 -->
+     <update id="submitNcheck2" parameterType="HashMap">     	
+		update tbl_patient set patient_symptom = #{patient_symptom}, patient_waiting = 1, patient_visitdate = sysdate
+		where patient_no = #{patient_no}     
+     </update>
+     
+     
+     <!-- === 신규환자 정보 입력하여 등록 및 접수 insert 하기  -->
+     <update id="submitNcheck1" parameterType="TreatPatientVO">
+     
+     insert into tbl_patient(patient_no, fk_child_dept_no, patient_name, patient_jubun, patient_gender, patient_symptom, patient_status, patient_visitdate, patient_waiting)
+	 values (seq_patient_no.nextval, #{fk_child_dept_no}, #{patient_name}, #{patient_jubun}, #{patient_gender}, #{patient_symptom}, 0, sysdate, 1)
+     
+     </update>
+     
+     
+     
 	
 	
 		

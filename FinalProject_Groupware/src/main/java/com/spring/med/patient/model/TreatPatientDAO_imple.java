@@ -24,8 +24,6 @@ public class TreatPatientDAO_imple implements TreatPatientDAO {
 	@Override
 	public List<Map<String, String>> selectPatientWaiting(Map<String, String> paraMap) {
 		
-		System.out.println("paraMapDAO:"+paraMap);
-		
 		List<Map<String, String>> PatientList = sqlsession.selectList("seonggon_patient.selectPatientWaiting", paraMap);
 		
 		return PatientList;
@@ -52,6 +50,20 @@ public class TreatPatientDAO_imple implements TreatPatientDAO {
 	public List<TreatPatientVO> existPatientShow(Map<String, String> paraMap) {
 		List<TreatPatientVO> existPatientList = sqlsession.selectList("seonggon_patient.existPatientShow", paraMap);
 		return existPatientList;
+	}
+
+	// === 기존환자 조회에서 등록 및 접수 update 하기
+	@Override
+	public int submitNcheck2(Map<String, String> paraMap) {
+		int n = sqlsession.update("seonggon_patient.submitNcheck2", paraMap);
+		return n;
+	}
+
+	// === 신규환자 정보 입력하여 등록 및 접수 insert 하기
+	@Override
+	public int submitNcheck1(TreatPatientVO tpvo) {
+		int n = sqlsession.insert("seonggon_patient.submitNcheck1", tpvo);
+		return n;
 	}
 	
 

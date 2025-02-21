@@ -348,26 +348,17 @@ public class ManagementController {
 	}
 	
 	// === 인사관리 회원수정 한명의 멤버 조회 === //
-	@RequestMapping("managementEdit")
-	public Map<String, Object> view(@RequestParam String member_userid, HttpServletRequest request) {	
-//		System.out.println(member_userid);
-		
+	@PostMapping("managementEdit")
+	public ModelAndView view(ModelAndView mav, HttpServletRequest request) {
+		String member_userid = request.getParameter("member_userid");
+		//System.out.println(member_userid);
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("member_userid", member_userid);
 		
 		ManagementVO_ga managvo = managService.getView_member_one(paraMap);
-		   Map<String, Object> response = new HashMap<>();
-
-		    if (managvo != null) {
-		        response.put("member_userid", managvo.getMember_userid());
-		        response.put("member_name", managvo.getMember_name());
-		        response.put("member_grade", managvo.getMember_grade());
-		        response.put("member_workingTime", managvo.getMember_workingTime());
-		    } else {
-		        response.put("error", "User not found");
-		    }
-
-		    return response;
+		mav.addObject("managvo", managvo);
+		
+		return mav;
 	}
 	
 	// === 사원목록 페이지 조회 요청 끝 === //

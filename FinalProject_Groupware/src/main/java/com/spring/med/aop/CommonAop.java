@@ -43,7 +43,7 @@ public class CommonAop {
 		
 		HttpSession session = request.getSession();
 
-/*
+
 		if(session.getAttribute("loginuser") == null) {
 			
 			String message = "먼저 로그인 하세요~~ (AOP Before Advice 활용)";
@@ -63,7 +63,7 @@ public class CommonAop {
 				e.printStackTrace();
 			}	
 		}
-*/		
+		
 		
 	}// end of public void loginCheck(JoinPoint joinpoint) {}-------------------------------------------
 	
