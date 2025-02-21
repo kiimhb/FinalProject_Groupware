@@ -275,7 +275,7 @@
 								var member_name = item.member_name;
 								if(member_name.includes(joinUserName)){ // name 이라는 문자열에 joinUserName 라는 문자열이 포함된 경우라면 true , 
 									                             // name 이라는 문자열에 joinUserName 라는 문자열이 포함되지 않은 경우라면 false 
-								   joinUserArr.push(name+"("+item.member_userid+")");
+								   joinUserArr.push(member_name+"("+item.member_userid+")");
 								}
 							});
 							
@@ -486,8 +486,8 @@
 							<option value="2">사내 캘린더</option>
 						</c:when>
 						--%> 
-                        <%-- 일정 등록 시 사내 캘린더 등록은 loginuser.gradelevel == '10'인 사용자만 등록이 가능하도록 한다. --%>
-                        <c:when test="${loginuser.gradelevel == '10'}"> 
+                        <%-- 일정 등록 시 사내 캘린더 등록은 loginuser.member_grade == '1'인 사용자만 등록이 가능하도록 한다. --%>
+                        <c:when test="${loginuser.member_grade == '1'}"> 
                             <option value="">선택하세요</option>
                             <option value="1">내 캘린더</option>
                             <option value="2">사내 캘린더</option>
@@ -530,7 +530,7 @@
             </td>
         </tr>
     </table>
-    <input type="hidden" value="${sessionScope.loginuser.fk_member_userid}" name="fk_member_userid" />
+    <input type="hidden" value="${sessionScope.loginuser.member_userid}" name="fk_member_userid" />
     <input type="hidden" value="${requestScope.map.SCHEDULE_NO}" name="schedule_no" />
 </form>
 

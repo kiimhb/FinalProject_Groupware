@@ -110,9 +110,9 @@ $(document).ready(function(){
                 $("input#allComCal").prop("checked", true); // 사내캘린더 체크박스에 체크를 한다.
 			}
 			
-			var comSmallCategoryArr = document.querySelectorAll("input.com_small_category_no");
+			var com_SmallCategoryArr = document.querySelectorAll("input.com_small_category_no");
 		    
-			comSmallCategoryArr.forEach(function(item) {
+			com_SmallCategoryArr.forEach(function(item) {
 		         item.addEventListener("change", function() {  // "change" 대신에 "click"을 해도 무방함.
 		         //	 console.log(item);
 		        	 calendar.refetchEvents();  // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
@@ -148,14 +148,14 @@ $(document).ready(function(){
 	            $("input#allMyCal").prop("checked", true); // 내캘린더 체크박스에 체크를 한다.
 	        }
 	
-	        var mySmallCategoryArr = document.querySelectorAll("input.my_small_category_no");
+	        var my_SmallCategoryArr = document.querySelectorAll("input.my_small_category_no");
 	
-	        mySmallCategoryArr.forEach(function (item) {
+	        my_SmallCategoryArr.forEach(function (item) {
 	            item.addEventListener("change", function () { // "change" 대신에 "click"을 해도 무방함.
 	                // console.log(item);
 	                calendar.refetchEvents(); // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
 	            });
-	        }); // end of mySmallCategoryArr.forEach(function (item) {})---------------------
+	        }); // end of my_SmallCategoryArr.forEach(function (item) {})---------------------
 	    } else {
 	        $("input#allMyCal").prop("checked", false);
 	    }
@@ -292,7 +292,7 @@ $(document).ready(function(){
 	                        	for (var i = 0; i < $("input:checkbox[name=my_small_category_no]:checked").length; i++) {
 	                                
 	                        		if ($("input:checkbox[name=my_small_category_no]:checked").eq(i).val() == item.fk_small_category_no &&
-	                                    item.fk_member_userid == "1") { // "${sessionScope.loginuser.member_userid}"
+	                                    item.fk_member_userid == "${sessionScope.loginuser.member_userid}") { // "${sessionScope.loginuser.member_userid}"
 	                                	// alert("캘린더 소분류 번호 : " + $("input:checkbox[name=my_small_category_no]:checked").eq(i).val());
 	                                    events.push({
 	                                        id: item.schedule_no,
@@ -307,14 +307,17 @@ $(document).ready(function(){
 	                            }
 	                        }
 
-	                        // 공유받은 캘린더
-	                        if (item.fk_large_category_no === "${sessionScope.loginuser.member_userid}" && (item.schedule_joinuser).indexOf("${sessionScope.loginuser.member_userid}") !== -1) {
+	                     // 공유받은 캘린더(다른 사용자가 내캘린더로 만든 것을 공유받은 경우임)
+	                        if (item.fk_large_category_no == 1 && item.fk_member_userid != "${sessionScope.loginuser.member_userid}" && (item.schedule_joinuser).indexOf("${sessionScope.loginuser.member_userid}") !== -1) {
 	                        	
 	                            events.push({
-	                                id: "0", // 고유해야 하기 때문에 "0" 사용
+	                                id: "0", // "0" 인 이유는  배열 events 에 push 할때 id는 고유해야 하는데 위의 사내캘린더 및 내캘린더에서 push 할때 id값으로 
+			                           		 // item.scheduleno 을 사용하였다. item.scheduleno 값은 DB에서 1 부터 시작하는 시퀀스로 사용된 값이므로 0 값은 
+			                           		 // 위의 사내캘린더나 내캘린더에서 사용되지 않으므로 여기서 고유한 값을 사용하기 위해 0 값을 준 것이다.
+			                           		 // 고유해야 하기 때문에 "0" 사용   
 	                                title: item.schedule_subject,
-	                                start: schedule_startdate,
-	                                end: schedule_enddate,
+	                                start: startdate,
+	                                end: enddate,
 	                                url: "<%= ctxPath%>/schedule/detailSchedule?schedule_no=" + item.schedule_no,
 	                                color: item.schedule_color,
 	                                cid: "0" // 공유받은 캘린더의 체크박스 value가 "0"
@@ -351,10 +354,11 @@ $(document).ready(function(){
 		    var arr_calendar_checkbox = document.querySelectorAll("input.calendar_checkbox");
 		    // 사내캘린더, 내캘린더, 공유받은캘린더의 모든 체크박스
 		
-		    arr_calendar_checkbox.forEach(function(item) { // 각 체크박스에 대해 처리
+		    arr_calendar_checkbox.forEach(function(item) { // item 이 사내캘린더, 내캘린더, 공유받은캘린더 에서의 모든 체크박스 중 하나인 체크박스임
 		        if (item.checked) {
-		            // 체크박스에 체크가 되어 있다면
-		            if (arg.event.extendedProps.cid === item.value) { // item.value는 체크박스의 value 값
+		        	// 사내캘린더, 내캘린더, 공유받은캘린더 에서의 체크박스중 체크박스에 체크를 한 경우 라면
+		            
+		        	if (arg.event.extendedProps.cid === item.value) { // item.value는 체크박스의 value 값
 		                // console.log("일정을 보여주는 cid : " + arg.event.extendedProps.cid);
 		                // console.log("일정을 보여주는 체크박스의 value값(item.value) : " + item.value);
 		                
@@ -419,9 +423,11 @@ function addComCalendar() {
 
 // === 사내 캘린더 추가 모달창에서 추가 버튼 클릭시 ===
 function goAddComCal() {
+	
     if ($("input.add_com_small_category_name").val().trim() == "") {
         alert("추가할 사내캘린더 소분류명을 입력하세요!!");
         return;
+        
     } else {
         $.ajax({
             url: "<%= ctxPath%>/schedule/addComCalendar",
@@ -434,8 +440,11 @@ function goAddComCal() {
                 if (json.n != 1) {
                     alert("이미 존재하는 '사내캘린더 소분류명' 입니다.");
                     return;
-                } else if (json.n == 1) {
+                    
+                } 
+                else if (json.n == 1) {
                     $('#modal_addComCal').modal('hide'); // 모달창 감추기
+                    
                     alert("사내 캘린더에 " + $("input.add_com_small_category_name").val() + " 소분류명이 추가되었습니다.");
 
                     $("input.add_com_small_category_name").val("");
@@ -467,8 +476,8 @@ function showCompanyCal() {
                     html += "<tr style='font-size: 11pt;'>";
                     html += "<td style='width:60%; padding: 3px 0px;'><input type='checkbox' name='com_small_category_no' class='calendar_checkbox com_small_category_no' style='margin-right: 3px;' value='" + item.small_category_no + "' checked id='com_small_category_no_" + index + "'/><label for='com_small_category_no_" + index + "'>" + item.small_category_name + "</label></td>";
 
-                    // 사내 캘린더 추가를 할 수 있는 조건: gradelevel이 10인 경우
-                    if ("${sessionScope.loginuser.gradelevel}" == '10') {
+                    // 사내 캘린더 추가를 할 수 있는 조건: member_grade이 1인 경우
+                    if ("${sessionScope.loginuser.member_grade}" == '1') {
                         html += "<td style='width:20%; padding: 3px 0px;'><button class='btn_edit' data-target='editCal' onclick='editComCalendar(" + item.small_category_no + ",\"" + item.small_category_name + "\")'><i class='fas fa-edit'></i></button></td>";
                         html += "<td style='width:20%; padding: 3px 0px;'><button class='btn_edit delCal' onclick='delCalendar(" + item.small_category_no + ",\"" + item.small_category_name + "\")'><i class='fas fa-trash'></i></button></td>";
                     }
@@ -510,7 +519,7 @@ function goEditComCal() {
             data: {
                 "small_category_no": $("input.edit_com_small_category_no").val(),
                 "small_category_name": $("input.edit_com_small_category_name").val(),
-                "fk_member_userid": "${sessionScope.loginuser.member_userid}",
+                "member_userid": "${sessionScope.loginuser.member_userid}",
                 "caltype": "2" // 사내캘린더
             },
             dataType: "json",
@@ -555,7 +564,7 @@ function goAddMyCal() {
             type: "post",
             data: {
                 "my_small_category_name": $("input.add_my_small_category_name").val(),
-                "fk_member_userid": "1"
+                "fk_member_userid": "${sessionScope.loginuser.member_userid}"
                 // "${sessionScope.loginuser.member_userid}"
             },
             dataType: "json",
@@ -564,7 +573,9 @@ function goAddMyCal() {
                 if (json.n != 1) {
                     alert("이미 존재하는 '내캘린더 소분류명' 입니다.");
                     return;
-                } else if (json.n == 1) {
+                    
+                }
+                else if (json.n == 1) {
                     $('#modal_addMyCal').modal('hide'); // 모달창 감추기
                     alert("내 캘린더에 " + $("input.add_my_small_category_name").val() + " 소분류명이 추가되었습니다.");
 
@@ -586,7 +597,7 @@ function showmyCal() {
     $.ajax({
         url: "<%= ctxPath%>/schedule/showMyCalendar",
         type: "get",
-        data: { "fk_member_userid": "1" },
+        data: { "fk_member_userid": "${sessionScope.loginuser.member_userid}" },
         // "${sessionScope.loginuser.member_userid}"
         dataType: "json",
         success: function (json) {
@@ -636,7 +647,7 @@ function goEditMyCal() {
             data: {
                 "small_category_no": $("input.edit_my_small_category_no").val(),
                 "small_category_name": $("input.edit_my_small_category_name").val(),
-                "member_userid": "1",
+                "member_userid": "${sessionScope.loginuser.member_userid}",
                 // "${sessionScope.loginuser.member_userid}"
                 "caltype": "1"  // 내캘린더
             },
@@ -722,14 +733,14 @@ function goSearch() {
 	<h3>일정 관리</h3>
 	
 	<div id="wrapper1">
-		<input type="hidden" value="1" id="fk_member_userid"/>
-		<%-- value="${sessionScope.loginuser.fk_member_userid}" --%>
+		<input type="hidden" value="${sessionScope.loginuser.member_userid}" id="fk_member_userid"/>
+		<%-- value="${sessionScope.loginuser.member_userid}" --%>
 		
 		<input type="checkbox" id="allComCal" class="calendar_checkbox" checked/>&nbsp;&nbsp;<label for="allComCal">사내 캘린더</label>
 	
 	<%-- 사내 캘린더 추가를 할 수 있는 직원은 직위코드가 3 이면서 부서코드가 4 에 근무하는 사원이 로그인 한 경우에만 가능하도록 조건을 걸어둔다.  	
 	     <c:if test="${sessionScope.loginuser.fk_pcode =='3' && sessionScope.loginuser.fk_dcode == '4' }"> --%>
-	     <c:if test="${sessionScope.loginuser.gradelevel =='10'}"> 
+	     <c:if test="${sessionScope.loginuser.member_grade =='1'}"> 
 		 	<button class="btn_edit" style="float: right;" onclick="addComCalendar()"><i class='fas'>&#xf055;</i></button>
 		 </c:if> 
 	<%-- </c:if> --%> 
@@ -767,7 +778,7 @@ function goSearch() {
 						<option value="15">15</option>
 						<option value="20">20</option>
 					</select>&nbsp;&nbsp;
-					<input type="hidden" name="fk_member_userid" value="1"/>
+					<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" />
 					<button type="button" class="btn_normal" style="display: inline-block;" onclick="goSearch()">검색</button>
 				</div>
 			</form>
@@ -801,8 +812,8 @@ function goSearch() {
       			</tr>
       			<tr>
       				<td style="text-align: left;">만든이</td>
-      				<td style="text-align: left; padding-left: 5px;"></td>
-      				<%-- ${sesscionScope.loginuser.name} --%>
+      				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.member_name}</td>
+      				<%-- ${sesscionScope.loginuser.member_name} --%>
       			</tr>
       		</table>
         </form>	
@@ -840,8 +851,8 @@ function goSearch() {
       			</tr>
       			<tr>
       				<td style="text-align: left;">만든이</td>
-      				<td style="text-align: left; padding-left: 5px;">이순신</td>
-      				<%-- ${sesscionScope.loginuser.name} --%>
+      				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.member_name}</td>
+      				<%-- ${sesscionScope.loginuser.member_name} --%>
       			</tr>
       		</table>
         </form>	
@@ -879,7 +890,7 @@ function goSearch() {
       			</tr>
       			<tr>
       				<td style="text-align: left;">만든이</td>
-      				<td style="text-align: left; padding-left: 5px;">이순신</td> 
+      				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.member_name}</td> 
       				<%-- ${sesscionScope.loginuser.name} --%>
       			</tr>
       		</table>
@@ -918,7 +929,7 @@ function goSearch() {
       			</tr>
       			<tr>
       				<td style="text-align: left;">만든이</td>
-      				<td style="text-align: left; padding-left: 5px;">이순신</td>
+      				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.member_name}</td>
       				<%-- ${sesscionScope.loginuser.name} --%>
       			</tr>
       		</table>

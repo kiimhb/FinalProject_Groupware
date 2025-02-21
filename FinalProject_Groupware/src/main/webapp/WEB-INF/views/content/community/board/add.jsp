@@ -86,7 +86,7 @@ th {
 			   g : 전체 모든 문자열을 변경 global
 			   i : 영문 대소문자를 무시, 모두 일치하는 패턴 검색 ignore
 	      */
-	   // alert(content_val);
+	   // alert(board_content_val);
 	   // <p>                                      </p>
 	   
 	      board_content_val = board_content_val.substring(board_content_val.indexOf("<p>")+3);
@@ -123,16 +123,21 @@ th {
 <div style="display: flex;">
   <div style="margin: auto; padding-left: 3%;"> 
    
-   <%-- === 원글쓰기인 경우 --%>
+    <%-- === 원글쓰기인 경우 --%>
 	<h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">글쓰기</h2>
 
-	<form name="addFrm">
+	<%-- === 답변글쓰기인 경우 --%>
+   <c:if test='${requestScope.fk_board_no ne ""}'>
+  	 <h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">답변글쓰기</h2>
+   </c:if>
+   
+	<form name="addFrm" enctype="multipart/form-data">
 	   		<table style="width: 1200px" class="table table-bordered">
 				 <tr>
 					<th style="width: 15%; background-color: #00000; ">성명</th>
 				    <td>
-				       <input type="hidden" name="fk_member_userid" value="leess" />
-				       <input type="text" name="board_name" value="이순신" readonly>
+				       <input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" />
+				       <input type="text" name="board_name" value="${sessionScope.loginuser.member_name}" readonly>
 				    </td>	
 	   		     </tr>
 	   		     
@@ -140,8 +145,16 @@ th {
 	   		        <th style="width: 15%; background-color: #00000;">제목</th>
 	   		        <td>
 	   		        
-	   		        <%-- 원글쓰기 및 답변 글쓰기가 없었던 경우 --%>
-	   		        	<input type="text" name="board_subject" size="100" maxlength="200" />   
+	   		         <%-- === 원글쓰기인 경우 (requestScope 무언가를 보내주어야 한다 여기서는 subject를 보내줌) --%>
+	   				 <c:if test='${requestScope.fk_board_no eq ""}'>
+   		            	 <input type="text" name="board_subject" size="100" maxlength="200" />
+   		             </c:if>
+   		            
+   		            <%-- === 답변글쓰기인 경우 --%>
+   					<c:if test='${requestScope.fk_board_no ne ""}'>
+   		            	<input type="text" name="board_subject" size="100" value="${requestScope.board_subject}" readonly />
+   		            </c:if>
+   		            
 	   		        </td>
 	   		     </tr>
 	   		     
@@ -151,8 +164,15 @@ th {
 					    <textarea style="width: 100%; height: 612px;" name="board_content" id="board_content"></textarea>
 					</td>
 				 </tr>
-				 
-	   		     <tr>
+
+				<tr>
+					<th style="width: 15%; background-color: #00000;">파일첨부</th>
+					<td>
+						<input type="file" name="attach" /> <%-- attach는 컬럼이 아님 --%>
+					</td>
+				</tr>
+
+				<tr>
 					<th style="width: 15%; background-color: #00000;">글암호</th> 
 					<td>
 					    <input type="password" name="board_pw" maxlength="20"  />
@@ -160,9 +180,15 @@ th {
 				 </tr>
 	   		</table>
 	   		
-	   		<div class="find-btn" style="margin: 20px;">
-	            <button type="button" class="btn btn-outline-success" id="btnWrite">글쓰기</button>
-	            <button type="button" class="btn btn-outline-danger" onclick="javascript:history.back()">취소</button>  
+	   		<%-- === 답변글쓰기가 추가된 경우 시작 === --%>
+   			<input type="hidden" name="fk_board_no" value="${requestScope.fk_board_no}" />
+   			<input type="hidden" name="board_groupno" value="${requestScope.board_groupno}" />
+   			<input type="hidden" name="board_depthno" value="${requestScope.board_depthno}" />
+   			
+   			<%-- === 답변글쓰기가 추가된 경우 끝 === --%>
+	   		<div style="margin: 20px;">
+	            <button type="button" class="btn btn-secondary btn-sm mr-3" id="btnWrite">글쓰기</button>
+	            <button type="button" class="btn btn-secondary btn-sm" onclick="javascript:history.back()">취소</button>  
 	        </div>
 	   		
 	 </form>

@@ -375,7 +375,7 @@
         <tr>
             <th>캘린더 선택</th>
             <td>
-                <select class="calType schedule" name="fk_large_category_no">
+                <select class="calType schedule" name="fk_large_category_no"> 
                     <c:choose>
                     <%-- 사내 캘린더 추가를 할 수 있는 직원은 직위코드가 3 이면서 부서코드가 4 에 근무하는 사원이 로그인 한 경우에만 가능하도록 조건을 걸어둔다.
 						<c:when test="${loginuser.fk_pcode =='3' && loginuser.fk_dcode == '4' }">
@@ -384,12 +384,12 @@
 							<option value="2">사내 캘린더</option>
 						</c:when>
 					--%> 
-                        <c:when test="${loginuser.gradelevel == '10'}"> 
+                        <c:when test="${loginuser.member_grade =='1'}"> 
                             <option value="">선택하세요</option>
                             <option value="1">내 캘린더</option>
                             <option value="2">사내 캘린더</option>
                         </c:when>
-                        <%-- 일정등록시 사내캘린더 등록은 loginuser.gradelevel =='10' 인 사용자만 등록이 가능하도록 한다. --%> 
+                        <%-- 일정등록시 사내캘린더 등록은 loginuser.member_grade =='1' 인 사용자만 등록이 가능하도록 한다. --%> 
                         <c:otherwise>
                             <option value="">선택하세요</option>
                             <option value="1">내 캘린더</option>
@@ -426,7 +426,7 @@
             </td>
         </tr>
     </table>
-    <input type="hidden" value="1" name="fk_member_userid" /> <%-- "${sessionScope.loginuser.member_userid}" --%>
+    <input type="hidden" value="${sessionScope.loginuser.member_userid}" name="fk_member_userid" /> <%-- "${sessionScope.loginuser.member_userid}" --%>
 </form>
 
 <div style="float: right;">

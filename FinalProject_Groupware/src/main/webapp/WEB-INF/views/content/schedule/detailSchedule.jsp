@@ -181,7 +181,7 @@
 	
 	<c:set var="v_fk_member_userid" value="${requestScope.map.FK_MEMBER_USERID}" />
 	<c:set var="v_fk_large_category_no" value="${requestScope.map.FK_LARGE_CATEGORY_NO}"/>
-	<c:set var="v_loginuser_member_userid" value="1"/>
+	<c:set var="v_loginuser_member_userid" value="${sessionScope.loginuser.member_userid}"/>
 
 	<div style="float: right;">
 		<c:if test="${not empty requestScope.listgobackURL_schedule}">
@@ -189,7 +189,7 @@
 	               일정이 사내캘린더 인데, 로그인한 사용자가 4번 부서에 근무하는 3직급을 가진 사용자 이라면 
 	        <c:if test="${v_fk_lgcatgono eq '2' && sessionScope.loginuser.fk_pcode =='3' && sessionScope.loginuser.fk_dcode == '4' }">  
 	    --%>
-			<c:if test="${v_fk_large_category_no eq '2' && sessionScope.loginuser.gradelevel == 10 }">
+			<c:if test="${v_fk_large_category_no eq '2' && sessionScope.loginuser.member_grade == 1 }">
 				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
 				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
@@ -205,11 +205,11 @@
 	               일정이 사내캘린더 인데, 로그인한 사용자가 4번 부서에 근무하는 3직급을 가진 사용자 이라면 
 	        <c:if test="${v_fk_lgcatgono eq '2' && sessionScope.loginuser.fk_pcode =='3' && sessionScope.loginuser.fk_dcode == '4' }">  
 	    --%>
-	        <c:if test="${v_fk_large_category_no eq '2' && sessionScope.loginuser.gradelevel == 10 }">
+	        <c:if test="${v_fk_large_category_no eq '2' && sessionScope.loginuser.member_grade == 1 }">
 				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
 				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
-			<c:if test="${v_fk_large_category_no eq '1' && v_fk_member_userid eq 1}"> <%-- v_loginuser_member_userid --%>
+			<c:if test="${v_fk_large_category_no eq '1' && v_fk_member_userid eq v_loginuser_member_userid}">
 				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
 				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>

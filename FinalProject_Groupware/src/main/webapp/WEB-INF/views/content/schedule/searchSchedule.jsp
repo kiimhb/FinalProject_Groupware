@@ -167,7 +167,7 @@
 						<option value="15">15</option>
 						<option value="20">20</option>
 					</select>&nbsp;&nbsp;
-					<input type="hidden" name="fk_member_userid" value="1" /> <%-- ${sessionScope.loginuser.member_userid} --%>
+					<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" /> <%-- ${sessionScope.loginuser.member_userid} --%>
 					<button type="button" class="btn_normal" style="display: inline-block;" onclick="goSearch()">검색</button>
 				</div>
 			</form>
