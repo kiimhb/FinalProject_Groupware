@@ -18,10 +18,7 @@
 <div class="box_attendance">출퇴근 현황</div>
 <div class="box_reservation">오늘 환자 예약 명단</div>
 <div class="box_schedule">
-<jsp:include page="index_schedule.jsp"/>
-	
-	
-
+	<jsp:include page="index_schedule.jsp"/>
 </div>
 <div class="box_weather">날씨</div>
 <div class="box_payment">전자결재</div>

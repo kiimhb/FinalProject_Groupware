@@ -10,11 +10,11 @@ String ctxPath = request.getContextPath();
 <style type="text/css">
 
 div#wrapper1{
-	float: left; display: inline-block; width: 20%; margin-top:250px; font-size: 13pt;
+	float: left; 
 }
 
 div#wrapper2{
-	display: inline-block; width: 80%; padding-left: 20px;
+	padding-left: 20px;
 }
 
 /* ========== full calendar css 시작 ========== */
@@ -267,7 +267,7 @@ dateClick: function(info) {
 });
 </script>
 
-<div style="margin-left: 80px; width: 88%;">
+<div >
 	<div id="wrapper1">
 		<input type="hidden" value="${sessionScope.loginuser.member_userid}"
 			id="fk_member_userid" />
@@ -307,7 +307,7 @@ dateClick: function(info) {
 
 	<div id="wrapper2">
 		<%-- 풀캘린더가 보여지는 엘리먼트  --%>
-		<div id="calendar" style="margin: 100px 0 50px 0;"></div>
+		<div id="calendar" ></div>
 	</div>
 
 </div>
@@ -328,7 +328,7 @@ dateClick: function(info) {
 			<!-- Modal body -->
 			<div class="modal-body">
 				<form name="modal_frm">
-					<table style="width: 100%;" class="table table-bordered">
+					<table class="table table-bordered">
 						<tr>
 							<td style="text-align: left;">소분류명</td>
 							<td><input type="text" class="add_my_small_category_name" /></td>
