@@ -104,20 +104,18 @@ function goSearch() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //===사원수정기능 js===//
 function goEdit(member_userid) {
-   //console.log(member_userid);
-
     $.ajax({
-    	url: "<%= ctxPath%>/management/managementEdit",
-        data: { "member_userid" : member_userid },
+        url: "<%= ctxPath%>/management/managementEdit",
+        data: { "member_userid": member_userid },
         type: "post",
         dataType: "json",
         success: function(json) {
-            console.log(json);
-   
+            console.log(json); // 데이터 확인
+
             // 모달을 띄울 위치
             const EditModal_container = $("div#EditModal");
-           
-            // 모달 HTML 생성
+
+            // 모달 HTML 생성 (json 사용)
             const modal_popup = `
                 <div class="modal fade" id="EditView" aria-labelledby="EditViewLabel" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -126,7 +124,9 @@ function goEdit(member_userid) {
                                 <h5 class="modal-title" id="EditViewLabel">모달 제목</h5>
                             </div>
                             <div class="modal-body">
-                                <input type="text" name="member_userid" id="member_userid" value="${response.member_userid}" readonly />
+                                <input type="text" name="member_userid" id="member_userid" value="${json.member_userid}" readonly />
+                                <input type="text" name="member_name" id="member_name" value="${json.member_name}"  />
+                                <input type="text" name="member_email" id="member_email" value="${json.member_email}" readonly />
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
@@ -135,19 +135,19 @@ function goEdit(member_userid) {
                     </div>
                 </div>
             `;
-           
+
             // 모달 HTML 삽입
             EditModal_container.html(modal_popup);
-           
+
             // 모달 띄우기
             $('div#EditView').modal('show');
-            
-            
-        }, error: function(request, status, error) {
+        },
+        error: function(request, status, error) {
             alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
         }
     });
 }
+
 
 
 

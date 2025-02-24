@@ -83,6 +83,10 @@ div.profile {
     display: block;
 }
 
+.dropdown-item:active {
+	background-color: #f68b1f;
+}
+
 .submenu {
     display: none; /* 처음에 하위 메뉴는 숨김 */
 }
@@ -101,3 +105,42 @@ button#toggleBtn {
 .sidebar.hidden + #toggleBtn {
     left: 10px; /* 사이드바가 사라져도 버튼은 유지 */
 }
+
+a.sideBarCSS{
+	color: #222;
+}
+
+i.sideBarICSS{
+	color: #006769;
+}
+
+/*  로고  */
+div.logo-container {
+    display: flex;
+    align-items: center; /* 로고와 텍스트를 세로 중앙 정렬 */
+    gap: 8px; /* 로고와 텍스트 간격 조정 */
+}
+
+img.logo-img {
+    width: 50px;
+    height: 50px;
+}
+
+div.logo-text {
+    display: flex;
+    flex-direction: column; /* 텍스트를 위아래 정렬 */
+    line-height: 1.2; /* 텍스트 간격 조정 */
+}
+
+
+span.main_logo, span.main_logo2 {
+	font-size: 15px;
+	color: #006769;
+	font-weight: bold;
+}
+	
+span.main_logo2{
+	font-size: 11px;
+}
+
+/* meun 알림창*/

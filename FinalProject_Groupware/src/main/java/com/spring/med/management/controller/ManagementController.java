@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,28 +55,18 @@ public class ManagementController {
 	
 
 	// === 하위부서 테이블 가져오기 === //
-		@GetMapping("childDeptJSON")
-		@ResponseBody
-		public List<Map<String, String>> childDeptJSON(@RequestParam String dept) {
-		    Map<String, Object> paraMap = new HashMap<>();
-		    
-		    if (!"".equals(dept)) {
-		        paraMap.put("dept", dept);
-		    }
-		    
-		    List<Child_deptVO_ga> childDeptList = managService.childDeptJSON(paraMap);
-		    List<Map<String, String>> childDeptMapList = new ArrayList<>();
-		    
-		    for (Child_deptVO_ga childDept : childDeptList) {
-		        Map<String, String> childDeptMap = new HashMap<>();
-		        childDeptMap.put("fk_child_dept_no", String.valueOf(childDept.getChild_dept_no()));
-		        childDeptMap.put("fk_parent_dept_no", String.valueOf(childDept.getFk_parent_dept_no()));
-		        childDeptMap.put("child_dept_name", childDept.getChild_dept_name());
-		        childDeptMapList.add(childDeptMap);
-		    }
-		    
-		    return childDeptMapList;
-		}
+	@GetMapping("childDeptJSON")
+	@ResponseBody
+	public List<Child_deptVO_ga> childDeptJSON(@RequestParam String dept) {
+	    Map<String, Object> paraMap = new HashMap<>();
+	    
+	    if (!"".equals(dept)) {
+	        paraMap.put("dept", dept);
+	    }
+	    
+	    return managService.childDeptJSON(paraMap);
+	}
+
 
 	
 	
@@ -349,18 +341,21 @@ public class ManagementController {
 	
 	// === 인사관리 회원수정 한명의 멤버 조회 === //
 	@PostMapping("managementEdit")
-	public ModelAndView view(ModelAndView mav, HttpServletRequest request) {
-		String member_userid = request.getParameter("member_userid");
-		//System.out.println(member_userid);
-		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("member_userid", member_userid);
-		
-		ManagementVO_ga managvo = managService.getView_member_one(paraMap);
-		mav.addObject("managvo", managvo);
-		
-		return mav;
+	@ResponseBody
+	public String getMemberInfo(@RequestParam("member_userid") String member_userid) {
+	    Map<String, String> paramMap = new HashMap<>();
+	    paramMap.put("member_userid", member_userid);
+
+	    ManagementVO_ga memberInfo = managService.getView_member_one(paramMap);
+
+	    JSONObject jsonObj = new JSONObject();
+	    jsonObj.put("member_userid", memberInfo.getMember_userid());
+	    jsonObj.put("member_name", memberInfo.getMember_name());
+	    jsonObj.put("member_email", memberInfo.getMember_email());
+
+	    return jsonObj.toString();
 	}
-	
+
 	// === 사원목록 페이지 조회 요청 끝 === //
 
 }

@@ -1,2 +1,19 @@
 @charset "UTF-8";
 
+
+div.main_container {
+display: grid;
+grid-template-columns: 2fr 1fr;
+grid-template-rows: auto auto auto;
+gap: 10px;
+padding: 20px;
+max-width: 1200px;
+margin: auto;
+}
+
+div.box_schedule {
+border: solid 1px gray;
+padding: 20px;
+border-radius: 5px;
+text-align: center;
+}

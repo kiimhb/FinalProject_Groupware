@@ -35,6 +35,8 @@
 
   <%-- === jQuery 에서 ajax로 파일을 업로드 할때 가장 널리 사용하는 방법 : ajaxForm === --%> 
   <script type="text/javascript" src="<%=ctxPath%>/js/jquery.form.min.js"></script> 
+  <link rel="icon" href="<%=ctxPath%>/image/Favicon_logo.png" type="image/png">
+
   
 </head>
 <body>
