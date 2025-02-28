@@ -5,9 +5,9 @@
 
 <mapper namespace="com.spring.med.approval.model.ApprovalDAO">
 
-	<!-- ==== 결재선 목록에 선택한 사원 추가하기 ==== -->
+	<!-- ==== 결재선 목록에 선택한 사원 추가하기 / 기안자 정보 불러오기 ==== -->
 	<select id="insertToApprovalLine" parameterType="String" resultType="ApprovalVO">
-		select parent_dept_name, child_dept_name, member_position, member_name
+		select parent_dept_name, child_dept_name, member_position, member_name, member_userid
 			from tbl_parent_dept p join tbl_child_dept c
 		on p.parent_dept_no = c.fk_parent_dept_no
 		left join tbl_member m
@@ -39,17 +39,124 @@
 	</select>
 	
 	
-	<!-- ==== 기존에 추가했던 결재선 사원을 목록에 불러오기 ==== -->
-	<select id="insertToApprovalLine_Arr" parameterType="String" resultType="ApprovalVO">
-		select parent_dept_name, child_dept_name, member_position, member_name
-			from tbl_parent_dept p join tbl_child_dept c
+	<!-- ==== 참조자 목록 순서 지정 ==== -->
+	<resultMap type="HashMap" id="orderByReferenceMembers_Map">
+		<result property="member_step" 	column="member_step" 		javaType="String" />
+		<result property="parent_dept_name" 	column="parent_dept_name" 	javaType="String" />
+		<result property="child_dept_name" 	column="child_dept_name" 	javaType="String" />
+		<result property="member_position" 	column="member_position" 	javaType="String" />
+		<result property="member_name" 		column="member_name" 		javaType="String" />
+		<result property="member_userid" 	column="member_userid" 		javaType="String" />
+	</resultMap>
+	<select id="orderByReferenceMembers" resultMap="orderByReferenceMembers_Map" parameterType="String">
+		select DENSE_RANK() over (order by member_grade asc, member_start asc) as member_step
+		     , parent_dept_name
+		     , child_dept_name
+		     , member_position
+		     , member_name
+		     , member_userid
+		from tbl_parent_dept p join tbl_child_dept c
 		on p.parent_dept_no = c.fk_parent_dept_no
 		left join tbl_member m
 		on c.child_dept_no = m.fk_child_dept_no
 		where member_userid in
-		<foreach collection="arr_member_userid" index="i" open="(" separator="," close=")">
-			${arr_member_userid[i]}
+		<foreach collection="arr_referenceMembers" index="i" open="(" separator="," close=")">
+			${arr_referenceMembers[i]}
 		</foreach>
 	</select>
+	
+	
+	<!-- ==== 기존에 추가했던 결재선 사원을 목록에 불러오기 ==== -->
+	<select id="insertToApprovalLine_Arr" parameterType="String" resultType="ApprovalVO">
+		select parent_dept_name, child_dept_name, member_position, member_name
+		from tbl_parent_dept p join tbl_child_dept c
+		on p.parent_dept_no = c.fk_parent_dept_no
+		left join tbl_member m
+		on c.child_dept_no = m.fk_child_dept_no
+		where member_userid in
+		<foreach collection="arr_approvalLineMembers" index="i" open="(" separator="," close=")">
+			${arr_approvalLineMembers[i]}
+		</foreach>
+	</select>
+	
+	
+	<!-- ==== 기존에 추가했던 참조자 사원을 목록에 불러오기 ==== -->
+	<select id="insertToReferenceMember_Arr" parameterType="String" resultType="ApprovalVO">
+		select parent_dept_name, child_dept_name, member_position, member_name
+		from tbl_parent_dept p join tbl_child_dept c
+		on p.parent_dept_no = c.fk_parent_dept_no
+		left join tbl_member m
+		on c.child_dept_no = m.fk_child_dept_no
+		where member_userid in
+		<foreach collection="arr_referenceMembers" index="i" open="(" separator="," close=")">
+			${arr_referenceMembers[i]}
+		</foreach>
+	</select>
+	
+	
+	<!-- ==== 문서번호 생성 ==== -->
+	<select id="createDraftNo" resultType="String">
+		select to_char(sysdate, 'yyyymm') || lpad(seq_draft_no.nextval, 4, 0) as drat_no
+		from dual
+	</select>
+
+
+	<!-- ==== 잔여 연차 조회 ==== -->
+	<select id="leftoverYeoncha" resultType="String" parameterType="String">
+		select member_yeoncha 
+		from tbl_member
+		where member_userid = to_number(#{member_userid})
+	</select>
+	
+	
+	<!-- /////////////////////////////////////////////////// -->
+	<!-- ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== -->
+	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert <<< -->
+	<insert id="insertToTemporaryStored_TBL_DRAFT" parameterType="HashMap">
+		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), default, to_number(#{draft_urgent}), 1, default, default, default)
+	</insert>
+	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert_withFile <<< -->
+	<insert id="insertToTemporaryStored_TBL_DRAFT_withFile" parameterType="HashMap">
+		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), default, to_number(#{draft_urgent}), 1, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
+	</insert>
+	
+	<!-- >>> 2. 기안문 양식 테이블에 insert <<< -->
+	<!-- [휴가신청서] 테이블에 insert -->
+	<insert id="insertToTemporaryStored_TBL_DAY_LEAVE" parameterType="HashMap">
+		insert into tbl_day_leave(DAY_LEAVE_NO, FK_DRAFT_NO, DAY_LEAVE_START, DAY_LEAVE_END, DAY_LEAVE_CNT, DAY_LEAVE_REASON)
+		values(seq_day_leave_no.nextval, #{draft_no}, TO_DATE(#{day_leave_start}, 'YYYY/MM/DD'), TO_DATE(#{day_leave_end}, 'YYYY/MM/DD'), #{day_leave_cnt}, #{day_leave_reason})
+	</insert>
+	
+	<!-- >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert -->
+	<!-- 결재선 목록에 추가한 유저 insert -->
+	<insert id="insertToTemporaryStored_approvalLine1_TBL_APPROVAL" parameterType="HashMap">
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step1}, 1, default, null, null)
+	</insert>
+	<insert id="insertToTemporaryStored_approvalLine2_TBL_APPROVAL" parameterType="HashMap">
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step2}, 2, default, null, null)
+	</insert>
+	<insert id="insertToTemporaryStored_approvalLine3_TBL_APPROVAL" parameterType="HashMap">
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step3}, 3, default, null, null)
+	</insert>
+
+	<!-- 참조자 목록에 추가한 유저 insert -->
+	<insert id="insertToTemporaryStored_referMember1_TBL_APPROVAL" parameterType="HashMap">
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step1}, 0, default, null, null)
+	</insert>
+	<insert id="insertToTemporaryStored_referMember2_TBL_APPROVAL" parameterType="HashMap">
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step2}, 0, default, null, null)
+	</insert>
+	<insert id="insertToTemporaryStored_referMember3_TBL_APPROVAL" parameterType="HashMap">
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step3}, 0, default, null, null)
+	</insert>
+	<!-- /////////////////////////////////////////////////// -->
 	
 </mapper>

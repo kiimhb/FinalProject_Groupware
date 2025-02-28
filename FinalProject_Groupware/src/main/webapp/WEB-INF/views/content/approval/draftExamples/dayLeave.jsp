@@ -6,6 +6,13 @@
 
    
 <head>
+
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.js"></script>
+
 <style>
 	.draftContainer {
 		border: solid 1px gray;
@@ -63,13 +70,37 @@
 		text-align: center;
 	}
 	
+	table#designated_line_Table {
+		width: auto;
+		table-layout: auto;
+	}
+	
 	
 </style>
 </head>
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+	// 페이지 로드 시 오전반차 체크
+	$("input:radio[id='amDay']").prop("checked", true);
 	
+	
+	// ==== 오늘날짜 이후부터 선택하도록 한다 ==== //
+	// 오늘 날짜 구하기
+    const today = new Date();
+	
+ 	// 오늘 날짜에 1일 추가
+    today.setDate(today.getDate() + 1);
+ 	
+    // 오늘 날짜를 구하기
+    const todayDate = today.toISOString().slice(0, 10);  // 2025-02-26T00:00:00.000Z 에서 날짜만 가져오기
+    
+    // 날짜 최소값 설정
+    $("input[name='allDay_leave_start']").attr('min', todayDate);
+    $("input[name='allDay_leave_end']").attr('min', todayDate);
+    $("input[name='halfDay_leave_end']").attr('min', todayDate);
+    
 	////////////////////////////////////////////////////////////////////////////////
 	// ===== (Drag & Drop) 첨부파일 추가 이벤트 ===== //
 	const fileAdd = $("div#fileAdd").hide();
@@ -154,6 +185,80 @@ $(document).ready(function(){
 	////////////////////////////////////////////////////////////////////////////////
 	
 	
+	<%-- 연차 구분 클릭 이벤트 --%>
+	$("input:radio[name='dayLeaveType']").on('click',function(e){
+		
+		const dayLeaveType = ($("input:radio[name='dayLeaveType']:checked").val());
+		
+		if(dayLeaveType == "연차") {
+			$("div#halfDay").css({"display":"none"});
+			$("div#allDay").css({"display":"block"});	
+		}
+		else if (dayLeaveType == "오전반차" || dayLeaveType == "오후반차") {
+			$("div#halfDay").css({"display":"block"});
+			$("div#allDay").css({"display":"none"});
+		}
+		
+	});// end of $("input:radio").on('click',function(e){})-------------------------
+	
+	
+	
+	<%-- 연차시작일 변경 시 연차종료일 초기화 --%>
+	$("input[name='allDay_leave_start']").on("change", function(){
+		$("input[name='allDay_leave_end']").val("");
+	});// end of $("input[name='allDay_leave_start']").on("click", function(){})-------------------
+	
+	
+	<%-- 연차일수 계산 이벤트 --%>
+	$("input[name='allDay_leave_end']").on("change", function(){
+
+		const yeoncha = ${requestScope.paraMap.member_yeoncha}; // 잔여연차
+
+		const day_leave_start = $("input[name='allDay_leave_start']").val();	// 연차시작일
+		const day_leave_end = $("input[name='allDay_leave_end']").val();		// 연차종료일
+		
+		/// 문자열을 Date 객체로 변환
+		const start_date = new Date(day_leave_start + "T00:00:00");  // 연차 시작일
+		const end_date = new Date(day_leave_end + "T00:00:00");      // 연차 종료일
+		
+		// 오늘 날짜
+		const today = new Date();
+		
+		// 두 날짜 간의 차이를 밀리초로 계산 및 일로 변환
+		let day_leave_cnt = ((end_date.getTime() - start_date.getTime()) / (1000 * 60 * 60 * 24)) + 1 ;
+
+		if(day_leave_cnt < 1) {
+			// 시작날짜가 종료날짜 이후인 경우
+			$("input[name='allDay_leave_start']").val("");
+			$("input[name='allDay_leave_end']").val("");
+			
+			Swal.fire({
+                title: '잘못된 날짜를 입력했습니다',
+                text: "다시 시도해주세요",
+                icon: 'error'
+            });
+			
+		}
+		else if (yeoncha < day_leave_cnt) {
+			// 잔여연차보다 많은 일수를 지정한 경우
+			$("input[name='allDay_leave_start']").val("");
+			$("input[name='allDay_leave_end']").val("");
+			
+			Swal.fire({
+			    title: '연차 일수를 초과하였습니다',
+			    text: '신청 기간: ' + day_leave_cnt + ' / 잔여 연차: ' + yeoncha,
+			    icon: 'error'
+			});
+
+		}
+		else {
+			
+			$("span#day_leave_cnt").html(day_leave_cnt);
+		}
+		
+	});// end of $("input[name='allDay_leave_start']").on("click", function(){})-------------------
+	
+	
 	
 	
 });
@@ -197,75 +302,48 @@ function charCount(text, limit) {
 					<table class="table-bordered" style="width: 80%;">
 						<tr>
 							<td class="table_title">기안자</td>
-							<td>이순신</td>
+							<td><span id="member_userid" style="display: none;">${requestScope.paraMap.memverInfo.member_userid}</span>${requestScope.paraMap.memverInfo.member_name}</td>
 						</tr>
 						<tr>
-							<td class="table_title">소속</td>
-							<td id="testdata">간호부</td>
+							<td class="table_title">부문</td>
+							<td>${requestScope.paraMap.memverInfo.parent_dept_name}</td>
+						</tr>
+						<tr>
+							<td class="table_title">부서</td>
+							<td>${requestScope.paraMap.memverInfo.child_dept_name}</td>
+						</tr>
+						<tr>
+							<td class="table_title">직책</td>
+							<td>${requestScope.paraMap.memverInfo.member_position}</td>
 						</tr>
 						<tr>
 							<td class="table_title">기안일</td>
-							<td>2025/02/10</td>
+							<td id="draft_write_date">${requestScope.paraMap.now_date}</td>
 						</tr>
 						<tr>
 							<td class="table_title">문서번호</td>
-							<td>20250210-001</td>
+							<td id="draft_no">${requestScope.paraMap.draft_no}</td>
 						</tr>
 					</table>
 				</div>
 				
 				<div style="border: solid 0px green; flex: 3;">
-					<div style="border: solid 0px orange; float: right; width: 85%;">
+					<div id="undesignated_line_total" style="border: solid 0px orange; float: right; width: 73%;">
 						<div class="table_header">결재선</div>
-						<div id="undesignated_line" style="width: 100%; height: 100px; background-color: #eee"></div>
-						<table id="designated_line_Table" class="table-bordered table_approval table-bordered" style="display: none; float: right; width: 100%;">	
-							<tr id="approvalLine_1">
-<!-- 							<td class="table_title">순서</td>
-								<td>1</td>
-								<td>2</td>
-								<td>3</td> -->	
-							</tr>
-							<tr id="approvalLine_2">
-<!-- 								<td class="table_title">직책</td>	
-								<td>의사</td>
-								<td>의사</td>
-								<td>의사</td> -->
-							</tr>
-							<tr id="approvalLine_3">
-								<!-- <td class="table_title">부문</td>
-								<td>순환기내과</td>
-								<td>순환기내과</td>
-								<td>순환기내과</td> -->
-							</tr>
-							<tr id="approvalLine_4">
-								<!-- <td class="table_title">성명</td>		
-								<td>강감찬</td>
-								<td>강감찬</td>
-								<td>강감찬</td> -->
-							</tr>
-							<tr id="approvalLine_5">
-								<!-- <td class="table_title">결재상태</td>
-								<td><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>
-								<td><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>
-								<td><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td> -->
-							</tr>
+						<div id="undesignated_line" style="width: 100%; height: 174px; background-color: #eee"></div>
+						<table id="designated_line_Table" class="table-bordered table_approval table-bordered" style="display: none; float: right;">	
+							<tr class="approvalLine_view" id="approvalLine_1"></tr>
+							<tr class="approvalLine_view" id="approvalLine_2"></tr>
+							<tr class="approvalLine_view" id="approvalLine_3"></tr>
+							<tr class="approvalLine_view" id="approvalLine_4"></tr>
+							<tr class="approvalLine_view" id="approvalLine_5"></tr>
 						</table>
 					</div>
 					
-					<div style="border: solid 0px orange; float: right; width: 80%; margin-top: 8%;">
+					<div id="undesignated_refer_total" style="border: solid 0px orange; float: right; width: 80%; margin-top: 8%;">
 						<div class="table_header">참조자</div>
 						<div id="undesignated_refer" style="width: 100%; height: 60px; background-color: #eee"></div>
 						<table id="undesignated_refer_Table" class="table-bordered" style="width: 100%; display:none;">
-							<tr>
-								<td class="table_title">소속</td>
-								<td class="table_title">직급</td>
-								<td class="table_title">성명</td>
-							</tr>
-							<tr>
-								<td>간호부</td>
-								<td>간호사</td>
-								<td>엄정화</td>
-							</tr>
 						</table>
 					</div>
 				</div>
@@ -275,20 +353,25 @@ function charCount(text, limit) {
 			
 			<div>
 				<div class="draftInfo" style="display: inline-block;">제목 :</div>
-				<input type="text" class="form-control" style="display: inline-block; width: 90%; margin-left: 1%;"/>
+				<input type="text" class="form-control" name="draft_subject" style="display: inline-block; width: 80%; margin-left: 1%;"/>
+				
+				<span style="display: inline-block; margin-left: 3%;">
+					<span>긴급</span>
+					<input type="checkbox" name="draft_urgent"/>
+				</span>
 			</div>
 			
 			<hr style="border:0; height:1px; background: #bbb; margin: 3% 0.5%;">
 			<div>
 				<div class="draftInfo">구분</div>
 				<div>
-					<input type="radio" id="allDay" name="dayLeaveType"/>
+					<input type="radio" id="allDay" name="dayLeaveType" value="연차"/>
 					<label for="allDay">연차</label>
 					
-					<input type="radio" id="amDay" name="dayLeaveType" style="margin-left: 1%;" />
+					<input type="radio" id="amDay" name="dayLeaveType" style="margin-left: 1%;" value="오전반차"/>
 					<label for="amDay">오전반차</label>
 					
-					<input type="radio" id="pmDay" name="dayLeaveType" style="margin-left: 1%;"/>
+					<input type="radio" id="pmDay" name="dayLeaveType" style="margin-left: 1%;" value="오후반차"/>
 					<label for="pmDay">오후반차</label>
 				</div>
 			</div>
@@ -298,14 +381,20 @@ function charCount(text, limit) {
 					<div class="draftInfo" style="display: inline-block;">휴가사유</div>
 					<span id="char_count" class="form-text text-muted" style="display: inline-block; float: right;">0 / 2000</span>
 				</div>
-				<textarea class="form-control" style="width: 100%;" onkeyup="charCount(this,2000)"></textarea>
+				<textarea class="form-control" name="day_leave_reason" style="width: 100%;" onkeyup="charCount(this,2000)"></textarea>
 			</div>
 			
-			<div class="input_margin" style="padding: 10px 0;">
+			<div id="halfDay" class="input_margin" style="padding: 10px 0;">
 				<div class="draftInfo">신청기간</div>
-				<input type="date" class="form-control" style="width: 150px; display: inline-block;"/> 부터
-				<input type="date" class="form-control" style="width: 150px; display: inline-block; margin-left: 10px;"/> 까지
-				<div style="display: inline-block;">(총 0일)</div>
+				<input type="date" name="halfDay_leave_end" class="form-control" style="width: 150px; display: inline-block;"/> 
+				<div style="display: inline-block;">총 0.5일 (잔여연차: ${requestScope.paraMap.member_yeoncha}일)</div>
+			</div>
+			
+			<div id="allDay" class="input_margin" style="padding: 10px 0; display: none;">
+				<div class="draftInfo">신청기간</div>
+				<input type="date" name="allDay_leave_start" class="form-control" style="width: 150px; display: inline-block;"/> 부터
+				<input type="date" name="allDay_leave_end" class="form-control" style="width: 150px; display: inline-block; margin-left: 10px;"/> 까지
+				<div style="display: inline-block;">총 <span id="day_leave_cnt"></span>일 (잔여연차: ${requestScope.paraMap.member_yeoncha}일)</div>
 			</div>
 			
 			<div class="input_margin">
@@ -329,7 +418,7 @@ function charCount(text, limit) {
 			</div>
 	
 	        
-			</form>
+		</form>
 	</div>
 </body>	
 </html>
