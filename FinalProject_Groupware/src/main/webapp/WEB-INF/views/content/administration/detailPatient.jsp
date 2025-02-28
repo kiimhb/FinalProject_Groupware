@@ -121,7 +121,7 @@ $(document).ready(function(){
                          }
                          if (item.patient_visitdate) {
                              events.push({
-                                 title: "진료: " + item.order_no,
+                                 title: "charno." + item.order_no,
                                  start: item.patient_visitdate,
                                  color: "lightcoral"
                              });
