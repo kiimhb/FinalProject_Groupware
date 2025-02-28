@@ -9,6 +9,7 @@
 %>
 <link href='<%=ctxPath %>/fullcalendar_5.10.1/main.min.css' rel='stylesheet' />
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/administration/detailPatient.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <jsp:include page="../../header/header1.jsp" /> 
 
@@ -59,12 +60,19 @@ a:hover,
 
 
 <script type="text/javascript">
-$(document).ready(function(){  
+$(document).ready(function(){
+
+	var calendar
+	// alert($("input[name='jubun']").val());
+	
+	if (calendar) {
+        calendar.destroy(); // 이전 캘린더 인스턴스 삭제
+    }
 	
 	var calendarEl = document.getElementById('calendar'); // div#calendar 위치 (보여줄 위치임)
 	
 	/* 캘린더 띄움 시작 */
-	var calendar = new FullCalendar.Calendar(calendarEl, {
+	calendar = new FullCalendar.Calendar(calendarEl, {
 		
 		initialView: 'dayGridMonth',
         locale: 'ko',
@@ -81,6 +89,52 @@ $(document).ready(function(){
 	        dayMaxEventRows: 3 // adjust to 6 only for timeGridWeek/timeGridDay
 	      }
 	    },
+	    // ===================== DB 와 연동하는 법 시작 ===================== //
+	    events:function(info, successCallback, failureCallback) {
+
+	    	 $.ajax({
+	    		 url: '<%= ctxPath%>/patient/selectSchedule',
+                 data:{"jubun":$("input[name='jubun']").val()},
+                 dataType: "json",
+                 success:function(json) {
+					 
+                	 console.log(JSON.stringify(json));
+                	 
+                	 var events = [];
+
+                	 // 가져온 데이터를 FullCalendar의 events 배열 형식으로 변환
+                     json.forEach(function(item) {
+                         if (item.hospitalize_start_day && item.hospitalize_end_day) {
+                             events.push({
+                                 title: "입원: " + item.order_no,
+                                 start: item.hospitalize_start_day,
+                                 end: item.hospitalize_end_day,
+                                 color: "lightblue"
+                             });
+                         }
+                         if (item.surgery_day && item.surgery_start_time) {
+                             events.push({
+                                 title: "수술: " + item.order_no,
+                                 start: item.surgery_day + "T" + item.surgery_start_time,
+                                 color: "lightgreen"
+                             });
+                         }
+                         if (item.patient_visitdate) {
+                             events.push({
+                                 title: "진료: " + item.order_no,
+                                 start: item.patient_visitdate,
+                                 color: "lightcoral"
+                             });
+                         }
+                     });
+                    	successCallback(events); 
+	    	 		},
+			    	error: function(request, status, error){
+				            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				    }	
+	    	 }); // end of  $.ajax
+	    },
+	    // ===================== DB 와 연동하는 법 끝 ===================== //
 	 	// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정에 대한 간단한 설명문 보여줌)
      	dateClick: function(info) {
       	 	// alert('클릭한 Date: ' + info.dateStr); // 클릭한 Date: 2021-11-20
@@ -164,10 +218,87 @@ $(document).ready(function(){
 		}); // end of $.ajax({
 	});		
 			
-			
-});
+	// 퇴원일 자동 입력하기
+	$("input[name='hospitalize_start_day']").on("change", function(e){
+		// alert("수정")
+		const start_day = $(e.target).val(); // 시작날짜 
+		
+		const order_howlonghosp = $("input.order_howlonghosp").data("id"); // 입원일수
+		
+		var endDate = new Date(start_day);
+		endDate.setDate(endDate.getDate() + parseInt(order_howlonghosp));
+		
+		const year = endDate.getFullYear();
+	 	const month = (endDate.getMonth()+1).toString().padStart(2, '0');
+	 	const day = endDate.getDate().toString().padStart(2, '0');
+		
+	 	const hospitalize_end_day = `\${year}-\${month}-\${day}`;
+	 	
+	 	$("input[name='hospitalize_end_day']").val(hospitalize_end_day); // 입원 일수에 따라 종료날짜 자동입력
+	});
 
-//종료 가능한 시간 선택하기 (동일 시간대 동일 수술실 중복 피하기)
+	
+	// 시작일 변경되면 함수 시작 -> 입원시작일과 입원종료일을 고려한 입원실 잔여석 알아오기 
+	$("input[name='hospitalize_start_day'").on("change", function(){
+		
+			const order_no = $("input[name='fk_order_no']").val();
+			const hospitalize_start_day = $("input[name='hospitalize_start_day']").val(); // 입원일자 
+			const hospitalize_end_day = $("input[name='hospitalize_end_day']").val(); // 퇴원일자 
+			
+			// console.log(hospitalize_start_day + hospitalize_end_day);
+			
+			if(hospitalize_start_day && hospitalize_end_day) {
+				
+					$.ajax({
+						url:"<%= ctxPath%>/register/okroom",
+						type: "GET", 
+						data:{"hospitalize_start_day":hospitalize_start_day,
+								  "hospitalize_end_day":hospitalize_end_day},
+				        dataType: "json",
+						success:function(okSeat){		 
+								// alert(JSON.stringify(okSeat)); 
+								
+								const roomSelect = $("select.hospitalizeroom_no");
+								roomSelect.empty(); // 기존 옵션 초기
+								
+								let html = ``;
+								
+								// 2인실 
+							    let tworoom = okSeat.filter(room => room.hospitalizeroom_capacity == 2);
+								if(tworoom.length > 0) {
+									html += `<optgroup label="2인실">`;
+										tworoom.forEach(room => {
+											let disabled = room.ok_seat == 0 ? 'disabled' : ''; // 잔여자리 없으면 disabled 추가 
+											html += `<option value="\${room.hospitalizeroom_no}" \${disabled}>\${room.hospitalizeroom_no}호 ( \${room.ok_seat} / \${room.hospitalizeroom_capacity} )</option>`;
+										});
+										html += `</optgroup>`;
+								}
+								
+								// 4인실 
+							    let fourroom = okSeat.filter(room => room.hospitalizeroom_capacity == 4);
+								if(fourroom.length > 0) {
+									html += `<optgroup label="4인실">`;
+										fourroom.forEach(room => {
+											let disabled = room.ok_seat == 0 ? 'disabled' : ''; // 잔여자리 없으면 disabled 추가 
+											html += `<option value="\${room.hospitalizeroom_no}" \${disabled}>\${room.hospitalizeroom_no}호 ( \${room.ok_seat} / \${room.hospitalizeroom_capacity} )</option>`;
+										});
+										html += `</optgroup>`;
+								}
+
+								roomSelect.append(html);		
+						},
+		  	    	    error: function(request, status, error){
+					   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					    }
+						
+			});
+		}	
+	}); // end of $("input[name='hospitalize_start_day'").on("change", function(){
+	
+			
+}); //end of ready 
+
+// 종료 가능한 시간 선택하기 (동일 시간대 동일 수술실 중복 피하기)
 function getAvaliableEndTime(startTime, reservedTime) {
 	
 	let allTimes = [
@@ -207,7 +338,6 @@ function getAvaliableEndTime(startTime, reservedTime) {
 	
 function trlist(order_detail, orderno) {
 	
-	// alert(order_detail + orderno);
 	$("div.detailrecord").html(order_detail);
 	
 };
@@ -241,8 +371,36 @@ function checkedSurgeryUpdate() {
 	$("input.surgeryupdateday").val(timeString); 
 };
 
+// 입원 수정하기 체크박스 클릭 
+function checkedHospitalizeUpdate() {
+	
+		// ***** 예약일자 (오늘) 입력하기 시작 ***** //
+		const today = new Date();
+		const year = today.getFullYear();
+	 	const month = (today.getMonth()+1).toString().padStart(2, '0');
+	 	const day = today.getDate().toString().padStart(2, '0')
+	 	
+	 	const timeString = `\${year}-\${month}-\${day}`
+	 	// ***** 예약일자 (오늘) 입력하기 끝 ***** //
+		
+		// 내가 선택한 행의 정보를 가져오기
+		const clicktr = $(event.target).closest("tr");
+		
+		const patient_name = $("td#patient_name").text().trim();	
+		const fk_hospitalizeroom_no = clicktr.find("td.fk_hospitalizeroom_no").data("id");
+		const hospitalize_start_day = clicktr.find("td.hospitalize_start_day").text().trim();
+		const hospitalize_end_day = clicktr.find("td.hospitalize_end_day").text().trim();
+	
+		$("input[name='patient_name']").val(patient_name);
+		$("input[name='hospitalize_reserve_date']").val(timeString);
+		$("input[name='hospitalize_start_day']").val(hospitalize_start_day);
+		$("input[name='hospitalize_end_day']").val(hospitalize_end_day);
+		$("select.hospitalizeroom_no").val("");
+}
+
+
 // 초기화 클릭한 경우
-function surgeryUpdatereset() {
+function reset() {
 	// alert("초기화누름")
 	
 	const room = $("input.room").val();
@@ -254,7 +412,7 @@ function surgeryUpdatereset() {
 	
 };
 
-// 수정 완료하기 
+// 수술 수정 완료하기 
 function registerUpdate() {
 	
 	const checkedRadio = $("input[name='radio']:checked"); // 체크된 체크박스 찾음
@@ -266,10 +424,8 @@ function registerUpdate() {
 	const surgery_day = $("input#surgery_day").val(); // 수술할 날짜
 	const surgery_start_time = $("select#surgery_start_time").val(); // 수술시작시간
 	const surgery_end_time = $("select#surgery_end_time").val(); // 수술시작시간
+	const jubun = $("input[name='jubun']").val();
 	
-	console.log("fk_order_no"+fk_order_no+"surgery_surgeryroom_name"+surgery_surgeryroom_name+"surgery_day"+surgery_day+"surgery_start_time"+surgery_start_time+"surgery_end_time"+surgery_end_time);
-	// surgery_dayundefined surgery_start_timeundefined surgery_end_timeundefined
-
 	$.ajax({
 		url:"<%= ctxPath%>/register/surgeryUpdate",
 		type: "PATCH",
@@ -277,19 +433,56 @@ function registerUpdate() {
 				"surgery_surgeryroom_name":surgery_surgeryroom_name,
 				"surgery_day":surgery_day,
 				"surgery_start_time":surgery_start_time,
-				"surgery_end_time":surgery_end_time },
+				"surgery_end_time":surgery_end_time,
+				"jubun":jubun},
 	    dataType: "json",
-	    success:function(json) {  
-	    	alert(json.message);
+	    success:function(response) {  
+	    	alert(response.message);
 	    	location.reload(true);
 	    	
-	    },  error: function(request, status, error){
-	   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		}
+		},error: function(error){
+			let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";
+	   		alert(errorMessage);
+	 	}
 	});
 	
 }
 
+// 입원 수정하기 
+function hospitalizeUpdate() {
+	
+	const checkedRadio = $("input[name='radio2']:checked"); // 체크된 체크박스 찾음
+ 	const clicktr = checkedRadio.closest("tr"); 		    // 내가 선택한 행 찾기
+	
+	// 보낼 데이터
+	const fk_order_no = clicktr.find("input[name='radio2']").val(); 					// 내가 체크한 orderno
+	const hospitalize_no = $("input.hospitalize_no").val(); 							// 내가 체크한 hospitalize_no
+	const fk_hospitalizeroom_no = $("select[name='fk_hospitalizeroom_no']").val(); 		// 내가 체크한 fk_hospitalizeroom_no
+	const hospitalize_start_day	 = $("input#hospitalize_start_day").val(); 				// 입원일자
+	const hospitalize_end_day = $("input#hospitalize_end_day").val(); 					// 퇴원일자
+	const jubun = $("input[name='jubun']").val();
+	
+	$.ajax({
+		url:"<%= ctxPath%>/register/hospitalizeUpdate",
+		type: "PATCH",
+		data: { "fk_order_no":fk_order_no,
+				"hospitalize_no":hospitalize_no,
+				"fk_hospitalizeroom_no":fk_hospitalizeroom_no,
+				"hospitalize_start_day":hospitalize_start_day,
+				"hospitalize_end_day":hospitalize_end_day,
+				"jubun":jubun},
+	    dataType: "json",
+	    success:function(response) {  
+	    	alert(response.message);
+	    	location.reload(true);
+		},error: function(error){
+			let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";
+	   		alert(errorMessage);
+	 	}
+	});
+
+	
+}
 
 </script>
 	
@@ -310,7 +503,7 @@ function registerUpdate() {
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
+						<tr><input type="hidden" name="jubun" value="${requestScope.jubun}"/>
 							<td>${requestScope.detail_patient.order_no}</td>
 							<td id="patient_name">${requestScope.detail_patient.patient_name}</td>
 							<td>${requestScope.detail_patient.patient_gender}</td>
@@ -319,7 +512,7 @@ function registerUpdate() {
 								<c:when test="${requestScope.detail_patient.patient_status eq 0}">
 									<td>초진</td>
 								</c:when>
-								<c:when test="${requestScope.detail_patient.patient_status eq 0}">
+								<c:when test="${requestScope.detail_patient.patient_status eq 1}">
 									<td>재진</td>
 								</c:when>
 							</c:choose>
@@ -482,7 +675,7 @@ function registerUpdate() {
 		  		</form>	
 		  			<div class="button">
   						<button type="button" class="btn" onclick="registerUpdate()">수정하기</button>
-	  					<button type="reset" class="btn reset" onclick="surgeryUpdatereset()">초기화</button>
+	  					<button type="reset" class="btn reset" onclick="reset()">초기화</button>
 		  			</div>
 					
 		  		</div>
@@ -518,18 +711,24 @@ function registerUpdate() {
 			  					<th>선택</th>
 			  					<th>입원일자</th>
 			  					<th>퇴원일자</th>
-			  					<th>입원실</th>
-			  					<th>담당간호사</th>			  			
+			  					<th>입원실</th>	  			
 		  					</tr>
 		  				</thead>
 		  				<tbody>
-		  					<tr>
-		  						<td><input type="checkbox"/></td>
-		  						<td>2025-03-03</td>
-		  						<td>2025-03-04</td>
-		  						<td>1001호</td>
-		  						<td>신가은</td>
-		  					</tr>
+							<c:if test="${not empty requestScope.hospitalize_list}">
+									<c:forEach var="hvo" items="${requestScope.hospitalize_list}">
+										<tr><input type="hidden" class="hospitalize_no"  value="${hvo.hospitalize_no}"/>
+											<input type="hidden" class="order_howlonghosp" data-id="${hvo.order_howlonghosp}"> 
+					  						<td><input type="radio" name="radio2" class="${hvo.hospitalize_no}" value="${hvo.order_no}" onclick="checkedHospitalizeUpdate()" /></td>
+					  						<td class="hospitalize_start_day">${hvo.hospitalize_start_day}</td>
+					  						<td class="hospitalize_end_day">${hvo.hospitalize_end_day}</td>
+					  						<td class="fk_hospitalizeroom_no" data-id="${hvo.fk_hospitalizeroom_no}">${hvo.fk_hospitalizeroom_no}호</td>
+					  					</tr>
+									</c:forEach>
+							</c:if>
+							<c:if test="${empty requestScope.hospitalize_list}">
+									<tr><td>${requestScope.hospitalizeMessage}</td></tr>
+							</c:if>
 		  				</tbody>
 		  			</table>
 		  		</div>
@@ -539,25 +738,31 @@ function registerUpdate() {
 		  		<div class="reservation2 updatefrm">
 		  		
 		  			<div class="input">
-		  				<div class="text">이름</div>
-		  				<input type="text" class="patientinput" />
+		  				<div class="text">환자명</div>
+		  				<input type="text" class="patientinput" name="patient_name" disabled/>
 		  			</div>
-		  			<div class="input">
-		  				<div class="text">입원실</div>
-		  				<input type="text" class="patientinput" />
+					<div class="input">
+		  				<div class="text">예약변경일자</div>
+		  				<input type="text" class="patientinput" name="hospitalize_reserve_date" disabled/>
 		  			</div>
+	
 		  			<div class="input">
 		  				<div class="text">입원일자</div>
-		  				<input type="text" class="patientinput" />
+		  				<input type="date" id="hospitalize_start_day" name="hospitalize_start_day" class="patientinput "/>
 		  			</div>
-		  			<div class="input">
+						<div class="input">
 		  				<div class="text">퇴원일자</div>
-		  				<input type="text" class="patientinput date mr-2" />
-		  				<input type="text" class="patientinput date" />
-		  			</div>
+			  			<input type="date" id="hospitalize_end_day" name="hospitalize_end_day" class="patientinput "/>
+	  				</div>
+					<div class="input">
+		  				<div class="text">입원실</div>
+						<select name="fk_hospitalizeroom_no" class="hospitalizeroom_no">
+		  						<option value="">입원실</option>
+	  					</select>
+  					</div>
 		  			<div class="button btn2">
-  						<button type="button" class="btn">수정하기</button>
-	  					<button type="reset" class="btn reset">초기화</button>
+  						<button type="button" class="btn" onclick="hospitalizeUpdate()">수정하기</button>
+	  					<button type="reset" class="btn reset" onclick="reset()">초기화</button>
 		  			</div>
 		  		</div>
 	  	</div>

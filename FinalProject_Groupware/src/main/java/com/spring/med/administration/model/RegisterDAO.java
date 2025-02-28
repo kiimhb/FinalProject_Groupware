@@ -10,6 +10,7 @@ import com.spring.med.surgery.domain.SurgeryroomVO;
 
 public interface RegisterDAO {
 
+	// ********** 수술  예약  관리 **********// 
 	// 수술 대기자 목록 개수
 	int register_list_cnt();
 	
@@ -28,16 +29,23 @@ public interface RegisterDAO {
 	// 예약된 시간 가져오기
 	List<Map<String, String>> reservedTime(Map<String, Object> paraMap);
 
-	// 비관적락 사용해서 예약된 시간인지 확인하기
+	// 동일한 날 한개이상의 수술을 막기 위해 주민번호 알아오기 
+	String getJubun(SurgeryVO surgeryvo);
+	
+	// 1. 동일한 환자가 같은 날 다른 수술이 있는지 확인하기 (수술은 하루에 한개만 가능)
+	int todayOtherSurgery(Map<String, String> paraMap);
+	
+	// 2. 비관적락 사용해서 예약된 시간인지 확인하기 (수술)
 	SurgeryVO existingSurgery(Map<String, String> paraMap);
 
-	// 예약 처리해주기
+	// 3. 예약 처리해주기
 	void insertSurgery(SurgeryVO surgeryvo);
 
 	// 수술 예약일정 수정하기
-	int surgeryUpdate(Map<String, String> paraMap);
+	void surgeryUpdate(Map<String, String> paraMap);
 
 	
+	// ********** 입원 예약  관리 **********// 
 	// 입원 대기자 목록 총 개수
 	int hospitalize_list_cnt();
 
@@ -47,17 +55,22 @@ public interface RegisterDAO {
 	// 입원일수 알아오기
 	String order_howlonghosp(String order_no);
 
-	// 입원실 목록가져오기 4인실
-	List<HospitalizeroomVO> hospitalizeroom();
+	// 입원실 잔여석 가져오기
+	List<Map<String, String>> okSeat(Map<String, String> paraMap);
 
-	// 입원실 목록가져오기 2인실
-	List<HospitalizeroomVO> hospitalizeroom_2();
+	// 중복 입원 확인을 위해 주민번호 알아오기
+	String jubunGet(HospitalizeVO hospitalizevo);
+	
+	// 1. 동일한 입원일/퇴원일에 다른 입원건이 있는지 확인
+	int todayOtherHospitalize(Map<String, String> paraMap);
 
-	// 입원예약하기
+	// 2. 비관적락 사용해서 예약된 시간인지 확인하기(입원)
+	HospitalizeVO existingHospitalize(Map<String, String> paraMap);
+	
+	// 3. 입원예약하기
 	void hospitalizeRegister(HospitalizeVO hospitalizevo);
 
-	// 입원실 잔여석 가져오기
-	List<Map<String, String>> okSeat();
-
+	// 입원 수정하기 
+	void hospitalizeUpdate(Map<String, String> paraMap);
 
 }

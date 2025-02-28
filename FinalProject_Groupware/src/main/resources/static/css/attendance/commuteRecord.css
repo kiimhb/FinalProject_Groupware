@@ -61,9 +61,14 @@ div.recordbtn {
 	width:100%;
 	display:flex;
 }
-span.subtitle {
+span.subtitle,
+span.month {
 	color:#4c4d4f;
 }
+span.month {
+	font-size: 11pt;
+}
+
 div.startbtn,
 div.endbtn {
 	/* border: 1px solid black; */

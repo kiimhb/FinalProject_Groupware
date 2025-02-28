@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="hyeyeon">
+	
+	<!-- 공지사항 개수 알아오기  -->
+	<select id="getNoticeCount" resultType="int" parameterType="HashMap">
+		select count(*)
+		from
+		(
+			select notice_no, fk_member_userid, notice_dept, notice_title, 
+	       	notice_content, notice_fix, notice_del, notice_view_cnt, 
+	       	to_char(notice_write_date, 'yyyy-mm-dd') as notice_write_date
+			from tbl_notice
+			where notice_dept in 
+			<foreach item="parent_dept_no" collection="parent_deptList" open="(" separator="," close=")">
+		    	#{parent_dept_no}
+		    </foreach>
+		)
+	</select>
+	
+	<!-- 공지사항 목록 불러오기  -->
+	<select id="notice_list" parameterType="NoticeVO" resultType="NoticeVO">
+		select *
+		from
+		(
+		   	select rownum as rno, notice_no, fk_member_userid,  fk_child_dept_no, notice_dept, notice_title,
+       			   notice_content, notice_fix, notice_del, notice_view_cnt, notice_filename, 
+           		   to_char(notice_write_date, 'yyyy-mm-dd') as notice_write_date
+		    from tbl_notice a join tbl_member b
+		    on a.fk_member_userid = b.member_userid
+		    where notice_dept in 
+		    <foreach item="parent_dept_no" collection="parent_deptList" open="(" separator="," close=")">
+		    	#{parent_dept_no}
+		    </foreach>
+		    order by notice_fix desc, notice_write_date desc
+		)
+		where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	
+	<!-- 글 1개 조회하기 -->
+	<select id="noticeView" resultType="NoticeVO" parameterType="map">	
+		select notice_no, fk_member_userid, notice_title, notice_dept, notice_content, fk_child_dept_no, 
+		notice_view_cnt, notice_write_date, notice_fileName, notice_orgFilename, notice_fileSize
+		from tbl_notice a join tbl_member b
+		on a.fk_member_userid = b.member_userid
+		where notice_no = #{notice_no}
+	</select>
+	
+	<!-- 조회수 증가하기  -->
+	<update id="increase_notice_readCount" parameterType="String">
+		update tbl_notice set notice_view_cnt = notice_view_cnt + 1
+		where notice_no = #{notice_no}
+	</update>
+
+	<!--파일첨부가 없는 공지사항 작성하기-->
+	<insert id="notice_write" parameterType="NoticeVO">
+		insert into tbl_notice(notice_no, fk_member_userid, notice_dept, notice_title, notice_content, notice_fix, notice_del, notice_view_cnt, notice_write_date)
+		values(seq_notice_no.nextval, #{fk_member_userid}, #{notice_dept}, #{notice_title}, #{notice_content}, #{notice_fix}, 0, 0, sysdate)
+	</insert>
+	
+	<!--파일첨부가 있는 공지사항 작성하기-->
+	<insert id="notice_file_write" parameterType="NoticeVO">
+		insert into tbl_notice(notice_no, fk_member_userid, notice_dept, notice_title, notice_content, notice_fix, notice_del, notice_view_cnt, notice_write_date, notice_fileName, notice_orgFilename, notice_fileSize)
+		values(seq_notice_no.nextval, #{fk_member_userid}, #{notice_dept}, #{notice_title}, #{notice_content}, #{notice_fix}, 0, 0, sysdate, #{notice_fileName}, #{notice_orgFilename}, #{notice_fileSize})
+	</insert>
+	
+	<!-- 삭제할 첨부파일명 알아오기 -->
+	<resultMap type="HashMap" id="notice_file_map">
+		<result property="notice_no" 			column="notice_no"  		javaType="String" />
+		<result property="notice_fileName" 		column="notice_fileName"  	javaType="String" />
+	</resultMap>
+	<select id="getNotice_delete" parameterType="String" resultMap="notice_file_map">
+		select notice_no, notice_fileName
+		from tbl_notice
+		where notice_no = #{notice_no}
+	</select>
+
+	<!-- 공지사항 삭제하기 -->
+	<delete id="notice_del" parameterType="String">
+		delete tbl_notice
+		where notice_no = #{notice_no}
+	</delete>
+	
+
+</mapper>

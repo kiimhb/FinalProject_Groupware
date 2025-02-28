@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%
 	String ctxPath = request.getContextPath();
@@ -14,6 +16,15 @@
 
 <script type="text/javascript">
 $(document).ready(function(){  
+	
+	$("input:text[name='patientname']").bind("keydown", function(e){		
+		if(e.keyCode == 13) {
+			paySearch();
+		}
+	});
+	
+	
+	
 	
 
 });
@@ -42,6 +53,36 @@ function allCheck(selectAll) {
 	});
 }
 
+function nameSearch() {
+	const frm = document.searchFrm;
+			    frm.submit();
+}
+
+// 수납처리 버튼 클릭할 경우
+function pay_success() {
+	
+	// 체크박스를 선택하지 않고 수납처리 버튼을 클릭한 경우 
+	if($("input:checkbox[name='finishCheck']:checked").length == 0) {
+		alert("수납처리할 회원을 선택하세요");
+		return;
+	}
+	
+	// 수납 상태를 0 에서 1로 변경한다. (여러명일 경우를 위해 반복문 사용)
+	$("input:checkbox[name='finishCheck']:checked").each((index, elmt) => {
+		$(document.paySuccessFrm).append("<input type='hidden' name='order_no' value='"+ $(elmt).val() +"'/>")
+	});
+	
+	if(confirm("수납처리를 하시겠습니까?")) {
+		const frm = document.paySuccessFrm;
+	    frm.action = "success";
+	    frm.method = "post";
+	    frm.submit();
+	} else {
+		alert("수납처리가 취소되었습니다.");
+	}
+	
+}
+
 </script>
 	
       <div class="header">
@@ -49,21 +90,32 @@ function allCheck(selectAll) {
 	  		<div class="title">
 	  			수납
 	  		</div>
+	  		
+	  		<form name="searchFrm">
+		  		<div class="menu ml-1">
+					<div class="menulist">
+						<div><a href="<%= ctxPath%>/pay/wait?order_status=0" style="${requestScope.order_status eq '0' ? 'color:black;' : ''}">수납대기</a>&nbsp;&nbsp;&nbsp;&nbsp;|</div>
+						<div><a href="<%= ctxPath%>/pay/wait?order_status=1" style="${requestScope.order_status eq '1' ? 'color:black;' : ''}">&nbsp;&nbsp;&nbsp;&nbsp;수납완료</a></div>
+					</div>
+				</div>
+			
+			
+				<div class="search_and_pay">
+					<div class="search">
+						<input type="text" name="patientname" class="patientname" placeholder="환자명을 입력하세요" >
+						<i class="fa-solid fa-magnifying-glass" id="icon" onclick="nameSearch()"></i></input>	
+					</div>
+					<c:if test="${requestScope.order_status eq '0'}">
+						<div class="paybtn">
+							<button type="button" class="btn" onclick="pay_success()">수납처리</button>	
+						</div>
+					</c:if>
+				</div>	
+			</form>
 		
-			<div class="menu">
-				<div class="menulist">
-					<div><a href="<%= ctxPath%>/pay/wait" >수납대기</a>&nbsp;&nbsp;&nbsp;&nbsp;|</div>
-					<div><a href="<%= ctxPath%>/pay/finish">&nbsp;&nbsp;&nbsp;&nbsp;수납완료</a></div>
-				</div>
-				<div class="paybtn">
-					<button type="button" class="btn">수납처리</button>	
-				</div>
-			</div>
-			
-			
       </div>
   
-	  <div class="patientList mt-3">
+	  <div class="patientList mt-1">
 		
 		<table class="table table-hover">
 			<thead>
@@ -71,29 +123,48 @@ function allCheck(selectAll) {
 					<th><input type="checkbox" name="allcheckbox" onclick="allCheck(this)" /></th>
 					<th>차트번호</th>
 					<th>진료일자</th>
-					<th>진료과</th>
 					<th>환자명</th>
 					<th>성별</th>
 					<th>주민등록번호</th>
+					<th>수납비용</th>
 					<th>처방전</th>
 					<th>수납</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr class="patientList">
-					<td><input type="checkbox" name="finishCheck" onclick="onecheck()" /></td>
-					<td>10001</td>
-					<td>2025-12-12</td>
-					<td>호흡기내과</td>
-					<td>이혜연</td>
-					<td>여</td>
-					<td>020106-*******</td>
-					<td><input type="button" value="출력" id="print" class="btn print" onclick="window.print()"></td>
-					<td><input type="button" value="출력" id="print" class="btn print" onclick="window.print()"></td>
-				</tr>
+			<c:if test="${not empty requestScope.pay_list}">
+				<c:forEach var="pvo" items="${requestScope.pay_list}">
+					<tr class="patientList">
+						<td><input type="checkbox" name="finishCheck" onclick="onecheck()" value="${pvo.order_no}"/></td>
+						<td>${pvo.order_no}</td>
+						<td>${pvo.order_createTime}</td>
+						<td>${pvo.patient_name}</td>
+						<td>${pvo.patient_gender}</td>
+						<td>${fn:substring(pvo.patient_jubun, 0, 8)}******</td>
+						<td><fmt:formatNumber value="${pvo.cost}" pattern="#,###"/>원</td>
+						<td><input type="button" value="출력" id="print" class="btn print" onclick="window.print()"></td>
+						<td><input type="button" value="출력" id="print" class="btn print" onclick="window.print()"></td>
+					</tr>
+				</c:forEach>
+			</c:if>
+			<c:if test="${empty requestScope.pay_list}">
+				<tr><td>수납 목록이 없습니다...</td></tr>
+			</c:if>
+				
 			</tbody>
 		</table>
 	  </div>
+	  
+	  <c:if test="${not empty requestScope.pay_list}">
+		  <%-- 페이지바 === --%>
+	      <div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+	    		${requestScope.pageBar}
+	   	  </div>
+   	  </c:if>
+
+	 <form name="paySuccessFrm">
+		
+	 </form>
 
 
 <jsp:include page="../../footer/footer1.jsp" />   

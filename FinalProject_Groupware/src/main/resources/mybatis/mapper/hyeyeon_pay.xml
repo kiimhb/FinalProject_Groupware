@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="hyeyeon">
+	
+	<!-- 수납상태와 검색어에 따른 총 수납개수 -->
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">
+		select count(*)
+		from
+		(
+		    select order_no, order_createTime, fk_patient_no, cost
+		    from tbl_order a join tbl_cost b
+		    on a.order_no = b.fk_order_no
+		    where order_status = #{order_status}
+		) a join tbl_patient b
+		on a.fk_patient_no = b.patient_no
+		<choose>
+		    <when test='patientname != ""  '>
+		    	where patient_name like '%'|| #{patientname} ||'%' 
+	    	</when>
+    	</choose>
+	</select>
+	
+	<!-- 수납대기 또는 수납 완료 목록 -->
+	<resultMap id="pay_list_map" type="HashMap">
+	    <result property="order_no" 			column="order_no" 			javaType="String" />
+	    <result property="order_createTime"  	column="order_createTime" 	javaType="String" />
+	    <result property="fk_patient_no" 		column="fk_patient_no" 		javaType="String" />
+	    <result property="cost"  				column="cost" 				javaType="String" />
+	    <result property="patient_name" 		column="patient_name" 		javaType="String" />
+	    <result property="patient_jubun"  		column="patient_jubun" 		javaType="String" />
+	     <result property="patient_gender"  	column="patient_gender" 	javaType="String" />
+	</resultMap>
+	<select id="pay_list" parameterType="HashMap" resultMap="pay_list_map">
+		select rno, order_no, order_createTime, fk_patient_no, cost,
+       		   patient_name, patient_jubun, patient_gender
+		from
+		(
+		    select rownum as rno, order_no, 
+		    to_char(order_createTime, 'yyyy-mm-dd') as order_createTime, fk_patient_no, cost
+		    from tbl_order a join tbl_cost b
+		    on a.order_no = b.fk_order_no
+		    where order_status = #{order_status}
+		    order by order_createTime asc
+		) a join tbl_patient b
+		on a.fk_patient_no = b.patient_no
+		where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+		<choose>
+		    <when test='patientname != ""  '>
+		    	and patient_name like '%'|| #{patientname} ||'%'  
+	    	</when>
+    	</choose>
+		
+	</select>
+	
+	<!-- 수납처리하기 -->
+	<update id="pay_success" parameterType="HashMap">
+		update tbl_order set order_status = 1
+		where order_no = #{order_no}
+	</update>
+	
+
+</mapper>

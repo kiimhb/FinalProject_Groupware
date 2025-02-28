@@ -52,4 +52,255 @@ SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
 
 
 
-desc tbl_work;
+
+select fk_member_userid, fk_child_dept_no, 
+       notice_view_cnt, notice_write_date
+from tbl_notice a join tbl_member b
+on a.fk_member_userid = b.member_userid
+where notice_no = 2;
+
+
+update tbl_notice set notice_view_cnt = notice_view_cnt + 1
+where notice_no = 2
+
+select *
+from tbl_notice;
+
+select *
+from tbl_notice
+
+
+
+select *
+from
+(
+    select rownum as rno, notice_no, fk_member_userid,  fk_child_dept_no, notice_dept, notice_title,
+    notice_content, notice_fix, notice_del, notice_view_cnt, 
+    to_char(notice_write_date, 'yyyy-mm-dd') as notice_write_date
+    from tbl_notice a join tbl_member b
+    on a.fk_member_userid = b.member_userid
+    where notice_dept in (0 , 2)
+)
+where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+
+
+
+
+select *
+from 
+(
+    with 
+    a as
+    (
+        select order_no, fk_patient_no, order_howlonghosp
+        from tbl_order a join tbl_hospitalize b
+        on a.order_no = b.fk_order_no
+        where order_ishosp = 1 and hospitalize_status = 0
+    ),
+    b as
+    (
+         select patient_no, fk_child_dept_no, patient_name, patient_visitdate, child_dept_name,
+                patient_gender, patient_jubun
+         from tbl_patient a join tbl_child_dept b
+         on a.fk_child_dept_no = b.child_dept_no
+         order by patient_visitdate asc
+    )
+    select rownum as rno, order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
+    from a join b
+    on a.fk_patient_no = b.patient_no
+)
+WHERE rno BETWEEN to_number(#{startRno2}) AND to_number(#{endRno2})
+
+select *
+from tbl_order;
+
+
+select *
+from tbl_hospitalize a join tbl_order b
+on a.hospitalize_no = b.order_no
+where hospitalize_no = 59;
+
+delete tbl_work;
+
+commit;
+
+select *
+from tbl_member;
+
+
+
+select fk_member_userid, notice_title, notice_dept, notice_content, fk_child_dept_no, 
+notice_view_cnt, notice_write_date, notice_fileName, notice_orgFilename, notice_fileSize
+from tbl_notice a join tbl_member b
+on a.fk_member_userid = b.member_userid
+
+select *
+from tbl_notice;
+
+delete tbl_notice
+where notice_no = 9;
+
+commit;
+
+select notice_no, notice_fileName
+from tbl_notice
+where notice_no = #{notice_no}
+
+select *
+from tbl_member;
+
+
+
+select count(*) as count
+from tbl_work
+where fk_member_userid = '65897690'
+and to_char(work_recorddate, 'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd')
+and work_endstatus is not null;
+
+select *
+from tbl_patient;
+
+select patient_name, patient_gender, patient_status, order_no
+     , case when sysdate - to_date( to_char(sysdate, 'yyyy') || substr(patient_jubun, 3, 4), 'yyyymmdd') >= 0
+                then extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) 
+                else extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) - 1
+       end AS age   
+from tbl_patient a join tbl_order b
+on a.patient_no = b.fk_patient_no
+where patient_no = 12
+
+
+select *
+from tbl_patient;
+
+delete tbl_patient
+where patient_no = 12;
+
+select *
+from tbl_order;
+
+delete tbl_order
+where order_no = 63;
+
+select *
+from tbl_hospitalize
+
+delete tbl_hospitalize
+where fk_order_no = 64
+
+
+delete tbl_hospitalize
+
+delete tbl_surgery
+
+commit;
+
+/* 수납 페이징 */
+select rno, order_no, order_createTime, fk_patient_no, cost,
+       patient_name, patient_jubun, patient_gender
+from
+(
+    select rownum as rno, order_no, order_createTime, fk_patient_no, cost
+    from tbl_order a join tbl_cost b
+    on a.order_no = b.fk_order_no
+    where order_status = 0
+) a join tbl_patient b
+on a.fk_patient_no = b.patient_no
+where rno between 1 and 10
+and patient_name like '%'|| #{patientname} ||'%' 
+
+
+/* 수납 개수 */
+select count(*)
+from
+(
+    select order_no, order_createTime, fk_patient_no, cost
+    from tbl_order a join tbl_cost b
+    on a.order_no = b.fk_order_no
+    where order_status = 0
+) a join tbl_patient b
+on a.fk_patient_no = b.patient_no
+where rno between 1 and 10
+and patient_name like '%'|| #{patientname} ||'%';
+
+select *
+from tbl_order
+where order_status = 0
+
+desc tbl_cost;
+
+insert into tbl_cost values(33, '진료비', '감기진료', 26800)
+insert into tbl_cost values(87, '수술비', '맹장수술', 26800);
+insert into tbl_cost values(92, '입원비', '입원비용', 26800);
+insert into tbl_cost values(76, '진료비', '감기진료', 26800)
+insert into tbl_cost values(15, '수술비', '맹장수술', 26800);
+insert into tbl_cost values(16, '입원비', '입원비용', 26800);
+insert into tbl_cost values(17, '진료비', '감기진료', 26800)
+insert into tbl_cost values(18, '수술비', '맹장수술', 26800);
+insert into tbl_cost values(19, '입원비', '입원비용', 26800);
+insert into tbl_cost values(20, '수술비', '맹장수술', 26800);
+insert into tbl_cost values(21, '입원비', '입원비용', 26800);
+insert into tbl_cost values(22, '입원비', '입원비용', 26800);
+insert into tbl_cost values(23, '수술비', '맹장수술', 26800);
+insert into tbl_cost values(24, '입원비', '입원비용', 26800);
+insert into tbl_cost values(25, '입원비', '입원비용', 26800);
+insert into tbl_cost values(27, '수술비', '맹장수술', 26800);
+insert into tbl_cost values(28, '입원비', '입원비용', 26800);
+
+commit;
+
+
+update tbl_order set order_status = 1
+where order_no = 
+
+
+select *
+from tbl_notice;
+
+desc tbl_notice;
+
+
+select rownum as rno, notice_no, fk_member_userid,  fk_child_dept_no, notice_dept, notice_title,
+notice_content, notice_fix, notice_del, notice_view_cnt, notice_filename, 
+to_char(notice_write_date, 'yyyy-mm-dd') as notice_write_date
+from tbl_notice a join tbl_member b
+on a.fk_member_userid = b.member_userid
+
+select member_userid, member_grade
+from tbl_member;
+
+select *
+from tbl_notice
+order by notice_fix desc, notice_write_date desc
+
+
+
+with
+a as -- 오더테이블
+(
+    select fk_patient_no, order_no, order_createTime
+    from tbl_order a join tbl_patient b
+    on a.fk_patient_no = b.patient_no
+    where patient_jubun = '230404-1000000'
+),
+b as -- 입원테이블조회 
+(
+    select fk_order_no, hospitalize_start_day, hospitalize_end_day
+    from tbl_hospitalize
+),
+c as -- 수술테이블
+(
+    select fk_order_no, surgery_day, surgery_start_time
+    from tbl_surgery
+)
+select order_no, order_createTime,
+       hospitalize_start_day, hospitalize_end_day,
+       surgery_day, surgery_start_time
+from a left join b
+on a.order_no = b.fk_order_no
+left join c
+on a.order_no = c.fk_order_no
+
+
+
+

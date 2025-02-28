@@ -115,31 +115,60 @@ public class RegisterService_imple  implements RegisterService {
 		return reservedTime;
 	}
 	
+	// 동일한 날 한개이상의 수술을 막기 위해 주민번호 알아오기 
+	@Override
+	public String getJubun(SurgeryVO surgeryvo) {
+		String jubun = dao.getJubun(surgeryvo);
+		return jubun;
+	}
+	
 	// 수술 예약하기 - 동시성처리
 	@Transactional // 중복검사 -> 예약완료하기 (트랜잭션 처리)
-	public void surgeryRegister(SurgeryVO surgeryvo) {
+	public void surgeryRegister(SurgeryVO surgeryvo, String jubun) {
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("surgery_surgeryroom_name", surgeryvo.getSurgery_surgeryroom_name());
 		paraMap.put("surgery_day", surgeryvo.getSurgery_day());
 		paraMap.put("surgery_start_time", surgeryvo.getSurgery_start_time());
+		paraMap.put("jubun", jubun);
 		
-		// 1. 비관적락 사용해서 예약된 시간인지 확인하기
-		SurgeryVO existingSurgery = dao.existingSurgery(paraMap);
+		// 1. 동일한 환자가 같은 날 다른 수술이 있는지 확인하기 (수술은 하루에 한개만 가능)
+		int n = dao.todayOtherSurgery(paraMap);
 		
-		if(existingSurgery != null) { // 1-2. 예약이 되어있는 상태라면 오류 발생(동시성)
-			throw new RuntimeException("해당 시간에 이미 예약이 존재합니다.");
+		if(n > 0) { // 1-1. 동일한 날 다른 수술이 존재한다면 오류 발생
+			throw new RuntimeException("동일한 날 다른 예약건이 존재합니다. 다른 예약일을 선택해 주세요.");
 		}
 		
-		// 2. 예약이 없다면 예약 처리를 해준다.
+		// 2. 비관적락 사용해서 예약된 시간인지 확인하기 - 동시성확인 
+		SurgeryVO existingSurgery = dao.existingSurgery(paraMap);
+		
+		if(existingSurgery != null) { // 2-2. 예약이 되어있는 상태라면 오류 발생(동시성)
+			throw new RuntimeException("해당 시간에 이미 예약이 존재합니다. 다시 예약을 진행해 주세요.");
+		}
+		
+		// 3. 예약이 없다면 예약 처리를 해준다.
 		dao.insertSurgery(surgeryvo);
 	}
 
-	// 수술 예약 일정 수정하기
-	@Override
-	public int surgeryUpdate(Map<String, String> paraMap) {
-		int n = dao.surgeryUpdate(paraMap);
-		return n;
+	// 수술 예약 일정 수정하기 (예약과 동일하다.)
+	@Transactional
+	public void surgeryUpdate(Map<String, String> paraMap) {
+		
+		// 1. 동일한 환자가 같은 날 다른 수술이 있는지 확인하기 (수술은 하루에 한개만 가능)
+		int n = dao.todayOtherSurgery(paraMap);
+		
+		if(n > 0) { // 1-1. 동일한 날 다른 수술이 존재한다면 오류 발생
+			throw new RuntimeException("동일한 날 다른 예약건이 존재합니다. 다른 예약일을 선택해 주세요.");
+		}
+		
+		// 2. 비관적락 사용해서 예약된 시간인지 확인하기 - 동시성확인 
+		SurgeryVO existingSurgery = dao.existingSurgery(paraMap);
+		
+		if(existingSurgery != null) { // 2-2. 예약이 되어있는 상태라면 오류 발생(동시성)
+			throw new RuntimeException("해당 시간에 이미 예약이 존재합니다. 다시 예약을 진행해 주세요.");
+		}
+		
+		dao.surgeryUpdate(paraMap);
 	}
 
 	// 입원 대기자 목록 총 개수
@@ -163,32 +192,77 @@ public class RegisterService_imple  implements RegisterService {
 		return howlonghosp;
 	}
 
-	// 입원실 목록 가져오기 4인실
+	// 입원실 잔여석 가져오기
 	@Override
-	public List<HospitalizeroomVO> hospitalizeroom() {
-		List<HospitalizeroomVO> hospitalizeroom = dao.hospitalizeroom();
-		return hospitalizeroom;
+	public List<Map<String, String>> okSeat(Map<String, String> paraMap) {
+		List<Map<String, String>> okseat = dao.okSeat(paraMap);
+		return okseat;
 	}
 
-	// 입원실 목록 가져오기 2인실
+	
+	// 중복 입원 확인을 위해 주민번호 알아오기
 	@Override
-	public List<HospitalizeroomVO> hospitalizeroom_2() {
-		List<HospitalizeroomVO> hospitalizeroom_2 = dao.hospitalizeroom_2();
-		return hospitalizeroom_2;
+	public String jubunGet(HospitalizeVO hospitalizevo) {
+		String n = dao.jubunGet(hospitalizevo);
+		return n;
 	}
 
-	// 입원예약하기
+	// 입원예약하기 - 동시성 처리하기 
 	@Override
-	public void hospitalizeRegister(HospitalizeVO hospitalizevo) {
+	@Transactional // 중복검사 -> 예약완료하기 (트랜잭션 처리)
+	public void hospitalizeRegister(HospitalizeVO hospitalizevo, String jubun) {
+		
+		Map<String, String> paraMap = new HashMap<>(); 
+		paraMap.put("fk_hospitalizeroom_no" , hospitalizevo.getFk_hospitalizeroom_no());
+		paraMap.put("hospitalize_start_day" , hospitalizevo.getHospitalize_start_day());
+		paraMap.put("hospitalize_end_day" , hospitalizevo.getHospitalize_end_day());
+		paraMap.put("jubun", jubun);
+		
+		// 1. 동일한 입원일/퇴원일에 다른 입원건이 있는지 확인
+		int n = dao.todayOtherHospitalize(paraMap);
+		
+		if(n > 0) { // 1-2. 동일 기간에 다른 예약건이 존재한다.
+			throw new RuntimeException("해당 기간에 다른 입원예약건이 존재합니다. 다른 입원일을 선택하세요.");
+		}
+		
+		// 2. 비관적락 사용해서 예약된 시간인지 확인하기
+		HospitalizeVO existingHospitalize = dao.existingHospitalize(paraMap);
+		
+		if(existingHospitalize != null) { // 2-2. 예약이 되어있는 상태라면 오류 발생(동시성)
+			throw new RuntimeException("해당 시간에 이미 예약이 존재합니다. 다시 예약을 진행해 주세요.");
+		}
+		
+		// 2.예약이 없다면 예약처리 해준다. 
 		dao.hospitalizeRegister(hospitalizevo);
 	}
 
-	// 입원실 잔여석 가져오기
-	@Override
-	public List<Map<String, String>> okSeat() {
-		List<Map<String, String>> okseat = dao.okSeat();
-		return okseat;
+
+	// 입원 예약 수정하기
+	@Transactional
+	public void hospitalizeUpdate(Map<String, String> paraMap) {
+		
+		// 1. 동일한 입원일/퇴원일에 다른 입원건이 있는지 확인
+		int n = dao.todayOtherHospitalize(paraMap);
+		System.out.println("n 값"+n);
+		System.out.println(paraMap.get("hospitalize_start_day"));
+		System.out.println(paraMap.get("hospitalize_end_day"));
+		
+		if(n > 0) { // 1-2. 동일 기간에 다른 예약건이 존재한다.
+			throw new RuntimeException("해당 기간에 다른 입원예약건이 존재합니다. 다른 입원일을 선택하세요.");
+		}
+		
+		// 2. 비관적락 사용해서 예약된 시간인지 확인하기
+		HospitalizeVO existingHospitalize = dao.existingHospitalize(paraMap);
+		
+		if(existingHospitalize != null) { // 2-2. 예약이 되어있는 상태라면 오류 발생(동시성)
+			throw new RuntimeException("해당 시간에 이미 예약이 존재합니다. 다시 예약을 진행해 주세요.");
+		}
+		
+		// 2.예약이 없다면 예약처리 해준다. 
+		dao.hospitalizeUpdate(paraMap);
 	}
+
+
 
 
 

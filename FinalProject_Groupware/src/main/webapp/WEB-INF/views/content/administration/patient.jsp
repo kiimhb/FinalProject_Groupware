@@ -55,16 +55,21 @@ function nameSearch() {
 				</tr>
 			</thead>
 			<tbody>
-			<c:forEach var="pvo" items="${requestScope.patientList}">
-				<tr class="patientList" onclick="javascript:location.href='<%= ctxPath%>/patient/detail/${pvo.patient_no}'" >
-					<td>${pvo.patient_no}</td>
-					<td>${pvo.patient_visitdate}</td>
-					<td>${pvo.child_dept_name}</td>
-					<td>${pvo.patient_name}</td>
-					<td>${pvo.patient_gender}</td>
-					<td>${pvo.patient_jubun}</td>
-				</tr>
-			</c:forEach>
+				<c:if test="${not empty requestScope.patientList}">
+					<c:forEach var="pvo" items="${requestScope.patientList}">
+						<tr class="patientList" onclick="javascript:location.href='<%= ctxPath%>/patient/detail/${pvo.patient_no}'" >
+							<td>${pvo.patient_no}</td>
+							<td>${pvo.patient_visitdate}</td>
+							<td>${pvo.child_dept_name}</td>
+							<td>${pvo.patient_name}</td>
+							<td>${pvo.patient_gender}</td>
+							<td>${pvo.patient_jubun}</td>
+						</tr>
+					</c:forEach>
+				</c:if>
+				<c:if test="${empty requestScope.patientList}">
+					<tr><td>진료기록이 있는 환자가 없습니다</td></tr>
+				</c:if>
 			</tbody>
 		</table>
 		
