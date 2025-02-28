@@ -25,5 +25,4 @@ public interface TreatPatientService {
 	// === 신규환자 정보 입력하여 등록 및 접수 insert 하기
 	int submitNcheck1(TreatPatientVO tpvo);
 
-
 }

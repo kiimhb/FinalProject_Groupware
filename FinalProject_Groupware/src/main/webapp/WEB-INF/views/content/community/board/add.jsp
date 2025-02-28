@@ -27,6 +27,10 @@ th {
 	display :inline-block;
 }
 
+  button.btn {
+	background-color: #006769;
+	color:white;
+
 
 </style> 
 
@@ -124,7 +128,7 @@ th {
   <div style="margin: auto; padding-left: 3%;"> 
    
     <%-- === 원글쓰기인 경우 --%>
-	<h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">글쓰기</h2>
+	<h2 style="margin-bottom: 30px; padding-top: 3%; font-weight: bold;"><span style="margin-right:10px"; >|</span>글쓰기</h2>
 
 	<%-- === 답변글쓰기인 경우 --%>
    <c:if test='${requestScope.fk_board_no ne ""}'>
@@ -186,10 +190,11 @@ th {
    			<input type="hidden" name="board_depthno" value="${requestScope.board_depthno}" />
    			
    			<%-- === 답변글쓰기가 추가된 경우 끝 === --%>
-	   		<div style="margin: 20px;">
-	            <button type="button" class="btn btn-secondary btn-sm mr-3" id="btnWrite">글쓰기</button>
-	            <button type="button" class="btn btn-secondary btn-sm" onclick="javascript:history.back()">취소</button>  
-	        </div>
+	   		<div style="margin: 20px; text-align: center;">
+			    <button type="button" class="btn btn ml-2" id="btnWrite">글쓰기</button>
+			    <button type="button" class="btn btn ml-2" onclick="javascript:history.back()">취소</button>  
+			</div>
+
 	   		
 	 </form>
 	   

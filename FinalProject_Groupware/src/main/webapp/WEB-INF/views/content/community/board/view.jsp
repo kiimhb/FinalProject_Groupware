@@ -21,6 +21,13 @@ span.move  {cursor: pointer; color: navy;}
 td.comment {text-align: center;}
 
 a {text-decoration: none !important;}
+
+#commentDisplay td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+
 </style>
 
 <script type="text/javascript">
@@ -43,8 +50,8 @@ $(document).ready(function(){
   
   $("input:text[name='comment_content']").bind("keydown", function(e){
 	  if(e.keyCode == 13) { // 엔터
-		  goAddWrite();
-	  }
+		  goAddWrite();  // 댓글쓰기
+	  } 
   });
   
   
@@ -54,6 +61,7 @@ $(document).ready(function(){
   $(document).on('click', 'button.btnUpdateComment', function(e){
 	  
 	  const $btn = $(e.target);
+	  
 	  
 	  if($btn.text() == "수정") {
 		// alert("댓글수정");
@@ -80,7 +88,7 @@ $(document).ready(function(){
 		  // alert($btn.val());  // 수정해야할 댓글시퀀스 번호
 		  // alert($btn.parent().parent().children("td:nth-child(2)").children("input").val()); // 수정후 댓글내용 
 		     const comment_content = $btn.parent().parent().children("td:nth-child(2)").children("input").val();
-		  
+		  	 
 		     $.ajax({
 		    	 url:"${pageContext.request.contextPath}/board/updateComment",
 		    	 type:"put",
@@ -135,7 +143,7 @@ $(document).ready(function(){
 			    	 url:"${pageContext.request.contextPath}/board/deleteComment",
 			    	 type:"delete",
 			    	 data:{"comment_no":$btn.val(),
-			    		   "comment_parentSeq":"${requestScope.commentvo.comment_no}"},
+			    		   "comment_parentSeq":"${requestScope.boardvo.board_no}"},
 			    	 dataType:"json",
 			    	 success:function(json){
 			    	     console.log(JSON.stringify(json));
@@ -215,15 +223,24 @@ frm.submit();
 
 // === 댓글쓰기 === //
 function goAddWrite() {
-  
+//	alert("댓글 쓰기");	
+
   const comment_content = $("input:text[name='comment_content']").val().trim();
+
   if(comment_content == ""){
 	 alert("댓글 내용을 입력하세요!!");
 	 return; // 종료
   }
   
-  // 첨부파일이 없는 댓글쓰기인 경우
-  goAddWrite_noAttach();
+  <%-- === #171. 댓글쓰기에 첨부파일이 있는 경우와, 첨부파일이 없는 경우 시작 === --%>
+  if($("input:file[name='attach']").val() == "") {
+	  // 첨부파일이 없는 댓글쓰기인 경우
+	  goAddWrite_noAttach();
+  }
+  else {
+	  // 첨부파일이 있는 댓글쓰기인 경우
+	  goAddWrite_withAttach();
+  }
   
 }// end of function goAddWrite()-----------------
 
@@ -239,17 +256,14 @@ function goAddWrite_noAttach() {
   --%>
   
   const queryString = $("form[name='addWriteFrm']").serialize();
-//  alert(queryString);
-  /*
-     fk_userid=seoyh&name=서영학&content=댓글쓰기내용입니다&parentSeq=3
-  */
+  // alert(queryString);
   
   $.ajax({
 	  url:"<%= ctxPath%>/board/addComment",
 	/*  
 	  data:{"fk_userid":$("input:hidden[name='fk_userid']").val()
 		  , "name":$("input:text[name='name']").val()
-		  , "content":$("input:text[name='content']").val()
+		  , "comment_content":$("input:text[name='comment_content']").val()
 		  , "parentSeq":$("input:hidden[name='parentSeq']").val()},
 	*/
 	// 또는
@@ -263,17 +277,10 @@ function goAddWrite_noAttach() {
 		  // 또는 
 		  // {"name":"서영학","n":0}
 		  
-		  if(json.n == 0){
-			  alert(json.name + "님의 포인트는 300점을 초과할 수 없으므로 댓글쓰기가 불가합니다.");
-		  }
-		  else {
-		        //  goReadComment();  // 페이징 처리 안한 댓글 읽어오기
-		        
-		        // === #129. 페이징 처리 한 댓글 읽어오기 === //
-			       goViewComment(1); 
-		  }
+		  // === #129. 페이징 처리 한 댓글 읽어오기 === //
+		  goViewComment(1); 
 		  
-		  $("input:text[name='content']").val("");
+		  $("input:text[name='comment_content']").val("");
 	  },
 	  error: function(request, status, error){
 	      alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -281,6 +288,74 @@ function goAddWrite_noAttach() {
   });
   
 }// end of goAddWrite_noAttach()----------------------------
+
+
+
+// === #172. 첨부파일이 있는 댓글쓰기인 경우 === //
+function goAddWrite_withAttach() {
+	  
+	  <%-- jQuery 에서 Ajax 를 사용하여 파일을 첨부할 때는 2가지 방법이 있다.
+	       첫번째, formData 객체를 사용하는 것이고(메일보내기[다중파일첨부]에서 해볼것이다),
+	       두번째, ajaxForm 을 사용하는 것이다.
+	       우리는 ajaxForm 을 사용해서 파일을 첨부해보겠다.
+	       
+	       우선 ajaxForm 을 사용하기 위해서는 jquery.form.min.js 가 있어야 한다.
+	       우리는 /myspring/src/main/resources/static/js/jquery.form.min.js 파일이 있다.
+	       
+	       우리는 /myspring/src/main/webapp/WEB-INF/views/header/header1.jsp 와
+	            /myspring/src/main/webapp/WEB-INF/views/header/header2.jsp 파일속에
+	       <script type="text/javascript" src="<%=ctxPath%>/js/jquery.form.min.js"></script> 라고 기술해 두었다.       
+	  --%>
+	  
+	       
+    <%--
+      // 보내야할 데이터를 선정하는 또 다른 방법
+	    // jQuery에서 사용하는 것으로써,
+	    // form태그의선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
+	    const queryString = $("form[name='addWriteFrm']").serialize();
+    --%>     
+	  const queryString = $("form[name='addWriteFrm']").serialize();     
+	       
+	  // 첨부파일이 있는 form 태그는 $.ajax() 가 아니라 폼태그선택자.ajaxForm(); 이다.
+	  // 그리고 맨 아래에서 폼태그선택자.submit(); 을 꼭 해주어야 한다.
+	  $("form[name='addWriteFrm']").ajaxForm({
+		  url:"<%= ctxPath%>/board/addComment_withAttach",
+	    /*	  
+		  data:{"fk_userid":$("input:hidden[name='fk_userid']").val() 
+			   ,"name":$("input:text[name='name']").val() 
+			   ,"content":$("input:text[name='content']").val()
+			   ,"parentSeq":$("input:hidden[name='parentSeq']").val()
+			   ,"attach":$("input:file[name='attach']").val()}, 
+		*/
+		  // 또는
+		  data:queryString,
+		  
+		  type:"post",                   // === #173. 파일을 전송하는 form 은 항상 post 방식이어야 한다. === 
+		  enctype:"multipart/form-data", // === #173. 파일을 전송하는 form 은 항상 enctype 이 multipart/form-data 이어야 한다. === 
+			  
+		  dataType:"json",
+		  success:function(json){
+			  console.log(JSON.stringify(json));
+  		  // {"name":"서영학","n":1}
+  		  // 또는 
+  		  // {"name":"서영학","n":0}
+  		  
+
+  		 goViewComment(1); // 페이징 처리한 댓글 읽어오기  
+
+  		  
+  		  $("input:text[name='comment_content']").val("");
+  		  $("input:file[name='attach']").val("");
+		  },
+		  error: function(request, status, error){
+		      alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		  }
+		  
+	  });
+	  
+	  $("form[name='addWriteFrm']").submit();
+	  
+}// end of function goAddWrite_withAttach()-----------------
 
 
 // 페이징 처리 안한 댓글 읽어오기
@@ -293,9 +368,9 @@ function goReadComment() {
 	  success:function(json){
 		  console.log(JSON.stringify(json));
 		  /*
-		     [{"seq":"3","fk_userid":"seoyh","name":"서영학","content":"세번째 댓글쓰기 입니다","regDate":"2025-01-24 10:50:40","parentSeq":null,"status":null}
-	         ,{"seq":"2","fk_userid":"seoyh","name":"서영학","content":"두번째 댓글쓰기 입니다","regDate":"2025-01-24 10:48:50","parentSeq":null,"status":null}
-	         ,{"seq":"1","fk_userid":"seoyh","name":"서영학","content":"첫번째 댓글쓰기 입니다","regDate":"2025-01-24 10:46:23","parentSeq":null,"status":null}]
+		     [{"seq":"3","fk_userid":"seoyh","name":"서영학","comment_content":"세번째 댓글쓰기 입니다","regDate":"2025-01-24 10:50:40","parentSeq":null,"status":null}
+	         ,{"seq":"2","fk_userid":"seoyh","name":"서영학","comment_content":"두번째 댓글쓰기 입니다","regDate":"2025-01-24 10:48:50","parentSeq":null,"status":null}
+	         ,{"seq":"1","fk_userid":"seoyh","name":"서영학","comment_content":"첫번째 댓글쓰기 입니다","regDate":"2025-01-24 10:46:23","parentSeq":null,"status":null}]
 		  
 		     // 또는
 		     []
@@ -326,7 +401,7 @@ function goReadComment() {
 		  
 		  else {
 			  v_html = `<tr>
-			              <td colspan='5'>댓글이 없습니다</td> 
+			                <td>댓글이 없습니다</td> 
 			            </tr>`;
 		  }
 		  
@@ -352,9 +427,9 @@ $.ajax({
   success:function(json){
      // console.log(JSON.stringify(json));
      /*
-        [{"seq":"50","fk_userid":"kimhb","name":"김홍비","content":"댓글연습37","regDate":"2025-02-05 10:42:56","parentSeq":null,"status":null}
-        ,{"seq":"49","fk_userid":"kimhb","name":"김홍비","content":"댓글연습36","regDate":"2025-02-05 10:42:50","parentSeq":null,"status":null}
-        ,{"seq":"48","fk_userid":"kimhb","name":"김홍비","content":"댓글연습35","regDate":"2025-02-05 10:41:34","parentSeq":null,"status":null}]
+        [{"seq":"50","fk_userid":"kimhb","name":"김홍비","comment_content":"댓글연습37","regDate":"2025-02-05 10:42:56","parentSeq":null,"status":null}
+        ,{"seq":"49","fk_userid":"kimhb","name":"김홍비","comment_content":"댓글연습36","regDate":"2025-02-05 10:42:50","parentSeq":null,"status":null}
+        ,{"seq":"48","fk_userid":"kimhb","name":"김홍비","comment_content":"댓글연습35","regDate":"2025-02-05 10:41:34","parentSeq":null,"status":null}]
      
         // 또는
         []
@@ -392,6 +467,9 @@ $.ajax({
            v_html += `<tr>
                          <td class="comment">\${sunbun}</td>
                          <td>\${item.comment_content}</td>
+                         
+                         <td>\${item.comment_orgFilename ? `<a href='<%= ctxPath%>/board/downloadComment?comment_no=\${item.comment_no}'>\${item.comment_orgFilename}</a>` : ''}</td>
+			              
                          <td class="comment">\${item.comment_name}</td>
                          <td class="comment">\${item.comment_regDate}</td>`;
                          
@@ -418,8 +496,8 @@ $.ajax({
      $("tbody#commentDisplay").html(v_html);
      
      // === #128. 페이지바 함수 호출 === //
-     const totalPage = Math.ceil(json[0].totalCount/json[0].sizePerPage);  // json[0].totalCount : 댓글 총 개수
-     // console.log("totalPage", totalPage);
+     const totalPage = Math.ceil(json[0].totalCount/json[0].sizePerPage);  
+     console.log("totalPage", totalPage);
      // totalPage : 10
      
      makeCommentPageBar(currentShowPageNo, totalPage);
@@ -499,27 +577,27 @@ $("div#pageBar").html(pageBar_HTML);
 <div style="display: flex;">
 <div style="margin: auto; padding-left: 3%;">
 
- <h2 style="margin-bottom: 30px;">글내용보기</h2>
+ <h2 style="margin-bottom: 30px; padding-top: 3%; font-weight: bold;"><span style="margin-right:10px"; >|</span>글내용보기</h2>
  
  <c:if test="${not empty requestScope.boardvo}">
- 	<table class="table table-bordered table-dark" style="width: 1024px; word-wrap: break-word; table-layout: fixed;">
+ 	<table style="width: 1200px" class="table table-bordered">
  	   <tr>
- 	      <th style="width: 15%">글번호</th>
+ 	      <th style="width: 150px; text-align: center;">글번호</th>
  	      <td>${requestScope.boardvo.board_no}</td>
  	   </tr>
  	   
  	   <tr>
- 	      <th>성명</th>
+ 	      <th style="width: 150px; text-align: center;">성명</th>
  	      <td>${requestScope.boardvo.board_name}</td>
  	   </tr>
  	   
  	   <tr>
- 	      <th>제목</th>
+ 	      <th style="width: 150px; text-align: center;">제목</th>
  	      <td>${requestScope.boardvo.board_subject}</td>
  	   </tr>
  	   
  	   <tr>
- 	      <th>내용</th>
+ 	      <th style="width: 150px; text-align: center;">내용</th>
  	      <td>
  	         <p style="word-break: break-all;">
  	            ${requestScope.boardvo.board_content}
@@ -528,15 +606,27 @@ $("div#pageBar").html(pageBar_HTML);
  	   </tr>
  	   
  	   <tr>
- 	      <th>조회수</th>
+ 	      <th style="width: 150px; text-align: center;">조회수</th>
  	      <td>${requestScope.boardvo.board_readCount}</td>
  	   </tr>
  	   
  	   <tr>
- 	      <th>날짜</th>
+ 	      <th style="width: 150px; text-align: center;">날짜</th>
  	      <td>${requestScope.boardvo.board_regDate}</td>
  	   </tr>
  	   
+ 	   <%-- === #160. 첨부파일 이름 및 파일크기를 보여주고 첨부파일을 다운로드 되도록 만들기 === --%>
+	 	   <tr>
+	 	      <th style="width: 150px; text-align: center;">첨부파일</th>
+	 	      <td>
+	 	         <c:if test="${sessionScope.loginuser != null}">
+	 	            <a href="<%= ctxPath%>/board/download?board_no=${requestScope.boardvo.board_no}">${requestScope.boardvo.board_orgFilename}</a>
+	 	         </c:if>
+	 	         <c:if test="${sessionScope.loginuser == null}">
+	 	            ${requestScope.boardvo.board_orgFilename}
+	 	         </c:if>
+	 	      </td>
+	 	   </tr>
  	</table>
  </c:if> 
  
@@ -546,21 +636,38 @@ $("div#pageBar").html(pageBar_HTML);
  
  <div class="mt-5">
  
-	 <%-- ==== 이전글제목, 다음글제목 보기 시작 ==== --%>	
-	 <c:if test="${not empty requestScope.boardvo}">
-		 <div style="margin-bottom: 1%;">이전글&nbsp;제목&nbsp;&nbsp;<span class="move" onclick="goView('${requestScope.boardvo.previousseq}')">${requestScope.boardvo.previoussubject}</span></div> 
-		 <div style="margin-bottom: 1%;">다음글&nbsp;제목&nbsp;&nbsp;<span class="move" onclick="goView('${requestScope.boardvo.nextseq}')">${requestScope.boardvo.nextsubject}</span></div>
-	 </c:if>
-	 <%-- ==== 이전글제목, 다음글제목 보기 끝 ==== --%> 
- 
+		<%-- ==== 이전글제목, 다음글제목 보기 (없으면 "없음" 표시) ==== --%>	
+		<div style="margin-bottom: 1%;">이전글 제목&nbsp;
+			<c:if test="${not empty requestScope.boardvo.previousseq}">
+				<span class="move" onclick="goView('${requestScope.boardvo.previousseq}')">
+					${requestScope.boardvo.previoussubject}
+				</span>
+			</c:if>
+			<c:if test="${empty requestScope.boardvo.previousseq}">
+				<span style="color: gray;">없음</span>
+			</c:if>
+		</div> 
+		
+		<div style="margin-bottom: 1%;">다음글 제목&nbsp;
+			<c:if test="${not empty requestScope.boardvo.nextseq}">
+				<span class="move" onclick="goView('${requestScope.boardvo.nextseq}')">
+					${requestScope.boardvo.nextsubject}
+				</span>
+			</c:if>
+			<c:if test="${empty requestScope.boardvo.nextseq}">
+				<span style="color: gray;">없음</span>
+			</c:if>
+		</div>
+		<%-- ==== 이전글제목, 다음글제목 보기 끝 ==== --%>
+		
 	 <br>
 	 
 	 <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/list'">전체목록보기</button>
 	 <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
 	 
 	 <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.member_userid == requestScope.boardvo.fk_member_userid}">
-	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/edit/${requestScope.boardvo.board_no}'">글수정하기</button>
-	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/del/${requestScope.boardvo.board_no}'">글삭제하기</button>
+	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/edit/${requestScope.boardvo.board_no}'">글수정</button>
+	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/del/${requestScope.boardvo.board_no}'">글삭제</button>
 	 </c:if>
 	 
 	 
@@ -579,20 +686,30 @@ $("div#pageBar").html(pageBar_HTML);
 			      <th width="10%">성명</th>
 			      <td>
 			         <input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" readonly /> 
-			         <input type="text" name="member_name" value="${sessionScope.loginuser.member_name}" readonly />
+			         <input type="text" name="comment_name" value="${sessionScope.loginuser.member_name}" readonly />
 			      </td>
 			   </tr>
 			   
 			   <tr style="height: 30px;">
 			      <th>댓글내용</th>
 			      <td>
-			         <input type="text" name="board_content" size="100" maxlength="1000" /> 
+			         <input type="text" name="comment_content" size="100" maxlength="1000" /> 
 			         
 			         <%-- 댓글에 달리는 원게시물 글번호(즉, 댓글의 부모글 글번호) --%>
 			         <input type="hidden" name="comment_parentSeq" value="${requestScope.boardvo.board_no}" readonly />
 			      </td>
 			   </tr>
 			   
+			   <%-- #170. 댓글쓰기에 파일첨부 하기 === --%>
+			   <tr style="height: 30px;">
+			   		<th>파일첨부</th>
+			   		<td>
+			   			<input type="file" name="attach">
+			   		</td>
+			   	</tr>
+			   	
+			   	
+			   		
 			   <tr>
 			      <th colspan="2">
 			      	<button type="button" class="btn btn-success btn-sm mr-3" onclick="goAddWrite()">댓글쓰기 확인</button>
@@ -614,7 +731,8 @@ $("div#pageBar").html(pageBar_HTML);
 			  <th style="text-align: center;">내용</th>
 			  
 			  <%-- === 댓글쓰기에 첨부파일이 있는 경우 시작 === --%>
-			  
+			  <th style="width: 10%">첨부파일</th>
+			  <%-- <th style="width: 8%">bytes</th>  --%>
 			  <%-- === 댓글쓰기에 첨부파일이 있는 경우 끝 === --%>
 			  
 			  <th style="width: 8%; text-align: center;">작성자</th>
