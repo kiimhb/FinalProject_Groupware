@@ -123,9 +123,6 @@
 	tr.approvalMember_V:hover {
 		background-color: #eee;
 	}
-	
-	
-	
 </style>
 
 
@@ -271,7 +268,6 @@ function goWrite() {
 <%-- ==== 결재선지정 버튼 클릭 함수 ==== --%>
 function setApprovalLine() {
 
-    
 	let arr_approvalLineMembers = [];	// 결재선에 추가된 멤버
 	let arr_referenceMembers = [];		// 참조자에 추가된 멤버
 	
@@ -360,57 +356,42 @@ function setApprovalLine() {
 		$("span.deleteBtn").addClass("disabled");
 		
 		
-		<%-- ==== 기존에 추가했던 결재선/참조자 사원을 목록에 불러오기 ==== --%>
+		<%-- ==================== 기존에 추가했던 결재선/참조자 사원을 목록에 불러오기 시작 ==================== --%>
 		if($("table#designated_line_Table tr#approvalLine_1 > td").length > 0 ) {
-			// 결재선/참조자 목록에 추가한 이력이 있으면
+			// 결재선 목록에 추가한 이력이 있으면
 			
 			let span_member_userid = document.querySelectorAll("tr#approvalLine_3 > td > span.span_member_userid");
-			let arr_member_userid = []
 			
 			span_member_userid.forEach(function(item, index, array){
-				
-				// console.log(item.textContent); // 텍스트는 textContent로 접근
-				arr_member_userid.push(item.textContent);
+
+				arr_approvalLineMembers.push(item.textContent);
 			});
 			
 			<%-- ==== 결재선 목록으로 넣기 ==== --%> 				
 			$.ajax({
     			url:"<%= ctxPath%>/approval/insertToApprovalLine_Arr",
-    			data:{"arr_member_userid":arr_member_userid},
+    			data:{"arr_approvalLineMembers":arr_approvalLineMembers},
     			type:"post",			
     			success:function(json){
     				
-    				if(arr_approvalLineMembers.length < 3) {
-    					// 결재선 목록에 있는 사원이 3명 미만인경우
-    					
-        				if(!arr_referenceMembers.includes(json.member_userid) && !arr_approvalLineMembers.includes(json.member_userid)){
-        					// 결재선 및 참조자 목록에 없는 사원일 경우만 목록에 추가
-        					
-        					$.each(json, function(index, item){
-        						arr_approvalLineMembers.push(json.member_userid);
-   
-	            				let html = `<tr class="approvalMember_V">
-	               							 	<td>\${item.parent_dept_name}</td>
-	               							 	<td>\${item.child_dept_name}</td>
-	               							 	<td>\${item.member_position}</td>
-	               							 	<td>\${item.member_name}</td>
-	               							 </tr>`;
-		 
-	       						$("table#approvalLineMember_T").append(html);		
-        					});
-        				}
-        				else {
-        					swal('이미 선택된 사원입니다.',"다시 시도해주세요",'warning');
-        				}
-    				}
-    				else {
-    					// 결재선 목록에 있는 사원이 3명 이상인 경우
-    					Swal.fire({
-    					    title: '',
-    					    html: '<span style="font-size: 20px;">결재선 지정은 3명까지만<br>가능합니다.</span>',
-    					    icon: 'warning'
-    					});
-    				}
+       				if(!arr_referenceMembers.includes(json.member_userid) && !arr_approvalLineMembers.includes(json.member_userid)){
+       					// 결재선 및 참조자 목록에 없는 사원일 경우만 목록에 추가
+       					
+       					$.each(json, function(index, item){
+  
+            				let html = `<tr class="approvalMember_V">
+               							 	<td>\${item.parent_dept_name}</td>
+               							 	<td>\${item.child_dept_name}</td>
+               							 	<td>\${item.member_position}</td>
+               							 	<td>\${item.member_name}</td>
+               							 </tr>`;
+	 
+       						$("table#approvalLineMember_T").append(html);		
+       					});
+       				}
+       				else {
+       					swal('이미 선택된 사원입니다.',"다시 시도해주세요",'warning');
+       				}
 
     			},
     			error: function() {
@@ -419,7 +400,53 @@ function setApprovalLine() {
     		});
 			
 			
-		}
+			<%-- ==== 참조자 목록에 추가한 이력이 있다면 목록으로 넣기 ==== --%> 	
+			if($("table#undesignated_refer_Table tr.referenceMember").length > 0 ) {
+				
+				let span_member_userid = document.querySelectorAll("tr.referenceMember > td span.span_member_userid");
+
+				span_member_userid.forEach(function(item, index, array){
+
+					arr_referenceMembers.push(item.textContent);
+				});
+	
+				
+				$.ajax({
+	    			url:"<%= ctxPath%>/approval/insertToReferenceMember_Arr",
+	    			data:{"arr_referenceMembers":arr_referenceMembers},
+	    			type:"post",			
+	    			success:function(json){
+	    				
+	       				if(!arr_referenceMembers.includes(json.member_userid) && !arr_approvalLineMembers.includes(json.member_userid)){
+	       					// 결재선 및 참조자 목록에 없는 사원일 경우만 목록에 추가
+	       					
+	       					$.each(json, function(index, item){
+	  
+	            				let html = `<tr class="referenceMember_V">
+	               							 	<td>\${item.parent_dept_name}</td>
+	               							 	<td>\${item.child_dept_name}</td>
+	               							 	<td>\${item.member_position}</td>
+	               							 	<td>\${item.member_name}</td>
+	               							 </tr>`;
+		 
+	       						$("table#referenceMember_T").append(html);		
+	       					});
+	       				}
+	       				else {
+	       					swal('이미 선택된 사원입니다.',"다시 시도해주세요",'warning');
+	       				}
+
+	    			},
+	    			error: function() {
+						swal('참조자 목록에 추가 실패!',"다시 시도해주세요",'error');
+					}
+	    		});
+			}
+			
+			
+		}// end of if($("table#designated_line_Table tr#approvalLine_1 > td").length > 0 ) {}------------------
+		
+		<%-- ==================== 기존에 추가했던 결재선/참조자 사원을 목록에 불러오기 끝  ==================== --%>
 		
 		
         <%-- ==================== 사원 선택 후 결재선/참조자 목록으로 넣는 이벤트 시작 ==================== --%>
@@ -546,8 +573,6 @@ function setApprovalLine() {
             	$("span.insertBtn").addClass("disabled");
         	}
         	
-        	var member;
-        	
         });
         <%-- ==================== 사원 선택 후 결재선/참조자 목록으로 넣는 이벤트 끝  ==================== --%>
         
@@ -555,7 +580,7 @@ function setApprovalLine() {
         
         <%-- ==================== 사원 선택 후 결재선 목록에서 제거하는 이벤트 시작 ==================== --%>
         $("table#approvalLineMember_T").on("click", "tr", function(e){
-        	
+        	console.log(arr_approvalLineMembers);
         	// 조직도 선택 노드 초기화 (기존 노드 상태 비움)
             $("div#selectDiv span").off("click");  // 기존에 바인딩된 클릭 이벤트 제거
             
@@ -586,8 +611,7 @@ function setApprovalLine() {
         		// 배열에서도 제거
         		arr_approvalLineMembers.splice(memberIndex-1,1);
         	});
-        	
-        	
+	
         });// end of $("table#approvalLineMember_T").on("click", function(e){})---------------------- 
         <%-- ==================== 사원 선택 후 결재선 목록에서 제거하는 이벤트 끝  ==================== --%>
         
@@ -618,14 +642,13 @@ function setApprovalLine() {
         	// 선택한 사원의 인덱스 번호
         	const memberIndex = $(this).index();
         	
-        	<%-- ==== 결재선 목록에서 빼기 ==== --%> 	
+        	<%-- ==== 참조선 목록에서 빼기 ==== --%> 	
         	$("span#referLeftBtn").on("click", function(e){
         		$("table#referenceMember_T tr").eq(memberIndex).remove();
         		
         		// 배열에서도 제거
         		arr_referenceMembers.splice(memberIndex-1,1);
         	});
-        	
         	
         });// end of $("table#referenceMember_T").on("click", "tr", function(e){})---------------------- 
         <%-- ==================== 사원 선택 후 참조자 목록에서 제거하는 이벤트 끝  ==================== --%>
@@ -634,49 +657,129 @@ function setApprovalLine() {
 	
 	<%-- ==================== 결재선지정 버튼 클릭 이벤트 시작 ==================== --%>
 	$("button[id='goAddLine']").on("click",function(){
-		
-		// >>> 결재선 결재순위 지정 <<<
-		$.ajax({
-			url:"<%= ctxPath%>/approval/orderByApprovalStep",
-			data:{"arr_approvalLineMembers":arr_approvalLineMembers},
-			type:"post",			
-			success:function(json){
-				
-				// AJAX 요청 성공 후, 취소 버튼 클릭을 강제로 트리거
-	            $("button[id='btn_cancel']").click();  // 취소 버튼 클릭 시 모달 닫힘
 
-	            // 모달이 닫힌 후 실행될 작업을 처리
-				setTimeout(function(){
-		
-					// 기존에 회색 박스를 다시 감추고, 결재선 테이블을 보인다.
-					$("div#undesignated_line").css({"display":"none"});
-					$("table#designated_line_Table").css({"display":"table"})
+		<%-- ==== 결재선 결재순위 지정 ==== --%> 
+		if(arr_approvalLineMembers.length > 0) {
+			$.ajax({
+				url:"<%= ctxPath%>/approval/orderByApprovalStep",
+				data:{"arr_approvalLineMembers":arr_approvalLineMembers},
+				type:"post",			
+				success:function(json){
 					
-					if($("table#designated_line_Table tr#approvalLine_1 > td").length == 0) {
-						// 현재 결재선에 추가된 사람이 없을 경우
-						$("tr#approvalLine_1").append(`<td class="table_title">순서</td>`);
-						$("tr#approvalLine_2").append(`<td class="table_title">직책</td>	`);
-						$("tr#approvalLine_3").append(`<td class="table_title">부문</td>`);
-						$("tr#approvalLine_4").append(`<td class="table_title">성명</td>`);
-						$("tr#approvalLine_5").append(`<td class="table_title">결재상태</td>`);
-					}
-
-					$.each(json, function(index, item){
-						$("tr#approvalLine_1").append(`<td>\${item.member_step}</td>`);
-						$("tr#approvalLine_2").append(`<td>\${item.member_position}</td>`);
-						$("tr#approvalLine_3").append(`<td><span class="span_member_userid" style="display: none;">\${item.member_userid}</span>\${item.child_dept_name}</td>`);
-						$("tr#approvalLine_4").append(`<td>\${item.member_name}</td>`);
-						$("tr#approvalLine_5").append(`<td><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>`);
-					});
+					// AJAX 요청 성공 후, 취소 버튼 클릭을 강제로 트리거
+		            $("button[id='btn_cancel']").click();
+	
+		            // 모달이 닫힌 후 실행될 작업을 처리
+					setTimeout(function(){
+			
+						// 기존에 회색 박스를 다시 감추고, 결재선 테이블을 보인다.
+						$("div#undesignated_line").css({"display":"none"});
+						$("table#designated_line_Table").css({"display":"table"});
+						
+						// 결재선 목록에 추가되는 인원 수에 따라서 width 가 잡히도록 설정.
+						$("div#undesignated_line_total").css({"width":"auto"});
+						
+						// 기존의 결재선 목록을 없앤다.
+						$("tr.approvalLine_view").html("");
+						
+						if($("table#designated_line_Table tr#approvalLine_1 > td").length == 0) {
+							// 현재 결재선에 추가된 사람이 없을 경우
+							$("tr#approvalLine_1").append(`<td class="table_title" style="width: 110px;">순서</td>`);
+							$("tr#approvalLine_2").append(`<td class="table_title" style="width: 110px;">직책</td>	`);
+							$("tr#approvalLine_3").append(`<td class="table_title" style="width: 110px;">부서</td>`);
+							$("tr#approvalLine_4").append(`<td class="table_title" style="width: 110px;">성명</td>`);
+							$("tr#approvalLine_5").append(`<td class="table_title" style="width: 110px;">결재상태</td>`);
+						}
+	
+						$.each(json, function(index, item){
+							$("tr#approvalLine_1").append(`<td style="width: 120px;">\${item.member_step}</td>`);
+							$("tr#approvalLine_2").append(`<td style="width: 120px;">\${item.member_position}</td>`);
+							$("tr#approvalLine_3").append(`<td style="width: 120px;"><span class="span_member_userid" style="display: none;">\${item.member_userid}</span>\${item.child_dept_name}</td>`);
+							$("tr#approvalLine_4").append(`<td style="width: 120px;">\${item.member_name}</td>`);
+							$("tr#approvalLine_5").append(`<td style="width: 120px;"><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>`);
+						});
 					
-				
-				},300);
-
-			},
-			error: function() {
-				swal('결재선 불러오기 실패!',"다시 시도해주세요",'error');
-			}
-		});
+					},200);
+	
+				},
+				error: function() {
+					swal('결재선 불러오기 실패!',"다시 시도해주세요",'error');
+				}
+			});
+			
+		}
+		else {
+			// 결재선 목록에 추가하지 않고 버튼을 클릭한 경우
+			Swal.fire({
+			    title: '',
+			    html: '<span style="font-size: 20px;">결재선 목록에 최소 한 명 이상<br>추가 해야합니다.</span>',
+			    icon: 'warning'
+			});
+			
+			return;
+		}
+		
+		<%-- ==== 참조자 목록 순서 지정 ==== --%>
+		if(arr_referenceMembers.length > 0) {
+			$.ajax({
+				url:"<%= ctxPath%>/approval/orderByReferenceMember",
+				data:{"arr_referenceMembers":arr_referenceMembers},
+				type:"post",			
+				success:function(json){
+					
+					// AJAX 요청 성공 후, 취소 버튼 클릭을 강제로 트리거
+		            // $("button[id='btn_cancel']").click();
+	
+		            // 모달이 닫힌 후 실행될 작업을 처리
+					setTimeout(function(){
+			
+						// 기존에 회색 박스를 다시 감추고, 참조선 테이블을 보인다.
+						$("div#undesignated_refer").css({"display":"none"});
+						$("table#undesignated_refer_Table").css({"display":"table"});
+						
+						// 참조선 목록에 추가되는 인원 수에 따라서 width 가 잡히도록 설정.
+						$("div#undesignated_line_total").css({"width":"auto"});
+						
+						// 기존의 참조선 목록을 없앤다.
+						$("table#undesignated_refer_Table").html("");
+						
+						if($("table#undesignated_refer_Table tr#referenceMember > td").length == 0) {
+							// 현재 참조선 추가된 사람이 없을 경우
+							
+							if($("table#undesignated_refer_Table tr").length == 0) {
+								html = `<tr>
+											<th class="table_title">부문</th>
+											<th class="table_title">부서</th>
+											<th class="table_title">직책</th>
+											<th class="table_title">성명</th>
+										</tr>`;
+								
+								$("table#undesignated_refer_Table").append(html);
+							}
+							
+							$.each(json, function(index, item){
+								html = `<tr class="referenceMember">
+											<td style="width: 100px;">\${item.parent_dept_name}</td>
+											<td style="width: 100px;">\${item.child_dept_name}</td>
+											<td style="width: 100px;">\${item.member_position}</td>
+											<td style="width: 100px;"><span class="span_member_userid" style="display: none;">\${item.member_userid}</span>\${item.member_name}</td>
+										</tr>`;
+										
+								$("table#undesignated_refer_Table").append(html);
+			
+							});
+						}
+	
+					},100);
+	
+				},
+				error: function() {
+					swal('참조선 불러오기 실패!',"다시 시도해주세요",'error');
+				}
+			});
+		
+		}
+		
 	});
 	<%-- ==================== 결재선지정 버튼 클릭 이벤트 끝  ==================== --%>
 	
@@ -684,8 +787,162 @@ function setApprovalLine() {
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-<%-- ==== 결재선지정 완료 함수 ==== --%>
 
+<%-- ==== 임시저장 버튼 함수 ==== --%>
+function goTemporaryStored() {
+	
+	// >>> 결재선 가져오기 <<<
+	let approvalLineMember = func_approvalLineMember();
+	console.log(approvalLineMember);
+	
+	// >>> 참조자 가져오기 <<<
+	let referMember = func_referMember();
+	console.log(referMember);
+
+	// >>> 공통 문서정보 <<< 
+	const fk_member_userid = $("span#member_userid").text();						// 작성자id
+	const draft_no = $("td#draft_no").text().toString();							// 문서번호
+	const draft_form_type = $("h2#draftSubject").text();							// 기안문유형
+	const draft_subject = $("input:text[name='draft_subject']").val();				// 제목
+	const draft_write_date = $("td#draft_write_date").text();						// 작성일자
+	const draft_urgent = $("input:checkbox[name='draft_urgent']:checked").length.toString();	// 긴급여부
+	
+	// >>> 휴가신청서 <<< 
+	let day_leave_end;		// 연차종료일
+	let day_leave_start;	// 연차시작일
+	let day_leave_cnt;		// 연차사용일
+	let day_leave_reason;	// 휴가사유
+	
+	if(draft_subject.trim() == "") {
+		// 제목을 작성하지 않은 경우
+		Swal.fire({
+		    icon: 'info',
+		    title: '제목을 작성해 주세요',
+		    text: '다시 시도해주세요.'
+		});
+		return;
+	}
+	/* else if (Object.keys(approvalLineMember).length == 0) {
+		// 결재선 목록에 추가한 이력이 없는 경우
+		Swal.fire({
+		    icon: 'info',
+		    title: '결재선에 최소 1명 이상 추가해야합니다',
+		    text: '다시 시도해주세요.'
+		});
+		return;
+		
+	} */
+	else {
+		
+		if(draft_form_type == "휴가신청서") {
+			
+			const dayLeaveType = ($("input:radio[name='dayLeaveType']:checked").val()); // 연차, 반차 중 어느 것인지 구분을 위한 변수
+			
+			if(dayLeaveType == "연차") {
+				day_leave_start = $("input[name='allDay_leave_start']").val();	// 연차시작일
+				day_leave_end = $("input[name='allDay_leave_end']").val();		// 연차종료일
+				day_leave_cnt = $("span#day_leave_cnt").text();					// 연차사용일
+				
+			}
+			else if (dayLeaveType == "오전반차" || dayLeaveType == "오후반차") {
+				day_leave_end = $("input[name='halfDay_leave_end']").val();			// 반차시작일
+				day_leave_start = day_leave_end;									// 반차종료일
+				day_leave_cnt = 0.5;												// 반차사용일
+			}
+
+			day_leave_reason = $("textarea[name='day_leave_reason']").val();			// 휴가사유
+			day_leave_reason = day_leave_reason.replace(/(?:\r\n|\r|\n)/g,'<br/>');		// 줄바꿈을 문자열로 바꾸어주기
+			
+		}
+		else if (draft_form_type == "근무변경") {
+			
+		}
+		
+		<%-- 임시저장하기 위해 데이터 취합 --%>		
+		var formData = new FormData();
+		
+		formData.append("approvalLineMember", JSON.stringify(approvalLineMember));
+		formData.append("referMember", JSON.stringify(referMember));
+		formData.append("fk_member_userid", fk_member_userid);
+		formData.append("draft_no", draft_no);
+		formData.append("draft_form_type", draft_form_type);
+		formData.append("draft_subject", draft_subject);
+		formData.append("draft_write_date", draft_write_date);
+		formData.append("draft_urgent", draft_urgent);
+		formData.append("day_leave_start", day_leave_start);
+		formData.append("day_leave_end", day_leave_end);
+		formData.append("day_leave_cnt", day_leave_cnt);
+		formData.append("day_leave_reason", day_leave_reason);
+		
+		// 파일데이터가 있다면 파일데이터도 추가
+		var fileInput = $("input[type='file']")[0];
+		var file = fileInput.files[0];
+		
+		if(file) {
+			formData.append("file", file);
+		}
+		
+		<%-- 임시저장 ajax 요청 --%>
+		$.ajax({
+			url:"<%= ctxPath%>/approval/insertToTemporaryStored",
+			data: formData,
+			processData: false,
+		    contentType: false,
+			type:"post",			
+			success:function(json){
+				
+				if(json == 1) {
+					Swal.fire({
+					    icon: 'success',
+					    title: '임시 저장 완료',
+					    text: '임시 저장이 성공적으로 완료되었습니다.'
+					});
+				}	
+			},
+			error: function() {
+				Swal.fire({
+				    icon: 'error',
+				    title: '임시 저장 실패!',
+				    text: '다시 시도해주세요.'
+				});
+			}
+		});
+	}
+}
+
+
+
+<%-- 결재선 가져오기 --%>
+let step = "step";
+
+function func_approvalLineMember() {
+	
+	let approvalLineMember = {};
+	
+	let span_member_userid = document.querySelectorAll("tr#approvalLine_3 > td > span.span_member_userid");
+	
+	span_member_userid.forEach(function(item, index, array){
+
+		approvalLineMember[step+(index+1).toString()] = item.textContent;  // 컨트롤러에서 Map<String, Object> 형태를 맞춰주기 위해 형변환
+	});
+	
+	return approvalLineMember;
+}
+
+<%-- 참조선 가져오기 --%>
+function func_referMember() {
+	
+	let referMember = {};
+	
+	let span_member_userid = document.querySelectorAll("tr.referenceMember > td span.span_member_userid");
+	
+	span_member_userid.forEach(function(item, index, array){
+
+		referMember[step+(index+1).toString()] = item.textContent;  // 컨트롤러에서 Map<String, Object> 형태를 맞춰주기 위해 형변환
+	});
+	
+	return referMember;
+}
 </script>
 
 
@@ -696,7 +953,7 @@ function setApprovalLine() {
 	<button type="button" id="btnType">결재양식선택</button>
 
 	<span id="btnRight">
-		<button type="button" id="btnSaved">임시저장</button>
+		<button type="button" id="btnSaved" onclick="goTemporaryStored()">임시저장</button>
 		<button type="button" id="btnLine" onclick="setApprovalLine()">결재선지정</button>
 		<button type="button" id="btnRequest">결재요청</button>
 	</span>

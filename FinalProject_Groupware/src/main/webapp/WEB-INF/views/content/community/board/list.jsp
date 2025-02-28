@@ -28,14 +28,24 @@
   a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없애기 */
   
   div.button {text-align: right;}
-    
+  
+  button.btn {
+	background-color: #006769;
+	color:white;
+	
+	.no-outline:focus {
+    outline: none; /* 포커스 시 파란 테두리 제거 */
+    box-shadow: none; /* 추가적인 파란색 그림자 제거 */
+  }
+
 </style>
 
 
 <script type="text/javascript">
 //즐겨찾기 토글 함수
-function importantmemo(button) {
-	  const icon = button.querySelector("i");
+function importantboard(board_no) {
+
+	  /* const icon = button.querySelector("i");
 	  if (icon.classList.contains("fa-star-o")) {
 	    // 비어 있는 별 -> 채워진 별
 	    icon.classList.remove("fa-star-o");
@@ -46,7 +56,28 @@ function importantmemo(button) {
 	    icon.classList.remove("fa-star");
 	    icon.classList.add("fa-star-o");
 	    icon.style.color = "gray";
-	  }
+	  } */
+	
+	 let str_board_no = board_no;
+
+	<%-- 즐겨찾기 버튼 --%>
+    $.ajax({
+        url: "<%= ctxPath%>/board/bookmark",
+        type: "post",
+        data: { "board_no":str_board_no},
+        success: function (response) {
+          if (response.success) {
+            if (isFavorite) {
+              icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold");
+            } else {
+              icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
+            }
+          }
+        },
+        error: function () {
+          console.error("즐겨찾기 상태 업데이트 실패");
+        },
+      });
 }
 
 
@@ -151,6 +182,10 @@ $(document).ready(function(){
        goSearch();
     });
     
+    
+    
+    
+    
  });// end of $(document).ready(function(){})-------------------------------
  
  
@@ -178,11 +213,10 @@ $(document).ready(function(){
      아래의 본문에 #105 에 표기된 form 태그를 먼저 만든다.
   --%>
    const frm = document.goViewFrm;
-//   console.log("board_no:", board_no);
    frm.board_no.value = board_no;
    frm.goBackURL.value = goBackURL
    
-   console.log("확인용 ~~: " + frm.board_no.value);
+   
 
    if(${not empty requestScope.paraMap}) {  // 검색조건이 있을 경우 (#107.)
   	 	frm.searchType.value = "${requestScope.paraMap.searchType}";
@@ -213,26 +247,26 @@ $(document).ready(function(){
 <div style="display: flex;">
 	<div style="margin: auto; padding-left: 3%;">
 
-		<h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">자유게시판</h2>
+		<h2 style="margin-bottom: 30px; padding-top: 3%; font-weight: bold;"><span style="margin-right:10px"; >|</span>자유게시판</h2>
 
-		<table style="width: 1200px" class="table">
+		<table style="width: 1200px" class="table table-hover">
 			<thead>
-				<tr>
-					<th style="width: 70px; text-align: center;">글번호</th>
-					<th style="width: 300px; text-align: center;">제목</th>
-					<th style="width: 70px; text-align: center;">작성자</th>
-					<th style="width: 150px; text-align: center;">작성일자</th>
-					<th style="width: 60px; text-align: center;">조회수</th>
-					<th style="width: 60px; text-align: center;">즐겨찾기</th>
-				</tr>
+			    <tr>
+			    	<th style="width: 70px; text-align: center;">글번호</th>
+<!-- 			        <th style="width: 70px; text-align: center;">글번호</th> -->
+			        <th style="width: 300px; text-align: center;">제목</th>
+			        <th style="width: 70px; text-align: center;">작성자</th>
+			        <th style="width: 150px; text-align: center;">작성일자</th>
+			        <th style="width: 60px; text-align: center;">조회수</th>
+			        <th style="width: 60px; text-align: center;">즐겨찾기</th>
+			    </tr>
 			</thead>
 
 			<tbody>
 				<c:if test="${not empty requestScope.boardList}">
-					<c:forEach var="boardvo" items="${requestScope.boardList}"
-						varStatus="board_status">
+					<c:forEach var="boardvo" items="${requestScope.boardList}" varStatus="board_status">
 						<tr>
-							<td align="center">${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (board_status.index) }
+							<td align="center" id="pageBar">${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (board_status.index) }
 								<%-- >>> 페이징 처리시 보여주는 순번 공식 <<<
 		                           데이터개수 - (페이지번호 - 1) * 1페이지당보여줄개수 - 인덱스번호 => 순번 
 		                        
@@ -260,7 +294,7 @@ $(document).ready(function(){
 		                    --%>
 
 							</td>
-							<td align="center">${boardvo.board_no}</td>
+ 							<%-- <td align="center">${boardvo.board_no}</td>  --%>
 							<td>
 								<%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 시작 === --%> <%-- 첨부파일이 없는 경우 시작 --%>
 
@@ -268,11 +302,9 @@ $(document).ready(function(){
 									test="${empty boardvo.board_fileName}">
 									<%-- >>>>>>>>> #142. 원글인 경우 시작 <<<<<<<<< --%>
 									<%-- 댓글이 있는 경우 시작 --%>
-									<c:if
-										test="${boardvo.board_depthno == 0 && boardvo.board_commentCount > 0}">
+									<c:if test="${boardvo.board_depthno == 0 && boardvo.board_commentCount > 0}">
 										<c:if test="${fn:length(boardvo.board_subject) < 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}<span
+											<span class="board_subject" onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}<span
 												style="vertical-align: super;">[<span
 													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
 											</span></span>
@@ -341,7 +373,10 @@ $(document).ready(function(){
 									</c:if>
 									<%-- 댓글이 없는 경우 끝  --%>
 									<%-- >>>>>>>>> #143. 답변글인 경우 들여쓰기 끝  <<<<<<<<< --%>
-								</c:if> <%-- ========= 첨부파일이 없는 경우 끝 ========= --%> <%-- ========= #158. 첨부파일이 있는 경우 시작 ========= --%>
+								
+								</c:if> <%-- ========= 첨부파일이 없는 경우 끝 ========= --%> 
+								
+								<%-- ========= #158. 첨부파일이 있는 경우 시작 ========= --%>
 								<c:if test="${not empty boardvo.board_fileName}">
 									<%-- >>>>>>>>> #142. 원글인 경우 시작 <<<<<<<<< --%>
 									<%-- 댓글이 있는 경우 시작 --%>
@@ -428,11 +463,21 @@ $(document).ready(function(){
 									</c:if>
 									<%-- 댓글이 없는 경우 끝  --%>
 									<%-- >>>>>>>>> #143. 답변글인 경우 들여쓰기 끝  <<<<<<<<< --%>
-								</c:if> <%-- ========= 첨부파일이 있는 경우 끝 ========= --%> <%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 끝 === --%>
+									
+								</c:if> <%-- ========= 첨부파일이 있는 경우 끝 ========= --%> 
+								
+								<%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 끝 === --%>
 							</td>
 							<td align="center">${boardvo.board_name}</td>
 							<td align="center">${boardvo.board_regDate}</td>
 							<td align="center">${boardvo.board_readCount}</td>
+							<td align="center">
+							    <button type="button" class="btnstar btn-link p-0 no-outline" 
+							        onclick="importantboard('${boardvo.board_no}')" 
+							         style="font-size: 1.5rem; color: gray; margin-left: 8px; background-color: transparent; border: none; outline: none;">
+							        <i class="fa fa-star-o" aria-hidden="true"></i>
+							    </button>
+							</td>
 
 
 						</tr>
@@ -442,13 +487,13 @@ $(document).ready(function(){
 				<c:if test="${empty requestScope.boardList}">
 					<tr>
 						<td colspan="7"
-							style="text-align: center; vertical-align: middle;">데이터가
-							없습니다.</td>
+							style="text-align: center; vertical-align: middle;">데이터가 없습니다.</td>
 					</tr>
 				</c:if>
 			</tbody>
+			
 			<div class="button">
-				<button type="button" class="btn btn-outline-primary"
+				<button type="button" class="btn btn ml-2"
 					onclick="javascript:location.href='<%=ctxPath%>/board/add'"
 					style="margin-bottom: 10px;">글쓰기</button>
 			</div>
@@ -456,30 +501,32 @@ $(document).ready(function(){
 		</table>
 
 		<%-- === 페이지바 === --%>
-		<div align="center"
+		<div align="center" id="pageBar"
 			style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 			${requestScope.pageBar}</div>
 
 		<%-- === #82. 글검색 폼 추가하기 : 글제목, 글내용, 글제목+글내용, 글쓴이로 검색을 하도록 한다. --%>
 		<form name="searchFrm" style="margin-top: 20px; text-align: center;">
 			<select name="searchType" style="height: 26px;">
-				<option value="board_subjcet">글제목</option>
+				<option value="board_subject">글제목</option>
 				<option value="board_content">글내용</option>
 				<option value="board_subject_board_content">글제목+글내용</option>
 				<option value="board_name">글쓴이</option>
-			</select> <input type="text" name="searchWord" size="28" autocomplete="off" />
+			</select> 
+			<input type="text" name="searchWord" size="28" autocomplete="off" />
 			<input type="text" style="display: none;" />
 			<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
-			<button type="button" class="btn btn-outline-primary"
-				onclick="goSearch()" id="btnWrite">검색</button>
+			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
+
 		</form>
 
 
 		<%-- === #87. 검색어 입력시 자동글 완성하기 1 === --%>
+<%-- 		
 		<div id="displayList"
-			style="border: solid 1px gray; border-top: 0px; height: 100px; margin-left: 13.2%; margin-top: -1px; margin-bottom: 30px; overflow: auto;">
+			style="border: solid 0px gray; border-top: 0px; height: 100px; margin-left: 13.2%; margin-top: -1px; margin-bottom: 30px; overflow: auto; text-align: center;">
 		</div>
-
+--%>
 	</div>
 </div>
 

@@ -65,48 +65,54 @@
    
    
    <!-- === #39. 글 1개 조회하기 === -->
-  <!--  <select id="getView" resultType="BoardVO" parameterType="HashMap">
+   <!-- 
+ <select id="getView" resultType="BoardVO" parameterType="HashMap">
       SELECT previousseq, 
              case when length(previoussubject) &lt; 30 then previoussubject 
                     else substr(previoussubject, 1, 28)||'..' end AS previoussubject
-           , seq, fk_userid, name, subject, content, readCount, regDate, pw
-           , nextseq, 
+           , board_no, fk_member_userid, board_name, board_subject, board_content, board_readCount, board_regDate, board_pw
+           , nextseq,
              case when length(nextsubject) &lt; 30 then nextsubject 
                     else substr(nextsubject, 1, 28)||'..' end AS nextsubject
       FROM
        (
-           select lag(seq) over(order by seq desc) AS previousseq
-                , lag(subject) over(order by seq desc) AS previoussubject
-                , seq, fk_userid, name, subject, content, readCount, regDate, pw  
-                , lead(seq) over(order by seq desc) AS nextseq
-                , lead(subject) over(order by seq desc) AS nextsubject
+           select lag(board_no) over(order by board_no desc) AS previousseq
+                , lag(board_subject) over(order by board_no desc) AS previoussubject
+                , board_no, fk_member_userid, board_name, board_subject, board_content, board_readCount, board_regDate, board_pw  
+                , lead(board_no) over(order by board_no desc) AS nextseq
+                , lead(board_subject) over(order by board_no desc) AS nextsubject
            from tbl_board
-           where status = 1
-           === #109. 이전글제목, 다음글제목 보여줄때 검색이 있는지 여부를 넘겨주기 시작 ===
+           where board_status = 1
+  -->          
+ <!--      === #109. 이전글제목, 다음글제목 보여줄때 검색이 있는지 여부를 넘겨주기 시작 === --> 
+  <!--
            <choose>
-              <when test='searchType == "subject" and searchWord != ""'>
-                 and lower(subject) like '%'||  lower(#{searchWord}) ||  '%'
+              <when test='searchType == "board_subject" and searchWord != ""'>
+                 and lower(board_subject) like '%'||  lower(#{searchWord}) ||  '%'
               </when>
-              <when test='searchType == "content" and searchWord != ""'>
-               and lower(content) like '%'||  lower(#{searchWord}) ||  '%'
+              <when test='searchType == "board_content" and searchWord != ""'>
+               and lower(board_content) like '%'||  lower(#{searchWord}) ||  '%'
               </when>           
-              <when test='searchType == "subject_content" and searchWord != ""'>
-                 and (lower(subject) like '%'||  lower(#{searchWord}) ||  '%' or  and lower(content) like '%'||  lower(#{searchWord}) ||  '%')
+              <when test='searchType == "board_subject_board_content" and searchWord != ""'>
+                 and (lower(board_subject) like '%'||  lower(#{searchWord}) ||  '%' or  and lower(board_content) like '%'||  lower(#{searchWord}) ||  '%')
               </when>   
-              <when test='searchType == "name" and searchWord != ""'>
-                 and lower(name) like '%'||  lower(#{searchWord}) ||  '%'
+              <when test='searchType == "board_name" and searchWord != ""'>
+                 and lower(board_name) like '%'||  lower(#{searchWord}) ||  '%'
               </when>   
               <otherwise></otherwise>
            </choose>
-           === 이전글제목, 다음글제목 보여줄때 검색이 있는지 여부를 넘겨주기 끝 ===
+   -->         
+ <!--           === 이전글제목, 다음글제목 보여줄때 검색이 있는지 여부를 넘겨주기 끝 ===  -->
+  <!--
        ) V
-      WHERE V.seq = #{seq}
-   </select> -->
-   
+      WHERE V.board_no = #{board_no}
+   </select>
+      --> 
        
    <!-- === #132. 글글 및 답변글쓰기 게시판에서 글 1개 조회하기 === 
             먼저 위의 #39을 주석처리 하고서 아래와 같이 한다.
    -->
+<!--  
    <select id="getView" resultType="BoardVO" parameterType="HashMap">
       SELECT previousseq, 
              case when length(previoussubject) &lt; 30 then previoussubject 
@@ -126,7 +132,9 @@
                 ,board_groupno, fk_board_no, board_depthno
            from tbl_board
            where board_status = 1
+-->
            <!-- === #109. 이전글제목, 다음글제목 보여줄때 검색이 있는지 여부를 넘겨주기 시작 === -->
+ <!--           
            <choose>
               <when test='searchType == "board_subject" and searchWord != ""'>
                  and lower(board_subject) like '%'||  lower(#{searchWord}) ||  '%'
@@ -135,22 +143,71 @@
                and lower(board_content) like '%'||  lower(#{searchWord}) ||  '%'
               </when>           
               <when test='searchType == "board_subject_board_content" and searchWord != ""'>
-                 and (lower(board_subject) like '%'||  lower(#{searchWord}) ||  '%' or  and lower(board_content) like '%'||  lower(#{searchWord}) ||  '%')
+                 and (lower(board_subject) like '%'||  lower(#{searchWord}) ||  '%' or lower(board_content) like '%'||  lower(#{searchWord}) ||  '%')
               </when>   
-              <when test='searchType == "name" and searchWord != ""'>
+              <when test='searchType == "board_name" and searchWord != ""'>
                  and lower(board_name) like '%'||  lower(#{searchWord}) ||  '%'
               </when>   
               <otherwise></otherwise>
            </choose>
+-->   
+       
            <!-- === 이전글제목, 다음글제목 보여줄때 검색이 있는지 여부를 넘겨주기 끝 === -->
+<!--
        ) V
       WHERE V.board_no = #{board_no}
    </select>
-   
-   
+-->  
+
+
+
+<select id="getView" resultType="BoardVO" parameterType="HashMap">
+      SELECT previousseq, 
+             case when length(previoussubject) &lt; 30 then previoussubject 
+                    else substr(previoussubject, 1, 28)||'..' end AS previoussubject
+           , board_no, fk_member_userid, board_name, board_subject, board_content, board_readCount, board_regDate, board_pw
+           , nextseq, 
+             case when length(nextsubject) &lt; 30 then nextsubject 
+                    else substr(nextsubject, 1, 28)||'..' end AS nextsubject
+           , board_groupno, fk_board_no, board_depthno
+           , board_fileName, board_orgFilename, board_fileSize
+      FROM
+       (
+           select lag(board_no) over(order by board_no desc) AS previousseq
+                , lag(board_subject) over(order by board_no desc) AS previoussubject
+                , board_no, fk_member_userid, board_name, board_subject, board_content, board_readCount, board_regDate, board_pw  
+                , lead(board_no) over(order by board_no desc) AS nextseq
+                , lead(board_subject) over(order by board_no desc) AS nextsubject
+                , board_groupno, fk_board_no, board_depthno
+                , board_fileName, board_orgFilename, board_fileSize
+           from tbl_board
+           where board_status = 1
+           
+           <!-- === #109. 이전글제목, 다음글제목 보여줄때 검색이 있는지 여부를 넘겨주기 시작 === -->
+              <choose>
+                 <when test='searchType == "board_subject" and searchWord != ""'>
+                       and lower(board_subject) like '%'||lower(#{searchWord})||'%'
+                 </when>
+                 <when test='searchType == "board_content" and searchWord != ""'>
+                       and lower(board_content) like '%'||lower(#{searchWord})||'%'
+                 </when>
+                 <when test='searchType == "board_subject_board_content" and searchWord != ""'>
+                       and (lower(board_subject) like '%'||lower(#{searchWord})||'%' or lower(board_content) like '%'||lower(#{searchWord})||'%')
+                 </when>
+                 <when test='searchType == "board_name" and searchWord != ""'>
+                       and lower(board_name) like '%'||lower(#{searchWord})||'%'
+                 </when>
+                 <otherwise></otherwise>
+              </choose>
+           <!-- === #109. 이전글제목, 다음글제목 보여줄때 검색이 있는지 여부를 넘겨주기 끝 === -->
+       ) V
+      WHERE V.board_no = to_number(#{board_no})
+   </select>
+
+
    <!-- === #41. 글조회수 1증가 하기 === -->
    <update id="increase_readCount" parameterType="String">
-        update tbl_board set readCount = readCount + 1
+        update tbl_board set board_readCount = board_readCount + 1
         where board_no = to_number(#{board_no})
    </update>
    
@@ -163,6 +220,20 @@
    </update>
    
    
+   <!--  === #166. 1개글 삭제할 때 먼저 사진이미지파일명 및 첨부파일명을 알아오기 위한 것 ===  -->
+	<resultMap type="HashMap" id="getView_delete_map">
+		<result property="board_no" 			column="board_no" 			javaType="String"/>
+		<result property="board_fileName" 		column="board_fileName" 	javaType="String"/>
+		<result property="photofilename"	 	column="photofilename" 		javaType="String"/>
+	</resultMap>
+	
+	<select id="getView_delete" parameterType="String" resultMap="getView_delete_map"> 
+		select board_no, board_fileName, substr(func_photo_upload_delete(board_no), 2) AS photofilename 
+		from tbl_board 
+		where board_no = #{board_no} 
+	</select>
+   
+   
    <!-- === #55. 1개글 삭제하기 === -->
    <delete id="del" parameterType="String">
         delete from tbl_board
@@ -171,12 +242,19 @@
 
    <!-- === #62.1  댓글쓰기(tbl_comment 테이블에 insert) === -->
    <insert id="addComment" parameterType="CommentVO">
+   
       <!-- 첨부파일이 없는 경우 -->
-      insert into tbl_comment(comment_no, fk_member_userid, comment_name, comment_content, comment_regDate, comment_parentSeq, comment_status)
-      values(commentSeq.nextval, #{fk_member_userid}, #{comment_name}, #{comment_content}, default, #{comment_parentSeq}, default)
+      <if test="comment_fileName == null">
+      insert into tbl_comment(comment_no, fk_board_no, fk_member_userid, comment_name, comment_content, comment_regDate, comment_parentSeq, comment_status)
+      values(seq_comment_no.nextval, #{comment_parentSeq}, #{fk_member_userid}, #{comment_name}, #{comment_content}, default, #{comment_parentSeq}, default)
+      </if>
       
-      <!-- 첨부파일이 있는 경우 -->
-   </insert> 
+      <!--  === #176. 첨부파일이 있는 경우 ===  -->
+		<if test="comment_fileName != null"> 
+		insert into tbl_comment(comment_no, fk_board_no, fk_member_userid, comment_name, comment_content, comment_regDate, comment_parentSeq, comment_status, comment_fileName, comment_orgFilename, comment_fileSize) 
+		values(seq_comment_no.nextval, #{comment_parentSeq}, #{fk_member_userid}, #{comment_name}, #{comment_content}, default, #{comment_parentSeq}, default, #{comment_fileName}, #{comment_orgFilename}, #{comment_fileSize}) 
+		</if>
+	</insert> 
 
    <!-- === #62.2  tbl_board 테이블에 commentCount 컬럼이 1증가(update) === -->
    <update id="updateCommentCount" parameterType="String">
@@ -184,17 +262,11 @@
        where board_no = to_number(#{comment_parentSeq})
    </update>
    
-   <!-- === #62.3  tbl_member 테이블의 point 컬럼의 값을 50점을 증가(update) === 
-   <update id="updateMemberPoint" parameterType="HashMap">
-       update tbl_member set point = point + to_number(#{point})
-       where userid = #{userid}
-   </update>   
-   -->
    
    <!-- === #66. 원게시물에 딸린 댓글들을 조회해오기 === -->
    <!-- 첨부파일이 없는 경우 -->
    <select id="getCommentList" parameterType="String" resultType="CommentVO">
-      select comment_no, fk_member_userid, name, comment_content
+      select comment_no, fk_member_userid, comment_name, comment_content
            , to_char(comment_regDate, 'yyyy-mm-dd hh24:mi:ss') AS comment_regDate
       from tbl_comment
       where comment_parentSeq = #{comment_parentSeq}
@@ -204,8 +276,9 @@
    
    <!-- === #71. 댓글 수정(Ajax 로 처리) === -->
    <update id="updateComment" parameterType="HashMap">
-        update tbl_comment set content = #{content}, regDate = sysdate
-        where board_no = #{board_no}
+        update tbl_comment 
+        set comment_content = #{comment_content}, comment_regdate = sysdate
+		where comment_no = to_number(#{comment_no})
    </update>
    
    
@@ -218,16 +291,9 @@
    <!-- === #75.2 댓글삭제시 tbl_board 테이블에 commentCount 컬럼이 1감소(update) === -->
    <update id="updateCommentCount_decrease" parameterType="String">
        update tbl_board set board_commentCount = board_commentCount - 1 
-       where comment_no = to_number(#{comment_parentSeq})
+       where board_no = to_number(#{comment_parentSeq})
    </update>
-   
-   
-   <!-- === #81. CommonAop 클래스에서 사용하는 것으로 특정 회원에게 특정 점수만큼 포인트를 증가하기 위한 것 === 
-   <update id="pointPlus" parameterType="HashMap">
-       update tbl_member set point = point + to_number(#{point}) 
-       where userid = #{userid}
-   </update>
-	-->
+
 
    <!-- #### 중요 #### 
        HashMap 타입으로 매개변수를 받아온 것을 꺼내서 사용할때 
@@ -247,7 +313,7 @@
         <when test='searchType == "board_subject" and searchWord != ""'>
            and lower(board_subject) like '%'||lower(#{searchWord})||'%'  
         </when>
-        <when test='searchType == "content" and searchWord != ""'>
+        <when test='searchType == "board_content" and searchWord != ""'>
            and lower(board_content) like '%'||lower(#{searchWord})||'%'
         </when>
         <when test='searchType == "board_subject_board_content" and searchWord != ""'>
@@ -504,7 +570,7 @@
                and lower(board_content) like '%'||lower(#{searchWord})||'%'
              </when>
              <when test='searchType == "board_subject_board_content" and searchWord != ""'>
-               and (lower(board_subject) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')
+               and (lower(board_subject) like '%'||lower(#{searchWord})||'%' or lower(board_content) like '%'||lower(#{searchWord})||'%')
              </when>
              <when test='searchType == "board_name" and searchWord != ""'>
                and lower(board_name) like '%'||lower(#{searchWord})||'%'
@@ -570,6 +636,7 @@
    <select id="getCommentList_Paging" parameterType="HashMap" resultType="CommentVO">
        <!-- 첨부파일이 없는 경우 -->
        <!-- Oracle 11g -->
+<!--       
        SELECT comment_no, fk_member_userid, comment_name, comment_content, comment_regDate
       FROM
       (
@@ -581,7 +648,7 @@
             order by comment_no desc
       ) V
       WHERE rno BETWEEN #{startRno} AND #{endRno}
-       
+-->        
        
        <!-- Oracle 12C 이상 
        select comment_no, fk_member_userid, comment_name, comment_content
@@ -593,8 +660,21 @@
       FETCH NEXT to_number(#{sizePerPage}) ROW ONLY
       --> 
        
-       <!-- 첨부파일이 있는 경우 -->
-      
+       	<!-- #177. 첨부파일이 있는 경우 -->
+      	<!--  Oracle 11g  -->
+		SELECT comment_no, fk_member_userid, comment_name, comment_content, comment_regDate , comment_fileName, comment_orgFilename, comment_fileSize 
+		FROM 
+		( 
+			select row_number() over(order by comment_no desc) AS rno 
+				, comment_no, fk_member_userid, comment_name, comment_content , to_char(comment_regDate, 'yyyy-mm-dd hh24:mi:ss') AS comment_regDate 
+				, nvl(comment_fileName, ' ' ) AS comment_fileName 
+				, nvl(comment_orgFilename, ' ') AS comment_orgFilename 
+				, nvl(to_char(comment_fileSize), ' ') AS comment_fileSize 
+			from tbl_comment 
+			where comment_parentSeq = to_number(#{comment_parentSeq}) 
+		) V 
+		WHERE rno BETWEEN #{startRno} AND #{endRno}
+		
    </select>
    
    <!-- === #124. 페이징 처리시 보여주는 순번을 나타내기 위한 것 === -->
@@ -612,9 +692,28 @@
    </select>
    
    
+   <!--  === #183. 파일첨부가 되어진 댓글 1개에서 서버에 업로드 되어진 파일명과 오리지널파일명을 조회해주는 것 ===  -->
+	<select id="getCommentOne" parameterType="String" resultType="CommentVO"> 
+		select nvl(comment_fileName, ' ') AS comment_fileName , nvl(comment_orgFilename, ' ') AS comment_orgFilename 
+		from tbl_comment where comment_no = #{comment_no} 
+	</select>
    
    
    
    
+   
+   
+
+<!-- 												즐겨찾기 시작 														   -->
+
+
+<insert id="insertBookmark" parameterType="HashMap">
+	insert into tbl_bookmark (fk_board_no, fk_member_userid)
+    values (#{board_no}, #{member_userid})
+</insert>
+
+
+
+
    
 </mapper>

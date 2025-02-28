@@ -56,8 +56,16 @@ public class BoardDAO_imple implements BoardDAO {
 		int n = sqlsession.update("minji_board.edit", boardvo);
 		return n;
 	}
+	
+	
+	// === #165. 1개글 삭제할 때 먼저 첨부파일명을 알아오기 위한 것 === //
+	@Override
+	public Map<String, String> getView_delete(String board_no) {
+		Map<String, String> boardmap = sqlsession.selectOne("minji_board.getView_delete", board_no);
+		return boardmap;
+	}
 
-
+		
 	// === #54. 1개글 삭제하기 === //
 	@Override
 	public int del(String board_no) {
@@ -68,6 +76,14 @@ public class BoardDAO_imple implements BoardDAO {
     // === #61.1  댓글쓰기(tbl_comment 테이블에 insert) === //
 	@Override
 	public int addComment(CommentVO commentvo) {
+/*		
+		System.out.println("getFk_member_userid" +commentvo.getFk_member_userid());
+		System.out.println("getComment_name" +commentvo.getComment_name());
+		System.out.println("getComment_content" +commentvo.getComment_content());
+		System.out.println("getComment_regDate" +commentvo.getComment_regDate());
+		System.out.println("getComment_parentSeq" +commentvo.getComment_parentSeq());
+		System.out.println("getComment_status" +commentvo.getComment_status());
+*/		
 		int n = sqlsession.insert("minji_board.addComment", commentvo);
 		return n;
 	}
@@ -76,13 +92,6 @@ public class BoardDAO_imple implements BoardDAO {
 	@Override
 	public int updateCommentCount(String comment_parentSeq) {
 		int n = sqlsession.update("minji_board.updateCommentCount", comment_parentSeq);
-		return n;
-	}
-
-	// === #61.3  tbl_member 테이블의 point 컬럼의 값을 50점을 증가(update) === //
-	@Override
-	public int updateMemberPoint(Map<String, String> paraMap) {
-		int n = sqlsession.update("minji_board.updateMemberPoint", paraMap);
 		return n;
 	}
 
@@ -98,6 +107,7 @@ public class BoardDAO_imple implements BoardDAO {
 	// === #70. 댓글 수정(Ajax 로 처리) === //
 	@Override
 	public int updateComment(Map<String, String> paraMap) {
+
 		int n = sqlsession.update("minji_board.updateComment", paraMap);
 		return n;
 	}
@@ -118,14 +128,6 @@ public class BoardDAO_imple implements BoardDAO {
 		return n;
 	}
 
-
-	// === #80. CommonAop 클래스에서 사용하는 것으로 특정 회원에게 특정 점수만큼 포인트를 증가하기 위한 것 === // 
-/*
-	@Override
-	public void pointPlus(Map<String, String> paraMap) {
-		sqlsession.update("board.pointPlus", paraMap);
-	}
-*/
 
 	// === #85. 페이징 처리를 안한 검색어가 있는 전체 글목록 보여주기 === //
 	@Override
@@ -197,14 +199,24 @@ public class BoardDAO_imple implements BoardDAO {
 	}
 
 
+	// === #182. 파일첨부가 되어진 댓글 1개에서 서버에 업로드 되어진 파일명과 오리지널파일명을 조회해주는 것
+	@Override
+	public CommentVO getCommentOne(String comment_no) {
+		CommentVO commentvo = sqlsession.selectOne("minji_board.getCommentOne", comment_no);
+		return commentvo;
+	}
 
 
+
+
+
 	
-	
-	
-	
-	
-	
-	
-	
+	/////////////////////////////////////////////////////////////////////////////////////////    즐겨찾기
+	// 즐겨찾기 테이블에 insert(한 행 추가)
+	@Override
+	public void insertBookmark(Map<String, String> paraMap) {
+		sqlsession.insert("minji_board.insertBookmark", paraMap);
+	}
+
+
 }
