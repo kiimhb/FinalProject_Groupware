@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,40 +44,52 @@ public class ManagementController {
 	@GetMapping("ManagementForm")
 	public String ManagementForm_get(HttpServletRequest request) {
 		
-		//상위부서 테이블 가져오기
-		List<Parent_deptVO_ga> parentDeptList = managService.parentDeptList();
-		
-		request.setAttribute("parentDeptList", parentDeptList);
-		
 		return "content/management/ManagementForm";
 	}
 	
+	
+	@GetMapping("parentDeptJSON")
+	@ResponseBody
+	public List<Map<String, String>> parentDeptJSON() {
+
+	    List<Parent_deptVO_ga> parentDeptList = managService.parentDeptList();
+	    List<Map<String, String>> parentDeptMapList = new ArrayList<>();
+	    
+	    for (Parent_deptVO_ga parentDept : parentDeptList) {
+	        Map<String, String> parentDeptMap = new HashMap<>();
+	        parentDeptMap.put("parent_dept_no", String.valueOf(parentDept.getParent_dept_no()));
+	        parentDeptMap.put("parent_dept_name", String.valueOf(parentDept.getParent_dept_name()));
+	        parentDeptMapList.add(parentDeptMap);
+	    }
+	    
+	    return parentDeptMapList;
+	}
 
 	// === 하위부서 테이블 가져오기 === //
-		@GetMapping("childDeptJSON")
-		@ResponseBody
-		public List<Map<String, String>> childDeptJSON(@RequestParam String dept) {
-		    Map<String, Object> paraMap = new HashMap<>();
-		    
-		    if (!"".equals(dept)) {
-		        paraMap.put("dept", dept);
-		    }
-		    
-		    List<Child_deptVO_ga> childDeptList = managService.childDeptJSON(paraMap);
-		    List<Map<String, String>> childDeptMapList = new ArrayList<>();
-		    
-		    for (Child_deptVO_ga childDept : childDeptList) {
-		        Map<String, String> childDeptMap = new HashMap<>();
-		        childDeptMap.put("fk_child_dept_no", String.valueOf(childDept.getChild_dept_no()));
-		        childDeptMap.put("fk_parent_dept_no", String.valueOf(childDept.getFk_parent_dept_no()));
-		        childDeptMap.put("child_dept_name", childDept.getChild_dept_name());
-		        childDeptMapList.add(childDeptMap);
-		    }
-		    
-		    return childDeptMapList;
-		}
+	@GetMapping("childDeptJSON")
+	@ResponseBody
+	public List<Map<String, String>> childDeptJSON(@RequestParam String dept) {
+	    Map<String, Object> paraMap = new HashMap<>();
+	    
+	    if (!"".equals(dept)) {
+	        paraMap.put("dept", dept);
+	    }
+	    
+	    List<Child_deptVO_ga> childDeptList = managService.childDeptJSON(paraMap);
+	    List<Map<String, String>> childDeptMapList = new ArrayList<>();
+	    
+	    for (Child_deptVO_ga childDept : childDeptList) {
+	        Map<String, String> childDeptMap = new HashMap<>();
+	        childDeptMap.put("fk_child_dept_no", String.valueOf(childDept.getChild_dept_no()));
+	        childDeptMap.put("fk_parent_dept_no", String.valueOf(childDept.getFk_parent_dept_no()));
+	        childDeptMap.put("child_dept_name", childDept.getChild_dept_name());
+	        childDeptMapList.add(childDeptMap);
+	    }
+	    
+	    return childDeptMapList;
+	}
 
-	
+
 	
 	
 	@PostMapping("ManagementForm")
@@ -190,6 +203,7 @@ public class ManagementController {
                               HttpServletRequest request,
                               @RequestParam Map<String, String> paraMap) {
 		
+		
 		// === 클라이언트의 IP 주소를 알아오는 것 === //
 		// /myspring/src/main/webapp/JSP 파일을 실행시켰을 때 IP 주소가 제대로 출력되기위한 방법.txt 참조할 것!!!
 		String clientip = request.getRemoteAddr();
@@ -262,7 +276,7 @@ public class ManagementController {
 		
 		 mav.addObject("Manag_List", Manag_List);
 		
-		 if("child".equals(searchType) || 
+		 if("userid".equals(searchType) || 
 		    "position".equals(searchType) ||
 		    "name".equals(searchType)) { 
 
@@ -272,7 +286,7 @@ public class ManagementController {
 			 mav.addObject("paraMap", paraMap);	
 		 }
 		 int blockSize = 10;
-		 
+ 
 		 int loop = 1;
 		 
 		 int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
@@ -348,19 +362,34 @@ public class ManagementController {
 	}
 	
 	// === 인사관리 회원수정 한명의 멤버 조회 === //
-	@PostMapping("managementEdit")
-	public ModelAndView view(ModelAndView mav, HttpServletRequest request) {
-		String member_userid = request.getParameter("member_userid");
-		//System.out.println(member_userid);
-		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("member_userid", member_userid);
-		
-		ManagementVO_ga managvo = managService.getView_member_one(paraMap);
-		mav.addObject("managvo", managvo);
-		
-		return mav;
+	@PostMapping("managementone")
+	@ResponseBody
+	public String getMemberInfo(@RequestParam() String member_userid) {
+				
+	    Map<String, String> paramMap = new HashMap<>();
+	    paramMap.put("member_userid", member_userid);
+
+	    ManagementVO_ga memberInfo = managService.getView_member_one(paramMap);
+
+	    JSONObject jsonObj = new JSONObject();
+	    jsonObj.put("member_pro_filename", memberInfo.getMember_pro_filename());
+	    jsonObj.put("member_userid", memberInfo.getMember_userid());
+	    jsonObj.put("member_name", memberInfo.getMember_name());
+	    jsonObj.put("child_dept_no", memberInfo.getChildVO().getChild_dept_no());
+	    jsonObj.put("child_dept_name", memberInfo.getChildVO().getChild_dept_name());
+	    jsonObj.put("fk_parent_dept_no", memberInfo.getChildVO().getFk_parent_dept_no());
+	    jsonObj.put("parent_dept_name", memberInfo.getParentVO().getParent_dept_name());
+	    jsonObj.put("member_position", memberInfo.getMember_position());
+	    jsonObj.put("member_mobile", memberInfo.getMember_mobile());
+	    jsonObj.put("member_birthday", memberInfo.getMember_birthday());
+	    jsonObj.put("member_gender", memberInfo.getMember_gender());
+	    jsonObj.put("member_email", memberInfo.getMember_email());
+	    jsonObj.put("member_start", memberInfo.getMember_start());
+	    jsonObj.put("member_yeoncha", memberInfo.getMember_yeoncha());
+
+	    return jsonObj.toString();
 	}
-	
+
 	// === 사원목록 페이지 조회 요청 끝 === //
 
 }

@@ -42,7 +42,7 @@ $(document).ready(function(){
 		   
 		   else {
 			   
-			   if( $("select[name='searchType']").val() == "child" || 
+			   if( $("select[name='searchType']").val() == "userid" || 
 			       $("select[name='searchType']").val() == "position" ||
 			       $("select[name='searchType']").val() == "name" ) {
 				
@@ -102,52 +102,199 @@ function goSearch() {
 	 frm.submit();
 }// end of function goSearch()-----------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
 //===사원수정기능 js===//
 function goEdit(member_userid) {
-   //console.log(member_userid);
-
+	
+         
     $.ajax({
-    	url: "<%= ctxPath%>/management/managementEdit",
-        data: { "member_userid" : member_userid },
+        url: "<%= ctxPath%>/management/managementone",
+        data: { "member_userid": member_userid },
         type: "post",
         dataType: "json",
         success: function(json) {
-            console.log(json);
-   
+
             // 모달을 띄울 위치
             const EditModal_container = $("div#EditModal");
-           
-            // 모달 HTML 생성
+
+            // 모달 HTML 생성 (json 사용)
             const modal_popup = `
                 <div class="modal fade" id="EditView" aria-labelledby="EditViewLabel" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="EditViewLabel">모달 제목</h5>
+                                <h5 class="modal-title" id="EditViewLabel">사원 정보 수정</h5>
                             </div>
                             <div class="modal-body">
-                                <input type="text" name="member_userid" id="member_userid" value="${response.member_userid}" readonly />
+                            	<img width="50" height="50" src="<%=ctxPath%>/resources/profile/\${json.member_pro_filename}" alt="프로필">
+                                <input type="text" name="member_userid" id="member_userid" value=\${json.member_userid} readonly />
+                                <input type="text" name="member_name" id="member_name" value=\${json.member_name} />
+                                
+                                
+                                <select name="parentDept" id="parentDeptSelect">
+                            		<option value="\${json.parent_dept_no}">\${json.parent_dept_name}</option>
+                        		</select>
+                        	
+                                <select name="fk_child_dept_no" >
+                                	<option value="\${json.child_dept_no}">\${json.child_dept_name}</option>
+                            	</select>
+                            	
+            		        	<select name="member_position">
+            						<option value="\${json.member_position}"> \${json.member_position} </option>
+            	            	</select>
+                            	
+                                <input type="text" name="member_mobile" id="member_mobile" value=\${json.member_mobile} />
+                                <input type="text" name="member_birthday" id="member_birthday" value=\${json.member_birthday} />
+                                <input type="text" name="member_gender" id="member_gender" value=\${json.member_gender} />
+                                <input type="text" name="member_email" id="member_email" value=\${json.member_email} />
+                                <input type="text" name="member_start" id="member_start" value=\${json.member_start} />
+                                <input type="text" name="member_yeoncha" id="member_yeoncha" value=\${json.member_yeoncha} />
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                                <button type="button" class="btn btn-primary" id="saveChanges">저장</button>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-           
+     
+             
             // 모달 HTML 삽입
             EditModal_container.html(modal_popup);
-           
+            
+            //상위부서 데이터값 불러오기
+            const parentDeptSelect = $("#parentDeptSelect");
+
+           // 기존 선택된 값 (AJAX가 실행될 때까지 유지해야 함)
+           const selectedValue = parentDeptSelect.val(); // 현재 선택된 값
+
+           // AJAX로 상위 부서 목록을 불러오기
+           $.ajax({
+               url: "${pageContext.request.contextPath}/management/parentDeptJSON",
+               dataType: "json",
+               success: function(json) {
+                   console.log("AJAX 응답 데이터:", json);
+
+                   // 기존의 값을 지우고 새 옵션을 추가
+                   parentDeptSelect.empty();
+                   
+                   // 기본으로 선택된 부서를 넣음
+                   parentDeptSelect.append(`<option value="${selectedValue}">상위 부서 선택</option>`);
+
+                   // 서버에서 받은 상위 부서 리스트로 `select` 옵션 추가
+                   json.forEach(function(item) {
+                       let isSelected = (item.parent_dept_no == selectedValue) ? "selected" : "";
+                       parentDeptSelect.append(
+                           `<option value="${item.parent_dept_no}" ${isSelected}>${item.parent_dept_name}</option>`
+                       );
+                   });
+               },
+               error: function(request, status, error) {
+            	   alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
+               }
+           });
+           	
+           	
+           	 //하위부서 데이터값 불러오기
+                $("select[name='parentDept']").change(function(){
+                    const dept = $(this).val(); // 선택된 상위 부서 값
+                    const childDeptSelect = $("select[name='fk_child_dept_no']");
+                    
+                    // 기존 옵션 초기화
+                    childDeptSelect.empty();
+                    childDeptSelect.append('<option value=""> 하위 부서 선택 </option>');
+
+                    if (dept) { // 부서가 선택되었을 때만 AJAX 요청
+                        $.ajax({
+                            url: "${pageContext.request.contextPath}/management/childDeptJSON",
+                            data: {"dept": dept},
+                            dataType: "json",
+                            success: function(json) {
+
+                           	 json.forEach(function(item, index) {
+                                    childDeptSelect.append('<option value="' + item.fk_child_dept_no + '">' + item.child_dept_name + '</option>');
+                                });
+                            },
+                            error: function(request, status, error) {
+                                alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
+                            }
+                        });
+                    }
+                });
+                
+           	//직급 데이터값 불러오기
+                $("select[name='parentDept']").change(function() {
+                    const parentDept = $(this).val(); // 선택된 상위 부서 값
+                    const positionSelect = $("select[name='member_position']"); // 직급 select
+
+                    // 기존 옵션 초기화
+                    positionSelect.empty();
+                    positionSelect.append('<option value=""> 직급 선택 </option>');
+
+                    // 특정 부서에 따라 직급 추가
+                    if (parentDept == "1") {
+                        positionSelect.append('<option value="전문의">전문의</option>');
+                    } 
+                    if (parentDept == "2") {
+                        positionSelect.append('<option value="수간호사">수간호사</option>');
+                        positionSelect.append('<option value="평간호사">평간호사</option>');
+                    } 
+                    if (parentDept == "3") {
+                        positionSelect.append('<option value="병원장">병원장</option>');
+                        positionSelect.append('<option value="부장">부장</option>');
+                        positionSelect.append('<option value="차장">차장</option>');
+                        positionSelect.append('<option value="과장">과장</option>');
+                        positionSelect.append('<option value="주임">주임</option>');
+                    } 
+                });
+           	
+                let member_yeoncha;
+        	     let member_grade;
+           	
+                $("select[name='member_position']").change(function() {
+               	    const selectedPosition = $(this).val(); // 선택된 직급 값
+               	    const parentDept = $("select[name='parentDept']").val(); // 선택된 부서 값
+
+               	    // 연차, 등급 설정
+               	    if ((parentDept == "3" && (selectedPosition == "병원장"))) {
+               	        member_yeoncha = 20;
+               	        member_grade = 1;
+               	    } else  if 
+               	    ((parentDept == "3" && (selectedPosition == "부장")) || (parentDept == "1" && (selectedPosition == "전문의"))) {
+               	        member_yeoncha = 18;
+               	        member_grade = 2;
+               	    } else  if 
+               	    ((parentDept == "3" && (selectedPosition == "차장")) || (parentDept == "2" && (selectedPosition == "수간호사"))) {
+               	        member_yeoncha = 17;
+               	        member_grade = 3;
+               	    }  else  if 
+               	    ((parentDept == "3" && (selectedPosition == "과장")) ) {
+               	        member_yeoncha = 15;
+               	        member_grade = 4;
+               	    } else{
+               	    	member_yeoncha = 15;
+               	        member_grade = 5;
+               	    }
+
+               	   // console.log("연차:", member_yeoncha, "등급:", member_grade);
+               	    
+               	  
+               	});
+
             // 모달 띄우기
             $('div#EditView').modal('show');
             
             
-        }, error: function(request, status, error) {
+        },
+        error: function(request, status, error) {
             alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
         }
     });
+
 }
+
+
 
 
 
@@ -162,7 +309,7 @@ function goEdit(member_userid) {
 	
 	 <form name="searchFrm" style="margin-top: 20px;">
 		<select name="searchType" style="height: 26px;">
-			<option value="child">하위부서명</option>
+			<option value="userid">사번명</option>
 			<option value="position">직급명</option>
 			<option value="name">사원명</option>
 		</select>
@@ -171,12 +318,13 @@ function goEdit(member_userid) {
 		<button type="button" onclick="goSearch()">검색</button> 
 	</form>	
 	
-	<div id="displayList" style="border:solid 1px gray; border-top:0px; height:20px; margin-left:8.6%; margin-top:-1px;  overflow:auto;"></div>
+	<div id="displayList" style="border:solid 1px gray; border-top:0px; height:40px; margin-left:8.6%; margin-top:-1px;  overflow:auto;"></div>
 	
 	<table>
 		<thead>
 		    <tr>
 		    	<th>순서</th>
+		    	<th>사번</th>
 		    	<th>프로필</th>
 		    	<th>하위부서명</th>
 		    	<th>성명</th>
@@ -191,13 +339,14 @@ function goEdit(member_userid) {
 	<tr>
 	<td>${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (status.index) }
 	</td>
+	<td>${managementVO_ga.member_userid}</td>
 	<td><img width="50" height="50" src="<%=ctxPath%>/resources/profile/${managementVO_ga.member_pro_filename}" alt="프로필"></td>
 	<td>${managementVO_ga.child_dept_name}</td>
 	<td>${managementVO_ga.member_name}</td>
 	<td>${managementVO_ga.member_gender}</td>
 	<td>${managementVO_ga.member_position}</td>
 	<td><button type="button" id="EditView" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
-	<td><button type="button" onclick="goQuit()">퇴사처리</button> </td>
+	<td><button type="button" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
 	</c:forEach>
 	</c:if>
 	  

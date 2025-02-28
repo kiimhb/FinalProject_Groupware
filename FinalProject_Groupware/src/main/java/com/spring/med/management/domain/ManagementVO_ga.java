@@ -29,6 +29,39 @@ public class ManagementVO_ga {
 	
 	private String child_dept_name;
 	
+	private Child_deptVO_ga ChildVO;
+	private Parent_deptVO_ga ParentVO;
+	
+	
+	public Child_deptVO_ga getChildVO() {
+		return ChildVO;
+	}
+
+
+
+
+	public void setChildVO(Child_deptVO_ga childVO) {
+		ChildVO = childVO;
+	}
+
+
+
+
+	public Parent_deptVO_ga getParentVO() {
+		return ParentVO;
+	}
+
+
+
+
+	public void setParentVO(Parent_deptVO_ga parentVO) {
+		ParentVO = parentVO;
+	}
+
+
+
+
+	
 	
 	private MultipartFile attach;
 	/*

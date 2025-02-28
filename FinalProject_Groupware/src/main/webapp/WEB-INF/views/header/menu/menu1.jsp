@@ -48,13 +48,43 @@
 %>
 --%>
 
+
+
     <%-- 상단 네비게이션 시작 --%>
 	<nav class="navbar">
-		<!-- Brand/logo --> 
-		<a class="navbar-brand" href="<%=ctxPath%>/index" >logo</a>
+	 
+		<a class="navbar-brand" href="<%=ctxPath%>/index">
+		    <div class="logo-container">
+		        <img class="logo-img" src="<%=ctxPath%>/image/main_logo.png">
+		        <div class="logo-text">
+		            <span class="main_logo">마포아삭병원</span>
+		            <span class="main_logo2">Asak Medical Center</span>
+	        	</div>
+		    </div>
+		</a>
 		
 		<div class="navbar_menu">
-			<a href="<%=ctxPath%>" class="navbar_menu1"><i class="fa-solid fa-bell"></i></a>
-			<a href="<%=ctxPath%>" class="navbar_menu1"><i class="fa-solid fa-comments"></i></a>
+		<div class="dropdown">
+			<button type="button" class="dropdown-btn"><i class="fa-solid fa-bell"></i></button>
+			<!-- <div class="dropdown-content">
+				<div class="notification">
+					[전체]공지사항 [급여관련 변경사항] ..... <span>5초 전</span>
+				</div>
+				<div class="notification">
+					[전체]공지사항 [급여관련 변경사항] ..... <span>1일 전</span>
+				</div>
+				<div class="notification">
+					[부서]공지사항 [휴가기획서 결재관] <span>3일 전</span>
+				</div>
+				<div class="notification">
+					[부서]공지사항 [외래 안전교육관련] <span>3일 전</span>
+				</div>
+				<div class="notification">
+					[전체]공지사항 [기안서 마감기간 관] <span>한달 전</span>
+				</div>
+			</div> -->
+		</div>
+
+		<a href="<%=ctxPath%>" class="navbar_menu1"><i class="fa-solid fa-comments"></i></a>
 		</div>
 	</nav>

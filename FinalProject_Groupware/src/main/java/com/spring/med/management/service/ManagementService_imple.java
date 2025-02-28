@@ -56,15 +56,19 @@ public class ManagementService_imple implements ManagementService {
 	}
 
 
+
 	// ==== 로그인 처리 ==== //
 	@Override
 	public ModelAndView login(ModelAndView mav, HttpServletRequest request, Map<String, String> paraMap) {
 		
-		paraMap.put("member_pwd", Sha256.encrypt(paraMap.get("member_pwd"))); // 비밀번호를 암호화 시키기 
+		paraMap.put("member_pwd", Sha256.encrypt(paraMap.get("member_pwd"))); // 비밀번호를 암호화 시키기
+		int member_userid = Integer.parseInt(paraMap.get("member_userid"));
+		paraMap.put("member_userid", String.valueOf(member_userid));
+		
 		
 		ManagementVO_ga loginuser = manaDAO.getLoginMember(paraMap);
-		
-		if(loginuser == null) { // 로그인 실패시
+
+		if (loginuser == null) { // 로그인 실패시
         	String message = "아이디 또는 암호가 틀립니다.";
         	String loc = "javascript:history.back()";
         	
