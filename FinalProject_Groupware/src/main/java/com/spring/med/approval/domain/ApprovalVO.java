@@ -19,8 +19,13 @@ public class ApprovalVO {
 	private String member_name;			// 결재자의 이름
 	private String member_userid;		// 결재자의 아이디
 	
+	private String draft_file_origin_name;	// 원본파일명
+	private String draft_file_name;			// 저장된 파일명
+	private String draft_file_size;			// 파일크기
+	
 
 	
+
 	// === Method === //
 	public String getApproval_no() {
 		return approval_no;
@@ -94,7 +99,24 @@ public class ApprovalVO {
 	public void setMember_userid(String member_userid) {
 		this.member_userid = member_userid;
 	}
-	
+	public String getDraft_file_origin_name() {
+		return draft_file_origin_name;
+	}
+	public void setDraft_file_origin_name(String draft_file_origin_name) {
+		this.draft_file_origin_name = draft_file_origin_name;
+	}
+	public String getDraft_file_name() {
+		return draft_file_name;
+	}
+	public void setDraft_file_name(String draft_file_name) {
+		this.draft_file_name = draft_file_name;
+	}
+	public String getDraft_file_size() {
+		return draft_file_size;
+	}
+	public void setDraft_file_size(String draft_file_size) {
+		this.draft_file_size = draft_file_size;
+	}
 	
 
 }
