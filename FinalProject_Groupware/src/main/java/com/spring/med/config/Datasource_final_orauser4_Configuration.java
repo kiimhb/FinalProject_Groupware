@@ -58,7 +58,7 @@ public class Datasource_final_orauser4_Configuration {
    
     
     @Bean 
-    public PlatformTransactionManager transactionManager_mymvc_user() {
+    public PlatformTransactionManager transactionManager_final_orauser4() {
         DataSourceTransactionManager tm = new DataSourceTransactionManager();
         tm.setDataSource(dataSource());
         return tm;

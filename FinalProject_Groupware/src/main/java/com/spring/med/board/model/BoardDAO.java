@@ -24,12 +24,13 @@ public interface BoardDAO {
 	int edit(BoardVO boardvo);
 
 	// 글 1개 삭제하기
+	Map<String, String> getView_delete(String board_no);  // 1개글 삭제할 때 먼저 사진이미지파일명 및 첨부파일명을 알아오기 위한 것
 	int del(String board_no);
 
 	////////////////////////////////////////////////////////////////////
 	int addComment(CommentVO commentvo);       // 댓글쓰기(tbl_comment 테이블에 insert)
 	int updateCommentCount(String comment_parentSeq);  // tbl_board 테이블에 commentCount 컬럼이 1증가(update)
-	int updateMemberPoint(Map<String, String> paraMap);  // tbl_member 테이블의 point 컬럼의 값을 50점을 증가(update)
+//	int updateMemberPoint(Map<String, String> paraMap);  // tbl_member 테이블의 point 컬럼의 값을 50점을 증가(update)
     ////////////////////////////////////////////////////////////////////
 
 	// 원게시물에 딸린 댓글들을 조회해오기
@@ -71,6 +72,18 @@ public interface BoardDAO {
 
 	// 글쓰기(파일첨부가 있는 글쓰기)
 	int add_withFile(BoardVO boardvo);
+
+	// 파일첨부가 되어진 댓글 1개에서 서버에 업로드 되어진 파일명과 오리지널파일명을 조회해주는 것
+	CommentVO getCommentOne(String comment_no);
+
+	
+	
+	
+	//////////////////////////////////////////////////////////////////////  즐겨찾기
+	// 즐겨찾기 테이블에 insert(한 행 추가)
+	void insertBookmark(Map<String, String> paraMap);
+
+	
 
 
 	

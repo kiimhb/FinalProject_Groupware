@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.spring.med.board.domain.BoardVO;
 import com.spring.med.board.domain.CommentVO;
 import com.spring.med.board.model.BoardDAO;
+import com.spring.med.common.FileManager;
 
 // ==== #23. 서비스 선언 ====
 // 트랜잭션 처리를 담당하는 곳, 업무를 처리하는 곳, 비지니스(Business)단
@@ -22,6 +23,9 @@ public class BoardService_imple implements BoardService {
 	@Autowired
 	private BoardDAO dao;
 
+	// === #169. 첨부파일 및 사진이미지 파일을 삭제하기 위한 것 === // 
+	@Autowired   // Type 에 따라 알아서 Bean 을 주입해준다.
+	private FileManager fileManager;
 	
 	// === #29. 파일첨부가 없는 글쓰기 ===
 	@Override
@@ -96,13 +100,82 @@ public class BoardService_imple implements BoardService {
 		return n;
 	}
 
-
+/*
 	// === #53. 1개글 삭제하기 === //
 	@Override
 	public int del(String board_no) {
 		int n = dao.del(board_no);
 		return n;
 	}
+*/
+	
+	// === #164. 1개글 삭제할 때 먼저 사진이미지파일명 및 첨부파일명을 알아오기 위한 것 === //
+		@Override
+		public Map<String, String> getView_delete(String board_no) {
+			Map<String, String> boardmap = dao.getView_delete(board_no);
+			return boardmap;
+		}
+		
+		// === #168. 첨부파일 및 사진이미지가 있는 경우의 글삭제 === // 
+		//      먼저, 위의 #53 을 주석처리 한 이후에 아래처럼 한다.
+		@Override
+		public int del(Map<String, String> paraMap) {
+			
+			int n = dao.del(paraMap.get("board_no")); // 테이블에서 행삭제하기
+			
+			// === 첨부파일 및 사진이미지 파일 삭제하기 시작 === // 
+			if(n==1) {
+				String filepath = paraMap.get("filepath");  // 삭제해야할 첨부파일이 저장된 경로
+				String board_fileName = paraMap.get("board_fileName");  // 삭제해야할 첨부파일명 
+				
+				if(board_fileName != null && !"".equals(board_fileName)) {
+					try {
+						fileManager.doFileDelete(board_fileName, filepath);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				//////////////////////////////////////////////////////
+				
+				// 글내용에 사진이미지가 들어가 있는 경우라면 사진이미지 파일도 삭제해야 한다.
+				String photofilename = paraMap.get("photofilename");
+				
+				if(photofilename != null) {
+					
+					String photo_upload_path = paraMap.get("photo_upload_path");
+					
+					if(photofilename.contains("/")) {
+						// 사진이미지가 2개 이상 존재하는 경우
+						
+					   String[] arr_photofilename =	photofilename.split("[/]");
+					   
+					   for(int i=0; i<arr_photofilename.length; i++) {
+							try {
+								fileManager.doFileDelete(arr_photofilename[i], photo_upload_path); 
+							} catch (Exception e) {
+								e.printStackTrace();
+							}   
+					   }// end of for----------------
+						
+					}
+					else {
+						// 사진이미지가 1개만 존재하는 경우
+						try {
+							fileManager.doFileDelete(photofilename, photo_upload_path); 
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+				}
+				
+			}
+			// === 첨부파일 및 사진이미지 파일 삭제하기 끝 === // 
+			
+			return n;
+		}
+	
 
 
 	// === #60. 댓글쓰기(Transaction 처리) === // 
@@ -113,7 +186,7 @@ public class BoardService_imple implements BoardService {
  	// >>>>> 트랜잭션처리를 해야할 메소드에 @Transactional 어노테이션을 설정하면 된다. 
  	// rollbackFor={Throwable.class} 은 롤백을 해야할 범위를 말하는데 Throwable.class 은 error 및 exception 을 포함한 최상위 루트이다. 즉, 해당 메소드 실행시 발생하는 모든 error 및 exception 에 대해서 롤백을 하겠다는 말이다.
 	@Override
-	@Transactional(value="transactionManager_mymvc_user", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	@Transactional(value="transactionManager_final_orauser4", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int addComment(CommentVO commentvo) {
 		
 		int n1=0, n2=0, result=0;
@@ -157,7 +230,7 @@ public class BoardService_imple implements BoardService {
 
 	// === #73. 댓글 삭제(Ajax 로 처리) === //
 	@Override
-	@Transactional(value="transactionManager_mymvc_user", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class}) 
+	@Transactional(value="transactionManager_final_orauser4", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class}) 
 	public int deleteComment(Map<String, String> paraMap) {
 		
 		int n = dao.deleteComment(paraMap.get("comment_no"));
@@ -171,17 +244,22 @@ public class BoardService_imple implements BoardService {
 		   // ~~~~ 확인용 m : 1
 		}
 		
+		// === #185. 파일첨부가 된 댓글이라면 댓글 삭제시 첨부파일을 삭제해주어야 한다. 시작 === //
+		String filepath = paraMap.get("filepath");  // 삭제해야할 첨부파일이 저장된 경로
+		String board_fileName = paraMap.get("board_fileName");  // 삭제해야할 첨부파일명
+		
+		if(m==1 && board_fileName != null && !"".equals(board_fileName.trim())) {
+			try {
+				fileManager.doFileDelete(board_fileName, filepath);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		// === 파일첨부가 된 글이라면 글 삭제시 첨부파일을 삭제해주어야 한다. 끝 === //
+		
 		return n*m;
 	}
 
-
-	// === #79. CommonAop 클래스에서 사용하는 것으로 특정 회원에게 특정 점수만큼 포인트를 증가하기 위한 것 === // 
-/*	
-	@Override
-	public void pointPlus(Map<String, String> paraMap) {
-		dao.pointPlus(paraMap);
-	}
-*/
 
 	// === #84. 페이징 처리를 안한 검색어가 있는 전체 글목록 보여주기 === //
 	@Override
@@ -253,6 +331,32 @@ public class BoardService_imple implements BoardService {
 		int n = dao.add_withFile(boardvo); // <== 첨부파일이 있는 경우 (boardvo 속에 넣어서 보내준다-insert)
 		return n;
 	}
+
+
+	// ===  #181. 파일첨부가 되어진 댓글 1개에서 서버에 업로드 되어진 파일명과 오리지널파일명을 조회해주는 것 === //
+	@Override
+	public CommentVO getCommentOne(String comment_no) {
+		CommentVO commentvo = dao.getCommentOne(comment_no);
+		return commentvo;
+	}
+
+
+	
+	
+	
+	//////////////////////////////////////////////////////////////////////즐겨찾기
+	
+	// 즐겨찾기 테이블에 insert(한 행 추가)
+	@Override
+	public void insertBookmark(Map<String, String> paraMap) {
+		dao.insertBookmark(paraMap);
+		
+	}
+
+
+
+
+
 
 
 

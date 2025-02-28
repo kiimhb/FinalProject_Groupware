@@ -24,7 +24,9 @@ public interface BoardService {
 	int edit(BoardVO boardvo);
 
 	// 1개글 삭제하기
-	int del(String board_no);
+//	int del(String board_no);	// 첨부파일 및 사진이미지가 없는 경우의 글 삭제
+	Map<String, String> getView_delete(String board_no);  // 1개글 삭제할 때 먼저 사진이미지파일명 및 첨부파일명을 알아오기 위한 것
+	int del(Map<String, String> paraMap);  // 첨부파일 및 사진이미지가 있는 경우의 글 삭제
 
 	// 댓글쓰기(Transaction 처리)
 	int addComment(CommentVO commentvo);
@@ -61,6 +63,25 @@ public interface BoardService {
 
 	// 글쓰기(파일첨부가 있는 글쓰기)
 	int add_withFile(BoardVO boardvo);
+
+	// 파일첨부가 되어진 댓글 1개에서 서버에 업로드 되어진 파일명과 오리지널파일명을 조회해주는 것
+	CommentVO getCommentOne(String comment_no);
+
+	
+	
+	////////////////////////////////////////////////////////////////////////// 즐겨찾기
+	
+	// 즐겨찾기 테이블에 insert(한 행 추가)
+	void insertBookmark(Map<String, String> paraMap);
+
+	
+
+	
+
+	
+
+
+
 
 	
 	
