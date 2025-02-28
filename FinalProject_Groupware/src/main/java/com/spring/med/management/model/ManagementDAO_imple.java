@@ -43,7 +43,7 @@ public class ManagementDAO_imple implements ManagementDAO {
 	//로그인 처리
 	@Override
 	public ManagementVO_ga getLoginMember(Map<String, String> paraMap) {
-		
+
 		ManagementVO_ga loginuser = sqlmanag.selectOne("management_ga.getLoginMember", paraMap);
 		return loginuser;
 		

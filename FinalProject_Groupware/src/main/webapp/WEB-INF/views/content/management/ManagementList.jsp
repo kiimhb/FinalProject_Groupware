@@ -42,7 +42,7 @@ $(document).ready(function(){
 		   
 		   else {
 			   
-			   if( $("select[name='searchType']").val() == "child" || 
+			   if( $("select[name='searchType']").val() == "userid" || 
 			       $("select[name='searchType']").val() == "position" ||
 			       $("select[name='searchType']").val() == "name" ) {
 				
@@ -121,15 +121,16 @@ function goEdit(member_userid) {
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="EditViewLabel">모달 제목</h5>
+                                <h5 class="modal-title" id="EditViewLabel">사원 정보 수정</h5>
                             </div>
                             <div class="modal-body">
-                                <input type="text" name="member_userid" id="member_userid" value="${json.member_userid}" readonly />
-                                <input type="text" name="member_name" id="member_name" value="${json.member_name}"  />
-                                <input type="text" name="member_email" id="member_email" value="${json.member_email}" readonly />
+                                <input type="text" name="member_userid" id="member_userid" value="${member_userid}" readonly />
+                                <input type="text" name="member_name" id="member_name" value="${member_name}" />
+                                <input type="text" name="member_email" id="member_email" value="${member_email}" />
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                                <button type="button" class="btn btn-primary" id="saveChanges">저장</button>
                             </div>
                         </div>
                     </div>
@@ -152,6 +153,7 @@ function goEdit(member_userid) {
 
 
 
+
 </script>
 
 <div class="subContent">
@@ -162,7 +164,7 @@ function goEdit(member_userid) {
 	
 	 <form name="searchFrm" style="margin-top: 20px;">
 		<select name="searchType" style="height: 26px;">
-			<option value="child">하위부서명</option>
+			<option value="userid">사번명</option>
 			<option value="position">직급명</option>
 			<option value="name">사원명</option>
 		</select>
@@ -171,12 +173,13 @@ function goEdit(member_userid) {
 		<button type="button" onclick="goSearch()">검색</button> 
 	</form>	
 	
-	<div id="displayList" style="border:solid 1px gray; border-top:0px; height:20px; margin-left:8.6%; margin-top:-1px;  overflow:auto;"></div>
+	<div id="displayList" style="border:solid 1px gray; border-top:0px; height:40px; margin-left:8.6%; margin-top:-1px;  overflow:auto;"></div>
 	
 	<table>
 		<thead>
 		    <tr>
 		    	<th>순서</th>
+		    	<th>사번</th>
 		    	<th>프로필</th>
 		    	<th>하위부서명</th>
 		    	<th>성명</th>
@@ -191,6 +194,7 @@ function goEdit(member_userid) {
 	<tr>
 	<td>${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (status.index) }
 	</td>
+	<td>${managementVO_ga.member_userid}</td>
 	<td><img width="50" height="50" src="<%=ctxPath%>/resources/profile/${managementVO_ga.member_pro_filename}" alt="프로필"></td>
 	<td>${managementVO_ga.child_dept_name}</td>
 	<td>${managementVO_ga.member_name}</td>

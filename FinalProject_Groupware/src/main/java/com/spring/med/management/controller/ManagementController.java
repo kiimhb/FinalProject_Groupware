@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -68,7 +67,6 @@ public class ManagementController {
 	}
 
 
-	
 	
 	
 	@PostMapping("ManagementForm")
@@ -182,6 +180,7 @@ public class ManagementController {
                               HttpServletRequest request,
                               @RequestParam Map<String, String> paraMap) {
 		
+		
 		// === 클라이언트의 IP 주소를 알아오는 것 === //
 		// /myspring/src/main/webapp/JSP 파일을 실행시켰을 때 IP 주소가 제대로 출력되기위한 방법.txt 참조할 것!!!
 		String clientip = request.getRemoteAddr();
@@ -254,7 +253,7 @@ public class ManagementController {
 		
 		 mav.addObject("Manag_List", Manag_List);
 		
-		 if("child".equals(searchType) || 
+		 if("userid".equals(searchType) || 
 		    "position".equals(searchType) ||
 		    "name".equals(searchType)) { 
 
@@ -264,7 +263,7 @@ public class ManagementController {
 			 mav.addObject("paraMap", paraMap);	
 		 }
 		 int blockSize = 10;
-		 
+ 
 		 int loop = 1;
 		 
 		 int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
@@ -342,7 +341,7 @@ public class ManagementController {
 	// === 인사관리 회원수정 한명의 멤버 조회 === //
 	@PostMapping("managementEdit")
 	@ResponseBody
-	public String getMemberInfo(@RequestParam("member_userid") String member_userid) {
+	public String getMemberInfo(@RequestParam() String member_userid) {
 	    Map<String, String> paramMap = new HashMap<>();
 	    paramMap.put("member_userid", member_userid);
 
