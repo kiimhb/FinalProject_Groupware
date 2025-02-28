@@ -60,7 +60,7 @@ $(document).ready(function(){
 					</c:if>
 					
 					<c:if test="${empty requestScope.register_list}">
-						<tr>수술 대기 환자가 없습니다.</tr>
+						<tr><td>수술 대기 환자가 없습니다.</td></tr>
 					</c:if>	
 					
 	  				</tbody>
@@ -68,9 +68,11 @@ $(document).ready(function(){
 	  		</div>
 	  		
 			<%-- 페이지바 === --%>
-		    <div id="pageBar" align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-		    	${requestScope.pageBar}
-		    </div>
+			<c:if test="${not empty requestScope.hospitalize_list}">
+			    <div id="pageBar" align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+			    	${requestScope.pageBar}
+			    </div>
+		    </c:if>
 		    
 	    </div>
 	    
@@ -107,14 +109,16 @@ $(document).ready(function(){
 					</c:if>
 					
 					<c:if test="${empty requestScope.register_list}">
-						<tr>입원 대기 환자가 없습니다.</tr>
+						<tr><td>입원 대기 환자가 없습니다.</td></tr>
 					</c:if>	
 	  				</tbody>
 	  			</table>
 	  		</div>
-			<div id="pageBar2" align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-		    	${requestScope.pageBar2}
-		    </div>
+	  		<c:if test="${not empty requestScope.hospitalize_list}">
+				<div id="pageBar2" align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+			    	${requestScope.pageBar2}
+			    </div>
+		    </c:if>
 		    
 	    </div>
 	</div>

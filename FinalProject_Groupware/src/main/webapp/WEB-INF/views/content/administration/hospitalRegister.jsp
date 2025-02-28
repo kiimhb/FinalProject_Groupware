@@ -65,6 +65,8 @@ a:hover,
 <script type="text/javascript">
 $(document).ready(function(){  
 	
+	$("span.error").hide();
+	
 	// ***** 예약일자 (오늘) 입력하기 시작 ***** //
 	const today = new Date();
 	const year = today.getFullYear();
@@ -110,7 +112,39 @@ $(document).ready(function(){
 	
 	calendar.render();  // 풀캘린더 보여주기
 	
+	// ****** 입력폼 유효성 검사하기 시작 ******//
+	/* 입원시작일자 유효성 검사하기 */
+	$("input[name='hospitalize_start_day']").blur((e) => {
+
+	   if($(e.target).val() == "") {
+			$("div.form :input, div.form select").prop("disabled", true);
+	        $(e.target).prop("disabled", false);
+
+	      	$(e.target).closest(".input").find("span.error").eq(0).show(); // 에러메시지 표시 
+	   }
+		else {
+			$("div.form :input, div.form select").prop("disabled", false); 
+			$(e.target).closest(".input").find("span.error").eq(0).hide(); // 에러메시지 표시 
+		}	
+	});
+		
+	/* 입원실 유효성 검사하기 */
+	$("select[name='fk_hospitalizeroom_no']").blur((e) => {
+
+	   if($(e.target).val() == "") {
+			$("div.form :input, div.form select").prop("disabled", true);
+	        $(e.target).prop("disabled", false);
+
+	        $(e.target).closest(".input").find("span.error").show(); // 에러메시지 표시 
+	   }
+		else {
+			$("div.form :input, div.form select").prop("disabled", false); 
+			$(e.target).closest(".input").find("span.error").hide();  // 에러메시지 숨김
+		}	
+	});
+	// ****** 입력폼 유효성 검사하기 끝 ******//
 	
+
 	// 퇴원일 자동 입력하기
 	$("input[name='hospitalize_start_day']").on("change", function(e){
 		
@@ -130,6 +164,63 @@ $(document).ready(function(){
 	 	$("input[name='hospitalize_end_day']").val(hospitalize_end_day); // 입원 일수에 따라 종료날짜 자동입력
 	});
 	
+	
+	// 시작일 변경되면 함수 시작 -> 입원시작일과 입원종료일을 고려한 입원실 잔여석 알아오기 
+	$("input[name='hospitalize_start_day'").on("change", function(){
+		
+		const order_no = $("input[name='fk_order_no']").val();
+		const hospitalize_start_day = $("input[name='hospitalize_start_day']").val(); // 입원일자 
+		const hospitalize_end_day = $("input[name='hospitalize_end_day']").val(); // 퇴원일자 
+			
+		if(hospitalize_start_day && hospitalize_end_day) {
+		
+			$.ajax({
+				url:"<%= ctxPath%>/register/okroom",
+				type: "GET", 
+				data:{"hospitalize_start_day":hospitalize_start_day,
+						  "hospitalize_end_day":hospitalize_end_day},
+		        dataType: "json",
+				success:function(okSeat){		 
+					// alert(JSON.stringify(okSeat)); 
+					
+					const roomSelect = $("select.hospitalizeroom_no");
+					roomSelect.empty(); // 기존 옵션 초기화 
+					
+					let html = ``;
+					
+					// 2인실 
+				    let tworoom = okSeat.filter(room => room.hospitalizeroom_capacity == 2);
+					if(tworoom.length > 0) {
+						html += `<optgroup label="2인실">`;
+							tworoom.forEach(room => {
+								let disabled = room.ok_seat == 0 ? 'disabled' : ''; // 잔여자리 없으면 disabled 추가 
+								html += `<option value="\${room.hospitalizeroom_no}" \${disabled}>\${room.hospitalizeroom_no}호 ( \${room.ok_seat} / \${room.hospitalizeroom_capacity} )</option>`;
+							});
+							html += `</optgroup>`;
+					}
+					
+					// 4인실 
+				    let fourroom = okSeat.filter(room => room.hospitalizeroom_capacity == 4);
+					if(fourroom.length > 0) {
+						html += `<optgroup label="4인실">`;
+							fourroom.forEach(room => {
+								let disabled = room.ok_seat == 0 ? 'disabled' : ''; // 잔여자리 없으면 disabled 추가 
+								html += `<option value="\${room.hospitalizeroom_no}" \${disabled}>\${room.hospitalizeroom_no}호 ( \${room.ok_seat} / \${room.hospitalizeroom_capacity} )</option>`;
+							});
+							html += `</optgroup>`;
+					}
+					roomSelect.append(html);
+					
+				},
+  	    	    error: function(request, status, error){
+			   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			    }
+							
+		});
+		}	
+	}); // end of $("input[name='hospitalize_start_day'").on("change", function(){
+	
+	
 });
 
 // 입원예약하기 클릭 
@@ -146,9 +237,10 @@ function registerHospitalize() {
 			alert(response.message);
 			window.location.href = "<%= ctxPath%>/register/list";
 		},
-	    error: function(request, status, error){
-		   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		}
+		error: function(error){
+			let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";
+	   		alert(errorMessage);
+	 	}
 	});
 }
 </script>
@@ -159,62 +251,37 @@ function registerHospitalize() {
 			
 	  		<div class="title">
 	  			입원예약
-	  			<div class="regimenu">
-	  				<span><a href="<%= ctxPath%>/register/surgery">수술예약</a> | </span><span><a href="<%= ctxPath%>/register/hospitalization">입원예약</a></span>
-	  			</div>
+	  			
 	  		</div>
   			
 	  		<form name="hospitalizeRegister">
 	  		
-		  		<div class="form">
+		  		<div class="form ">
 		  			<input type="hidden" value="${requestScope.order_no}" name="fk_order_no">
-		  			<div class="input">
+		  			<div class="input read">
 		  				<div class="text">차트번호</div>
-		  				<input type="text" value="${requestScope.order_no}" disabled/>
+		  				<input type="text" value="${requestScope.order_no}" readonly/>
 		  			</div>
-		  			<div class="input">
+		  			<div class="input read">
 		  				<div class="text">환자명</div>
-		  				<input type="text" value="${requestScope.name}" disabled/>
+		  				<input type="text" value="${requestScope.name}" readonly/>
 		  			</div>
-		  			<div class="input">
+		  			<div class="input read">
 		  				<div class="text">예약일자</div>
-		  				<input type="text" class="today" name="hospitalize_reserve_date" disabled/>
+		  				<input type="text" class="today" name="hospitalize_reserve_date" readonly/>
 		  			</div>
-		  			<div class="input">
+		  			<div class="input read">
 		  				<div class="text">입원기간</div>
-		  				<input type="text" class="order_howlonghosp" name="order_howlonghosp" data-id="${requestScope.order_howlonghosp}" value="${requestScope.order_howlonghosp} 일" disabled/>
+		  				<input type="text" class="order_howlonghosp" name="order_howlonghosp" data-id="${requestScope.order_howlonghosp}" value="${requestScope.order_howlonghosp} 일" readonly/>
 		  			</div>
 		  			<div class="input">
-		  				<div class="text">입원일자 / 퇴원일자 *</div>
-		  				<input type="date" class="date mr-3" name="hospitalize_start_day" /><input type="date" class="date" name="hospitalize_end_day"/>
+		  				<div class="text">입원일자 / 퇴원일자 * <span class="error">입원일자를 선택하세요</span><span class="error">퇴원일자를 선택하세요</span></div>
+		  				<input type="date" class="date mr-3" name="hospitalize_start_day" /><input type="date" class="date" name="hospitalize_end_day" readonly/>
 		  			</div>
 		  			<div class="input">
-		  				<div class="text">입원실 *</div>
+		  				<div class="text">입원실 *<span class="error">입원실을 선택하세요</span></div>
 			  				<select name="fk_hospitalizeroom_no" class="hospitalizeroom_no">
-			  					<optgroup label="4인실">
-			  					<c:forEach var="hvo" items="${requestScope.hospitalizeroom}">
-			  						<c:set var="okseat" value="-" />
-			  						<c:forEach var="seat" items="${requestScope.okSeat}">
-			  							<c:if test="${hvo.hospitalizeroom_no == seat.hospitalizeroom_no}">
-			  								<c:set var="okseat" value="${seat.ok_seat}" />
-			  							</c:if>
-			  						</c:forEach>
-			  						<option value="${hvo.hospitalizeroom_no}">${hvo.hospitalizeroom_no}호 (${okseat}/4)</option>
-		 						</c:forEach>
-		 						</optgroup>
-		 						
-		 						<optgroup label="2인실">
-			  					<c:forEach var="hvo" items="${requestScope.hospitalizeroom_2}">
-			  						<c:set var="okseat" value="-" />
-			  						<c:forEach var="seat" items="${requestScope.okSeat}">
-			  							<c:if test="${hvo.hospitalizeroom_no == seat.hospitalizeroom_no}">
-			  								<c:set var="okseat" value="${seat.ok_seat}" />
-			  							</c:if>
-			  						</c:forEach>
-			  						<option value="${hvo.hospitalizeroom_no}">${hvo.hospitalizeroom_no}호(${okseat}/2)</option>
-		 						</c:forEach>
-		 						</optgroup>
-		 						
+			  						<option value="">입원실</option>
 		  					</select>		
 		  				</div>
 		  			</div>
@@ -222,7 +289,7 @@ function registerHospitalize() {
 	    </div>
 	    
 	    <div class="middle" style="width:50px;"></div>
-	    
+	    	
 	    <div class="right">
 			
 			<div id="calendar">

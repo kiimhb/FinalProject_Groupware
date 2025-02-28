@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.med.administration.domain.Calendar_patient_recordVO;
 import com.spring.med.administration.model.PatientDAO;
 import com.spring.med.patient.domain.PatientVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
@@ -66,8 +67,20 @@ public class PatientService_imple implements PatientService {
 		return room;
 	}
 
-	
-	
-	
+	// 입원 목록 불러오기  
+	@Override
+	public List<Map<String, Object>> hospitalize_list(String jubun) {
+		List<Map<String, Object>> hospitalize_list = dao.hospitalize_list(jubun);
+		return hospitalize_list;
+	}
+
+	// 환자의 일정목록을 불러오기 캘린더
+	@Override
+	public List<Calendar_patient_recordVO> selectSchedule(String jubun) {
+		List<Calendar_patient_recordVO> selectSchedule = dao.selectSchedule(jubun);
+		return selectSchedule;
+	}
+
+
 	
 }

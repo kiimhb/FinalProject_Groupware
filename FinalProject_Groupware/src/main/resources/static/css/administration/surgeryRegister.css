@@ -45,8 +45,12 @@ div.read > input {
 	background-color: #eee;
 }
 div.text {
-	width:200px;
+	width:300px;
 	margin-bottom: 1% ;
+}
+span.error {
+	font-size: 10pt;
+	color:red;
 }
 input {
 	width: 620px;

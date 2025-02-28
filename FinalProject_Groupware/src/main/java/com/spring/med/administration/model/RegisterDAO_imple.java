@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.spring.med.hospitalize.domain.HospitalizeVO;
-import com.spring.med.hospitalize.domain.HospitalizeroomVO;
 import com.spring.med.surgery.domain.SurgeryVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
 
@@ -61,14 +60,29 @@ public class RegisterDAO_imple implements RegisterDAO {
 		return reservedTime;
 	}
 
-	// 비관적락 사용해서 예약된 시간인지 확인하기
+	// 동일한 날 한개이상의 수술을 막기 위해 주민번호 알아오기 
+	@Override
+	public String getJubun(SurgeryVO surgeryvo) {
+		String jubun = sqlsession.selectOne("hyeyeon.jubun", surgeryvo);
+		return jubun;
+	}
+
+	// 1. 동일한 환자가 같은 날 다른 수술이 있는지 확인하기 (수술은 하루에 한개만 가능)
+	@Override
+	public int todayOtherSurgery(Map<String, String> paraMap) {
+		int n = sqlsession.selectOne("hyeyeon.todayOtherSurgery", paraMap);
+		return n;
+	}
+
+	
+	// 2. 비관적락 사용해서 예약된 시간인지 확인하기
 	@Override
 	public SurgeryVO existingSurgery(Map<String, String> paraMap) {
 		SurgeryVO existingSurgery = sqlsession.selectOne("hyeyeon.existingSurgery", paraMap);
 		return existingSurgery;
 	}
 	
-	// 예약처리하기
+	// 3. 예약처리하기
 	@Override
 	public void insertSurgery(SurgeryVO surgeryvo) {
 		sqlsession.update("hyeyeon.insertSurgery", surgeryvo);
@@ -76,9 +90,8 @@ public class RegisterDAO_imple implements RegisterDAO {
 
 	// 수술 예약일정 수정하기 
 	@Override
-	public int surgeryUpdate(Map<String, String> paraMap) {
-		int n = sqlsession.update("hyeyeon.surgeryUpdate", paraMap);
-		return n;
+	public void surgeryUpdate(Map<String, String> paraMap) {
+		sqlsession.update("hyeyeon.surgeryUpdate", paraMap);
 	}
 
 	// 입원 대기자 목록 총 개수
@@ -102,31 +115,44 @@ public class RegisterDAO_imple implements RegisterDAO {
 		return howlonghosp;
 	}
 
-	// 수술실 목록 가져오기 4인실
+	// 입원실 잔여석 가져오기
 	@Override
-	public List<HospitalizeroomVO> hospitalizeroom() {
-		List<HospitalizeroomVO> hospitalizeroom = sqlsession.selectList("hyeyeon.hospitalizeroom");
-		return hospitalizeroom;
+	public List<Map<String, String>> okSeat(Map<String, String> paraMap) {
+		List<Map<String, String>> okSeat = sqlsession.selectList("hyeyeon.okSeat", paraMap);
+		return okSeat;
 	}
 
-	// 수술실 목록 가져오기 2인실
+	// 중복 입원 확인을 위해 주민번호 알아오기
 	@Override
-	public List<HospitalizeroomVO> hospitalizeroom_2() {
-		List<HospitalizeroomVO> hospitalizeroom_2 = sqlsession.selectList("hyeyeon.hospitalizeroom_2");
-		return hospitalizeroom_2;
+	public String jubunGet(HospitalizeVO hospitalizevo) {
+		String n = sqlsession.selectOne("hyeyeon.jubunGet", hospitalizevo);
+		return n;
 	}
-
+	
+	// 1. 동일한 입원일/퇴원일에 다른 입원건이 있는지 확인
+	@Override
+	public int todayOtherHospitalize(Map<String, String> paraMap) {
+		int n = sqlsession.selectOne("hyeyeon.todayOtherHospitalize", paraMap);
+		return n;
+	}
+	
+	// 2. 비관적락 사용해서 예약된 시간인지 확인하기(입원)
+	@Override
+	public HospitalizeVO existingHospitalize(Map<String, String> paraMap) {
+		HospitalizeVO existingHospitalize = sqlsession.selectOne("hyeyeon.existingHospitalize", paraMap);
+		return existingHospitalize;
+	}
+	
+	// 3. 입원 예약하기 
 	@Override
 	public void hospitalizeRegister(HospitalizeVO hospitalizevo) {
 		sqlsession.update("hyeyeon.hospitalizeRegister", hospitalizevo);
 	}
 
-	// 입원실 잔여석 가져오기
+	// 입원예약수정하기
 	@Override
-	public List<Map<String, String>> okSeat() {
-		List<Map<String, String>> okSeat = sqlsession.selectList("hyeyeon.okSeat");
-		return okSeat;
+	public void hospitalizeUpdate(Map<String, String> paraMap) {
+		sqlsession.update("hyeyeon.hospitalizeUpdate", paraMap);	
 	}
-	
 	
 }

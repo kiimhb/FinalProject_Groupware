@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="hyeyeon">
+	
+	<!-- **************************** 환자관련 mapper **************************** -->
+	<!-- 총 진료 기록이 있는 환자 건수 (검색이 있음 / 검색이 없음) -->
+	<select id="totalCount" parameterType="HashMap" resultType="int">
+			select count(*)
+			from 
+			(
+			    SELECT patient_no, child_dept_name, patient_name,
+		               patient_jubun, patient_gender, patient_visitdate
+		        FROM tbl_patient a 
+		        JOIN tbl_child_dept b 
+		        ON a.fk_child_dept_no = b.child_dept_no 
+			    <choose>
+				    <when test='patientname != ""  '>
+				    	where patient_name like '%'|| #{patientname} ||'%' 
+			    	</when>
+		    	</choose>
+			) a join tbl_order b
+		    on a.patient_no = b.fk_patient_no 
+		    where order_no is not null
+	</select>
+	
+
+	<!--  진료기록이 있는 환자 목록 (최적화했음(인덱싱페이징): 나중에 대용량 데이터 넣고 성능 확인하기) -->
+	<resultMap id="PatientListMap" type="HashMap">
+	    <result property="patient_no" 			column="patient_no" 		javaType="String" />
+	    <result property="child_dept_name"  	column="child_dept_name" 	javaType="String" />
+	    <result property="patient_name" 		column="patient_name" 		javaType="String" />
+	    <result property="patient_jubun" 		column="patient_jubun"    	javaType="String" />
+	    <result property="patient_gender"   	column="patient_gender" 	javaType="String" />
+	    <result property="patient_visitdate"    column="patient_visitdate" 	javaType="String" />
+	</resultMap>
+	<select id="patientList" parameterType="HashMap" resultMap="PatientListMap">
+		select *
+		from
+		(
+		select rownum as rno, patient_no, child_dept_name, patient_name,
+		       patient_jubun, patient_gender, patient_visitdate
+		from 
+		    (
+		        SELECT patient_no, child_dept_name, patient_name,
+		               patient_jubun, patient_gender, patient_visitdate
+		        FROM tbl_patient a 
+		        JOIN tbl_child_dept b 
+		        ON a.fk_child_dept_no = b.child_dept_no 
+		        <choose>
+				    <when test='patientname != ""  '>
+				    	where patient_name like '%'|| #{patientname} ||'%' 
+			    	</when>
+			    </choose>
+			    order by patient_visitdate desc
+		    )a join tbl_order b
+		    on a.patient_no = b.fk_patient_no 
+		    where order_no is not null and rownum &lt;= #{endRno}
+		) 
+		where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+
+	<!-- 주민번호로 환자를 식별해야 하기 때문에 주민번호를 찾는다. -->
+	<select id="getJubun" parameterType="String" resultType="String">
+		select patient_jubun
+		from tbl_patient
+		where patient_no = to_number(#{seq})
+	</select>
+	
+	<!-- 차트 기본 인적사항 -->
+	<resultMap id="chartMap" type="HashMap">
+	    <result property="patient_name" 		column="patient_name" 		javaType="String" />
+	    <result property="patient_gender"  		column="patient_gender" 	javaType="String" />
+	    <result property="patient_status" 	 	column="patient_status" 	javaType="String" />
+	    <result property="order_no" 			column="order_no"    		javaType="String" />
+	    <result property="age"   				column="age" 	  			javaType="String" />
+	</resultMap>
+	<select id="detail_patient" parameterType="String" resultMap="chartMap"> 
+		select patient_name, patient_gender, patient_status, order_no
+		     , case when sysdate - to_date( to_char(sysdate, 'yyyy') || substr(patient_jubun, 3, 4), 'yyyymmdd') >= 0
+		                then extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) 
+		                else extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) - 1
+		           end AS age   
+		from tbl_patient a join tbl_order b
+		on a.patient_no = b.fk_patient_no
+		where patient_no = #{seq}
+	</select>
+	
+	<!-- 진료기록(내역) 조회하기 -->
+	<resultMap id="orderMap" type="HashMap">
+	    <result property="order_no" 		 	column="order_no" 			  javaType="String" />
+	    <result property="fk_child_dept_no"  	column="fk_child_dept_no" 	  javaType="String" />
+	    <result property="child_dept_name" 	 	column="child_dept_name" 	  javaType="String" />
+	    <result property="patient_visitdate" 	column="patient_visitdate"    javaType="String" />
+	    <result property="patient_symptom"   	column="patient_symptom" 	  javaType="String" />
+	    <result property="order_symptom_detail" column="order_symptom_detail" javaType="String" />
+	</resultMap>
+	<select id="order_list" parameterType="String" resultMap="orderMap">
+		with
+		a as
+		(
+			select order_no, fk_child_dept_no, patient_visitdate, patient_symptom, order_symptom_detail
+			from tbl_patient a left join tbl_order b
+			on a.patient_no = b.fk_patient_no
+			where patient_jubun = #{jubun}
+		)
+		select order_no, fk_child_dept_no, child_dept_name, patient_visitdate, patient_symptom, order_symptom_detail
+		from a join tbl_child_dept b
+		on a.fk_child_dept_no = b.child_dept_no
+		order by patient_visitdate desc
+	</select>
+	
+	<!-- 수술 목록 가져오기  -->
+	<resultMap id="surgeryMap" type="HashMap">
+		<result property="order_no" 					column="order_no" 					javaType="String" />
+		<result property="order_surgeryType_name" 		column="order_surgeryType_name" 	javaType="String" />
+		<result property="member_name" 					column="member_name" 				javaType="String" />
+		<result property="surgery_surgeryroom_name" 	column="surgery_surgeryroom_name" 	javaType="String" />
+		<result property="surgery_day" 					column="surgery_day" 				javaType="String" />
+		<result property="surgery_start_time" 			column="surgery_start_time" 		javaType="String" />
+		<result property="surgery_end_time" 			column="surgery_end_time" 			javaType="String" />
+	</resultMap>
+	<select id="surgery_list" parameterType="String" resultMap = "surgeryMap">
+		with
+		a as
+		(
+		    select order_no, order_surgeryType_name, member_name, fk_patient_no
+		    from tbl_order a join tbl_member b
+		    on a.fk_member_userid = b.member_userid
+		    where order_issurg = 1
+		),
+		b as
+		(
+		    select patient_no, patient_jubun
+		    from tbl_patient
+		    where patient_jubun = #{jubun}
+		),
+		c as
+		(
+		    select fk_order_no, surgery_surgeryroom_name, surgery_day, surgery_start_time, surgery_end_time
+		    from tbl_surgery
+		    where surgery_status = 1
+		    order by surgery_day asc
+		)
+		select order_no, order_surgeryType_name, member_name, surgery_surgeryroom_name,
+		       to_char(surgery_day, 'yyyy-mm-dd') as surgery_day,
+		       to_char(surgery_start_time, 'HH24:mi') as surgery_start_time, 
+		       to_char(surgery_end_time, 'HH24:mi') as surgery_end_time
+		from a join b
+		on a.fk_patient_no = b.patient_no
+		join c
+		on a.order_no = c.fk_order_no
+	</select>
+
+	<!-- 입원 목록 가져오기  -->
+	<resultMap id="hospitalize_map" type="HashMap">
+			<result property="hospitalize_no" 				column="hospitalize_no" 			javaType="String" />
+			<result property="patient_name" 				column="patient_name" 				javaType="String" />
+			<result property="patient_jubun" 				column="patient_jubun" 				javaType="String" />
+			<result property="hospitalize_start_day" 		column="hospitalize_start_day" 		javaType="String" />
+			<result property="hospitalize_end_day" 			column="hospitalize_end_day" 		javaType="String" />
+			<result property="fk_hospitalizeroom_no" 		column="fk_hospitalizeroom_no" 		javaType="String" />
+			<result property="order_howlonghosp" 			column="order_howlonghosp" 			javaType="String" />
+			<result property="order_no" 					column="order_no" 					javaType="String" />
+	</resultMap>
+	<select id="hospitalizeList" parameterType="String" resultMap="hospitalize_map">
+			select hospitalize_no, patient_name, patient_jubun, 
+						to_char(hospitalize_start_day, 'yyyy-mm-dd') as hospitalize_start_day, 
+						to_char(hospitalize_end_day, 'yyyy-mm-dd') as hospitalize_end_day, 
+						fk_hospitalizeroom_no, order_howlonghosp, order_no
+			from
+			(
+			    select hospitalize_no, hospitalize_start_day, hospitalize_end_day, fk_hospitalizeroom_no, fk_patient_no, order_howlonghosp, order_no
+			    from tbl_hospitalize a join tbl_order b
+			    on a.fk_order_no = b.order_no
+			    where hospitalize_status = 1 and order_ishosp = 1
+			) a join tbl_patient b
+			on a.fk_patient_no = b.patient_no
+			where patient_jubun = #{patient_jubun}
+	</select>
+	
+	
+	<!-- 캘린더를 위한 환자의 일정조회 -->
+	<select id="selectSchedule" resultType="Calendar_patient_recordVO">
+		with
+		a as <!-- 오더테이블 -->
+		(
+		    select fk_patient_no, order_no, patient_visitdate
+		    from tbl_order a join tbl_patient b
+		    on a.fk_patient_no = b.patient_no
+		    where patient_jubun = #{jubun}
+		),
+		b as <!-- 입원테이블조회  -->
+		(
+		    select fk_order_no, hospitalize_start_day, hospitalize_end_day
+		    from tbl_hospitalize
+		),
+		c as <!-- 수술테이블 -->
+		(
+		    select fk_order_no, surgery_day, surgery_start_time
+		    from tbl_surgery
+		)
+		select order_no, patient_visitdate,
+		       hospitalize_start_day, hospitalize_end_day,
+		       surgery_day, surgery_start_time
+		from a left join b
+		on a.order_no = b.fk_order_no
+		left join c
+		on a.order_no = c.fk_order_no
+	</select>
+	<!-- **************************** 환자관련 mapper 끝 **************************** -->
+
+	
+</mapper>

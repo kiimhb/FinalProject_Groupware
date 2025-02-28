@@ -4,14 +4,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.schedule.domain.Calendar_schedule_VO;
+import com.spring.med.administration.domain.Calendar_patient_recordVO;
 import com.spring.med.administration.service.PatientService;
 import com.spring.med.patient.domain.PatientVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
@@ -136,10 +141,13 @@ public class PatientController {
 		List<Map<String, String>> order_list = service.order_list(jubun); // 개인별 환자 진료목록
 		List<Map<String, Object>> surgery_list = service.surgery_list(jubun); // 환자 수술기록
 		List<SurgeryroomVO> surgeryroom = service.getSurgeryRoom(); // 수술실 목록 불러오기 (select)
-		
+		List<Map<String, Object>> hospitalize_list = service.hospitalize_list(jubun); // 환자 입원기록 
 		
 		if (surgery_list == null || surgery_list.isEmpty()) {
 	        mav.addObject("surgeryMessage", "수술 기록이 없습니다.");
+	    }
+		if (hospitalize_list == null || hospitalize_list.isEmpty()) {
+	        mav.addObject("hospitalizeMessage", "입원 기록이 없습니다.");
 	    }
 			
 		mav.addObject("detail_patient", detail_patient);
@@ -147,9 +155,40 @@ public class PatientController {
 		mav.addObject("surgery_list", surgery_list);
 		mav.addObject("surgeryroom", surgeryroom);
 		mav.addObject("patient_no", seq);
+		mav.addObject("hospitalize_list", hospitalize_list);
+		mav.addObject("jubun", jubun);
 		
 		mav.setViewName("content/administration/detailPatient");
 		return mav;
+	}
+	
+	// 환자별 일정 조회하기 (진료, 수술, 입원)
+	@ResponseBody
+	@GetMapping(value="selectSchedule", produces="text/plain;charset=UTF-8")
+	public String selectSchedule(HttpServletRequest request) {
+		
+		// 등록된 일정 가져오기
+		String jubun = request.getParameter("jubun");
+		
+		List<Calendar_patient_recordVO> scheduleList = service.selectSchedule(jubun);
+		
+		JSONArray jsArr = new JSONArray();
+		
+		if(scheduleList != null && scheduleList.size() > 0) {
+			
+			for(Calendar_patient_recordVO cvo : scheduleList) {
+				JSONObject jsObj = new JSONObject();
+				jsObj.put("order_no", cvo.getOrder_no());
+				jsObj.put("patient_visitdate", cvo.getPatient_visitdate());
+				jsObj.put("hospitalize_start_day", cvo.getHospitalize_start_day());
+				jsObj.put("hospitalize_end_day", cvo.getHospitalize_end_day());
+				jsObj.put("surgery_day", cvo.getSurgery_day());
+				jsObj.put("surgery_start_time", cvo.getSurgery_start_time());
+				jsArr.put(jsObj);
+			}// end of for-------------------------------------
+		}
+
+		return jsArr.toString();
 	}
 	
 }

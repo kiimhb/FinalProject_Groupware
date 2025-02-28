@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.spring.med.administration.domain.Calendar_patient_recordVO;
 import com.spring.med.patient.domain.PatientVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
 
@@ -66,6 +67,20 @@ public class PatientDAO_imple implements PatientDAO {
 	public List<SurgeryroomVO> getSurgeryRoom() {
 		List<SurgeryroomVO> room = sqlsession.selectList("hyeyeon.getRoom");
 		return room;
+	}
+
+	 // 입원목록 불러오기 
+	@Override
+	public List<Map<String, Object>> hospitalize_list(String jubun) {
+		List<Map<String, Object>> hospitalize_list = sqlsession.selectList("hyeyeon.hospitalizeList", jubun);
+		return hospitalize_list;
+	}
+
+	// 환자의 일정목록을 불러오기 캘린더
+	@Override
+	public List<Calendar_patient_recordVO> selectSchedule(String jubun) {
+		List<Calendar_patient_recordVO> selectSchedule = sqlsession.selectList("hyeyeon.selectSchedule", jubun);
+		return selectSchedule;
 	}
 
 

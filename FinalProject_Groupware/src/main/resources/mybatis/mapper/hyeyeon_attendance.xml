@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="hyeyeon">
+	
+	<!-- 이름 알아오기 -->
+	<select id="getMemberName" parameterType="String" resultType="String">
+		select member_name
+		from tbl_member
+		where member_userid = #{member_userid}
+	</select>
+	
+	<!-- 출근기록 목록 -->
+	<resultMap id="StartRecordList_map" type="HashMap" >
+	    <result property="work_recorddate"  	column="work_recorddate" 		javaType="String" />
+	    <result property="work_starttime" 		column="work_starttime" 		javaType="String" />
+	    <result property="work_startstatus" 	column="work_startstatus"    	javaType="String" />
+	</resultMap>
+	<select id="StartRecordList" parameterType="String" resultMap="StartRecordList_map">
+		select to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_starttime, 'hh24:mi:ss') as work_starttime, work_startstatus
+		from tbl_work a join tbl_member b
+		on a.fk_member_userid = b.member_userid
+		where to_char(work_recorddate, 'mm') = to_char(sysdate, 'mm')
+			  and fk_member_userid = #{member_userid}
+		order by work_recorddate desc
+	</select>
+	
+	<!-- 퇴근기록 목록 -->
+	<resultMap id="EndRecordList_map" type="HashMap" >
+	    <result property="work_recorddate"  	column="work_recorddate" 		javaType="String" />
+	    <result property="work_endtime"   		column="work_endtime" 			javaType="String" />
+	    <result property="work_endstatus"    	column="work_endstatus" 		javaType="String" />
+	</resultMap>
+	<select id="EndRecordList" parameterType="String" resultMap="EndRecordList_map">
+		select to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_endtime, 'hh24:mi:ss') as work_endtime, work_endstatus
+		from tbl_work a join tbl_member b
+		on a.fk_member_userid = b.member_userid
+		where to_char(work_recorddate, 'mm') = to_char(sysdate, 'mm')
+			  and fk_member_userid = #{member_userid} and work_endstatus is not null
+	    order by work_recorddate desc
+	</select>
+	
+	<!-- 어제 출근하지 않은 사원들의 아이디 알아오기 -->
+	<select id="yesterday_notWork_userid" resultType="String" parameterType="String">
+		select member_userid, trunc(sysdate - 1) as work_recorddate
+		from tbl_member a left join tbl_work b
+		on a.member_userid = b.fk_member_userid
+		and work_recorddate = trunc(sysdate - 1)
+		where work_recorddate is null
+	</select>
+	
+	<!-- 결근 처리하기 --> 
+	<insert id="insert_status_no" parameterType="String">
+		insert into tbl_work values(seq_workno.nextval, #{fk_member_userid}, trunc(sysdate - 1), null, null, 2, 2)
+	</insert>
+	
+	<!-- 출근 기록이 이미 존재하는지 확인하기  -->
+	<select id="already_check_in" parameterType="String" resultType="Boolean">
+		select count(*) as count
+		from tbl_work
+		where fk_member_userid = #{fk_member_userid}
+			  and to_date(work_recorddate, 'yyyy-mm-dd') = to_date(sysdate, 'yyyy-mm-dd')
+	</select>
+	
+	<!-- 퇴근 기록이 이미 존재하는지 확인하기  -->
+	<select id="already_check_out" parameterType="String" resultType="Boolean">
+		select count(*) as count
+		from tbl_work
+		where fk_member_userid = #{fk_member_userid}
+			  and to_char(work_recorddate, 'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd')
+			  and work_endstatus is not null
+	</select>
+	
+	
+	<!-- 출근기록하기 -->
+	<insert id="check_in" parameterType="map">
+		insert into tbl_work(work_no, fk_member_userid, work_recorddate, work_starttime, work_startstatus)
+		values(seq_workno.nextval, #{fk_member_userid}, to_date(sysdate, 'yy-mm-dd'), to_date(#{work_starttime}, 'HH24:MI:SS'), #{work_startstatus})
+	</insert>
+	
+	<!-- 퇴근기록하기 -->
+	<update id="check_out" parameterType="map">
+		update tbl_work set
+       	work_endtime = to_date(#{work_endtime}, 'HH24:MI:SS'),
+       	work_endstatus = #{work_endstatus}
+       	where work_recorddate = to_date(#{work_recorddate}, 'yyyy-mm-dd') 
+       		  and fk_member_userid = #{fk_member_userid}
+	</update>
+
+</mapper>

@@ -257,7 +257,7 @@ public class RegisterController {
 	@PostMapping("reservedTime")
 	@ResponseBody
 	public List<Map<String, String>> reservedTime(@RequestParam int surgeryroom_no, 
-									 			  @RequestParam String surgery_day) {
+									 			  										@RequestParam String surgery_day) {
 		
 		Map<String, Object> paraMap = new HashMap<>();
 		paraMap.put("surgery_surgeryroom_name", surgeryroom_no);
@@ -272,19 +272,20 @@ public class RegisterController {
 	// 수술 예약하기 클릭 (예약하기) 
 	@PostMapping("/success")
 	public ResponseEntity<Map<String,String>> registerSuccess(@ModelAttribute SurgeryVO surgeryvo) {
-		// System.out.println(surgeryvo.toString());
+		
+		String jubun = service.getJubun(surgeryvo); // 주민번호 알아오기 (환자가 같은 날 한개 이상의 수술을 예약하는 것을 방지하기 위함)
+		
 		Map<String, String> response = new HashMap<>();
 		
 		try {
-			service.surgeryRegister(surgeryvo); // 예약하기 insert
+			service.surgeryRegister(surgeryvo, jubun); // 예약하기 insert
 			response.put("message", "수술 예약이 완료되었습니다.");
 			return ResponseEntity.ok(response);
 		} catch(RuntimeException e) {
 			e.printStackTrace();
-			response.put("message", "해당 시간에 이미 예약이 존재합니다. 다른 시간으로 예약해주세요.");
+			response.put("message", e.getMessage()); // service 단의 예외 메시지 그대로 반환해준다. 
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
-
 	}
 	
 	// 수술 일정 수정하기
@@ -294,7 +295,8 @@ public class RegisterController {
 															@RequestParam("surgery_surgeryroom_name") String surgery_surgeryroom_name,
 															@RequestParam("surgery_day") String surgery_day,
 															@RequestParam("surgery_start_time") String surgery_start_time,
-															@RequestParam("surgery_end_time") String surgery_end_time) { 
+															@RequestParam("surgery_end_time") String surgery_end_time,
+															@RequestParam("jubun") String jubun) { 
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("fk_order_no", fk_order_no);
@@ -302,19 +304,19 @@ public class RegisterController {
 		paraMap.put("surgery_day", surgery_day);
 		paraMap.put("surgery_start_time", surgery_start_time);
 		paraMap.put("surgery_end_time", surgery_end_time);
+		paraMap.put("jubun", jubun);
 		
 		Map<String, String> response = new HashMap<>();
 		
-		int n = service.surgeryUpdate(paraMap); // 새로운 수술일정 insert 하기
-		
-		if(n==1) { // 성공할 경우
-			response.put("message", "수술 일정 변경이 완료되었습니다.");
+		try {
+			service.surgeryUpdate(paraMap); // 새로운 수술일정 update 하기
+			response.put("message", "수술 일정이 변경 되었습니다.");
+			return ResponseEntity.ok(response);
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+			response.put("message", e.getMessage()); // service 단의 예외 메시지 그대로 반환해준다. 
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
-		else {
-			response.put("message", "수술 일정 변경이 실패하였습니다.");
-		}
-		
-		return ResponseEntity.ok(response);
 	}
 	
 	
@@ -322,43 +324,90 @@ public class RegisterController {
 	// **************************** 입원 **************************** //
 	// 입원예약
 	@GetMapping("hospitalization/{order_no}")
+	@ResponseBody
 	public ModelAndView hospitalization_form(HttpServletRequest request, ModelAndView mav,
-											 @PathVariable String order_no) {
+											 									@PathVariable String order_no) {
 		
 		String name = service.getPatientName(order_no); // 환자명 알아오기
 		String order_howlonghosp = service.order_howlonghosp(order_no); // 입원일수 알아오기 
-		// System.out.println("order_howlonghosp"+order_howlonghosp);
-		List<HospitalizeroomVO> hospitalizeroom_4 = service.hospitalizeroom(); // 입원실 목록 가져오기 4인실
-		List<HospitalizeroomVO> hospitalizeroom_2 = service.hospitalizeroom_2(); // 입원실 목록 가져오기 2인실
-		List<Map<String, String>> okSeat = service.okSeat(); // 입원실 잔여석 가져오기
-		
+
 		mav.addObject("name", name);
 		mav.addObject("order_no", order_no); // 차트번호
-		mav.addObject("order_howlonghosp", order_howlonghosp); // 수술일수
-		mav.addObject("hospitalizeroom", hospitalizeroom_4); // 입원실 목록 가져오기 4인실
-		mav.addObject("hospitalizeroom_2", hospitalizeroom_2); // 입원실 목록 가져오기 2인실
-		mav.addObject("okSeat", okSeat); // 입원실 잔여석 가져오기
-		
+		mav.addObject("order_howlonghosp", order_howlonghosp); // 입원 일수
+
 		mav.setViewName("content/administration/hospitalRegister");
 		return mav;
 	}
+	
+	// 입원일, 퇴원일에 따른 입원실 잔여석 알아오기 
+	@GetMapping("okroom")
+	@ResponseBody
+	public List<Map<String, String>> okroom(@RequestParam String hospitalize_start_day,
+										    @RequestParam String hospitalize_end_day) {
+
+		   Map<String, String> paraMap = new HashMap<>();
+		   paraMap.put("hospitalize_start_day", hospitalize_start_day);
+		   paraMap.put("hospitalize_end_day", hospitalize_end_day);
+			
+		   List<Map<String, String>> okSeat = service.okSeat(paraMap); // 입원실 잔여석 가져오기
+		
+		   return okSeat;	
+	}
+	
 	
 	// 입원예약완료하기
 	@PostMapping("successreserve")
 	@ResponseBody
 	public ResponseEntity<Map<String,String>> successreserve(@ModelAttribute HospitalizeVO hospitalizevo) {
+		
+		String jubun = service.jubunGet(hospitalizevo); // 중복 입원 확인을 위해 주민번호 알아오기
+		// System.out.println("jubun"+ jubun);
 		Map<String, String> response = new HashMap<>();
 		
 		try {
-			service.hospitalizeRegister(hospitalizevo); // 입원 예약하기 insert
+			service.hospitalizeRegister(hospitalizevo, jubun); // 입원 예약하기 update
 			response.put("message", "입원 예약이 완료되었습니다.");
 			return ResponseEntity.ok(response);
 		} catch(RuntimeException e) {
 			e.printStackTrace();
-			response.put("message", "해당 시간에 이미 예약이 존재합니다. 다른 시간으로 예약해주세요.");
+			response.put("message", e.getMessage()); // service 단의 예외 메시지 그대로 반환해준다. 
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 
 	}
+	
+	
+	
+	// 입원 일정 수정하기
+	@PatchMapping("hospitalizeUpdate")
+	@ResponseBody
+	public ResponseEntity<Map<String,String>> hospitalizeUpdate(@RequestParam("fk_order_no") String fk_order_no,
+																@RequestParam("hospitalize_no") String hospitalize_no,
+																@RequestParam("fk_hospitalizeroom_no") String fk_hospitalizeroom_no,
+																@RequestParam("hospitalize_start_day") String hospitalize_start_day,
+																@RequestParam("hospitalize_end_day") String hospitalize_end_day,
+																@RequestParam("jubun") String jubun) { 
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("fk_order_no", fk_order_no);
+		paraMap.put("hospitalize_no", hospitalize_no);
+		paraMap.put("hospitalize_start_day", hospitalize_start_day);
+		paraMap.put("hospitalize_end_day", hospitalize_end_day);
+		paraMap.put("fk_hospitalizeroom_no", fk_hospitalizeroom_no);
+		paraMap.put("jubun", jubun);
+		
+		Map<String, String> response = new HashMap<>();
+		
+		try {
+			service.hospitalizeUpdate(paraMap); // 새로운 입원일정 update 하기
+			response.put("message", "입원 일정이 변경 되었습니다.");
+			return ResponseEntity.ok(response);
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+			response.put("message", e.getMessage()); // service 단의 예외 메시지 그대로 반환해준다. 
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
 	
 }

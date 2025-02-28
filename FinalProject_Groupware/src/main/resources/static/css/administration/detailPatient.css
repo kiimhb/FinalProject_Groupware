@@ -27,8 +27,6 @@ div.detail_title {
 	/* border: 1px solid blue; */
 	height:150px;
 }
-.charthead {
-}
 /* 중간 */
 .content {
 	display: flex;
@@ -88,9 +86,6 @@ div.list {
 	font-size: 11pt;
 	color: gray;
 }
-div.bottom {
-	 /* border: 1px solid yellow;  */
-}
 div.reservation2 {
 	height:300px;
 	width: 50%;
@@ -122,7 +117,8 @@ div.text {
 input.patientinput,
 select.room,
 select.surgeryStartdate,
-select.surgeryenddate {
+select.surgeryenddate,
+select.hospitalizeroom_no {
 	border: 1px solid #ccc;
 	width: 65%;
 	height:30px;
@@ -137,10 +133,6 @@ select.surgeryenddate {
 div.button {
 	/* border: 1px solid black; */
 	text-align: center;
-}
-div.btn2 {
-	/* border: 1px solid black; */
-	margin-top: 10%;
 }
 button.btn {
 	background-color: #006769;

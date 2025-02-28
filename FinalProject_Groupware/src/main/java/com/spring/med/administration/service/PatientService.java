@@ -3,6 +3,7 @@ package com.spring.med.administration.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.med.administration.domain.Calendar_patient_recordVO;
 import com.spring.med.patient.domain.PatientVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
 
@@ -28,6 +29,12 @@ public interface PatientService {
 
 	// 수술실 목록 불러오기
 	List<SurgeryroomVO> getSurgeryRoom();
+
+	// 입원  목록 불러오기 
+	List<Map<String, Object>> hospitalize_list(String jubun);
+
+	// 환자의 일정목록을 불러오기 캘린더
+	List<Calendar_patient_recordVO> selectSchedule(String jubun);
 
 
 

@@ -61,6 +61,8 @@ a:hover,
 <script type="text/javascript">
 $(document).ready(function(){  
 	
+	$("span.error").hide();
+	
 	// ***** 예약일자 (오늘) 입력하기 시작 ***** //
 	const today = new Date();
 	const year = today.getFullYear();
@@ -108,6 +110,85 @@ $(document).ready(function(){
 	// ****** 캘린더 띄움 끝 ******//
 	
 	
+	// ****** 입력폼 유효성 검사하기 시작 ******//
+	/* 수술실 유효성 검사하기 */
+	$("select#surgery_surgeryroom_name").blur((e) => {
+
+       if($(e.target).val() == '0') {
+			$("div.form :input, div.form select").prop("disabled", true);
+            $(e.target).prop("disabled", false);
+
+            $(e.target).parent().find("span.error").show(); // 에러메시지 표시 
+	   }
+		else {
+			$("div.form :input, div.form select").prop("disabled", false); 
+			$(e.target).parent().find("span.error").hide();  // 에러메시지 숨김
+		}	
+
+	});
+	
+	/* 수술일자 유효성 검사하기 */
+	$("input#surgery_day").blur((e) => {
+
+       if($(e.target).val() == "") {
+			$("div.form :input, div.form select").prop("disabled", true);
+            $(e.target).prop("disabled", false);
+
+            $(e.target).closest(".input").find("span.error").eq(0).show(); // 에러메시지 표시 
+	   }
+		else {
+			$("div.form :input, div.form select").prop("disabled", false); 
+			$(e.target).closest(".input").find("span.error").eq(0).hide();  // 에러메시지 숨김
+		}	
+	});
+	
+
+	/* 수술시작시간 유효성 검사하기 */
+	$("select#surgery_start_time").blur((e) => {
+
+	   if($(e.target).val() == "0") {
+			$("div.form :input, div.form select").prop("disabled", true);
+	        $(e.target).prop("disabled", false);
+
+	        $(e.target).closest(".input").find("span.error").eq(1).show(); // 에러메시지 표시 
+	   }
+		else {
+			$("div.form :input, div.form select").prop("disabled", false); 
+			$(e.target).closest(".input").find("span.error").eq(1).hide();  // 에러메시지 숨김
+		}	
+	});
+	
+	/* 수술종료시간 유효성 검사하기 */
+	$("select#surgery_end_time").blur((e) => {
+
+	   if($(e.target).val() == "0") {
+			$("div.form :input, div.form select").prop("disabled", true);
+	        $(e.target).prop("disabled", false);
+
+	        $(e.target).closest(".input").find("span.error").show(); // 에러메시지 표시 
+	   }
+		else {
+			$("div.form :input, div.form select").prop("disabled", false); 
+			$(e.target).closest(".input").find("span.error").hide();  // 에러메시지 숨김
+		}	
+	});
+
+	/* 수술 설명 유효성 검사하기 */
+	$("input#surgery_description").blur((e) => {
+
+	   if($(e.target).val().trim() == "") {
+			$("div.form :input, div.form select").prop("disabled", true);
+	        $(e.target).prop("disabled", false);
+
+	        $(e.target).closest(".input").find("span.error").show(); // 에러메시지 표시 
+	   }
+		else {
+			$("div.form :input, div.form select").prop("disabled", false); 
+			$(e.target).closest(".input").find("span.error").hide();  // 에러메시지 숨김
+		}	
+	});
+	// ****** 입력폼 유효성 검사하기 끝 ******//
+	
 	
 	// ****** 예약 가능한 시간선택 옵션 시작 ******//
 	// 수술실과 날짜를 고려한 수술 가능한 시간 구하기
@@ -129,7 +210,8 @@ $(document).ready(function(){
 						let startTime = $("select#surgery_start_time")
 						
 						startTime.empty(); // 비우기
-						startTime.append('<option value="" disabled>시작시간</option>');
+						
+						startTime.append('<option value="0">시작시간</option>');
 						
 						availableTimes.forEach(time => {
 							startTime.append(`<option value="\${time}">\${time}</option>`);
@@ -164,7 +246,7 @@ $(document).ready(function(){
 				
 				let availableEndTimes = getAvaliableEndTime(startTime, reservedTime); // 종료시간 구하는 함수
 				
-				endTimeSelect.empty().append('<option value="" disabled>종료시간</option>'); // 종료시간초기화
+				endTimeSelect.empty().append('<option value="0">종료시간</option>'); // 종료시간초기화
 				
 				availableEndTimes.forEach(time => {
 					endTimeSelect.append(`<option value="\${time}">\${time}</option>`);
@@ -227,7 +309,7 @@ function registerSurgery() {
 	const formData = new FormData(frm); // 폼데이터 직렬화
 	
 	const orderno = $("input#fk_order_no").val();
-	console.log(orderno);
+	// console.log(orderno);
 	$.ajax({
 		 url:"<%= ctxPath%>/register/success",
 		 type:"POST", 
@@ -239,8 +321,9 @@ function registerSurgery() {
 			alert(response.message);
 			window.location.href = "<%= ctxPath%>/register/list";
 		 },
-	     error: function(request, status, error){
-	   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	     error: function(error){
+			let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";
+	   		alert(errorMessage);
 	 	}
 
 	});
@@ -254,9 +337,7 @@ function registerSurgery() {
 			
 	  		<div class="title">
 	  			수술예약
-	  			<div class="regimenu">
-	  				<span><a href="<%= ctxPath%>/register/surgery">수술예약</a> | </span><span><a href="<%= ctxPath%>/register/hospitalization">입원예약</a></span>
-	  			</div>
+	  			
 	  		</div>
   			
 	  		
@@ -277,16 +358,18 @@ function registerSurgery() {
 		  				<input type="text" class="today" name="surgery_reserve_date" readonly/>
 		  			</div>
 		  			<div class="input">
-		  				<div class="text">수술실 *</div>
+		  				<div class="text">수술실 * <span class="error">수술실을 선택하세요</span></div>
 	  					<select name="surgery_surgeryroom_name" id="surgery_surgeryroom_name">
-	  					<c:forEach var="surgeryvo" items="${requestScope.surgeryroom}">
+							<option value="0">수술실</option>
+	  					<c:forEach var="surgeryvo" items="${requestScope.surgeryroom}">	
 	  						<option value="${surgeryvo.surgeryroom_no}">${surgeryvo.surgeryroom_name}</option>
  						</c:forEach>
-	  					</select>	
+	  					</select>
 		  			</div>
 		  			
 		  			<div class="input">
-		  				<div class="text">수술일자 / 시작시간 *</div>
+		  				<div class="text">수술일자 / 시작시간 * <span class="error">수술일자를 선택하세요</span>
+															<span class="error">시간시간을 선택하세요</span></div>
 		  				<div class="div_surgerydate">
 			  				<input type="date" name="surgery_day" id="surgery_day" class="surgerydate mr-3" />
 			  				<select name="surgery_start_time" id="surgery_start_time" class="surgeryStartdate">
@@ -296,14 +379,14 @@ function registerSurgery() {
 		  			</div>
 		  			
 		  			<div class="input">
-		  				<div class="text">수술종료시간 (예상) *</div>
+		  				<div class="text">수술종료시간 (예상) * <span class="error">죵료시간을 선택하세요</span></div>
 		  				<select name="surgery_end_time" id="surgery_end_time" class="surgeryenddate">
 		  					<option value="">종료시간</option>
 		  				</select>
 		  			</div>
 		  			<div class="input">
-		  				<div class="text">수술설명 *</div>
-		  				<input type="text" name="surgery_description" value="${requestScope.surgery_description}"/>
+		  				<div class="text">수술설명 * <span class="error">수술설명을 입력하세요</span></div>
+		  				<input type="text" name="surgery_description" id="surgery_description" value="${requestScope.surgery_description}"/>
 		  			</div>	
 				</form>
 	  		</div>
