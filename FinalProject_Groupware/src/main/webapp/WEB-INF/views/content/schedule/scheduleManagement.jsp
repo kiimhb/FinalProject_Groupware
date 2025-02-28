@@ -56,6 +56,10 @@ button.btn_edit{
 	border: none;
 	background-color: #fff;
 }
+
+button.btn {
+	background-color: #006769;
+	color:white;
 </style>
 
 
@@ -779,7 +783,7 @@ function goSearch() {
 						<option value="20">20</option>
 					</select>&nbsp;&nbsp;
 					<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" />
-					<button type="button" class="btn_normal" style="display: inline-block;" onclick="goSearch()">검색</button>
+					<button type="button" class="btn ml-2" style="display: inline-block;" onclick="goSearch()">검색</button>
 				</div>
 			</form>
 		</div>

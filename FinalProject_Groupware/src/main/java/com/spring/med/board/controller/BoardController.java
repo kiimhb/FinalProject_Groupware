@@ -2,7 +2,9 @@ package com.spring.med.board.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -10,9 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.Get;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +38,7 @@ import com.spring.med.board.service.BoardService;
 import com.spring.med.common.FileManager;
 import com.spring.med.common.MyUtil;
 import com.spring.med.management.domain.ManagementVO_ga;
+import com.spring.med.surgery.domain.SurgeryroomVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,7 +55,6 @@ public class BoardController {
 	// === #150. 파일업로드 및 파일다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) === //
 	@Autowired  // Type 에 따라 알아서 Bean 을 주입해준다.
 	private FileManager fileManager;
-	
 	
 	// === #26. 게시판 글쓰기 폼페이지 요청 === //
 	@GetMapping("add")
@@ -75,56 +79,6 @@ public class BoardController {
 		
 		String board_groupno = request.getParameter("board_groupno"); 	// view.jsp에서 groupno를 받아온다
 		String board_depthno = request.getParameter("board_depthno");
-
-		/*
-	       view.jsp 에서 "답변글쓰기" 를 할때 글제목에 [ 또는 ] 이 들어간 경우 아래와 같은 오류가 발생한다.
-	             
-	       HTTP 상태 400 – 잘못된 요청
-	           메시지 : 요청 타겟에서 유효하지 않은 문자가 발견되었습니다. 
-	                  유효한 문자들은 RFC 7230과 RFC 3986에 정의되어 있습니다.
-	       
-	       HTTP Status 400 – Bad Request
-	           Message : Invalid character found in the request target    
-	                     The valid characters are defined in RFC 7230 and RFC 3986
-	                         
-	       원인 : get 방식으로 보내는 데이터 값에 [ ] 와 같은 문자가 들어갈 경우임.    
-	       
-	       해결책은 
-	       1. 외장톰캣을 사용할 경우에는 톰캣의 C:\SW\apache-tomcat-10.1.31\conf\server.xml 에서 
-	       <Connector port="9090" protocol="HTTP/1.1"
-	           connectionTimeout="20000"
-	           redirectPort="8443"
-	           maxParameterCount="1000" /> 
-	           
-	           에 가서
-	           
-	        <Connector port="9090" protocol="HTTP/1.1"
-	           connectionTimeout="20000"
-	           redirectPort="8443"
-	           maxParameterCount="1000" 
-	           relaxedQueryChars="[]()^|&quot;" />  
-	                 
-	           와 같이 relaxedQueryChars="[]()^|&quot;" 을 추가해주면 된다.
-	           
-	           
-	        2. 내장톰캣을 사용할 경우에는  (EmbeddedTomcatConfig > 클래스파일을 만들어준다)
-	      package com.spring.app.config;
-	      
-	      import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-	      import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-	      import org.springframework.context.annotation.Configuration;
-	      
-	      @Configuration
-	      public class EmbeddedTomcatConfig implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
-	      
-	         @Override
-	          public void customize(TomcatServletWebServerFactory factory) {
-	              factory.addConnectorCustomizers(connector -> connector.setProperty("relaxedQueryChars", "<>[\\]^`{|}"));
-	          }
-	      
-	      }
-	    
-	   */
 		 
 
 		// 밑의 뷰단페이지에 보낸다.
@@ -146,10 +100,7 @@ public class BoardController {
 	// === #28. 게시판 글쓰기 완료 요청 === //
 	@PostMapping("add")
 	// 원글에 대한 답글 게시물을 작성하면 add.jsp 글쓰기 버튼 코드 쪽 const frm = document.addFrm; 보내면 밑의 코드인 service.add(boardvo)로 보내진다. 
-	// add service 임플 > int n = dao.add(boardvo); > dao 임플 > board.xml #31
-	
-//	public ModelAndView add(ModelAndView mav, BoardVO boardvo) {   // <== After Advice 를 사용하기 전 
-//	public ModelAndView pointPlus_add(Map<String, String> paraMap, ModelAndView mav, BoardVO boardvo) {   // <== After Advice 를 사용하기, 파일첨부가 없을 경우
+
 	public ModelAndView pointPlus_add(Map<String, String> paraMap, ModelAndView mav, BoardVO boardvo, MultipartHttpServletRequest mrequest) {   
 	// <== #146. After Advice 를 사용하기, 파일첨부가 있을 경우
 
@@ -202,13 +153,10 @@ public class BoardController {
 				 bytes = attach.getBytes();
 				 // 실제 첨부파일의 내용물을 읽어오는 것
 				 
-				 String originalFilename = attach.getOriginalFilename();  
-				 // attach.getOriginalFilename() 이 첨부파일명의 파일명(예: 강아지.png) 이다. (첨부되어진 파일의 이름을 읽어온다)
-				 
-				 // System.out.println("~~~ 확인용 originalFilename => " + originalFilename);
+				 String board_orgFilename = attach.getOriginalFilename();
 				 
 				 // 첨부되어진 파일을 업로드 하는 것이다. (common 패키지에서 FileManager 클래스 생성-#149)
-				 newFileName = fileManager.doFileUpload(bytes, originalFilename, path);    // fileManager(의존객체)
+				 newFileName = fileManager.doFileUpload(bytes, board_orgFilename, path);    // fileManager(의존객체)
 				 					   			     // 내용물, 원래이름(확장자를 따오기 위해서 필요), 올릴 장소) 
 				 
 				 // === #151. BoardVO boardvo 에 fileName 값과 orgFilename 값과 fileSize 값을 넣어주기 === //
@@ -217,7 +165,7 @@ public class BoardController {
 				 // WAS(톰캣)에 저장된 파일명(2025020709291535243254235235234.png)
 				 
 				 // DB에 넣어줘야 원래 이름을 알 수 있다
-				 boardvo.setBoard_orgFilename(originalFilename);
+				 boardvo.setBoard_orgFilename(board_orgFilename);
 				 // 게시판 페이지에서 첨부된 파일(강아지.pdf)을 보여줄 때 사용.
 		         // 또한 사용자가 파일을 다운로드 할때 사용되어지는 파일명으로 사용.
 				 
@@ -269,7 +217,6 @@ public class BoardController {
 		
 	// === #32. 글목록 보기 페이지 요청 === //
 	@GetMapping("list")
-//	public ModelAndView list(ModelAndView mav, HttpServletRequest request) {
 	public ModelAndView list(ModelAndView mav, HttpServletRequest request,              
 							 @RequestParam(defaultValue = "") String searchType, 		 // (defaultValue = "")는 if(searchType == null) { searchType = ""; } 와 같은 뜻
 							 @RequestParam(defaultValue = "") String searchWord,
@@ -279,12 +226,23 @@ public class BoardController {
 		List<BoardVO> boardList = null;
 		
 		////////////////////////////////////////////////////////
+		// === #44. 글조회수(readCount)증가 (DML문 update)는
+		//          반드시 목록보기에 와서 해당 글제목을 클릭했을 경우에만 증가되고,
+		//          웹브라우저에서 새로고침(F5)을 했을 경우에는 증가가 되지 않도록 해야 한다.
+		//          이것을 하기 위해서는 session 을 사용하여 처리하면 된다.
+		HttpSession session = request.getSession();
+		session.setAttribute("readCountPermission", "yes");
 
 		searchWord = searchWord.trim();
 
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("searchType", searchType);
 		paraMap.put("searchWord", searchWord);
+		
+//		System.out.println("~~~ 확인용 searchType1 : " + searchType) ;
+//		System.out.println("~~~ 확인용 searchWord1 : " + searchWord) ;
+//		System.out.println(">>> paraMap 값 확인: " + paraMap);
+
 		
 		// 먼저, 총 게시물 건수(totalCount)를 구해와야 한다.    (전체 페이지, 검색이 없을 때, 검색이 있을 때)
 		// 총 게시물 건수(totalCount)는 검색조건이 있을 때와 검색조건이 없을 때로 나뉘어진다.
@@ -296,7 +254,7 @@ public class BoardController {
 		
 		// 총 게시물 건수 (totalCount)
 		totalCount = service.getTotalCount(paraMap);  // Map에 searchType과 searchWord를 넣어놨음
-		// System.out.println("~~~ 확인용 totalCount : " + totalCount);
+//		 System.out.println("~~~ 확인용 totalCount : " + totalCount);
 		/*
 		    ~~~ 확인용 totalCount : 203
 		    ~~~ 확인용 totalCount : 201
@@ -365,6 +323,9 @@ public class BoardController {
 			
 			mav.addObject("paraMap", paraMap);	
 		}
+//		System.out.println("~~~ 확인용 searchType1 : " + searchType) ;
+//		System.out.println("~~~ 확인용 searchWord1 : " + searchWord) ;
+//		System.out.println(">>> paraMap 값 확인: " + paraMap);
 		
 		
 		// === #102. 페이지바 만들기 === //
@@ -382,10 +343,10 @@ public class BoardController {
 	    String url = "list";
 	    
 	    // === [맨처음][이전] 만들기 === //
-	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'>[맨처음]</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'><<</a></li>";
 	    
 	    if(pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때(맨처음 페이지라면 [이전]이 없음)
-	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><</a></li>";
 	    }
 	   
 	    while( !(loop > blockSize || pageNo > totalPage) ) {   // 10 보다 크거나 totalPage 보다 크면 안 된다
@@ -405,10 +366,10 @@ public class BoardController {
 	    
 	    // === [다음][마지막] 만들기 === //
 	    if(pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
-	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
+	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>></a></li>";
 	    }
  
-	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>>></a></li>";
 	      
 	    pageBar += "</ul>"; 
 	    
@@ -440,8 +401,6 @@ public class BoardController {
 	
 		
 	// === #36. 글1개를 보여주는 페이지 요청 === //
-//	@GetMapping("view")
-//	@PostMapping("view")
 	@RequestMapping("view")   // === #106. 특정글을 조회한 후 "검색된결과목록보기" 버튼을 클릭했을 때 돌아갈 페이지를 만들기 위함. === //
 //  @RequestMapping : get,post 둘 다 사용할 때 사용
 	public ModelAndView view(ModelAndView mav, 
@@ -479,10 +438,10 @@ public class BoardController {
 				e.printStackTrace();
 			}  
 			
-			System.out.println("~~~ 확인용 board_no : " + board_no) ;
-			System.out.println("~~~ 확인용 searchType : " + searchType) ;
-			System.out.println("~~~ 확인용 searchWord : " + searchWord) ;
-			System.out.println("~~~ 확인용 goBackURL : " + goBackURL) ;
+//			System.out.println("~~~ 확인용 board_no2 : " + board_no) ;
+//			System.out.println("~~~ 확인용 searchType2 : " + searchType) ;
+//			System.out.println("~~~ 확인용 searchWord2 : " + searchWord) ;
+//			System.out.println("~~~ 확인용 goBackURL2 : " + goBackURL) ;
 			
 			// === #115. view_2 에서 redirect 해온 것을 처리해주기 끝 === //
 			
@@ -502,6 +461,9 @@ public class BoardController {
 	        if(searchWord == null) {
 	           searchWord = "";           
 	        }
+	        
+//			System.out.println("~~~ 확인용3 searchType : " + searchType) ;
+//			System.out.println("~~~ 확인용4 searchWord : " + searchWord) ;
 			
 		}  // end of if~else -------------------------------------
 		
@@ -534,10 +496,10 @@ public class BoardController {
 	 		paraMap.put("searchWord",searchWord);
 		 	// === #108. 이전글제목, 다음글제목 보여줄 때 검색이 있는지 여부를 넘겨주기 끝 === //
 	 		
-	 		System.out.println("board_no" + board_no);
-	 		System.out.println("login_member_userid" + login_member_userid);
-	 		System.out.println("searchType" + searchType);
-	 		System.out.println("searchWord" + searchWord);
+//	 		System.out.println("board_no" + board_no);
+//	 		System.out.println("login_member_userid" + login_member_userid);
+//	 		System.out.println("searchType1111" + searchType);
+//	 		System.out.println("searchWord1111" + searchWord);
 	 		
 			
 			// === #43. !!! 중요 !!! 
@@ -555,10 +517,10 @@ public class BoardController {
 			if("yes".equals( (String)session.getAttribute("readCountPermission") )) {
 			// 글목록보기인 /list 페이지를 클릭한 다음에 특정글을 조회해온 경우이다.
 			// view_2를 거쳐서 온 것은 yes가 있음 
-				System.out.println("~~~~~~ if(\"yes\".equals( (String)session.getAttribute(\"readCountPermission\") )) 확인");
+
 				boardvo = service.getView(paraMap);
 				// 글 조회수 증가와 함께 글 1개를 조회를 해오는 것
-			//	System.out.println("~~ 확인용 글내용 : " + boardvo.getContent());
+				// System.out.println("~~ 확인용 글내용 : " + boardvo.getBoard_content());
 				
 				session.removeAttribute("readCountPermission");
 				// 중요함!! session 에 저장된 readCountPermission 을 삭제한다. 
@@ -567,13 +529,13 @@ public class BoardController {
 			else {
 				// 글목록에서 특정 글제목을 클릭하여 본 상태에서
 			    // 웹브라우저에서 새로고침(F5)을 클릭한 경우이다.
-			//	System.out.println("글목록에서 특정 글제목을 클릭하여 본 상태에서 웹브라우저에서 새로고침(F5)을 클릭한 경우"); 
+//				System.out.println("글목록에서 특정 글제목을 클릭하여 본 상태에서 웹브라우저에서 새로고침(F5)을 클릭한 경우"); 
 				
 				boardvo = service.getView_no_increase_readCount(paraMap);
 				// 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
 				
 				if(boardvo == null) {
-					System.out.println("~~~~~~ if(boardvo == null) 확인");
+					// System.out.println("~~~~~~ if(boardvo == null) 확인");
 					mav.setViewName("redirect:/board/list");
 					return mav;
 				}
@@ -584,15 +546,14 @@ public class BoardController {
 			// === #112. 이전글제목 보기, 다음글제목 보기 시 POST 방식으로 넘기기 위한 것 === //
 			mav.addObject("paraMap", paraMap);
 			
-			System.out.println("~~~~~~ NumberFormatException 확인" + boardvo);
+			// System.out.println("~~~~~~ NumberFormatException 확인" + boardvo);
 			mav.setViewName("content/community/board/view");
-			//  /WEB-INF/views/mycontent1/board/view.jsp 파일을 생성한다. 
+			//  /WEB-INF/views/content/community/board/view.jsp 파일을 생성한다. 
 			
 		} catch (NumberFormatException e) {
-			System.out.println("~~~~~~ NumberFormatException 확인");
+			// System.out.println("~~~~~~ NumberFormatException 확인");
 			mav.setViewName("redirect:community/board/list");
 		}
-		
 		return mav;
 	}
 	
@@ -688,7 +649,7 @@ public class BoardController {
 					// 가져온 1개글을 글수정할 폼이 있는 view 단으로 보내준다.
 					
 					mav.addObject("boardvo", boardvo);
-					mav.setViewName("content/board/edit");
+					mav.setViewName("content/community/board/edit");
 				}
 				else {
 					// 자신의 글이 아닌 다른 사람의 글을 수정할 경우
@@ -719,7 +680,7 @@ public class BoardController {
 		int n = service.edit(boardvo);
 		
 		if(n==1) {
-			mav.addObject("message", "글 수정 성공!!");
+			mav.addObject("message", "✅글 수정 성공");
 			mav.addObject("loc", request.getContextPath()+"/board/view?board_no="+boardvo.getBoard_no());
 			mav.setViewName("msg");
 		}
@@ -758,7 +719,7 @@ public class BoardController {
 					// 가져온 1개글을 글삭제할 폼이 있는 view 단으로 보내준다.
 					
 					mav.addObject("boardvo", boardvo);
-					mav.setViewName("content/board/del");
+					mav.setViewName("content/community/board/del");
 				}
 				else {
 					// 자신의 글이 아닌 다른 사람의 글을 삭제할 경우
@@ -785,25 +746,89 @@ public class BoardController {
 	public ModelAndView del(ModelAndView mav,
 			                @RequestParam String board_no,
 			                HttpServletRequest request) {
-		
-		int n = service.del(board_no);
-		
-		if(n==1) {
-			mav.addObject("message", "글 삭제 성공!!");
-		    mav.addObject("loc", request.getContextPath()+"/board/list");
-		    mav.setViewName("msg");
-		}
-		
-		return mav;
-	}
 	
+			/////////////////////////////////////////////////////////////////////
+			// === #163. 파일첨부 또는 사진첨부 또는 파일첨부 및 사진첨부가 된 글이라면 글 삭제시 먼저 첨부파일, 사진파일을 삭제해주어야 한다. 시작 === //
+			Map<String, String> boardmap = service.getView_delete(board_no);
+			
+			String board_fileName = boardmap.get("board_fileName");
+			// 202502101220495247928548169500.pdf  이것이 바로 WAS(톰캣) 디스크에 저장된 '첨부 파일명' 이다.
+			
+			Map<String, String> paraMap = new HashMap<>();
+			
+			if(board_fileName != null && !"".equals(board_fileName)) {
+				// 첨부파일이 존재하는 경우
+				
+				// 첨부파일이 저장되어 있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
+		    	// 이 경로는 우리가 파일첨부를 위해서 @PostMapping("add") 에서 설정해두었던 경로와 똑같아야 한다.  
+				// WAS 의 webapp 의 절대경로를 알아와야 한다. 
+				HttpSession session = request.getSession(); 
+				String root = session.getServletContext().getRealPath("/");  
+				
+			 // System.out.println("~~~ 확인용 webapp 의 절대경로 => " + root);
+				// ~~~ 확인용 webapp 의 절대경로 => C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\
+									
+				String filepath = root+"resources"+File.separator+"files";
+				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+				      운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+				      운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+				*/
+				
+				// file_path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+			 //	System.out.println("~~~ 확인용 filepath => " + filepath);
+				// ~~~ 확인용 filepath => C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\files 
+				
+				paraMap.put("filepath", filepath); // 삭제해야할 첨부파일이 저장된 경로
+				paraMap.put("board_fileName", board_fileName); // 삭제해야할 첨부파일명 
+			}
+			 
+			
+			// === 글내용중에 사진이미지가 들어가 있는 경우라면 사진이미지 파일도 삭제해주어야 한다.
+			String photofilename = boardmap.get("photofilename");
+			
+		//	System.out.println("~~~ 확인용 photofilename => " + photofilename);
+			/*
+			    ~~~ 확인용 photofilename => null
+			    ~~~ 확인용 photofilename => 202502101219185247836895133100.jpg/202502101219185247836895126800.jpg/202502101219495247868621871500.jpg     
+			*/
+			
+			if(photofilename != null) {
+				// 글내용중에 사진이미지가 들어가 있는 경우라면
+				
+				HttpSession session = request.getSession(); 
+				String root = session.getServletContext().getRealPath("/");  
+				
+				String photo_upload_path = root+"resources"+File.separator+"photo_upload";
+				
+				paraMap.put("photo_upload_path", photo_upload_path); // 삭제해야할 사진이미지 파일이 저장된 경로
+				paraMap.put("photofilename", photofilename);         // 삭제해야할 사진이미지 파일명 
+			}
+			// === 파일첨부 또는 사진첨부 또는 파일첨부 및 사진첨부가 된 글이라면 글 삭제시 먼저 첨부파일을 삭제해주어야 한다. 끝 === //
+			/////////////////////////////////////////////////////////////////////
+			
+		//	int n = service.del(board_no);  // 파일첨부가 없는 글 삭제 
+			
+			// === #167. 첨부파일이 추가된 경우 또는 사진이미지가 들어가 있는 경우 글삭제하기 === //
+			//           먼저 위의 int n = service.del(seq); 을 주석처리 하고서 아래와 같이 해야한다.  
+			paraMap.put("board_no", board_no); // 삭제할 글번호
+			int n = service.del(paraMap); // 파일첨부, 사진이미지가 들었는 경우의 글 삭제하기
+			
+			
+			if(n==1) {
+				mav.addObject("message", "글 삭제 성공!!");
+			    mav.addObject("loc", request.getContextPath()+"/board/list");
+			    mav.setViewName("msg");
+			}
+			
+			return mav;
+		}
 	
 	// === #59. 댓글쓰기(Ajax 로 처리) === //
 	@PostMapping("addComment")
 	@ResponseBody
 	public Map<String, Object> addComment(CommentVO commentvo) {  
 		// 댓글쓰기에 첨부파일이 없는 경우
-		
+
 		int n = 0;
 		
 		try {
@@ -862,7 +887,42 @@ public class BoardController {
 	// === #72. 댓글 삭제(Ajax 로 처리) === //
 	@DeleteMapping("deleteComment")
 	@ResponseBody
-    public Map<String, Integer> deleteComment(@RequestParam Map<String, String> paraMap){
+    public Map<String, Integer> deleteComment(@RequestParam Map<String, String> paraMap,
+    											HttpServletRequest request) { // <== 파일첨부가 있는 댓글인 경우   	
+		// System.out.println(paraMap.get("comment_no"));
+		/////////////////////////////////////////////////////////////////////
+		// === #184. 파일첨부가 된 댓글이라면 댓글 삭제시 먼저 첨부파일을 삭제해주어야 한다. 시작 === //
+		CommentVO commentvo = service.getCommentOne((String)paraMap.get("comment_no"));
+		
+        String comment_fileName = commentvo.getComment_fileName();
+        // 202502120933595410718575921100.txt  이것이 바로 WAS(톰캣) 디스크에 저장된 '첨부 파일명' 이다.
+        
+        if(comment_fileName != null && !"".equals(comment_fileName.trim())) {
+			// 첨부파일이 존재하는 경우
+			
+			// 첨부파일이 저장되어 있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
+			// 이 경로는 우리가 파일첨부를 위해서 @PostMapping("addComment_withAttach") 에서 설정해두었던 경로와 똑같아야 한다.  
+			// WAS 의 webapp 의 절대경로를 알아와야 한다. 
+			HttpSession session = request.getSession(); 
+			String root = session.getServletContext().getRealPath("/");  
+
+			// System.out.println("~~~ 확인용 webapp 의 절대경로 => " + root);
+			// ~~~ 확인용 webapp 의 절대경로 => C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\
+
+			String filepath = root+"resources"+File.separator+"files";
+			/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+			   운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+			   운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+			*/
+       //  file_path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+       //  System.out.println("~~~ 확인용 filepath => " + filepath);
+           // ~~~ 확인용 filepath => C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\files 
+
+		   paraMap.put("filepath", filepath); // 삭제해야할 첨부파일이 저장된 경로
+           paraMap.put("comment_fileName", comment_fileName); // 삭제해야할 첨부파일명 
+        }
+        //=== 파일첨부가 된 글이라면 글 삭제시 먼저 첨부파일을 삭제해주어야 한다. 끝 === //
+        /////////////////////////////////////////////////////////////////////
 		
 		int n=0;
 				
@@ -897,16 +957,6 @@ public class BoardController {
 		}
 		
 		return mapList;
-	  /*
-		 [{"word":"java가 쉽나요?"}
-		 ,{"word":"JAVA공부를 하려고 해요. 도와주세요~~"}
-		 ,{"word":"프로그래밍은 Java 를 해야 하나요?"}
-		 ,{"word":"javascript 는 쉬운가요?"}
-		 ,{"word":"프론트 엔드를 하려면 JavaScript 를 해야 하나요?"}
-		 ,{"word":"질문있어요 jQuery 와 javaScript 는 관련이 있나요?"}] 
-		 
-		 또는 []
-	  */
 	}
 	
 	
@@ -966,6 +1016,13 @@ public class BoardController {
 	            
 	            jsonObj.put("sizePerPage", sizePerPage);      // {"seq":"3","fk_userid":"kimhb","name":"김홍비","content":"세번째 댓글쓰기 입니다.","regDate":"2025-01-24 10:57:28","totalCount":23,"sizePerPage":3}
 	            
+	            // === #178. 댓글읽어오기에 있어서 첨부파일 기능을 넣은 경우 시작 === //
+				jsonObj.put("comment_fileName", cmtvo.getComment_fileName());  
+				jsonObj.put("comment_orgFilename", cmtvo.getComment_orgFilename());
+				jsonObj.put("comment_fileSize", cmtvo.getComment_fileSize());
+				// === 댓글읽어오기에 있어서 첨부파일 기능을 넣은 경우 끝 === //
+	            
+	            
 	            jsonArr.put(jsonObj);
 	         }// end of for-------------------------------
 	         
@@ -985,4 +1042,420 @@ public class BoardController {
 	      
 	   }
 	   
-}
+
+  
+	// === #161. 첨부파일 다운로드 받기 === //
+		@GetMapping("download")
+		public void requiredLogin_download(HttpServletRequest request, HttpServletResponse response) {
+			
+			String board_no = request.getParameter("board_no");
+			// System.out.println("확인용~~~~~ board_no : " + board_no );
+			// 첨부파일이 있는 글번호 
+			
+			/*
+			    첨부파일이 있는 글번호에서
+			    202502071242164990019082166200.jpg 처럼
+			    이러한 fileName 값을 DB에서 가져와야 한다.
+			    또한 orgFilename 값도 DB에서 가져와야 한다.
+			*/
+			
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("board_no", board_no);
+			paraMap.put("searchType", "");
+			paraMap.put("searchWord", "");
+			
+			
+			// **** 웹브라우저에 출력하기 시작 **** //
+			// HttpServletResponse response 객체는 전송되어져온 데이터를 조작해서 결과물을 나타내고자 할때 쓰인다.
+			response.setContentType("text/html; charset=UTF-8");
+			
+			PrintWriter out = null;
+			// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+			
+			try {
+			    Integer.parseInt(board_no); 
+				
+			    BoardVO boardvo = service.getView_no_increase_readCount(paraMap);
+			    
+			    if(boardvo == null || (boardvo != null && boardvo.getBoard_fileName() == null) ) { 
+			    	out = response.getWriter();
+					// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+					
+					out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+					return;
+			    }
+			    
+			    else {
+			    	// 정상적으로 다운로드를 할 경우 
+			    	
+			    	String board_fileName = boardvo.getBoard_fileName();
+			    	// 202502071242164990019082166200.jpg  이것이 바로 WAS(톰캣) 디스크에 저장된 파일명이다.
+			    	
+			    	String board_orgFilename = boardvo.getBoard_orgFilename(); 
+			    	// 쉐보레전면.jpg   다운로드시 보여줄 파일명
+
+			    	/*
+					   첨부파일이 저장되어있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
+					   이 경로는 우리가 파일첨부를 위해서 @PostMapping("add") 에서 설정해두었던 경로와 똑같아야 한다.    
+					*/
+					// WAS 의 webapp 의 절대경로를 알아와야 한다.
+					HttpSession session = request.getSession();
+					String root = session.getServletContext().getRealPath("/");
+					
+					System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
+					// 확인용 webapp 의 절대경로 ==> C:\git\FinalProject_Groupware\FinalProject_Groupware\src\main\webapp\
+					
+					String path = root+"resources"+File.separator+"files";  
+					/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+				       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+				       운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+				    */
+					
+					// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+					System.out.println("~~~ 확인용 path ==> " + path);
+					// ~~~ 확인용 path ==> C:\git\FinalProject_Groupware\FinalProject_Groupware\src\main\webapp\resources\files
+			    	
+					
+					// ***** file 다운로드 하기 ***** //
+					boolean flag = false; // file 다운로드 성공, 실패인지 여부를 알려주는 용도
+					flag = fileManager.doFileDownload(board_fileName, board_orgFilename, path, response);
+					// file 다운로드 성공시 flag 는 true,
+					// file 다운로드 실패시 flag 는 false 를 가진다.
+					
+					System.out.println("파일 다운로드 성공 여부: " + flag);
+					// 파일 다운로드 성공 여부: true
+					
+					if(!flag) {
+						// 다운로드가 실패한 경우 메시지를 띄운다.
+						out = response.getWriter();
+						// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+						
+						out.println("<script type='text/javascript'>alert('파일다운로드가 실패되었습니다.'); history.back();</script>");
+					}
+			    	
+			    }
+				
+			} catch (NumberFormatException | IOException e) {
+				
+				try {
+					out = response.getWriter();
+					// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+					
+					out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+			}
+			
+		}
+		
+			
+		// === #162. 스마트에디터. 글쓰기 또는 글수정시 드래그앤드롭을 이용한 다중 사진 파일 업로드 하기 === //
+		@PostMapping("image/multiplePhotoUpload")
+		public void multiplePhotoUpload(HttpServletRequest request, HttpServletResponse response) {
+			
+			/*
+			   1. 사용자가 보낸 파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다.
+			   >>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
+			        우리는 WAS 의 webapp/resources/photo_upload 라는 폴더로 지정해준다.
+			*/
+			
+			// WAS 의 webapp 의 절대경로를 알아와야 한다.
+			HttpSession session = request.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			String path = root + "resources"+File.separator+"photo_upload";
+			// path 가 첨부파일들을 저장할 WAS(톰캣)의 폴더가 된다.
+			
+	       System.out.println("~~~ 확인용 path => " + path);
+		    //  ~~~ 확인용 path => C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\photo_upload
+			
+			File dir = new File(path);
+			if(!dir.exists()) {
+				dir.mkdirs();
+			}
+			
+			try {
+				String board_fileName = request.getHeader("file-name"); // 파일명(문자열)을 받는다 - 일반 원본파일명
+				// 네이버 스마트에디터를 사용한 파일업로드시 싱글파일업로드와는 다르게 멀티파일업로드는 파일명이 header 속에 담겨져 넘어오게 되어있다. 
+				
+				/*
+				    [참고]
+				    HttpServletRequest의 getHeader() 메소드를 통해 클라이언트의 정보를 알아올 수 있다. 
+		
+					request.getHeader("referer");           // 접속 경로(이전 URL)
+					request.getHeader("user-agent");        // 클라이언트 사용자의 시스템 정보
+					request.getHeader("User-Agent");        // 클라이언트 브라우저 정보 
+					request.getHeader("X-Forwarded-For");   // 클라이언트 ip 주소 
+					request.getHeader("host");              // Host 네임  예: 로컬 환경일 경우 ==> localhost:9090    
+				*/
+				
+				 System.out.println(">>> 확인용 filename ==> " + board_fileName);
+				// >>> 확인용 filename ==> berkelekle%EC%8B%AC%ED%94%8C%EB%9D%BC%EC%9A%B4%EB%93%9C01.jpg
+				
+				InputStream is = request.getInputStream(); // is는 네이버 스마트 에디터를 사용하여 사진첨부하기 된 이미지 파일임.
+				
+				// === 사진 이미지 파일 업로드 하기 === //
+				String newFilename = fileManager.doFileUpload(is, board_fileName, path);
+				// System.out.println("### 확인용 newFilename ==> " + newFilename);
+				//  ### 확인용 newFilename ==> 20250210165110401783618706200.jpg
+				
+				
+				// === 웹브라우저 상에 업로드 되어진 사진 이미지 파일 이미지를 쓰기 === //
+				String ctxPath = request.getContextPath(); //  
+				
+				String strURL = "";
+				strURL += "&bNewLine=true&sFileName="+newFilename; 
+				strURL += "&sFileURL="+ctxPath+"/resources/photo_upload/"+newFilename;
+							
+				PrintWriter out = response.getWriter();
+				out.print(strURL);
+				
+				// 글쓰기 또는 글수정시 이미지를 추가한 후 이미지를 마우스로 클릭하면
+				// 사진 사이즈 조절 레이어 에디터가 보여진다. 여기서 사진의 크기를 조절하면 된다.!!
+				// 사진의 크기 조절은 네이버 스마트에디터 소스속에 자바스크립트로 구현이 되어진 것이다.
+				// Ctrl + Alt + Shit + L 하여 검색어에 '사진 사이즈 조절 레이어' 를 하면 보여진다. 
+				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
+		
+		// === #174. 파일첨부가 있는 댓글쓰기(Ajax 로 처리) === //
+		@PostMapping("addComment_withAttach")
+		@ResponseBody
+		public Map<String, Object> addComment_withAttach(CommentVO commentvo, MultipartHttpServletRequest mrequest) {
+			// 댓글쓰기에 첨부파일이 있는 경우
+			// !!! 먼저, 오라클에서 tbl_comment 테이블에 fileName, orgFilename, fileSize 컬럼을 추가한다.
+			// !!! 그런 다음에 CommentVO 클래스에 가서 fileName, orgFilename, fileSize 필드를 추가하고, getter, setter 한다.
+			
+			// ====== !!! 첨부파일 업로드 시작 !!! ======= //
+			MultipartFile attach = commentvo.getAttach();
+			   
+			/*
+			   1. 사용자가 보낸 첨부파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다.
+			   >>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기 
+			       우리는 WAS 의 /myspring/src/main/webapp/resources/files 라는 폴더를 생성해서 여기로 업로드 해주도록 할 것이다. 
+			 */
+			
+			// WAS 의 webapp 의 절대경로를 알아와야 한다.
+			HttpSession session = mrequest.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			
+		//	System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
+			// ~~~ 확인용 webapp 의 절대경로 ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\
+			
+			String path =  root+"resources"+File.separator+"files";  
+			/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+		       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+		       운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+		    */
+			
+			// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+		//	System.out.println("~~~ 확인용 path ==> " + path);
+			// ~~~ 확인용 path ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\files    
+			
+			
+			/*
+			   2. 파일첨부를 위한 변수의 설정 및 값을 초기화 한 후 파일 올리기
+			*/
+			String newFileName = "";
+			// WAS(톰캣)의 디스크에 저장될 파일명
+			
+			byte[] bytes = null;
+			// 첨부파일의 내용물을 담는 것
+			
+			long comment_fileSize = 0;
+			// 첨부파일의 크기
+			
+			
+			try {
+				bytes = attach.getBytes();
+				// 첨부파일의 내용물을 읽어오는 것
+				
+				String comment_orgFilename = attach.getOriginalFilename();
+				// attach.getOriginalFilename() 이 첨부파일명의 파일명(예: 강아지.png) 이다. 
+				
+			//	System.out.println("~~~ 확인용 originalFilename => " + originalFilename); 
+				
+				// 첨부되어진 파일을 업로드 하는 것이다.
+				newFileName = fileManager.doFileUpload(bytes, comment_orgFilename, path);
+				
+			/* 
+			    3. CommentVO commentvo 에 fileName 값과 orgFilename 값과 fileSize 값을 넣어주기
+			*/
+				commentvo.setComment_fileName(newFileName);
+				// WAS(톰캣)에 저장된 파일명(2025020709291535243254235235234.png)
+				
+				commentvo.setComment_orgFilename(comment_orgFilename);
+				// 댓글 게시판 페이지에서 첨부된 파일(강아지.png)을 보여줄 때 사용.
+				// 또한 사용자가 파일을 다운로드 할때 사용되어지는 파일명으로 사용.
+				
+				comment_fileSize = attach.getSize(); // 첨부파일의 크기(단위는 byte임)
+				commentvo.setComment_fileSize(String.valueOf(comment_fileSize));
+			    
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// ====== !!! 첨부파일 업로드 끝 !!! ======= //
+			
+			
+			// === tbl_comment 테이블에 댓글 insert 해주기 시작 === //
+	        int n = 0;
+			
+			try {
+			     n = service.addComment(commentvo);
+			    // 댓글쓰기(insert) 및 원게시물(tbl_board 테이블)에 댓글의 개수 증가(update 1씩 증가)하기 
+			    // 이어서 회원의 포인트를 50점을 증가하도록 한다. (tbl_member 테이블에 point 컬럼의 값을 50 증가하도록 update 한다.)
+			} catch(Throwable e) {
+				e.printStackTrace();
+			}
+			
+			Map<String, Object> map = new HashMap<>();
+			map.put("comment_name", commentvo.getComment_name());
+			map.put("n", n);
+			
+			return map;	
+			// {"name":"서영학","n":1}
+			// 또는
+			// {"name":"서영학","n":0}
+		}
+		
+		
+		@GetMapping("downloadComment")
+		public void requiredLogin_downloadComment(HttpServletRequest request, HttpServletResponse response) {
+			
+			String comment_no = request.getParameter("comment_no");
+			// 첨부파일이 있는 글번호 
+			
+			/*
+			    첨부파일이 있는 글번호에서
+			    202502071242164990019082166200.jpg 처럼
+			    이러한 fileName 값을 DB에서 가져와야 한다.
+			    또한 orgFilename 값도 DB에서 가져와야 한다.
+			*/
+			
+			// **** 웹브라우저에 출력하기 시작 **** //
+			// HttpServletResponse response 객체는 전송되어져온 데이터를 조작해서 결과물을 나타내고자 할때 쓰인다.
+			response.setContentType("text/html; charset=UTF-8");
+			
+			PrintWriter out = null;
+			// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+			
+			try {
+			    Integer.parseInt(comment_no); 
+				
+			    CommentVO commentvo = service.getCommentOne(comment_no);
+			    
+			    if(commentvo == null || (commentvo != null && commentvo.getComment_fileName() == null) ) { 
+			    	out = response.getWriter();
+					// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+					
+					out.println("<script type='text/javascript'>alert('존재하지 않는 글번호이거나 첨부파일이 없으므로 파일다운로드가 불가합니다.'); history.back();</script>");
+					return;
+			    }
+			    
+			    else {
+			    	// 정상적으로 다운로드를 할 경우 
+			    	
+			    	String comment_fileName = commentvo.getComment_fileName();
+			    	// 202502071242164990019082166200.jpg  이것이 바로 WAS(톰캣) 디스크에 저장된 파일명이다.
+			    	
+			    	String comment_orgFilename = commentvo.getComment_orgFilename(); 
+			    	// 쉐보레전면.jpg   다운로드시 보여줄 파일명
+			    	
+			    	/*
+					   첨부파일이 저장되어있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
+					   이 경로는 우리가 파일첨부를 위해서 @PostMapping("add") 에서 설정해두었던 경로와 똑같아야 한다.    
+					*/
+					// WAS 의 webapp 의 절대경로를 알아와야 한다.
+					HttpSession session = request.getSession();
+					String root = session.getServletContext().getRealPath("/");
+					
+				//	System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
+					// ~~~ 확인용 webapp 의 절대경로 ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\
+					
+					String path = root+"resources"+File.separator+"files";  
+					/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+				       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+				       운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+				    */
+					
+					// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+				//	System.out.println("~~~ 확인용 path ==> " + path);
+					// ~~~ 확인용 path ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\files
+			    	
+					
+					// ***** file 다운로드 하기 ***** //
+					boolean flag = false; // file 다운로드 성공, 실패인지 여부를 알려주는 용도
+					flag = fileManager.doFileDownload(comment_fileName, comment_orgFilename, path, response);
+					// file 다운로드 성공시 flag 는 true,
+					// file 다운로드 실패시 flag 는 false 를 가진다.
+					
+					if(!flag) {
+						// 다운로드가 실패한 경우 메시지를 띄운다.
+						out = response.getWriter();
+						// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+						
+						out.println("<script type='text/javascript'>alert('파일다운로드가 실패되었습니다.'); history.back();</script>");
+					}
+			    	
+			    }
+				
+			} catch (NumberFormatException | IOException e) {
+				
+				try {
+					out = response.getWriter();
+					// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+					
+					out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+			}
+			
+		}
+		
+		
+
+		
+		
+		/////////////////////////////////////////////////////////////////////////////////////////////// 즐겨찾기 시작
+		
+		// 즐겨찾기 테이블에 insert(한 행 추가)
+		@PostMapping("bookmark")
+		@ResponseBody
+		public void bookmark(@RequestParam String board_no, HttpServletRequest request) {
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~" +board_no);
+			HttpSession session = request.getSession();
+			ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+			
+			String member_userid = null;
+			if(loginuser != null) {
+				member_userid = loginuser.getMember_userid();
+				// login_userid 는 로그인 되어진 사용자의 userid 이다. 
+				
+				Map<String, String> paraMap=new HashMap<>();
+				
+				paraMap.put("board_no", board_no);
+				paraMap.put("member_userid", member_userid);
+				
+				service.insertBookmark(paraMap);
+				
+			}
+			
+		}
+		
+		
+		
+		
+		
+
+		
+	}
+
+
