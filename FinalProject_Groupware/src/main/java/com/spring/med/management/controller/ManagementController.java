@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spring.app.common.MyUtil;
+import com.spring.med.common.MyUtil;
 import com.spring.med.common.ManagFileManager;
 import com.spring.med.management.domain.Child_deptVO_ga;
 import com.spring.med.management.domain.ManagementVO_ga;
