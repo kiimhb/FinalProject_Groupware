@@ -46,7 +46,30 @@ String ctxPath = request.getContextPath();
     }); 
     
     $(document).ready(function(){
-    	//하위부서 데이터값 불러오기
+    	
+    	//상위부서 데이터값 불러오기
+    	const parentDeptSelect = $("select[name='parentDept']");
+
+        // 기존 옵션 초기화
+        parentDeptSelect.empty();
+        parentDeptSelect.append('<option value=""> 상위 부서 선택 </option>');
+
+    	 $.ajax({
+               url: "${pageContext.request.contextPath}/management/parentDeptJSON",
+               dataType: "json",
+               success: function(json) {
+
+              	 json.forEach(function(item, index) {
+              			parentDeptSelect.append('<option value="' + item.parent_dept_no + '">' + item.parent_dept_name + '</option>');
+                   });
+               },
+               error: function(request, status, error) {
+                   alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
+               }
+           });
+    	
+    	
+    	 //하위부서 데이터값 불러오기
          $("select[name='parentDept']").change(function(){
              const dept = $(this).val(); // 선택된 상위 부서 값
              const childDeptSelect = $("select[name='fk_child_dept_no']");
@@ -364,22 +387,19 @@ String ctxPath = request.getContextPath();
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">부문</th>
 			<td>
-		    <select name="parentDept">
-		        <option value=""> 상위 부서 선택 </option>
-		        <c:forEach var="pvo" items="${requestScope.parentDeptList}">
-		            <option value="${pvo.parent_dept_no}">${pvo.parent_dept_name}</option>
-		        </c:forEach>
-		    </select>
-		</td>
+			    <select name="parentDept">
+			        <option value=""> 상위 부서 선택 </option>
+			    </select>
+			</td>
 		
-		<tr>
-		    <th style="width: 15%; background-color: #DDDDDD;">부서</th>
-		    <td>
-		        <select name="fk_child_dept_no">
-		            <option value=""> 하위 부서 선택 </option>
-		        </select>
-		    </td>
-		</tr>
+			<tr>
+			    <th style="width: 15%; background-color: #DDDDDD;">부서</th>
+			    <td>
+			        <select name="fk_child_dept_no">
+			            <option value=""> 하위 부서 선택 </option>
+			        </select>
+			    </td>
+			</tr>
 
 			
 			<tr>

@@ -44,26 +44,49 @@ public class ManagementController {
 	@GetMapping("ManagementForm")
 	public String ManagementForm_get(HttpServletRequest request) {
 		
-		//상위부서 테이블 가져오기
-		List<Parent_deptVO_ga> parentDeptList = managService.parentDeptList();
-		
-		request.setAttribute("parentDeptList", parentDeptList);
-		
 		return "content/management/ManagementForm";
 	}
 	
+	
+	@GetMapping("parentDeptJSON")
+	@ResponseBody
+	public List<Map<String, String>> parentDeptJSON() {
+
+	    List<Parent_deptVO_ga> parentDeptList = managService.parentDeptList();
+	    List<Map<String, String>> parentDeptMapList = new ArrayList<>();
+	    
+	    for (Parent_deptVO_ga parentDept : parentDeptList) {
+	        Map<String, String> parentDeptMap = new HashMap<>();
+	        parentDeptMap.put("parent_dept_no", String.valueOf(parentDept.getParent_dept_no()));
+	        parentDeptMap.put("parent_dept_name", String.valueOf(parentDept.getParent_dept_name()));
+	        parentDeptMapList.add(parentDeptMap);
+	    }
+	    
+	    return parentDeptMapList;
+	}
 
 	// === 하위부서 테이블 가져오기 === //
 	@GetMapping("childDeptJSON")
 	@ResponseBody
-	public List<Child_deptVO_ga> childDeptJSON(@RequestParam String dept) {
+	public List<Map<String, String>> childDeptJSON(@RequestParam String dept) {
 	    Map<String, Object> paraMap = new HashMap<>();
 	    
 	    if (!"".equals(dept)) {
 	        paraMap.put("dept", dept);
 	    }
 	    
-	    return managService.childDeptJSON(paraMap);
+	    List<Child_deptVO_ga> childDeptList = managService.childDeptJSON(paraMap);
+	    List<Map<String, String>> childDeptMapList = new ArrayList<>();
+	    
+	    for (Child_deptVO_ga childDept : childDeptList) {
+	        Map<String, String> childDeptMap = new HashMap<>();
+	        childDeptMap.put("fk_child_dept_no", String.valueOf(childDept.getChild_dept_no()));
+	        childDeptMap.put("fk_parent_dept_no", String.valueOf(childDept.getFk_parent_dept_no()));
+	        childDeptMap.put("child_dept_name", childDept.getChild_dept_name());
+	        childDeptMapList.add(childDeptMap);
+	    }
+	    
+	    return childDeptMapList;
 	}
 
 
@@ -339,18 +362,30 @@ public class ManagementController {
 	}
 	
 	// === 인사관리 회원수정 한명의 멤버 조회 === //
-	@PostMapping("managementEdit")
+	@PostMapping("managementone")
 	@ResponseBody
 	public String getMemberInfo(@RequestParam() String member_userid) {
+				
 	    Map<String, String> paramMap = new HashMap<>();
 	    paramMap.put("member_userid", member_userid);
 
 	    ManagementVO_ga memberInfo = managService.getView_member_one(paramMap);
 
 	    JSONObject jsonObj = new JSONObject();
+	    jsonObj.put("member_pro_filename", memberInfo.getMember_pro_filename());
 	    jsonObj.put("member_userid", memberInfo.getMember_userid());
 	    jsonObj.put("member_name", memberInfo.getMember_name());
+	    jsonObj.put("child_dept_no", memberInfo.getChildVO().getChild_dept_no());
+	    jsonObj.put("child_dept_name", memberInfo.getChildVO().getChild_dept_name());
+	    jsonObj.put("fk_parent_dept_no", memberInfo.getChildVO().getFk_parent_dept_no());
+	    jsonObj.put("parent_dept_name", memberInfo.getParentVO().getParent_dept_name());
+	    jsonObj.put("member_position", memberInfo.getMember_position());
+	    jsonObj.put("member_mobile", memberInfo.getMember_mobile());
+	    jsonObj.put("member_birthday", memberInfo.getMember_birthday());
+	    jsonObj.put("member_gender", memberInfo.getMember_gender());
 	    jsonObj.put("member_email", memberInfo.getMember_email());
+	    jsonObj.put("member_start", memberInfo.getMember_start());
+	    jsonObj.put("member_yeoncha", memberInfo.getMember_yeoncha());
 
 	    return jsonObj.toString();
 	}
