@@ -19,12 +19,14 @@ public class OrderVO {
 	
 	// 약 처방 T
 	private String fk_order_no;					// 오더번호
-	private String fk_medicine_no;				// 약 번호
-	private String medicine_beforeafter;		// 복용시간
-	private String medicine_morning;			// 아침
-	private String medicine_afternoon;			// 점심
-	private String medicine_night;				// 저녁
+	private String prescribe_name;				// 약 번호
+	private String prescribe_beforeafter;		// 복용시간
+	private String prescribe_morning;			// 아침
+	private String prescribe_afternoon;			// 점심
+	private String prescribe_night;				// 저녁
+	private String prescribe_perday;			// 복용일자
 	
+
 	// 수술종류 T
 	private String surgeryType_no;				// 수술번호
 	private String surgeryType_name;			// 수술명
@@ -32,7 +34,6 @@ public class OrderVO {
 	// 질병 T
 	private String desease_no;					// 질병번호
 	private String desease_name;				// 질병이름
-	
 	
 	
 	
@@ -76,21 +77,6 @@ public class OrderVO {
 	}
 	public String getFk_order_no() {
 		return fk_order_no;
-	}
-	public String getFk_medicine_no() {
-		return fk_medicine_no;
-	}
-	public String getMedicine_beforeafter() {
-		return medicine_beforeafter;
-	}
-	public String getMedicine_morning() {
-		return medicine_morning;
-	}
-	public String getMedicine_afternoon() {
-		return medicine_afternoon;
-	}
-	public String getMedicine_night() {
-		return medicine_night;
 	}
 	public String getSurgeryType_no() {
 		return surgeryType_no;
@@ -140,21 +126,6 @@ public class OrderVO {
 	public void setFk_order_no(String fk_order_no) {
 		this.fk_order_no = fk_order_no;
 	}
-	public void setFk_medicine_no(String fk_medicine_no) {
-		this.fk_medicine_no = fk_medicine_no;
-	}
-	public void setMedicine_beforeafter(String medicine_beforeafter) {
-		this.medicine_beforeafter = medicine_beforeafter;
-	}
-	public void setMedicine_morning(String medicine_morning) {
-		this.medicine_morning = medicine_morning;
-	}
-	public void setMedicine_afternoon(String medicine_afternoon) {
-		this.medicine_afternoon = medicine_afternoon;
-	}
-	public void setMedicine_night(String medicine_night) {
-		this.medicine_night = medicine_night;
-	}
 	public void setSurgeryType_no(String surgeryType_no) {
 		this.surgeryType_no = surgeryType_no;
 	}
@@ -166,6 +137,44 @@ public class OrderVO {
 	}
 	public void setDesease_name(String desease_name) {
 		this.desease_name = desease_name;
+	}
+	
+	
+	public String getPrescribe_name() {
+		return prescribe_name;
+	}
+	public String getPrescribe_beforeafter() {
+		return prescribe_beforeafter;
+	}
+	public String getPrescribe_morning() {
+		return prescribe_morning;
+	}
+	public String getPrescribe_afternoon() {
+		return prescribe_afternoon;
+	}
+	public String getPrescribe_night() {
+		return prescribe_night;
+	}
+	public String getPrescribe_perday() {
+		return prescribe_perday;
+	}
+	public void setPrescribe_name(String prescribe_name) {
+		this.prescribe_name = prescribe_name;
+	}
+	public void setPrescribe_beforeafter(String prescribe_beforeafter) {
+		this.prescribe_beforeafter = prescribe_beforeafter;
+	}
+	public void setPrescribe_morning(String prescribe_morning) {
+		this.prescribe_morning = prescribe_morning;
+	}
+	public void setPrescribe_afternoon(String prescribe_afternoon) {
+		this.prescribe_afternoon = prescribe_afternoon;
+	}
+	public void setPrescribe_night(String prescribe_night) {
+		this.prescribe_night = prescribe_night;
+	}
+	public void setPrescribe_perday(String prescribe_perday) {
+		this.prescribe_perday = prescribe_perday;
 	}
 	
 

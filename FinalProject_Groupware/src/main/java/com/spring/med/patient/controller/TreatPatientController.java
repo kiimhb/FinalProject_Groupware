@@ -161,7 +161,6 @@ public class TreatPatientController {
 		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
 		
 		if(session.getAttribute("loginuser") == null) {
-
 			
 			mav.setViewName("content/management/login");
 		}

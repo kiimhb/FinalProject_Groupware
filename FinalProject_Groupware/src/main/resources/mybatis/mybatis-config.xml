@@ -20,5 +20,7 @@
       <typeAlias type="com.spring.med.board.domain.CommentVO" alias="CommentVO"/>
       <typeAlias type="com.spring.med.hospitalize.domain.HospitalizeroomVO" alias="HospitalizeroomVO"/>
       <typeAlias type="com.spring.med.hospitalize.domain.HospitalizeroomVO" alias="HospitalizeVO"/>
+      <typeAlias type="com.spring.med.notice.domain.NoticeVO" alias="NoticeVO"/>
+      <typeAlias type="com.spring.med.order.domain.OrderVO" alias="OrderVO"/>
    </typeAliases>
 </configuration>

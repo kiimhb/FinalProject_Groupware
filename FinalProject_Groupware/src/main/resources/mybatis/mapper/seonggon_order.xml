@@ -48,8 +48,9 @@
 
 
 <resultMap id="orderMapList" type="HashMap">
-		<result property="timediff"   					column="timediff" 			javaType="String" />
-		<result property="patient_no"   				column="patient_no" 			javaType="String" />    
+		<result property="timediff"   					column="timediff" 				javaType="String" />
+		<result property="patient_no"   				column="patient_no" 			javaType="String" />
+		<result property="order_no"   					column="order_no" 				javaType="String" />    
 	    <result property="order_desease_name"   		column="order_desease_name" 	javaType="String" />
 	    <result property="order_symptom_detail" 		column="order_symptom_detail"   javaType="String" />
 	    <result property="order_surgeryType_name"    	column="order_surgeryType_name" javaType="String" />
@@ -62,7 +63,7 @@
 </resultMap>
 
 <select id="orderList" parameterType="HashMap" resultMap="orderMapList">
-	select patient_no, order_desease_name, order_symptom_detail, order_howlonghosp, 
+	select order_no, patient_no, order_desease_name, order_symptom_detail, order_howlonghosp, 
     order_surgeryType_name, order_ishosp, patient_name, child_dept_name, to_char(order_createTime, 'yyyy-mm-dd')AS order_createTime,((Round(sysdate-order_createTime))||'일전') AS timediff
 	from
 	(
@@ -74,6 +75,128 @@
 	on A.fk_child_dept_no = B.child_dept_no
 	order by order_createTime asc
 </select>
+
+
+	<!-- // 클릭하여 진료정보입력 진입시 빈 오더 생성하기 -->
+	<insert id="createEmptyOrder" parameterType="HashMap"> 
+		insert into tbl_order (order_no, fk_member_userid, fk_patient_no)
+		values (seq_order_no.nextval, #{fk_member_userid}, #{patient_no} )	
+	</insert>
+	
+	
+	<!-- 생성된 빈 오더번호 가져오기 -->
+	
+	<select id="newOrderNo" parameterType="HashMap" resultType="String">		
+		SELECT order_no
+		FROM (
+		    SELECT order_no
+		    FROM tbl_order
+		    WHERE fk_patient_no = #{patient_no}
+		    AND fk_member_userid LIKE #{fk_member_userid}
+		    ORDER BY order_no desc
+		) WHERE ROWNUM = 1		
+	</select>
+	
+	
+	<!--  수술리스트 가져오기 -->
+	<resultMap id="surgeryListMap" type="HashMap">
+		<result property="surgeryType_no"   				column="surgeryType_no" 			javaType="String" />
+		<result property="surgeryType_name"   				column="surgeryType_name" 			javaType="String" /> 	
+	</resultMap>
+	
+	<select id = "surgeryList" resultMap="surgeryListMap">
+		select surgeryType_no, surgeryType_name
+		from tbl_surgeryType
+	</select>
+	
+	
+	<!-- 입원 요청하여 입원테이블에 insert 하기 -->
+	
+	<update id="requestHosp" parameterType="HashMap">		
+		update tbl_order set order_isHosp = 1
+		where order_no = #{orderNo}
+		and fk_patient_no = #{hiddenPatientNo}
+		and fk_member_userid like #{fk_member_userid}
+	</update>
+	
+	<insert id="requestHosp2" parameterType="HashMap">
+		insert into tbl_hospitalize (hospitalize_no, fk_order_no)
+		values (seq_hospitalize_no.nextval , #{orderNo})
+	</insert>
+	
+	
+	<!-- 수술 요청하여 수술테이블에 insert 하기 -->
+	<update id="surgeryConfirm" parameterType="HashMap">
+		update tbl_order set order_issurg = 1
+		where order_no = #{orderNo}
+		and fk_patient_no = #{hiddenPatientNo}
+		and fk_member_userid like #{fk_member_userid}
+	</update>
+	
+	<insert id="surgeryConfirm2" parameterType="HashMap">
+		insert into tbl_surgery (surgery_no, fk_order_no, surgery_description)
+		values (seq_surgery_no.nextval , #{orderNo}, #{surgery_description})
+	</insert>
+
+
+	<!-- // === 질병 검색어 입력시 질병 자동 완성하기 3 === // -->
+     <select id="deseaseSearchShow" parameterType="HashMap" resultType="String">
+			select desease_name
+			from tbl_desease
+            where 1=1
+			and lower(desease_name) like '%'||lower(#{searchDesease})||'%'
+     </select>
+     
+     <!-- // 질병 고르고 확정눌러서 질병테이블에 insert 하기 -->
+     <update id="orderDesease" parameterType="HashMap">
+     	
+     	update tbl_order set order_desease_name = #{desease_name}
+     	where order_no = #{order_no}
+		and fk_patient_no = #{fk_patient_no}
+		and fk_member_userid like #{fk_member_userid}
+     	
+     </update>
+     
+     
+     
+     <!-- 약 검색후 클릭해서 약이름이랑 약처방 보여주기-->     
+     <select id="deseaseName" parameterType="HashMap" resultType="String">
+     	select desease_name
+		from tbl_desease
+		where desease_name = #{desease_name}     
+     </select>
+
+
+	<!-- // === 약 검색어 입력시 약 자동 완성하기 3 === // -->
+     <select id="medicineSearchShow" parameterType="HashMap" resultType="String">
+			select medicine_name
+			from tbl_medicine
+            where 1=1
+			and lower(medicine_name) like '%'||lower(#{searchMedicine})||'%'
+     </select>
+     
+     
+     <!-- 약 검색후 클릭해서 약이름이랑 약처방 보여주기-->
+     
+     <select id="medicineName" parameterType="HashMap" resultType="String">
+     	select medicine_name
+		from tbl_medicine
+		where medicine_name = #{medicineName}     
+     </select>
+     
+     
+     
+     <!-- 약 약처방 확정후 처방테이블로 insert하기 -->
+    <insert id="medicineSubmit">
+	    INSERT ALL
+	    <foreach collection="list" item="item">
+	        INTO tbl_prescribe (fk_order_no, prescribe_name, prescribe_beforeafter, prescribe_morning, prescribe_afternoon, prescribe_night, prescribe_perday)
+	        VALUES (#{item.fk_order_no}, #{item.prescribe_name}, #{item.prescribe_beforeafter}, 
+	                #{item.prescribe_morning}, #{item.prescribe_afternoon}, #{item.prescribe_night}, 
+	                #{item.prescribe_perday})
+	    </foreach>
+	    SELECT 1 FROM DUAL
+	</insert>
 
 
 		

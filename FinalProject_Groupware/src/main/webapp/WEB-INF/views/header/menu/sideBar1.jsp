@@ -62,7 +62,7 @@ $(document).ready(function() {
             <a class="dropdown-item" href="<%=ctxPath%>/patient/patientReg">환자등록</a>
             <a class="dropdown-item" href="<%=ctxPath%>/patient/patientWaiting">대기환자</a> 
             <a class="dropdown-item" href="<%=ctxPath%>/order/orderEnter">진료정보입력</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/order/orderEnter">처방전 및 수납</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/order/orderNpay">처방전 및 수납</a>
          </div></li>
 
       <li>
