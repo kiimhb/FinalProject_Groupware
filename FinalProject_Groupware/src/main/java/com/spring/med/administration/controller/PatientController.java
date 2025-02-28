@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spring.app.schedule.domain.Calendar_schedule_VO;
+import com.spring.med.schedule.domain.Calendar_schedule_VO;
 import com.spring.med.administration.domain.Calendar_patient_recordVO;
 import com.spring.med.administration.service.PatientService;
 import com.spring.med.patient.domain.PatientVO;

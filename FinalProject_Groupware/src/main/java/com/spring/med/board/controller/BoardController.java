@@ -108,7 +108,7 @@ public class BoardController {
 	           
 	           
 	        2. 내장톰캣을 사용할 경우에는  (EmbeddedTomcatConfig > 클래스파일을 만들어준다)
-	      package com.spring.app.config;
+	      package com.spring.med.config;
 	      
 	      import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 	      import org.springframework.boot.web.server.WebServerFactoryCustomizer;
