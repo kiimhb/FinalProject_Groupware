@@ -38,7 +38,7 @@ public class ApprovalController {
 	private ApprovalService approvalService;
 	
 	@Autowired
-	private FileManager fileManager;
+	private FileManager fileManager; 
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 기안문작성 ***
@@ -314,9 +314,101 @@ public class ApprovalController {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ==== 임시저장함 폼페이지 요청 ==== //
 	@GetMapping("approvalTemporaryList")
-	public ModelAndView approvalTemporaryList(ModelAndView mav) {
-		mav.setViewName("content/approval/approvalTemporaryList");
+	public ModelAndView approvalTemporaryList(ModelAndView mav
+			                                , HttpServletRequest request
+			                                , @RequestParam(defaultValue = "") String searchType
+			                                , @RequestParam(defaultValue = "") String searchWord
+			                                , @RequestParam(defaultValue = "10") int sizePerPage
+			                                , @RequestParam(defaultValue = "1") int currentShowPageNo) {
+
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
 		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("member_userid", loginuser.getMember_userid());
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+
+		// >>> 총 게시물 건수 구하기 <<< ///
+		int totalCount = 0;
+		int totalPage = 0;
+		
+		totalCount = approvalService.getTotalCount(paraMap);
+		
+		// 페이지 당 보여줄 기안문 개수에 따라 총 페이지 수 구하기
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+			
+		try {
+			// url 에 잘못된 페이지번호가 입력 될 경우 첫 페이지로 처리
+			if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+				currentShowPageNo = 1;
+			}
+		} catch (NumberFormatException e) {
+			currentShowPageNo = 1;
+		}
+		
+		
+		// >>> 페이지당 보여줄 목록 가져오기 <<< //
+		int startRno = ((currentShowPageNo - 1) * sizePerPage) + 1; // 범위시작
+		int endRno = startRno + sizePerPage -1;	// 범위끝
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		// >>> 임시저장함 기안문 불러오기 <<< //
+		List<ApprovalVO> temporaryList = approvalService.selectTemporaryList(paraMap);
+		mav.addObject("temporaryList", temporaryList);
+		
+		// 검색어 유지시키기 위해 데이터 전달
+		if("draft_form_type".equals(searchType) || "draft_subject".equals(searchType)) {	
+			mav.addObject("paraMap", paraMap);
+		}
+		
+		// >>> 페이지바 생성 <<< //
+		int blockSize = 10;	// 한 줄에 보이는 페이지 번호 개수
+		int loop = 1;		// 페이지바의 다음 줄을 보여주는데 사용
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<ul style='list-style:none;'>";
+	    String url = "approvalTemporaryList";
+	    
+	    // === [맨처음][이전] 만들기 === //
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'><<</a></li>";
+       
+	    if(pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때(맨처음 페이지라면 [이전]이 없음)
+	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><</a></li>";
+	    }
+      
+	    while( !(loop > blockSize || pageNo > totalPage) ) {   // 10 보다 크거나 totalPage 보다 크면 안 된다
+          
+          
+	    	if(pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지(현재페이지는 a태그 뺌)
+            	pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border: solid 1px gray; color:red; padding:2px 4px'>"+pageNo+"</li>";
+	    	}
+	    	else { 
+	    		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
+	    	}
+             
+	    	loop++;
+	    	pageNo++;
+	    }  // end of while ------------------------------ (10번을 반복하면 빠져나옴)
+       
+       
+	    // === [다음][마지막] 만들기 === //
+	    if(pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
+	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>></a></li>";
+	    }
+ 
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>>></a></li>";
+         
+	    pageBar += "</ul>"; 
+       
+	    mav.addObject("pageBar", pageBar); // modelandview(뷰단페이지에 페이지바를 나타냄)
+
+		mav.setViewName("content/approval/approvalTemporaryList");
+
 		return mav;
 	}
 

@@ -114,12 +114,12 @@
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert <<< -->
 	<insert id="insertToTemporaryStored_TBL_DRAFT" parameterType="HashMap">
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
-		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), default, to_number(#{draft_urgent}), 1, default, default, default)
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '임시저장', to_number(#{draft_urgent}), 1, default, default, default)
 	</insert>
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert_withFile <<< -->
 	<insert id="insertToTemporaryStored_TBL_DRAFT_withFile" parameterType="HashMap">
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
-		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), default, to_number(#{draft_urgent}), 1, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '임시저장', to_number(#{draft_urgent}), 1, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
 	</insert>
 	
 	<!-- >>> 2. 기안문 양식 테이블에 insert <<< -->
@@ -158,5 +158,65 @@
 	    values(seq_approval_no.nextval, #{draft_no}, #{step3}, 0, default, null, null)
 	</insert>
 	<!-- /////////////////////////////////////////////////// -->
+	
+	
+	<!-- ==== 임시저장함 기안문 불러오기 ==== -->
+	<select id="selectTemporaryList" resultType="ApprovalVO" parameterType="HashMap">
+		select *
+		from
+		(
+		    with A as
+		    (
+		        select draft_no, to_char(draft_write_date, 'yyyy/mm/dd') as draft_write_date
+		             , draft_form_type
+		             , case when length(draft_subject) > 14 then substr(draft_subject, 1, 11) || '...' else draft_subject end as draft_subject
+		             , draft_status, fk_member_userid, draft_file_name
+		        from tbl_draft
+		        where draft_saved = 1
+		        <choose>
+					<when test="searchType == 'draft_form_type' and searchWord != ''">
+						and lower(draft_form_type) like '%' || lower(#{searchWord}) ||'%'
+					</when>
+					<when test="searchType == 'draft_subject' and searchWord != ''">
+						and lower(draft_subject) like '%' || lower(#{searchWord}) ||'%'
+					</when>
+					<otherwise></otherwise>
+				</choose>
+				order by draft_no desc
+		    ),
+		    B as
+		    (
+		        select parent_dept_name, member_name, member_userid
+		        from tbl_member m join tbl_child_dept d
+		        on m.fk_child_dept_no = d.child_dept_no
+		        join tbl_parent_dept p
+		        on d.fk_parent_dept_no = p.parent_dept_no
+		        where member_userid=#{member_userid}
+		    )
+		    select rownum AS rno, draft_no, draft_write_date, draft_form_type, draft_subject, draft_status, draft_file_name
+		         , parent_dept_name, member_name
+		    from A join B
+		    on A.fk_member_userid = B.member_userid
+		)
+		where rno between to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	
+	<!-- ==== 총 게시물 건수 구하기 ==== -->
+	<select id="getTotalCount" resultType="int" parameterType="HashMap">
+		select count(*) 
+		from tbl_draft
+		where draft_saved = 1
+		and fk_member_userid = #{member_userid}
+		<choose>
+			<when test="searchType == 'draft_form_type' and searchWord != ''">
+				and lower(draft_form_type) like '%' || lower(#{searchWord}) ||'%'
+			</when>
+			<when test="searchType == 'draft_subject' and searchWord != ''">
+				and lower(draft_subject) like '%' || lower(#{searchWord}) ||'%'
+			</when>
+			<otherwise></otherwise>
+		</choose>
+	</select>
 	
 </mapper>

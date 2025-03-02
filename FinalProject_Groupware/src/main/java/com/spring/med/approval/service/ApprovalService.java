@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.med.approval.domain.ApprovalVO;
+import com.spring.med.management.domain.ManagementVO_ga;
 
 public interface ApprovalService {
 
@@ -34,6 +35,12 @@ public interface ApprovalService {
 
 	// ==== 첨부파일이 있는 경우 기안문 임시저장하기 ==== //
 	int insertToTemporaryStored_withFile(Map<String, Object> paraMap);
+
+	// ==== 임시저장함 기안문 불러오기 ==== //
+	List<ApprovalVO> selectTemporaryList(Map<String, String> paraMap);
+
+	// ==== 총 게시물 건수 구하기 ==== ///
+	int getTotalCount(Map<String, String> paraMap);
 
 
 

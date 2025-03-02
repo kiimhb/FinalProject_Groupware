@@ -791,123 +791,136 @@ function setApprovalLine() {
 <%-- ==== 임시저장 버튼 함수 ==== --%>
 function goTemporaryStored() {
 	
-	// >>> 결재선 가져오기 <<<
-	let approvalLineMember = func_approvalLineMember();
-	console.log(approvalLineMember);
 	
-	// >>> 참조자 가져오기 <<<
-	let referMember = func_referMember();
-	console.log(referMember);
+	Swal.fire({
+		title: '임시저장 하시겠습니까?',
+		text: "저장된 항목은 '임시저장함'에서 확인하실 수 있습니다.",
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		confirmButtonText: '확인',
+		cancelButtonText: '취소',      
+	}).then((result) => {
+		
+		// >>> 결재선 가져오기 <<<
+		let approvalLineMember = func_approvalLineMember();
+		console.log(approvalLineMember);
+		
+		// >>> 참조자 가져오기 <<<
+		let referMember = func_referMember();
+		console.log(referMember);
 
-	// >>> 공통 문서정보 <<< 
-	const fk_member_userid = $("span#member_userid").text();						// 작성자id
-	const draft_no = $("td#draft_no").text().toString();							// 문서번호
-	const draft_form_type = $("h2#draftSubject").text();							// 기안문유형
-	const draft_subject = $("input:text[name='draft_subject']").val();				// 제목
-	const draft_write_date = $("td#draft_write_date").text();						// 작성일자
-	const draft_urgent = $("input:checkbox[name='draft_urgent']:checked").length.toString();	// 긴급여부
-	
-	// >>> 휴가신청서 <<< 
-	let day_leave_end;		// 연차종료일
-	let day_leave_start;	// 연차시작일
-	let day_leave_cnt;		// 연차사용일
-	let day_leave_reason;	// 휴가사유
-	
-	if(draft_subject.trim() == "") {
-		// 제목을 작성하지 않은 경우
-		Swal.fire({
-		    icon: 'info',
-		    title: '제목을 작성해 주세요',
-		    text: '다시 시도해주세요.'
-		});
-		return;
-	}
-	/* else if (Object.keys(approvalLineMember).length == 0) {
-		// 결재선 목록에 추가한 이력이 없는 경우
-		Swal.fire({
-		    icon: 'info',
-		    title: '결재선에 최소 1명 이상 추가해야합니다',
-		    text: '다시 시도해주세요.'
-		});
-		return;
+		// >>> 공통 문서정보 <<< 
+		const fk_member_userid = $("span#member_userid").text();						// 작성자id
+		const draft_no = $("td#draft_no").text().toString();							// 문서번호
+		const draft_form_type = $("h2#draftSubject").text();							// 기안문유형
+		const draft_subject = $("input:text[name='draft_subject']").val();				// 제목
+		const draft_write_date = $("td#draft_write_date").text();						// 작성일자
+		const draft_urgent = $("input:checkbox[name='draft_urgent']:checked").length.toString();	// 긴급여부
 		
-	} */
-	else {
+		// >>> 휴가신청서 <<< 
+		let day_leave_end;		// 연차종료일
+		let day_leave_start;	// 연차시작일
+		let day_leave_cnt;		// 연차사용일
+		let day_leave_reason;	// 휴가사유
 		
-		if(draft_form_type == "휴가신청서") {
+		if(draft_subject.trim() == "") {
+			// 제목을 작성하지 않은 경우
+			Swal.fire({
+			    icon: 'info',
+			    title: '제목을 작성해 주세요',
+			    text: '다시 시도해주세요.'
+			});
+			return;
+		}
+		/* else if (Object.keys(approvalLineMember).length == 0) {
+			// 결재선 목록에 추가한 이력이 없는 경우
+			Swal.fire({
+			    icon: 'info',
+			    title: '결재선에 최소 1명 이상 추가해야합니다',
+			    text: '다시 시도해주세요.'
+			});
+			return;
 			
-			const dayLeaveType = ($("input:radio[name='dayLeaveType']:checked").val()); // 연차, 반차 중 어느 것인지 구분을 위한 변수
+		} */
+		else {
 			
-			if(dayLeaveType == "연차") {
-				day_leave_start = $("input[name='allDay_leave_start']").val();	// 연차시작일
-				day_leave_end = $("input[name='allDay_leave_end']").val();		// 연차종료일
-				day_leave_cnt = $("span#day_leave_cnt").text();					// 연차사용일
+			if(draft_form_type == "휴가신청서") {
+				
+				const dayLeaveType = ($("input:radio[name='dayLeaveType']:checked").val()); // 연차, 반차 중 어느 것인지 구분을 위한 변수
+				
+				if(dayLeaveType == "연차") {
+					day_leave_start = $("input[name='allDay_leave_start']").val();	// 연차시작일
+					day_leave_end = $("input[name='allDay_leave_end']").val();		// 연차종료일
+					day_leave_cnt = $("span#day_leave_cnt").text();					// 연차사용일
+					
+				}
+				else if (dayLeaveType == "오전반차" || dayLeaveType == "오후반차") {
+					day_leave_end = $("input[name='halfDay_leave_end']").val();			// 반차시작일
+					day_leave_start = day_leave_end;									// 반차종료일
+					day_leave_cnt = 0.5;												// 반차사용일
+				}
+
+				day_leave_reason = $("textarea[name='day_leave_reason']").val();			// 휴가사유
+				day_leave_reason = day_leave_reason.replace(/(?:\r\n|\r|\n)/g,'<br/>');		// 줄바꿈을 문자열로 바꾸어주기
 				
 			}
-			else if (dayLeaveType == "오전반차" || dayLeaveType == "오후반차") {
-				day_leave_end = $("input[name='halfDay_leave_end']").val();			// 반차시작일
-				day_leave_start = day_leave_end;									// 반차종료일
-				day_leave_cnt = 0.5;												// 반차사용일
-			}
-
-			day_leave_reason = $("textarea[name='day_leave_reason']").val();			// 휴가사유
-			day_leave_reason = day_leave_reason.replace(/(?:\r\n|\r|\n)/g,'<br/>');		// 줄바꿈을 문자열로 바꾸어주기
-			
-		}
-		else if (draft_form_type == "근무변경") {
-			
-		}
-		
-		<%-- 임시저장하기 위해 데이터 취합 --%>		
-		var formData = new FormData();
-		
-		formData.append("approvalLineMember", JSON.stringify(approvalLineMember));
-		formData.append("referMember", JSON.stringify(referMember));
-		formData.append("fk_member_userid", fk_member_userid);
-		formData.append("draft_no", draft_no);
-		formData.append("draft_form_type", draft_form_type);
-		formData.append("draft_subject", draft_subject);
-		formData.append("draft_write_date", draft_write_date);
-		formData.append("draft_urgent", draft_urgent);
-		formData.append("day_leave_start", day_leave_start);
-		formData.append("day_leave_end", day_leave_end);
-		formData.append("day_leave_cnt", day_leave_cnt);
-		formData.append("day_leave_reason", day_leave_reason);
-		
-		// 파일데이터가 있다면 파일데이터도 추가
-		var fileInput = $("input[type='file']")[0];
-		var file = fileInput.files[0];
-		
-		if(file) {
-			formData.append("file", file);
-		}
-		
-		<%-- 임시저장 ajax 요청 --%>
-		$.ajax({
-			url:"<%= ctxPath%>/approval/insertToTemporaryStored",
-			data: formData,
-			processData: false,
-		    contentType: false,
-			type:"post",			
-			success:function(json){
+			else if (draft_form_type == "근무변경") {
 				
-				if(json == 1) {
+			}
+			
+			<%-- 임시저장하기 위해 데이터 취합 --%>		
+			var formData = new FormData();
+			
+			formData.append("approvalLineMember", JSON.stringify(approvalLineMember));
+			formData.append("referMember", JSON.stringify(referMember));
+			formData.append("fk_member_userid", fk_member_userid);
+			formData.append("draft_no", draft_no);
+			formData.append("draft_form_type", draft_form_type);
+			formData.append("draft_subject", draft_subject);
+			formData.append("draft_write_date", draft_write_date);
+			formData.append("draft_urgent", draft_urgent);
+			formData.append("day_leave_start", day_leave_start);
+			formData.append("day_leave_end", day_leave_end);
+			formData.append("day_leave_cnt", day_leave_cnt);
+			formData.append("day_leave_reason", day_leave_reason);
+			
+			// 파일데이터가 있다면 파일데이터도 추가
+			var fileInput = $("input[type='file']")[0];
+			var file = fileInput.files[0];
+			
+			if(file) {
+				formData.append("file", file);
+			}
+			
+			<%-- 임시저장 ajax 요청 --%>
+			$.ajax({
+				url:"<%= ctxPath%>/approval/insertToTemporaryStored",
+				data: formData,
+				processData: false,
+			    contentType: false,
+				type:"post",			
+				success:function(json){
+					console.log(json);
+					if(json == 1) {
+						Swal.fire({
+						    icon: 'success',
+						    title: '임시 저장 완료',
+						    text: '임시 저장이 성공적으로 완료되었습니다.'
+						});
+					}	
+				},
+				error: function() {
 					Swal.fire({
-					    icon: 'success',
-					    title: '임시 저장 완료',
-					    text: '임시 저장이 성공적으로 완료되었습니다.'
+					    icon: 'error',
+					    title: '임시 저장 실패!',
+					    text: '다시 시도해주세요.'
 					});
-				}	
-			},
-			error: function() {
-				Swal.fire({
-				    icon: 'error',
-				    title: '임시 저장 실패!',
-				    text: '다시 시도해주세요.'
-				});
-			}
-		});
-	}
+				}
+			});
+		}
+	});
 }
 
 

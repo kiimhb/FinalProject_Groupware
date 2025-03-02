@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.med.approval.domain.ApprovalVO;
 import com.spring.med.approval.model.ApprovalDAO;
+import com.spring.med.management.domain.ManagementVO_ga;
 
 @Service
 public class ApprovalService_imple implements ApprovalService {
@@ -28,7 +29,6 @@ public class ApprovalService_imple implements ApprovalService {
 		return member;
 	}
 
-
 	// ==== 결재선 결재순위 지정 ==== // 
 	@Override
 	public List<HashMap<String, String>> orderByApprovalStep(String[] arr_approvalLineMembers) {
@@ -36,7 +36,6 @@ public class ApprovalService_imple implements ApprovalService {
 		List<HashMap<String, String>> memberList = mapper_approvalDAO.orderByApprovalStep(arr_approvalLineMembers);
 		return memberList;
 	}
-	
 	
 	// ==== 참조자 목록 순서 지정 ==== //
 	@Override
@@ -46,7 +45,6 @@ public class ApprovalService_imple implements ApprovalService {
 		return memberList;
 	}
 
-	
 	// ==== 기존에 추가했던 결재선 사원을 목록에 불러오기 ==== //
 	@Override
 	public List<ApprovalVO> insertToApprovalLine_Arr(String[] arr_approvalLineMembers) {
@@ -54,7 +52,6 @@ public class ApprovalService_imple implements ApprovalService {
 		List<ApprovalVO> memberList = mapper_approvalDAO.insertToApprovalLine_Arr(arr_approvalLineMembers);
 		return memberList;
 	}
-
 
 	// ==== 기존에 추가했던 참조자 사원을 목록에 불러오기 ==== //
 	@Override
@@ -71,14 +68,12 @@ public class ApprovalService_imple implements ApprovalService {
 		return draft_no;
 	}
 
-
 	// ==== 잔여 연차 조회 ==== //
 	@Override
 	public String leftoverYeoncha(String member_userid) {
 		String member_yeoncha = mapper_approvalDAO.leftoverYeoncha(member_userid);
 		return member_yeoncha;
 	}
-
 
 	// ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== // 
 	@Override
@@ -108,10 +103,13 @@ public class ApprovalService_imple implements ApprovalService {
 		//Object approvalLineMember = paraMap.get("approvalLineMember");
 		//Object referMember = paraMap.get("referMember");
 		
-		
+		boolean exist_line = false;
+		boolean exist_refer = false;
+		System.out.println("~~~~확인용 approvalLineMember : " + paraMap.get("approvalLineMember"));
+		System.out.println("~~~~확인용 referMember : " + paraMap.get("referMember"));
 		if(n2 == 1) {
 
-			if(paraMap.get("approvalLineMember") != null) {
+			if(paraMap.get("approvalLineMember") != null && !((Map<?, ?>) paraMap.get("approvalLineMember")).isEmpty()) {
 				
 				//Map<String, String> approvalLineMap = (Map<String, String>) approvalLineMember;
 				
@@ -125,10 +123,11 @@ public class ApprovalService_imple implements ApprovalService {
 				if(approvalLineMap.get("step2") != null) {n3 = mapper_approvalDAO.insertToTemporaryStored_approvalLine2_TBL_APPROVAL(approvalLineMap);}
 				if(approvalLineMap.get("step3") != null) {n3 = mapper_approvalDAO.insertToTemporaryStored_approvalLine3_TBL_APPROVAL(approvalLineMap);}
 				
+				exist_line = true;
 				System.out.println("~~~~확인용 n3 : " + n3);	
 			}
 			
-			if(paraMap.get("referMember") != null) {
+			if(paraMap.get("referMember") != null && !((Map<?, ?>) paraMap.get("referMember")).isEmpty()) {
 				
 				//Map<String, String> referMemberMap = (Map<String, String>) referMember;
 				
@@ -140,28 +139,27 @@ public class ApprovalService_imple implements ApprovalService {
 				if(referMemberMap.get("step1") != null) {n4 = mapper_approvalDAO.insertToTemporaryStored_referMember1_TBL_APPROVAL(referMemberMap);}
 				if(referMemberMap.get("step2") != null) {n4 = mapper_approvalDAO.insertToTemporaryStored_referMember2_TBL_APPROVAL(referMemberMap);}
 				if(referMemberMap.get("step3") != null) {n4 = mapper_approvalDAO.insertToTemporaryStored_referMember3_TBL_APPROVAL(referMemberMap);}
+				
+				exist_refer = true;
 				System.out.println("~~~~확인용 n4 : " + n4);
 			}	
 		}
 		
-		
-		if(paraMap.get("approvalLineMember") == null && paraMap.get("referMember") == null) {
+		if(!exist_line  && !exist_refer) {
 			result = n1*n2;
 		}
-		else if (paraMap.get("approvalLineMember") != null && paraMap.get("referMember") == null) {
+		else if (exist_line && !exist_refer) {
 			result = n1*n2*n3;
 		}
-		else if (paraMap.get("approvalLineMember") == null && paraMap.get("referMember") != null) {
+		else if (!exist_line && exist_refer) {
 			result = n1*n2*n4;
 		}
-		else if (paraMap.get("approvalLineMember") != null && paraMap.get("referMember") != null) {
+		else if (exist_line && exist_refer) {
 			result = n1*n2*n3*n4;
 		}
-		
+		System.out.println("~~~~확인용 result : " + result);
 		return result;
 	}
-
-
 	
 	// ==== 첨부파일이 있는 경우 기안문 임시저장하기 ==== //
 	@Override
@@ -194,7 +192,7 @@ public class ApprovalService_imple implements ApprovalService {
 		
 		if(n2 == 1) {
 
-			if(paraMap.get("approvalLineMember") != null) {
+			if(paraMap.get("approvalLineMember") != null && !((Map<?, ?>) paraMap.get("approvalLineMember")).isEmpty()) {
 				
 				//Map<String, String> approvalLineMap = (Map<String, String>) approvalLineMember;
 				
@@ -211,7 +209,7 @@ public class ApprovalService_imple implements ApprovalService {
 				System.out.println("~~~~확인용 n3 : " + n3);	
 			}
 			
-			if(paraMap.get("referMember") != null) {
+			if(paraMap.get("referMember") != null && !((Map<?, ?>) paraMap.get("referMember")).isEmpty()) {
 				
 				//Map<String, String> referMemberMap = (Map<String, String>) referMember;
 				
@@ -225,8 +223,7 @@ public class ApprovalService_imple implements ApprovalService {
 				if(referMemberMap.get("step3") != null) {n4 = mapper_approvalDAO.insertToTemporaryStored_referMember3_TBL_APPROVAL(referMemberMap);}
 				System.out.println("~~~~확인용 n4 : " + n4);
 			}	
-		}
-		
+		}	
 		
 		if(paraMap.get("approvalLineMember") == null && paraMap.get("referMember") == null) {
 			result = n1*n2;
@@ -240,9 +237,24 @@ public class ApprovalService_imple implements ApprovalService {
 		else if (paraMap.get("approvalLineMember") != null && paraMap.get("referMember") != null) {
 			result = n1*n2*n3*n4;
 		}
-		
-		return result;
 
+		return result;
+	}
+
+	// ==== 임시저장함 기안문 불러오기 ==== //
+	@Override
+	public List<ApprovalVO> selectTemporaryList(Map<String, String> paraMap) {
+		
+		List<ApprovalVO> temporaryList = mapper_approvalDAO.selectTemporaryList(paraMap);
+		return temporaryList;
+	}
+
+	// ==== 총 게시물 건수 구하기 ==== ///
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		
+		int totalCount = mapper_approvalDAO.getTotalCount(paraMap);
+		return totalCount;
 	}
 
 

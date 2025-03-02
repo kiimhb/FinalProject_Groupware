@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.spring.med.approval.domain.ApprovalVO;
+import com.spring.med.management.domain.ManagementVO_ga;
 
 @Mapper
 public interface ApprovalDAO {
@@ -54,6 +55,12 @@ public interface ApprovalDAO {
 	int insertToTemporaryStored_referMember2_TBL_APPROVAL(Map<String, String> referMemberMap);
 	int insertToTemporaryStored_referMember3_TBL_APPROVAL(Map<String, String> referMemberMap);
 	/////////////////////////////////////////////////
+
+	// ==== 임시저장함 기안문 불러오기 ==== //
+	List<ApprovalVO> selectTemporaryList(Map<String, String> paraMap);
+
+	// ==== 총 게시물 건수 구하기 ==== ///
+	int getTotalCount(Map<String, String> paraMap);
 
 	
 
