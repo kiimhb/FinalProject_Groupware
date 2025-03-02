@@ -219,4 +219,29 @@
 		</choose>
 	</select>
 	
+	
+	<!-- ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== -->
+	<select id="approvalTemporaryDetail" resultType="ApprovalVO" parameterType="String">
+		select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
+		     , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason
+		     , work_change_start, work_change_end, work_change_reason, work_change_member_workingTime
+		     , member_name, parent_dept_name, child_dept_name, member_position
+		from tbl_member M join
+		(
+		    select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
+		         , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason
+		         , work_change_start, work_change_end, work_change_reason, work_change_member_workingTime
+		    from tbl_draft D left join tbl_day_leave L
+		    on D.draft_no = L.fk_draft_no
+		    left join tbl_work_change C
+		    on D.draft_no = C.fk_draft_no
+		    where draft_no = to_number(#{draft_no})
+		) D
+		on M.member_userid = D.fk_member_userid
+		join tbl_child_dept C 
+		on M.fk_child_dept_no = C.child_dept_no
+		join tbl_parent_dept P
+		on C.fk_parent_dept_no = P.parent_dept_no
+	</select>
+	
 </mapper>

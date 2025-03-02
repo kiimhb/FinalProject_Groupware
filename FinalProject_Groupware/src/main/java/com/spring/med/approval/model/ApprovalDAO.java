@@ -62,6 +62,9 @@ public interface ApprovalDAO {
 	// ==== 총 게시물 건수 구하기 ==== ///
 	int getTotalCount(Map<String, String> paraMap);
 
+	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
+	ApprovalVO approvalTemporaryDetail(String draft_no);
+
 	
 
 

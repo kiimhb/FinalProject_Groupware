@@ -221,6 +221,22 @@ $(document).ready(function(){
 	});// end of $("button#btnType").on("click", function(){})-------
 	
 	////////////////////////////////////////////////////////////////////////////////
+	
+	
+	<%-- 임시저장목록에서 기안문 클릭시 기존 작성했던 정보 불러오기 --%>
+	if(${not empty requestScope.approvalvo}) {
+		console.log(requestScope.approvalvo.draft_form_type);
+		if(${requestScope.approvalvo.draft_form_type} == '휴가신청서') {
+			draftFormExample.load("<%= ctxPath%>/approval/dayLeaveForm");
+			
+		}
+		else if(${requestScope.approvalvo.draft_form_type} == '근무변경신청서') {
+			
+		}
+		
+		<%-- 결재선/참조자 목록 불러오기 --%>
+		
+	}
 
 	
 	

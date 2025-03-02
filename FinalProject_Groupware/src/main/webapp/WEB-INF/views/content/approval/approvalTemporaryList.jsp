@@ -134,6 +134,11 @@
 	  border-bottom: 1px solid rgba(0,0,0,.1);
   	  background-color: #fff;
 	}
+	
+	tr:hover {
+		cursor: pointer;
+		color: #999999;
+	}
 
 </style>
 
@@ -146,6 +151,19 @@ $(document).ready(function(){
 		$("select[name='searchType']").val("${requestScope.paraMap.searchType}");
         $("input[name='searchWord']").val("${requestScope.paraMap.searchWord}");
 	}
+	
+	<%-- 기안문서 클릭 이벤트 --%>
+	$("tbody > tr").on("click", function(e){
+		
+		const click_draft_no = $(this).children("td").eq(0).text();	// 클릭한 기안문의 문서번호
+		
+		const frm = document.detailTempFrm;
+		frm.draft_no.val = click_draft_no;
+		frm.method = "post";
+		frm.action = "<%= ctxPath%>/approval/approvalTemporaryDetail";
+		frm.submit();
+		
+	});// end of $("tbody > tr").on("click", function(e){})-----------------------------
 	
 
 });// end of $(document).ready(function(){})----------------
@@ -248,6 +266,10 @@ function goSearch() {
 			${requestScope.pageBar}
 		</div>
 	</div>
+	
+	<form name="detailTempFrm">
+		<input name="draft_no" />
+	</form>
 	
 </div>
 

@@ -411,6 +411,19 @@ public class ApprovalController {
 
 		return mav;
 	}
+	
+		
+	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
+	@PostMapping("approvalTemporaryDetail")
+	public ModelAndView approvalTemporaryDetail(ModelAndView mav, @RequestParam String draft_no) {
+		
+		ApprovalVO approvalvo = approvalService.approvalTemporaryDetail(draft_no);
+		
+		mav.addObject("approvalvo", approvalvo);
+		mav.setViewName("/content/approval/write");
+		
+		return mav;
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 결재문서함 ***
