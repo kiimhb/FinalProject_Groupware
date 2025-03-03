@@ -96,7 +96,7 @@
 	
 	<!-- ==== 문서번호 생성 ==== -->
 	<select id="createDraftNo" resultType="String">
-		select to_char(sysdate, 'yyyymm') || lpad(seq_draft_no.nextval, 4, 0) as drat_no
+		select to_char(sysdate, 'yyyymmdd') || lpad(seq_draft_no.nextval, 4, 0) as drat_no
 		from dual
 	</select>
 
@@ -110,7 +110,7 @@
 	
 	
 	<!-- /////////////////////////////////////////////////// -->
-	<!-- ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== -->
+	<!-- ==== 기안문 임시저장하기 [insert] ==== -->
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert <<< -->
 	<insert id="insertToTemporaryStored_TBL_DRAFT" parameterType="HashMap">
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
@@ -157,8 +157,62 @@
 	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
 	    values(seq_approval_no.nextval, #{draft_no}, #{step3}, 0, default, null, null)
 	</insert>
+	
 	<!-- /////////////////////////////////////////////////// -->
 	
+	<!-- ==== 기안문 임시저장하기 [update] ==== -->
+	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 update <<< -->
+	<update id="updateToTemporaryStored_TBL_DRAFT" parameterType="HashMap">
+		UPDATE tbl_draft
+			SET 
+			    DRAFT_SUBJECT = #{draft_subject},
+			    DRAFT_WRITE_DATE = TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'),
+			    DRAFT_STATUS = '임시저장',
+			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
+			    DRAFT_SAVED = 1,
+			    DRAFT_FILE_ORIGIN_NAME = DEFAULT, 
+			    DRAFT_FILE_NAME = DEFAULT,  
+			    DRAFT_FILE_SIZE = DEFAULT   
+			WHERE DRAFT_NO = #{draft_no}
+	</update>
+	
+	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 update_withFile <<< -->
+	<update id="updateToTemporaryStored_TBL_DRAFT_withFile" parameterType="HashMap">
+		UPDATE tbl_draft
+			SET 
+			    DRAFT_SUBJECT = #{draft_subject},
+			    DRAFT_WRITE_DATE = TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'),
+			    DRAFT_STATUS = '임시저장',
+			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
+			    DRAFT_SAVED = 1,
+			    DRAFT_FILE_ORIGIN_NAME = #{draft_file_origin_name}, 
+			    DRAFT_FILE_NAME = #{draft_file_name},  
+			    DRAFT_FILE_SIZE = #{draft_file_size}   
+			WHERE DRAFT_NO = #{draft_no}
+	</update>
+	
+	<!-- >>> 2. 기안문 양식 테이블에 update <<< -->
+	<!-- [휴가신청서] 테이블에 update -->
+	<update id="updateToTemporaryStored_TBL_DAY_LEAVE" parameterType="HashMap">
+		UPDATE tbl_day_leave
+			SET 
+			    DAY_LEAVE_START = TO_DATE(#{day_leave_start}, 'YYYY/MM/DD'),
+			    DAY_LEAVE_END = TO_DATE(#{day_leave_end}, 'YYYY/MM/DD'),
+			    DAY_LEAVE_CNT = #{day_leave_cnt},
+			    DAY_LEAVE_REASON = #{day_leave_reason}
+			WHERE FK_DRAFT_NO = #{draft_no}
+	</update>
+	
+	<!-- >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert -->
+	<!-- 기존 결재선 및 참조자 삭제 delete -->
+	<delete id="deleteToTemporaryStored_TBL_APPROVAL" parameterType="String">
+		DELETE from tbl_approval
+		where fk_draft_no = #{draft_no}
+	</delete>
+	
+	<!-- 결재선 목록에 추가한 유저 insert -->
+	
+	<!-- /////////////////////////////////////////////////// -->
 	
 	<!-- ==== 임시저장함 기안문 불러오기 ==== -->
 	<select id="selectTemporaryList" resultType="ApprovalVO" parameterType="HashMap">
@@ -221,7 +275,29 @@
 	
 	
 	<!-- ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== -->
-	<select id="approvalTemporaryDetail" resultType="ApprovalVO" parameterType="String">
+	<resultMap type="HashMap" id="approvalTemporaryDetail_Map">
+		<result property="draft_no" 				column="draft_no" 					javaType="String" />
+		<result property="fk_member_userid" 		column="fk_member_userid" 			javaType="String" />
+		<result property="draft_form_type" 			column="draft_form_type" 			javaType="String" />
+		<result property="draft_subject" 			column="draft_subject" 				javaType="String" />
+		<result property="draft_urgent" 			column="draft_urgent" 				javaType="String" />
+		<result property="draft_file_name" 			column="draft_file_name" 			javaType="String" />
+		<result property="draft_file_origin_name" 	column="draft_file_origin_name" 	javaType="String" />
+		<result property="draft_file_size" 			column="draft_file_size" 			javaType="String" />
+		<result property="day_leave_start" 			column="day_leave_start" 			javaType="String" />
+		<result property="day_leave_end" 			column="day_leave_end" 				javaType="String" />
+		<result property="day_leave_cnt" 			column="day_leave_cnt" 				javaType="String" />
+		<result property="day_leave_reason" 		column="day_leave_reason" 			javaType="String" />
+		<result property="work_change_start" 		column="work_change_start" 			javaType="String" />
+		<result property="work_change_end" 			column="work_change_end" 			javaType="String" />
+		<result property="work_change_reason" 		column="work_change_reason" 		javaType="String" />
+		<result property="work_change_member_workingTime" 		column="work_change_member_workingTime" 			javaType="String" />
+		<result property="member_name" 				column="member_name" 			javaType="String" />
+		<result property="parent_dept_name" 		column="parent_dept_name" 			javaType="String" />
+		<result property="child_dept_name" 			column="child_dept_name" 			javaType="String" />
+		<result property="member_position" 			column="member_position" 			javaType="String" />
+	</resultMap>
+	<select id="approvalTemporaryDetail" resultMap="approvalTemporaryDetail_Map" parameterType="String">
 		select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
 		     , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason
 		     , work_change_start, work_change_end, work_change_reason, work_change_member_workingTime
@@ -229,8 +305,8 @@
 		from tbl_member M join
 		(
 		    select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
-		         , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason
-		         , work_change_start, work_change_end, work_change_reason, work_change_member_workingTime
+		         , to_char(day_leave_start, 'yyyy-mm-dd') as day_leave_start , to_char(day_leave_end, 'yyyy-mm-dd') as day_leave_end, day_leave_cnt, day_leave_reason
+		         , to_char(work_change_start, 'yyyy-mm-dd') as work_change_start, to_char(work_change_end, 'yyyy-mm-dd') as work_change_end, work_change_reason, work_change_member_workingTime
 		    from tbl_draft D left join tbl_day_leave L
 		    on D.draft_no = L.fk_draft_no
 		    left join tbl_work_change C
@@ -242,6 +318,23 @@
 		on M.fk_child_dept_no = C.child_dept_no
 		join tbl_parent_dept P
 		on C.fk_parent_dept_no = P.parent_dept_no
+	</select>
+	
+	
+	<!-- ==== 임시저장한 내용 중 결재선/참조자 목록 불러오기 ==== -->
+	<resultMap type="HashMap" id="getTempApprovalRefer_Map">
+		<result property="fk_member_userid" 	column="fk_member_userid" 		javaType="String" />
+		<result property="approval_step" 		column="approval_step" 			javaType="String" />
+	</resultMap>
+	<select id="getTempApprovalRefer" resultMap="getTempApprovalRefer_Map" parameterType="String">
+		select fk_member_userid, approval_step
+		from tbl_approval A join ( select member_userid
+		                            from tbl_member M join tbl_child_dept C
+		                            on M.fk_child_dept_no = C.child_dept_no
+		                            join tbl_parent_dept P
+		                            on C.fk_parent_dept_no = P.parent_dept_no ) B
+		on A.fk_member_userid = B.member_userid
+		where fk_draft_no = to_number(#{draft_no})
 	</select>
 	
 </mapper>

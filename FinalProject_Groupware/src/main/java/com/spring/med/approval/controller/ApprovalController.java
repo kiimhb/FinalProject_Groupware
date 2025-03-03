@@ -207,9 +207,10 @@ public class ApprovalController {
 	@PostMapping("insertToTemporaryStored")
 	@ResponseBody
 	public int insertToTemporaryStored(MultipartHttpServletRequest mtp_request) {
-		
+
 		Map<String, Object> paraMap = new HashMap<>();
-	
+		
+		paraMap.put("draftMode", mtp_request.getParameter("draftMode"));
 		paraMap.put("fk_member_userid", mtp_request.getParameter("fk_member_userid"));
 		paraMap.put("draft_no", mtp_request.getParameter("draft_no"));
 		paraMap.put("draft_form_type", mtp_request.getParameter("draft_form_type"));
@@ -220,7 +221,6 @@ public class ApprovalController {
 		paraMap.put("day_leave_end", mtp_request.getParameter("day_leave_end"));
 		paraMap.put("day_leave_cnt", mtp_request.getParameter("day_leave_cnt"));
 		paraMap.put("day_leave_reason", mtp_request.getParameter("day_leave_reason"));
-		
 		
 		try {
 			String mtp_approvalLineMember = mtp_request.getParameter("approvalLineMember");
@@ -291,7 +291,7 @@ public class ApprovalController {
 	    }
 		
 		int result = 0;
-		
+
 		// ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== //
 		if(attachFile == null) {
 			result = approvalService.insertToTemporaryStored(paraMap);
@@ -300,7 +300,7 @@ public class ApprovalController {
 		else if(attachFile != null) {
 			result = approvalService.insertToTemporaryStored_withFile(paraMap);
 		}
-		
+	
 		return result;
 	}
 	
@@ -416,13 +416,80 @@ public class ApprovalController {
 	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
 	@PostMapping("approvalTemporaryDetail")
 	public ModelAndView approvalTemporaryDetail(ModelAndView mav, @RequestParam String draft_no) {
-		
-		ApprovalVO approvalvo = approvalService.approvalTemporaryDetail(draft_no);
-		
+		System.out.println("확인 draft_no: " + draft_no);
+		HashMap<String, String> approvalvo = approvalService.approvalTemporaryDetail(draft_no);
+		System.out.println("확인 : " + approvalvo);
 		mav.addObject("approvalvo", approvalvo);
 		mav.setViewName("/content/approval/write");
 		
 		return mav;
+	}
+	
+	
+	// ==== 임시저장한 기존의 기안 양식 가져오기 ==== //
+	@GetMapping("writeDraftTemp")
+	public ModelAndView writeDraftTemp(ModelAndView mav,
+								   	   HttpServletRequest request,
+								   	   @RequestParam String typeSelect
+								   		) {
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		Map<String, Object> paraMap = new HashMap<>();
+		
+		if(loginuser != null) {
+			
+			// 기안자 정보 불러오기
+			//ApprovalVO memverInfo = approvalService.insertToApprovalLine(loginuser.getMember_userid());
+			
+			// 문서번호 생성
+			//String draft_no = approvalService.createDraftNo();
+			
+			// 기안일자 
+			LocalDate now = LocalDate.now();	// 현재날짜
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+			String now_date = now.format(formatter);
+
+			//paraMap.put("memverInfo", memverInfo);
+			//paraMap.put("draft_no", draft_no);		
+			paraMap.put("now_date", now_date);
+		}
+		
+		
+		if(typeSelect.equals("휴가신청서")) {
+			
+			// 잔여 연차 조회
+			String member_yeoncha = approvalService.leftoverYeoncha(loginuser.getMember_userid());
+			paraMap.put("member_yeoncha", member_yeoncha);	
+			
+			// 문서 양식
+			mav.setViewName("/content/approval/draftExamples/dayLeave");
+		}
+		else if(typeSelect.equals("지출결의서")) {
+			
+			mav.setViewName("/content/approval/draftExamples/dayLeave");
+		}
+		else if(typeSelect.equals("근무 변경 신청서")) {
+			mav.setViewName("/content/approval/draftExamples/dayLeave");			
+		}
+		else if(typeSelect.equals("출장신청서")) {
+			mav.setViewName("/content/approval/draftExamples/dayLeave");
+		}
+
+		mav.addObject("paraMap", paraMap);
+		
+		return mav;
+	}
+	
+	
+	// ==== 임시저장한 내용 중 결재선/참조자 목록 불러오기 ==== //
+	@GetMapping("getTempApprovalRefer")
+	@ResponseBody
+	public List<Map<String, String>> getTempApprovalRefer(@RequestParam String draft_no) {
+		System.out.println("draft_no :" + draft_no);
+		List<Map<String, String>> mapList = approvalService.getTempApprovalRefer(draft_no);
+		return mapList;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////

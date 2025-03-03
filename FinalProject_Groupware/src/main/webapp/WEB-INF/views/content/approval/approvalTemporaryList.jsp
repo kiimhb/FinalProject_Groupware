@@ -158,7 +158,7 @@ $(document).ready(function(){
 		const click_draft_no = $(this).children("td").eq(0).text();	// 클릭한 기안문의 문서번호
 		
 		const frm = document.detailTempFrm;
-		frm.draft_no.val = click_draft_no;
+		$("input[name='draft_no']").val(click_draft_no);
 		frm.method = "post";
 		frm.action = "<%= ctxPath%>/approval/approvalTemporaryDetail";
 		frm.submit();

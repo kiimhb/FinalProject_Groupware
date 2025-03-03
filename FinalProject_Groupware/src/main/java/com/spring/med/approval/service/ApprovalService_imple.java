@@ -82,9 +82,17 @@ public class ApprovalService_imple implements ApprovalService {
 		
 		int n1=0, n2=0, n3=0, n4=0, result=0;
 		
-		// >>> 1. (TBL_DRAFT)기안문서 테이블에 insert <<<
-		n1 = mapper_approvalDAO.insertToTemporaryStored_TBL_DRAFT(paraMap);
-		System.out.println("~~~~확인용 n1 : " + n1);
+		// insert / update 구분용
+		String draftMode = (String) paraMap.get("draftMode");
+		
+		// >>> 1. (TBL_DRAFT)기안문서 테이블에 insert 및 update <<<
+		if("insert".equals(draftMode)) {
+			n1 = mapper_approvalDAO.insertToTemporaryStored_TBL_DRAFT(paraMap);
+		}
+		else if ("update".equals(draftMode)) {
+			n1 = mapper_approvalDAO.updateToTemporaryStored_TBL_DRAFT(paraMap);
+			System.out.println("~~~~확인용 n1 : " + n1);
+		}
 		
 		//////////////////////////////////////////////////////////
 		// >>> 2. 기안문 양식 테이블에 insert <<<
@@ -93,9 +101,16 @@ public class ApprovalService_imple implements ApprovalService {
 		if(n1 == 1) {
 			
 			if("휴가신청서".equals(draft_form_type)) {
-				// [휴가신청서] 테이블에 insert
-				n2 = mapper_approvalDAO.insertToTemporaryStored_TBL_DAY_LEAVE(paraMap);
-				System.out.println("~~~~확인용 n2 : " + n2);
+				
+				if("insert".equals(draftMode)) {
+					// [휴가신청서] 테이블에 insert
+					n2 = mapper_approvalDAO.insertToTemporaryStored_TBL_DAY_LEAVE(paraMap);
+				}
+				else if ("update".equals(draftMode)) {
+					// [휴가신청서] 테이블에 update
+					n2 = mapper_approvalDAO.updateToTemporaryStored_TBL_DAY_LEAVE(paraMap);
+					System.out.println("~~~~확인용 n2 : " + n2);
+				}
 			}
 		}
 		//////////////////////////////////////////////////////////
@@ -105,9 +120,14 @@ public class ApprovalService_imple implements ApprovalService {
 		
 		boolean exist_line = false;
 		boolean exist_refer = false;
-		System.out.println("~~~~확인용 approvalLineMember : " + paraMap.get("approvalLineMember"));
-		System.out.println("~~~~확인용 referMember : " + paraMap.get("referMember"));
+
 		if(n2 == 1) {
+			
+			if("update".equals(draftMode)) {	
+				// 기존 결재선 및 참조자 삭제 
+				int del1 = mapper_approvalDAO.deleteToTemporaryStored_TBL_APPROVAL((String) paraMap.get("draft_no"));
+				System.out.println("del1 확인 ~~ :" + del1);	
+			}
 
 			if(paraMap.get("approvalLineMember") != null && !((Map<?, ?>) paraMap.get("approvalLineMember")).isEmpty()) {
 				
@@ -165,12 +185,21 @@ public class ApprovalService_imple implements ApprovalService {
 	@Override
 	@Transactional(value="transactionManager_final_orauser4" , propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class}) // 오류가 발생하면 무조건 rollback
 	public int insertToTemporaryStored_withFile(Map<String, Object> paraMap) {
-		System.out.println(paraMap);
+		
 		int n1=0, n2=0, n3=0, n4=0, result=0;
 		
-		// >>> 1. (TBL_DRAFT)기안문서 테이블에 insert_withFile <<<
-		n1 = mapper_approvalDAO.insertToTemporaryStored_TBL_DRAFT_withFile(paraMap);
-		System.out.println("~~~~확인용 n1 : " + n1);
+		// insert / update 구분용
+		String draftMode = (String) paraMap.get("draftMode");
+
+		// >>> 1. (TBL_DRAFT)기안문서 테이블에 insert_withFile 및 update_withFile <<<
+		if("insert".equals(draftMode)) {
+			n1 = mapper_approvalDAO.insertToTemporaryStored_TBL_DRAFT_withFile(paraMap);
+		}
+		else if ("update".equals(draftMode)) {
+			n1 = mapper_approvalDAO.updateToTemporaryStored_TBL_DRAFT_withFile(paraMap);
+			System.out.println("~~~~확인용 n1 : " + n1);
+		}
+		
 		
 		//////////////////////////////////////////////////////////
 		// >>> 2. 기안문 양식 테이블에 insert <<<
@@ -179,9 +208,16 @@ public class ApprovalService_imple implements ApprovalService {
 		if(n1 == 1) {
 			
 			if("휴가신청서".equals(draft_form_type)) {
-				// [휴가신청서] 테이블에 insert
-				n2 = mapper_approvalDAO.insertToTemporaryStored_TBL_DAY_LEAVE(paraMap);
-				System.out.println("~~~~확인용 n2 : " + n2);
+				
+				if ("insert".equals(draftMode)) {
+					// [휴가신청서] 테이블에 insert
+					n2 = mapper_approvalDAO.insertToTemporaryStored_TBL_DAY_LEAVE(paraMap);
+				}
+				else if ("update".equals(draftMode)) {
+					// [휴가신청서] 테이블에 update
+					n2 = mapper_approvalDAO.updateToTemporaryStored_TBL_DAY_LEAVE(paraMap);
+					System.out.println("~~~~확인용 n2 : " + n2);
+				}
 			}
 		}
 		//////////////////////////////////////////////////////////
@@ -189,8 +225,16 @@ public class ApprovalService_imple implements ApprovalService {
 		//Object approvalLineMember = paraMap.get("approvalLineMember");
 		//Object referMember = paraMap.get("referMember");
 		
+		boolean exist_line = false;
+		boolean exist_refer = false;
 		
 		if(n2 == 1) {
+			
+			if("update".equals(draftMode)) {	
+				// 기존 결재선 및 참조자 삭제 
+				int del1 = mapper_approvalDAO.deleteToTemporaryStored_TBL_APPROVAL((String) paraMap.get("draft_no"));
+				System.out.println("del1 확인 ~~ :" + del1);	
+			}
 
 			if(paraMap.get("approvalLineMember") != null && !((Map<?, ?>) paraMap.get("approvalLineMember")).isEmpty()) {
 				
@@ -207,6 +251,7 @@ public class ApprovalService_imple implements ApprovalService {
 				if(approvalLineMap.get("step3") != null) {n3 = mapper_approvalDAO.insertToTemporaryStored_approvalLine3_TBL_APPROVAL(approvalLineMap);}
 				
 				System.out.println("~~~~확인용 n3 : " + n3);	
+				exist_line = true;
 			}
 			
 			if(paraMap.get("referMember") != null && !((Map<?, ?>) paraMap.get("referMember")).isEmpty()) {
@@ -222,23 +267,25 @@ public class ApprovalService_imple implements ApprovalService {
 				if(referMemberMap.get("step2") != null) {n4 = mapper_approvalDAO.insertToTemporaryStored_referMember2_TBL_APPROVAL(referMemberMap);}
 				if(referMemberMap.get("step3") != null) {n4 = mapper_approvalDAO.insertToTemporaryStored_referMember3_TBL_APPROVAL(referMemberMap);}
 				System.out.println("~~~~확인용 n4 : " + n4);
+				exist_refer = true;
 			}	
 		}	
 		
-		if(paraMap.get("approvalLineMember") == null && paraMap.get("referMember") == null) {
+		if(!exist_line  && !exist_refer) {
 			result = n1*n2;
 		}
-		else if (paraMap.get("approvalLineMember") != null && paraMap.get("referMember") == null) {
+		else if (exist_line && !exist_refer) {
 			result = n1*n2*n3;
 		}
-		else if (paraMap.get("approvalLineMember") == null && paraMap.get("referMember") != null) {
+		else if (!exist_line && exist_refer) {
 			result = n1*n2*n4;
 		}
-		else if (paraMap.get("approvalLineMember") != null && paraMap.get("referMember") != null) {
+		else if (exist_line && exist_refer) {
 			result = n1*n2*n3*n4;
 		}
-
+		System.out.println("~~~~확인용 result : " + result);
 		return result;
+
 	}
 
 	// ==== 임시저장함 기안문 불러오기 ==== //
@@ -259,10 +306,19 @@ public class ApprovalService_imple implements ApprovalService {
 
 	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
 	@Override
-	public ApprovalVO approvalTemporaryDetail(String draft_no) {
+	public HashMap<String, String> approvalTemporaryDetail(String draft_no) {
 		
-		ApprovalVO approvalvo = mapper_approvalDAO.approvalTemporaryDetail(draft_no);
+		HashMap<String, String> approvalvo = mapper_approvalDAO.approvalTemporaryDetail(draft_no);
+		System.out.println("확인2 : " + approvalvo);
 		return approvalvo;
+	}
+
+	// ==== 임시저장한 내용 중 결재선/참조자 목록 불러오기 ==== //
+	@Override
+	public List<Map<String, String>> getTempApprovalRefer(String draft_no) {
+		
+		List<Map<String, String>> mapList = mapper_approvalDAO.getTempApprovalRefer(draft_no);
+		return mapList;
 	}
 
 

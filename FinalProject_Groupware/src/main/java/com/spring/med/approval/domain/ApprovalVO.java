@@ -34,8 +34,16 @@ public class ApprovalVO {
 	
 	// === Join === //
 	private DayLeaveVO dayLeaveVO;
+	private WorkChangeVO workchangeVO;
+
 
 	// === Method === //
+	public WorkChangeVO getWorkchangeVO() {
+		return workchangeVO;
+	}
+	public void setWorkchangeVO(WorkChangeVO workchangeVO) {
+		this.workchangeVO = workchangeVO;
+	}
 	public DayLeaveVO getDayLeaveVO() {
 		return dayLeaveVO;
 	}

@@ -82,9 +82,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 
-	// 페이지 로드 시 오전반차 체크
 	$("input:radio[id='amDay']").prop("checked", true);
-	
 	
 	// ==== 오늘날짜 이후부터 선택하도록 한다 ==== //
 	// 오늘 날짜 구하기
@@ -293,8 +291,9 @@ function charCount(text, limit) {
 <%-- ===================================================================== --%>
 <body>
 	<div class="draftContainer" style="height: 600px; overflow: auto;">
+		<input type="hidden" id="draftMode" value="insert" /> 
 		<h2 id="draftSubject" style="text-align: center;">휴가신청서</h2>
-		
+
 		<form action="">
 			<div class="topTables" style="display: flex;">
 				<div style="border: solid 0px blue; flex: 2; vertical-align: top;">
@@ -302,19 +301,19 @@ function charCount(text, limit) {
 					<table class="table-bordered" style="width: 80%;">
 						<tr>
 							<td class="table_title">기안자</td>
-							<td><span id="member_userid" style="display: none;">${requestScope.paraMap.memverInfo.member_userid}</span>${requestScope.paraMap.memverInfo.member_name}</td>
+							<td id="member_name"><span id="member_userid" style="display: none;">${requestScope.paraMap.memverInfo.member_userid}</span>${requestScope.paraMap.memverInfo.member_name}</td>
 						</tr>
 						<tr>
 							<td class="table_title">부문</td>
-							<td>${requestScope.paraMap.memverInfo.parent_dept_name}</td>
+							<td id="parent_dept_name">${requestScope.paraMap.memverInfo.parent_dept_name}</td>
 						</tr>
 						<tr>
 							<td class="table_title">부서</td>
-							<td>${requestScope.paraMap.memverInfo.child_dept_name}</td>
+							<td id="child_dept_name">${requestScope.paraMap.memverInfo.child_dept_name}</td>
 						</tr>
 						<tr>
 							<td class="table_title">직책</td>
-							<td>${requestScope.paraMap.memverInfo.member_position}</td>
+							<td id="member_position">${requestScope.paraMap.memverInfo.member_position}</td>
 						</tr>
 						<tr>
 							<td class="table_title">기안일</td>

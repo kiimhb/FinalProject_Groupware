@@ -43,7 +43,10 @@ public interface ApprovalService {
 	int getTotalCount(Map<String, String> paraMap);
 
 	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
-	ApprovalVO approvalTemporaryDetail(String draft_no);
+	HashMap<String, String> approvalTemporaryDetail(String draft_no);
+
+	// ==== 임시저장한 내용 중 결재선/참조자 목록 불러오기 ==== //
+	List<Map<String, String>> getTempApprovalRefer(String draft_no);
 
 
 

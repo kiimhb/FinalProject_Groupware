@@ -34,7 +34,6 @@ public interface ApprovalDAO {
 	String leftoverYeoncha(String member_userid);
 
 	/////////////////////////////////////////////////
-	// ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== //
 	// >>> 1. (TBL_DRAFT)기안문서 테이블에 insert <<<  //
 	int insertToTemporaryStored_TBL_DRAFT(Map<String, Object> paraMap);
 	// >>> 1. (TBL_DRAFT)기안문서 테이블에 insert_withFile <<<  //
@@ -55,7 +54,21 @@ public interface ApprovalDAO {
 	int insertToTemporaryStored_referMember2_TBL_APPROVAL(Map<String, String> referMemberMap);
 	int insertToTemporaryStored_referMember3_TBL_APPROVAL(Map<String, String> referMemberMap);
 	/////////////////////////////////////////////////
+	
+	// >>> 1. (TBL_DRAFT)기안문서 테이블에 update <<<  //
+	int updateToTemporaryStored_TBL_DRAFT(Map<String, Object> paraMap);
+	// >>> 1. (TBL_DRAFT)기안문서 테이블에 update_withFile <<<  //
+	int updateToTemporaryStored_TBL_DRAFT_withFile(Map<String, Object> paraMap);
 
+	// >>> 2. 기안문 양식 테이블에 update <<<
+	// [휴가신청서] 테이블에 update
+	int updateToTemporaryStored_TBL_DAY_LEAVE(Map<String, Object> paraMap);
+	
+	// >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert <<<
+	// 기존 결재선 및 참조자 삭제 
+	int deleteToTemporaryStored_TBL_APPROVAL(String draft_no);
+	/////////////////////////////////////////////////	
+	
 	// ==== 임시저장함 기안문 불러오기 ==== //
 	List<ApprovalVO> selectTemporaryList(Map<String, String> paraMap);
 
@@ -63,7 +76,18 @@ public interface ApprovalDAO {
 	int getTotalCount(Map<String, String> paraMap);
 
 	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
-	ApprovalVO approvalTemporaryDetail(String draft_no);
+	HashMap<String, String> approvalTemporaryDetail(String draft_no);
+
+	// ==== 임시저장한 내용 중 결재선/참조자 목록 불러오기 ==== //
+	List<Map<String, String>> getTempApprovalRefer(String draft_no);
+
+
+
+
+
+
+
+
 
 	
 
