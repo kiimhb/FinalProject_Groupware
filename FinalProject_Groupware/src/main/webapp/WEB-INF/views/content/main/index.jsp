@@ -13,34 +13,6 @@
  <%-- 직접 만든 CSS 1 --%>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/main.css" />
 
-<style type="text/css">
-/* ========== full calendar css 시작 ========== */
-div#calendar{
-	width:640px;
-	height:400px;
-}
-
-a.fc-dom-24, a.fc-dom-24:hover, .fc-daygrid {
-    color: #FF0000;
-    text-decoration: none;
-    background-color: transparent;
-    cursor: pointer;
-} 
-
-.fc-sat { color: #0000FF; }    /* 토요일 */
-.fc-sun { color: #FF0000; }    /* 일요일 */
-/* ========== full calendar css 끝 ========== */
-
-ul{
-	list-style: none;
-}
-
-button.btn_edit{
-	border: none;
-	background-color: #fff;
-}
-</style>
-
 <!-- full calendar에 관련된 script -->
 <script src='<%=ctxPath%>/fullcalendar_5.10.1/main.min.js'></script>
 <script src='<%=ctxPath%>/fullcalendar_5.10.1/ko.js'></script>
@@ -51,6 +23,8 @@ button.btn_edit{
 
 
 <script type="text/javascript">
+
+<!-- 일정관리 시작 -->
 $(document).ready(function(){
 var calendarE2 = document.getElementById('calendar');
 var calendar = new FullCalendar.Calendar(calendarE2, {
@@ -138,17 +112,299 @@ var calendar = new FullCalendar.Calendar(calendarE2, {
 
 calendar.render();  // 풀캘린더 보여주기
 });
+<!-- 일정관리 끝 -->
+
+
+
+<!-- 출퇴근 현황 시작 -->
+$(document).ready(function(){  
+	
+	// 타이머 표시
+	clock();
+	
+	// 월 표시하기 (한달단위)
+	const now = new Date();
+	const month = now.getMonth() + 1;
+	$("span.month").html(month+"월");
+	
+	// 사번알아오기
+	const member_userid = $("input.member_userid").val();	
+	
+	// 페이지 로딩과 동시에 오늘 출근을 이미 했는지 여부 확인 (출근 버튼 비활성화)
+	$.ajax({
+		url:"<%= ctxPath%>/already_check_in",
+		type: "GET", 
+		data:{"member_userid":member_userid},
+        dataType: "json",
+        success:function(response){	
+       		if(response.already_check_in) {
+        		$("button.sbtn").attr("disabled", true); // 출근 기록이 있으면 출근 버튼 비활성화
+        	}
+        },
+ 	    	error: function(request, status, error){
+	   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+	}); // end of $.ajax 
+	
+	
+	
+	// 페이지 로딩과 동시에 오늘 퇴근을 이미 했는지 여부 확인 (퇴근 버튼 비활성화)
+	$.ajax({
+		url:"<%= ctxPath%>/already_check_out",
+		type: "GET", 
+		data:{"member_userid":member_userid},
+        dataType: "json",
+        success:function(response){	
+       		if(response.already_check_out) {
+        		$("button.ebtn").attr("disabled", true); // 퇴근 기록이 있으면 비활성화
+        	}
+        },
+ 	    	error: function(request, status, error){
+	   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+	}); // end of $.ajax 
+	
+
+	// 출근하기 버튼 
+	$("button.sbtn").on("click", function(){
+
+		const member_userid = $(this).val();	// 사번알아오기
+		const work_starttime = nowtime(); 		// 지금시간
+		
+		$.ajax({
+			url:"<%= ctxPath%>/check_in",
+			type: "POST", 
+			data:{"member_userid":member_userid,
+				  "work_starttime":work_starttime},
+	        dataType: "json",
+	        success:function(response){	
+	        	alert(response.message);
+	        	$("button.sbtn").attr("disabled", true); 
+	        	location.reload(true);
+	        },
+ 	    	error: function(error){
+   	    		let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";
+ 	   	   		alert(errorMessage);
+		    }
+		
+		}); // end of $.ajax 
+		
+	}); // end of $("button.sbtn").on("click", function()
+	
+	
+	// 퇴근하기 버튼 
+	$("button.ebtn").on("click", function(){
+		
+		const member_userid = $(this).val();	// 사번알아오기
+		const work_endtime = nowtime(); 		// 지금시간
+		const work_recorddate = nowday(); // 오늘 년-월-일
+		
+		// alert(member_userid+work_endtime+work_recorddate);
+		
+		$.ajax({
+			url:"<%= ctxPath%>/check_out",
+			type: "POST",
+			data:{"member_userid":member_userid,
+				  "work_recorddate":work_recorddate,
+				  "work_endtime":work_endtime},
+	        dataType: "json",
+	        success:function(response){	
+	        	alert(response.message);
+	        	$("button.ebtn").attr("disabled", true); 
+	        	location.reload(true);
+	        },
+ 	    	error: function(error){
+   	    		let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";
+ 	   	   		alert(errorMessage);
+		    }
+		
+		}); // end of $.ajax 
+	});
+	
+});
+
+//현재 시간 타이머 
+function clock() {
+	
+ 	const now = new Date();
+ 	const daysOfWeek = ["일","월","화","수","목","금","토"];
+ 	const dayOfWeek = daysOfWeek[now.getDay()];
+ 	const year = now.getFullYear();
+ 	const month = (now.getMonth()+1).toString().padStart(2, '0');
+ 	const day = now.getDate().toString().padStart(2, '0')
+ 	
+ 	const hour = now.getHours();
+ 	const minutes = now.getMinutes().toString().padStart(2, '0');
+ 	const seconds = now.getSeconds().toString().padStart(2, '0');
+
+ 	let ampm = 'AM';
+ 	let displayhours = hour;
+ 	
+ 	if(hour >= 12) {
+ 		ampm = 'PM';
+ 		displayhours = hour % 12;
+ 		if(displayhours === 0) {
+ 			displayhours = 12;
+ 		}
+ 		
+ 	}
+
+ 	const timeString = `\${year}-\${month}-\${day} (\${dayOfWeek}) \${displayhours}:\${minutes}:\${seconds} \${ampm}`
+	document.getElementById('clock').textContent = timeString;
+}
+
+// 1 초마다 타이머 업데이트
+setInterval(clock, 1000); 
+
+// 현재 날짜
+function nowday() {
+	const currentDate = new Date();
+			
+	const year = currentDate.getFullYear();
+	const month = currentDate.getMonth() + 1;
+	const day = currentDate.getDate();
+	
+	const nowday = `\${year}-\${String(month).padStart(2, '0')}-\${String(day).padStart(2, '0')}`;	
+	return `\${nowday}`
+}
+
+// 현재시간
+function nowtime() {
+	const currentDate = new Date();
+			
+	const hours = currentDate.getHours();
+	const minutes = currentDate.getMinutes();
+	const seconds = currentDate.getSeconds();
+	
+	const time = `\${String(hours).padStart(2, '0')}:\${String(minutes).padStart(2, '0')}:\${String(seconds).padStart(2, '0')}`;
+	
+	return `\${time}`
+}
+<!-- 출퇴근 현황 끝 -->
+
+
+
+
+//공지사항 디테일 페이지로 이동
+function detailNotice(notice_no) {
+	// alert(notice_no);	
+	window.location.href = `<%= ctxPath%>/notice/detail/\${notice_no}`;
+}
 </script>
 
 
 
  <div class="main_container">
 
-<div class="box_notice">공지사항</div>
-<div class="box_attendance">출퇴근 현황</div>
-<div class="box_reservation">오늘 환자 예약 명단</div>
+
+<!-- 출퇴근 현황 시작 -->
+	<div class="box_attendance">
+		<input type="hidden" class="member_userid"
+			value="${requestScope.member_userid}" />
+		<h6 class="main_h6"><a class="sideBarCSS" href="<%=ctxPath%>/commuteRecord">출퇴근 현황</a></h6>
+
+		<div class="main_time">
+			<div class="today">Today</div>
+			<div id="clock"></div>
+			
+		<i class="fa-regular fa-clock"><span class="recordText_1">&nbsp;${requestScope.member_name}</span>
+				<span class="recordText">님의 출퇴근현황</span></i>
+		</div>
+		
+		<div class="recordbtn">
+			<div class="startbtn">
+				<button type="button" class="sbtn main_att_btn"
+					value="${requestScope.member_userid}">출근</button>
+				<c:if test="${not empty requestScope.TodayStartRecord}">
+					<c:if test="${empty TodayStartRecord.work_starttime}">
+						<span class="times">출근 기록 없음</span>
+					</c:if>
+					<c:if test="${not empty TodayStartRecord.work_starttime}">
+						<span class="times">${TodayStartRecord.work_starttime}</span>
+					</c:if>
+					<c:choose>
+						<c:when test="${TodayStartRecord.work_startstatus eq 0}"> 정상 출근 </c:when>
+						<c:when test="${TodayStartRecord.work_startstatus eq 1}"> 지각 </c:when>
+						<c:when test="${TodayStartRecord.work_startstatus eq 2}"> 결근 </c:when>
+					</c:choose>
+				</c:if>
+				<c:if test="${empty requestScope.TodayStartRecord}"><span class="times">출근 기록 없음</span></c:if>
+			</div>
+
+			<div class="endbtn">
+				<button type="button" class="ebtn main_att_btn"
+					value="${requestScope.member_userid}">퇴근</button>
+				<c:if test="${not empty requestScope.TodayEndRecord}">
+					<c:if test="${empty TodayEndRecord.work_endtime}">
+						<span class="times">퇴근 기록 없음</span>
+					</c:if>
+					<c:if test="${not empty TodayEndRecord.work_endtime}">
+						<span class="times">${TodayEndRecord.work_endtime}</span>
+					</c:if>
+					<c:choose>
+						<c:when test="${TodayEndRecord.work_endstatus eq 0}">퇴근</c:when>
+						<c:when test="${TodayEndRecord.work_endstatus eq 1}">조퇴</c:when>
+						<c:when test="${TodayEndRecord.work_endstatus eq 2}">결근</c:when>
+					</c:choose>
+				</c:if>
+				<c:if test="${empty requestScope.TodayEndRecord}"><span class="times">퇴근 기록 없음</span></c:if>
+			</div>
+		</div>
+	</div>
+<!-- 출퇴근 현황 끝 -->
+
+
+<!-- 공지사항 시작 -->
+	<div class="box_notice">
+		<h6 class="main_h6"><a class="sideBarCSS" href="<%=ctxPath%>/notice/list">공지사항 총 <span style="color:#f68b1f;">${requestScope.totalCount}건</span></a></h6>
+		
+		<c:forEach var="nvo" items="${requestScope.notice_list}">
+			<div class="main_article_one_row" data-id="${nvo.notice_fix}"
+				onclick="detailNotice(`${nvo.notice_no}`)">
+
+				<div class="main_article">
+
+					<div class="main_article_title"
+						style="${nvo.notice_fix eq '1' ? 'color:black; font-weight:bold;' : ''}">
+						<c:if test="${nvo.notice_fix eq '1'}">
+							<i class="fa-solid fa-thumbtack"></i>
+						</c:if>
+						${nvo.notice_title}
+						<c:if test="${not empty nvo.notice_fileName}">
+							<i class="fa-solid fa-paperclip" style="color: #509d9c;"></i>
+						</c:if>
+					</div>
+				</div>
+
+				<div class="main_article_info">${nvo.notice_write_date}
+					<c:choose>
+						<c:when
+							test="${nvo.fk_child_dept_no >= 1 and nvo.fk_child_dept_no <= 7}">
+							<td>진료부</td>
+						</c:when>
+						<c:when
+							test="${nvo.fk_child_dept_no >= 8 and nvo.fk_child_dept_no <= 10}">
+							<td>간호부</td>
+						</c:when>
+						<c:when
+							test="${nvo.fk_child_dept_no >= 11 and nvo.fk_child_dept_no <= 13}">
+							<td>경영지원부</td>
+						</c:when>
+					</c:choose>
+				</div>
+			</div>
+		</c:forEach>
+	
+	</div>
+<!-- 공지사항 끝 -->
+
+
+	
+	
+<!-- 일정관리 시작 -->	
 	<div class="box_schedule">
 		<div>
+		<h6 class="main_h6"><a class="sideBarCSS" href="<%=ctxPath%>/schedule/scheduleManagement" >일정관리</a></h6>
 			<div id="wrapper1">
 				<input type="hidden" value="${sessionScope.loginuser.member_userid}"
 					id="fk_member_userid" />
@@ -162,7 +418,15 @@ calendar.render();  // 풀캘린더 보여주기
 			</form>
 		</div>
 	</div>
-	<div class="box_weather">날씨</div>
+<!-- 일정관리 끝 -->	
+	
+	
+	
+	
+	
+<div class="box_reservation">오늘 환자 예약 명단</div>
+
+<div class="box_weather">날씨</div>
 <div class="box_payment">전자결재</div>
 
 </div>

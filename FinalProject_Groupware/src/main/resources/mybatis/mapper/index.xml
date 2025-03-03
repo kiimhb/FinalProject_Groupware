@@ -5,6 +5,54 @@
 
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="index">
-
+<!-- 출근기록 목록 -->
+	<resultMap id="StartRecord_map" type="HashMap" >
+	    <result property="work_recorddate"  	column="work_recorddate" 		javaType="String" />
+	    <result property="work_starttime" 		column="work_starttime" 		javaType="String" />
+	    <result property="work_startstatus" 	column="work_startstatus"    	javaType="String" />
+	</resultMap>
+	<select id="StartRecord" parameterType="String" resultMap="StartRecord_map">
+	select to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_starttime, 'hh24:mi:ss') as work_starttime, work_startstatus
+    from tbl_work a join tbl_member b
+    on a.fk_member_userid = b.member_userid
+    WHERE TRUNC(work_recorddate) = to_char(TRUNC(SYSDATE))
+          and fk_member_userid = #{member_userid}
+    order by work_recorddate desc
+	</select>
+	
+	<!-- 퇴근기록 목록 -->
+	<resultMap id="EndRecord_map" type="HashMap" >
+	    <result property="work_recorddate"  	column="work_recorddate" 		javaType="String" />
+	    <result property="work_endtime"   		column="work_endtime" 			javaType="String" />
+	    <result property="work_endstatus"    	column="work_endstatus" 		javaType="String" />
+	</resultMap>
+	<select id="EndRecord" parameterType="String" resultMap="EndRecord_map">
+    select to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_endtime, 'hh24:mi:ss') as work_endtime, work_endstatus
+    from tbl_work a join tbl_member b
+    on a.fk_member_userid = b.member_userid
+    WHERE TRUNC(work_recorddate) = to_char(TRUNC(SYSDATE))
+          and fk_member_userid = #{member_userid} and work_endstatus is not null
+    order by work_recorddate desc
+	</select>
+	
+	<!-- 공지사항 목록 불러오기  -->
+	<select id="notice_list" parameterType="NoticeVO" resultType="NoticeVO">
+		select *
+		from
+		(
+		   	select rownum as rno, notice_no, fk_member_userid,  fk_child_dept_no, notice_dept, 
+ 			case when length(notice_title) > 23 then substr(notice_title,1,30) || ' ...' else notice_title end as notice_title,
+       			   notice_content, notice_fix, notice_del, notice_view_cnt, notice_filename, 
+           		   to_char(notice_write_date, 'yyyy-mm-dd') as notice_write_date
+		    from tbl_notice a join tbl_member b
+		    on a.fk_member_userid = b.member_userid
+		    where notice_dept in 
+		    <foreach item="parent_dept_no" collection="parent_deptList" open="(" separator="," close=")">
+		    	#{parent_dept_no}
+		    </foreach>
+		    order by notice_fix desc, notice_write_date desc
+		)
+		where rno BETWEEN 1 AND 4
+	</select>
 	
 </mapper>

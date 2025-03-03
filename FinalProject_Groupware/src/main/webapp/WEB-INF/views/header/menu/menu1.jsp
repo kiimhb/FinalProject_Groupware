@@ -47,7 +47,19 @@
 
 %>
 --%>
+<script type="text/javascript">
+function toggleAlarm() {
+	  var AlarmBox = document.getElementById("Alarm_box");
+	  // 알림 박스가 보일 때는 숨기고, 숨겨져 있을 때는 보이게 하기
+	  if (AlarmBox.style.display === "block") {
+		  AlarmBox.style.display = "none";
+	  } else {
+		  AlarmBox.style.display = "block";
+	  }
+	}
 
+
+</script>
 
 
     <%-- 상단 네비게이션 시작 --%>
@@ -64,27 +76,17 @@
 		</a>
 		
 		<div class="navbar_menu">
-		<div class="dropdown">
-			<button type="button" class="dropdown-btn"><i class="fa-solid fa-bell"></i></button>
-			<!-- <div class="dropdown-content">
-				<div class="notification">
-					[전체]공지사항 [급여관련 변경사항] ..... <span>5초 전</span>
-				</div>
-				<div class="notification">
-					[전체]공지사항 [급여관련 변경사항] ..... <span>1일 전</span>
-				</div>
-				<div class="notification">
-					[부서]공지사항 [휴가기획서 결재관] <span>3일 전</span>
-				</div>
-				<div class="notification">
-					[부서]공지사항 [외래 안전교육관련] <span>3일 전</span>
-				</div>
-				<div class="notification">
-					[전체]공지사항 [기안서 마감기간 관] <span>한달 전</span>
-				</div>
-			</div> -->
-		</div>
+		
+			<button type="button"  class="dropdown-btn nav_button_css" onclick="toggleAlarm()">
+				<i class="fa-solid fa-bell nav_i_css1"></i>
+			</button>
 
-		<a href="<%=ctxPath%>" class="navbar_menu1"><i class="fa-solid fa-comments"></i></a>
+			<div id="Alarm_box" class="Alarm_box">
+				<div class="Alarm_main_box"> <p>빨리합시다.</p><p>빨리합시다.</p><p>빨리합시다.</p><p>빨리합시다.</p></div>
+				<div  class="Alarm_sub_box"> 알림이 0건 있습니다. </div>
+			</div>
+	
+
+		<button type="button" class="nav_button_css" ><i class="fa-solid fa-comments nav_i_css2"></i></button>
 		</div>
 	</nav>

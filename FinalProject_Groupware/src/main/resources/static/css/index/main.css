@@ -1,20 +1,165 @@
 @charset "UTF-8";
 
-
 div.main_container {
-display: grid;
-grid-template-columns: 2fr 1fr;
-grid-template-rows: auto auto auto;
-gap: 10px;
-padding: 20px;
-max-width: 1200px;
-margin: auto;
+    overflow: hidden;
+    display: flex; 
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;                            
+    padding: 10px;
+    max-width: 1250px;
+    margin: auto;
+    justify-items: start;                 
+    align-items: start;                  
 }
 
-div.box_schedule {
-border: solid 1px gray;
-width:640px;
-height:400px;
-border-radius: 5px;
-text-align: center;
+
+h6.main_h6 {
+	margin-top: 10px;
+	display: flex;
+	justify-content: flex-start;
 }
+
+
+
+
+/* 출퇴근 현황  */
+div.box_attendance {
+	box-sizing: border-box;
+	border: solid 1px silver;
+	padding:10px;
+	width: 500px;
+	height: 270px;
+}
+
+div.main_time {
+	text-align: center;
+	font-weight: bold;
+}
+
+div.today, div#clock{
+	font-size: 20px;
+	margin-bottom: 5px;
+}
+
+span.recordText_1{
+	font-weight: bold;
+}
+
+div.recordbtn{
+	margin-top: 8px;
+	margin-left: 140px;
+}
+
+button.main_att_btn{
+	border: none;
+	margin: 10px;
+	padding: 5px;
+	width: 70px;
+}
+
+button.sbtn:not(:disabled), button.ebtn:not(:disabled) {
+  background: linear-gradient(#006769, #509d9c); 
+  color: white;
+}
+button.sbtn:disabled , button.ebtn:disabled {
+  background-color: eee; 
+  color: #A9A9A9;
+}
+
+
+
+
+/* 공지사항 */
+div.box_notice{
+	border: solid 1px orange;
+	/* border-radius: 5px; */
+	width: 700px;
+	height: 270px;
+	padding:10px;
+}
+
+div.main_article, div.main_article_info, i.fa-thumbtack {
+	display: inline-block;
+	cursor: pointer;
+}
+
+div.main_article_one_row {
+    display: inline-block; 
+    margin-top:3px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    border-bottom: solid 1px silver; 
+
+}
+div.main_article_info{
+	color: #4c4d4f;
+	font-size: 12px;
+}
+
+
+
+/* 오늘 환자 예약 명단 */
+div.box_reservation{
+	border: solid 1px teal;
+	width: 500px;
+	height: 400px;
+}
+
+
+/* 일정관리 */
+div.box_schedule {
+	border: solid 1px gray;
+	width: 640px;
+	height: 450px;
+	border-radius: 5px;
+	text-align: center;
+}
+
+div#calendar {
+	box-sizing: border-box;
+	width: 640px;
+	height: 400px;
+}
+
+a.fc-dom-24, a.fc-dom-24:hover, .fc-daygrid {
+	color: #FF0000;
+	text-decoration: none;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.fc-sat {
+	color: #0000FF;
+} /* 토요일 */
+.fc-sun {
+	color: #FF0000;
+} /* 일요일 */
+ul {
+	list-style: none;
+}
+
+button.btn_edit {
+	border: none;
+	background-color: #fff;
+}
+
+/* 오늘의 날씨 */
+div.box_weather{
+	border: solid 1px yellow;
+	width: 500px;
+	height: 400px;
+	
+}
+
+
+/* 전자결재 */
+div.box_payment{
+	border: solid 1px maroon;
+	width: 640px;
+	height: 400px;
+	
+}
+

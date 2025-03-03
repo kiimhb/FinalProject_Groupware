@@ -118,6 +118,7 @@ public class ManagementService_imple implements ManagementService {
 		return mav;
 	}
 
+
 	// ==== 사원 전체조회 ==== //
 	@Override
 	public List<ManagementVO_ga> Manag_List(Map<String, String> paraMap) {
@@ -147,6 +148,9 @@ public class ManagementService_imple implements ManagementService {
 		ManagementVO_ga member_one = manaDAO.getView_member_one(paraMap);
 		return member_one;
 	}
+
+
+
 
 
 	

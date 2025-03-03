@@ -28,7 +28,9 @@ font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
 }
 
 #mycontent {
-    min-height: 760px;
+	display: flex;
+    flex-direction: column;
+    min-height: 960px;
     margin-left: 250px;  /* 사이드바가 열렸을 때 */
     transition: margin-left 0.3s ease-in-out; /* 사이드바와 함께 콘텐츠의 이동을 부드럽게 */
     border: solid 1px red;
@@ -50,17 +52,41 @@ font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
 
 /* 프로필 창 */
 div.profile {
-    margin: 40px;
-    border: solid 1px black;
+	margin-top: 38px;
+	margin-bottom: 19px;
+	padding: 0 12px;
+    text-align: center;
+}
+
+button[name="mypage"] {
+	border: none;      
+    outline: none;     
+    background: none;  
+    cursor: pointer;   
+    font-size: 14px;
+    margin-bottom: 13px; 
+    text-decoration: underline;
+	color:#8ac2bd;
+}
+
+div.logout{
+	margin:0 60px 0 60px;
+	padding:2px;
+	background-color:  #006769;
+	border-radius: 5px;
+	cursor: pointer;  
+}
+a.logoutcss{
+	color: white;
 }
 
 /* 사이드바 */
 .sidebar {
-    border: solid 1px navy;
-    height: 760px;
-    width: 250px; /* 사이드바가 펼쳐졌을 때 */
-    position: absolute; /* 고정되지 않고 페이지 흐름을 따름 */
-    transition: width 0.3s ease-in-out; /* 사이드바가 열리고 닫힐 때 부드러운 전환 */
+	/* border: solid 1px navy; */
+	min-height: 960px;
+	width: 250px;
+	position: absolute; 
+	transition: width 0.3s ease-in-out; 
 }
 
 /* 사이드바가 접힐 때 */
@@ -117,8 +143,8 @@ i.sideBarICSS{
 /*  로고  */
 div.logo-container {
     display: flex;
-    align-items: center; /* 로고와 텍스트를 세로 중앙 정렬 */
-    gap: 8px; /* 로고와 텍스트 간격 조정 */
+    align-items: center; 
+    gap: 8px; 
 }
 
 img.logo-img {
@@ -128,8 +154,8 @@ img.logo-img {
 
 div.logo-text {
     display: flex;
-    flex-direction: column; /* 텍스트를 위아래 정렬 */
-    line-height: 1.2; /* 텍스트 간격 조정 */
+    flex-direction: column;
+    line-height: 1.2; 
 }
 
 
@@ -144,3 +170,75 @@ span.main_logo2{
 }
 
 /* meun 알림창*/
+div.navbar_menu{
+	padding: 7px;
+	margin-right: 60px;
+}
+
+button.nav_button_css{
+	border: none;
+	background-color: transparent;
+}
+
+i.nav_i_css1, i.nav_i_css2{
+	font-size: 25px;
+}
+
+i.nav_i_css1 {
+	background: linear-gradient(to bottom, #FF8C00, #FF6F61);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+i.nav_i_css2 {
+	background: linear-gradient(to bottom, #1E90FF, #212121);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+div.Alarm_box {
+  display: none;
+  position: absolute;
+  top: 65px;
+  right: 50px;
+  border: 1px solid #ccc;
+  background-color:#FAFAFA;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  height:400px;
+  border-radius: 5px;
+  z-index: 999;
+}
+
+div.Alarm_box::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 26%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #FAFAFA; 
+  z-index: 1000;
+}
+
+
+/* 주요 알림 박스 */
+div.Alarm_main_box {
+	width: 280px;
+	height: 340px;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	margin-bottom: 10px;
+	background-color: white;
+}
+
+/* 서브 알림 박스 */
+div.Alarm_sub_box {
+  font-size: 12px;
+  color: #888;
+  padding: 5px 0;
+  text-align: center;
+  height: 20px;
+}

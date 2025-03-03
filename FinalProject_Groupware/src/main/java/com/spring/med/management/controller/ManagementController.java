@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -222,7 +223,27 @@ public class ManagementController {
 	}
 	// === 메인페이지 이전 로그인 폼 페이지 요청 끝 === //
 	
+	// === 사이드바 프로필 요청 시작 === //
+	@PostMapping("sideProfile")
+	@ResponseBody
+	public String sideProfile(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
 
+		Map<String, String> paramMap = new HashMap<>();
+		paramMap.put("member_userid", loginuser.getMember_userid());
+
+	    ManagementVO_ga sideProfile = managService.getView_member_one(paramMap);
+	    JSONObject jsonObj = new JSONObject();
+	    jsonObj.put("member_pro_filename", sideProfile.getMember_pro_filename());
+	    jsonObj.put("member_name", sideProfile.getMember_name());
+	    jsonObj.put("child_dept_name", sideProfile.getChildVO().getChild_dept_name());
+	    jsonObj.put("member_position", sideProfile.getMember_position());
+	    
+	    return jsonObj.toString();
+	}
+	// === 사이드바 프로필 요청 끝 === //
 	
 	
 	// === 사원목록 페이지 조회 요청 시작 === //
@@ -360,6 +381,7 @@ public class ManagementController {
 		
 		return mapList;
 	}
+
 	
 	// === 인사관리 회원수정 한명의 멤버 조회 === //
 	@PostMapping("managementone")
