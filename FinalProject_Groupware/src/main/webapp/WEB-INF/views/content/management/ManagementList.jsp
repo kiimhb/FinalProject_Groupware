@@ -105,8 +105,7 @@ function goSearch() {
  
 //===사원수정기능 js===//
 function goEdit(member_userid) {
-	
-         
+
     $.ajax({
         url: "<%= ctxPath%>/management/managementone",
         data: { "member_userid": member_userid },
@@ -126,7 +125,10 @@ function goEdit(member_userid) {
                                 <h5 class="modal-title" id="EditViewLabel">사원 정보 수정</h5>
                             </div>
                             <div class="modal-body">
-                            	<img width="50" height="50" src="<%=ctxPath%>/resources/profile/\${json.member_pro_filename}" alt="프로필">
+                            	<img id="previewimg" width="50" height="50" src="<%=ctxPath%>/resources/profile/\${json.member_pro_filename}" alt="프로필">
+                            	<input type="file" name="attach" class="img_file"  accept="image/*"  />
+                            	
+                            	
                                 <input type="text" name="member_userid" id="member_userid" value=\${json.member_userid} readonly />
                                 <input type="text" name="member_name" id="member_name" value=\${json.member_name} />
                                 
@@ -142,17 +144,29 @@ function goEdit(member_userid) {
             		        	<select name="member_position">
             						<option value="\${json.member_position}"> \${json.member_position} </option>
             	            	</select>
-                            	
-                                <input type="text" name="member_mobile" id="member_mobile" value=\${json.member_mobile} />
-                                <input type="text" name="member_birthday" id="member_birthday" value=\${json.member_birthday} />
+            	            	
+            	            	
+            	            	<input type="text" name="hp1" id="hp1" size="6" maxlength="3" value="010" readonly /> 
+								<input type="text" name="hp2" id="hp2" size="6" maxlength="4" value=\${json.member_mobile.substring(4,8)}  />
+								<input type="text" name="hp3" id="hp3" size="6" maxlength="4" value=\${json.member_mobile.substring(9)} />
+                               
+                                
+                                <input type="date" name="member_birthday" id="member_birthday" value=\${json.member_birthday} />
+                                
+                    				
                                 <input type="text" name="member_gender" id="member_gender" value=\${json.member_gender} />
                                 <input type="text" name="member_email" id="member_email" value=\${json.member_email} />
-                                <input type="text" name="member_start" id="member_start" value=\${json.member_start} />
-                                <input type="text" name="member_yeoncha" id="member_yeoncha" value=\${json.member_yeoncha} />
+                                <input type="date" name="member_start" id="member_start" value=\${json.member_start} />
+                                <input type="text" name="member_yeoncha" id="member_yeoncha" value=\${json.member_yeoncha} readonly />
+
+                                <select name="member_workingTime">
+        							<option value="\${json.member_workingTime}"> \${json.member_workingTime} </option>
+        	            		</select>
+        	            	
                             </div>
                             <div class="modal-footer">
+                            	<button type="button" class="btn btn-primary" id="saveChanges">수정</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                                <button type="button" class="btn btn-primary" id="saveChanges">저장</button>
                             </div>
                         </div>
                     </div>
@@ -163,52 +177,82 @@ function goEdit(member_userid) {
             // 모달 HTML 삽입
             EditModal_container.html(modal_popup);
             
+        	
+            $(document).on("change", "input.img_file", function(e) {
+                const inputFile = $(e.target).get(0);
+                const file = inputFile.files[0];
+
+                if (!file) { 
+                    $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png");  // 파일 선택 취소 시 초기화
+                    return;
+                }
+                
+                // 파일 타입 및 크기 검사
+                const fileType = file.type;
+                const fileSize = file.size / 1024 / 1024; // MB 단위
+                if (!fileType.match("image/(jpeg|png|jpg)")) {
+                    alert("jpg 또는 png 형식의 이미지만 업로드 가능합니다.");
+                    $(this).val(""); // 입력값 초기화
+                    $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png"); // 초기화
+                    return;
+                }
+                if (fileSize > 3) {
+                    alert("파일 크기는 3MB 이하로 업로드해야 합니다.");
+                    $(this).val(""); // 입력값 초기화
+                    $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png"); // 초기화
+                    return;
+                }
+                
+             // 이미지 미리보기 처리
+                const fileReader = new FileReader();
+                fileReader.onload = function(event) {
+                    $("#previewimg").attr("src", event.target.result);
+                };
+                fileReader.readAsDataURL(file);
+            }); 
+            
+               
+            
             //상위부서 데이터값 불러오기
             const parentDeptSelect = $("#parentDeptSelect");
-
-           // 기존 선택된 값 (AJAX가 실행될 때까지 유지해야 함)
-           const selectedValue = parentDeptSelect.val(); // 현재 선택된 값
-
+		    let ParentValue = parentDeptSelect.val(); // 기존 선택된 값 저장
+	
            // AJAX로 상위 부서 목록을 불러오기
            $.ajax({
                url: "${pageContext.request.contextPath}/management/parentDeptJSON",
                dataType: "json",
                success: function(json) {
-                   console.log("AJAX 응답 데이터:", json);
+            	   
+            	   // 기존 옵션 초기화
+       		       parentDeptSelect.empty();
 
-                   // 기존의 값을 지우고 새 옵션을 추가
-                   parentDeptSelect.empty();
-                   
-                   // 기본으로 선택된 부서를 넣음
-                   parentDeptSelect.append(`<option value="${selectedValue}">상위 부서 선택</option>`);
-
-                   // 서버에서 받은 상위 부서 리스트로 `select` 옵션 추가
-                   json.forEach(function(item) {
-                       let isSelected = (item.parent_dept_no == selectedValue) ? "selected" : "";
-                       parentDeptSelect.append(
-                           `<option value="${item.parent_dept_no}" ${isSelected}>${item.parent_dept_name}</option>`
-                       );
+            	   json.forEach(function(item) {
+                       let isSelected = (item.parent_dept_no == ParentValue) ? "selected" : "";
+                       parentDeptSelect.append('<option value="' + item.parent_dept_no ${isSelected}+ '">' + item.parent_dept_name + '</option>');
                    });
+            	   
+            	   ParentValue = parentDeptSelect.val();
+
+                  
                },
                error: function(request, status, error) {
             	   alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
                }
            });
            	
-           	
            	 //하위부서 데이터값 불러오기
-                $("select[name='parentDept']").change(function(){
-                    const dept = $(this).val(); // 선택된 상위 부서 값
+                $("select[id='parentDeptSelect']").change(function(){	
+                	let ParentValue = $(this).val(); 
                     const childDeptSelect = $("select[name='fk_child_dept_no']");
-                    
+
                     // 기존 옵션 초기화
                     childDeptSelect.empty();
-                    childDeptSelect.append('<option value=""> 하위 부서 선택 </option>');
-
-                    if (dept) { // 부서가 선택되었을 때만 AJAX 요청
+                    childDeptSelect.append('<option value=""> 하위부서 선택 </option>');
+                    
+                    if (ParentValue) { // 부서가 선택되었을 때만 AJAX 요청
                         $.ajax({
                             url: "${pageContext.request.contextPath}/management/childDeptJSON",
-                            data: {"dept": dept},
+                            data: {"dept": ParentValue},
                             dataType: "json",
                             success: function(json) {
 
@@ -224,7 +268,7 @@ function goEdit(member_userid) {
                 });
                 
            	//직급 데이터값 불러오기
-                $("select[name='parentDept']").change(function() {
+                $("select[id='parentDeptSelect']").change(function() {
                     const parentDept = $(this).val(); // 선택된 상위 부서 값
                     const positionSelect = $("select[name='member_position']"); // 직급 select
 
@@ -281,6 +325,15 @@ function goEdit(member_userid) {
                	    
                	  
                	});
+               
+               	const workingTime = $("select[name='member_workingTime']"); 
+               	workingTime.empty();
+               	
+               	workingTime.append('<option value="day"> day </option>')
+               	workingTime.append('<option value="evening"> evening </option>')
+               	workingTime.append('<option value="night"> night </option>')
+                
+                
 
             // 모달 띄우기
             $('div#EditView').modal('show');
@@ -294,9 +347,75 @@ function goEdit(member_userid) {
 
 }
 
+/* === 회원 퇴사처리 js === */
+function goQuit(member_userid) {
+	
+	const now = new Date();
+ 	const daysOfWeek = ["일","월","화","수","목","금","토"];
+ 	const dayOfWeek = daysOfWeek[now.getDay()];
+ 	const year = now.getFullYear();
+ 	const month = (now.getMonth()+1).toString().padStart(2, '0');
+ 	const day = now.getDate().toString().padStart(2, '0')
+ 	
 
-
-
+ 	const timeString = `\${year}-\${month}-\${day}`
+	
+	
+	 $.ajax({
+	        url: "<%= ctxPath%>/management/managementone",
+	        data: { "member_userid": member_userid },
+	        type: "post",
+	        dataType: "json",
+	        success: function(json) {
+	        	
+	            // 모달을 띄울 위치
+	            const EditModal_container = $("div#EditModal");
+	            console.log(timeString);
+	            // 모달 HTML 생성 (json 사용)
+	            const modal_popup = `
+	                <div class="modal fade" id="EditView" aria-labelledby="EditViewLabel" tabindex="-1" aria-hidden="true">
+	                    <div class="modal-dialog modal-lg">
+	                        <div class="modal-content">
+	                            <div class="modal-header">
+	                                <h5 class="modal-title" id="EditViewLabel">사원 정보 수정</h5>
+	                            </div>
+	                            <div class="modal-body">
+	                            	<img width="50" height="50" src="<%=ctxPath%>/resources/profile/\${json.member_pro_filename}" alt="프로필" >
+	                                <input type="text" name="member_userid" id="member_userid" value=\${json.member_userid} readonly />
+	                                <input type="text" name="member_name" id="member_name" value=\${json.member_name} readonly />
+	                                <input type="text" name="child_dept_name" id="child_dept_name" value=\${json.child_dept_name} readonly />
+	                                <input type="text" name="parent_dept_name" id="parent_dept_name" value=\${json.parent_dept_name} readonly />
+	                                <input type="text" name="member_position" id="member_position" value=\${json.member_position} readonly />
+	                                <input type="text" name="member_mobile" id="member_mobile" value=\${json.member_mobile} readonly />
+	                                <input type="text" name="member_birthday" id="member_birthday" value=\${json.member_birthday} readonly />
+	                                <input type="text" name="member_gender" id="member_gender" value=\${json.member_gender} readonly />
+	                                <input type="text" name="member_email" id="member_email" value=\${json.member_email} readonly />
+	                                <input type="text" name="member_start" id="member_start" value=\${json.member_start} readonly />
+	                                <input type="text" name="member_yeoncha" id="member_yeoncha" value=\${json.member_yeoncha} readonly />
+	                               </div>
+	                            <div class="modal-footer">
+	                                <button type="button" class="btn btn-primary" id="saveChanges">퇴사처리</button>
+	                                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            `;
+	     
+	             
+	            // 모달 HTML 삽입
+	            EditModal_container.html(modal_popup);
+	            
+	            // 모달 띄우기
+	            $('div#EditView').modal('show');
+	            
+	            
+	        },
+	        error: function(request, status, error) {
+	            alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	        }
+	    });
+}
 
 
 </script>
@@ -307,16 +426,6 @@ function goEdit(member_userid) {
 		<h3>인사관리 <사원목록조회> </h3>
 	</div>
 	
-	 <form name="searchFrm" style="margin-top: 20px;">
-		<select name="searchType" style="height: 26px;">
-			<option value="userid">사번명</option>
-			<option value="position">직급명</option>
-			<option value="name">사원명</option>
-		</select>
-		<input type="text" name="searchWord" size="10" autocomplete="off" /> 
-		<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>  
-		<button type="button" onclick="goSearch()">검색</button> 
-	</form>	
 	
 	<div id="displayList" style="border:solid 1px gray; border-top:0px; height:40px; margin-left:8.6%; margin-top:-1px;  overflow:auto;"></div>
 	
@@ -329,6 +438,7 @@ function goEdit(member_userid) {
 		    	<th>하위부서명</th>
 		    	<th>성명</th>
 				<th>성별</th>
+				<th>근무시간</th>
 				<th>직급</th>
 		   </tr>
 		</thead>
@@ -344,6 +454,7 @@ function goEdit(member_userid) {
 	<td>${managementVO_ga.child_dept_name}</td>
 	<td>${managementVO_ga.member_name}</td>
 	<td>${managementVO_ga.member_gender}</td>
+	<td>${managementVO_ga.member_workingTime}</td>
 	<td>${managementVO_ga.member_position}</td>
 	<td><button type="button" id="EditView" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
 	<td><button type="button" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
@@ -359,9 +470,25 @@ function goEdit(member_userid) {
 	<div id="EditModal"></div>
     <div id="QuitModal"></div>
     
+<div>
    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">${requestScope.pageBar}</div>
+   
+    <form name="searchFrm" style="margin-top: 20px;">
+		<select name="searchType" style="height: 26px;">
+			<option value="userid">사번명</option>
+			<option value="position">직급명</option>
+			<option value="name">사원명</option>
+		</select>
+		<input type="text" name="searchWord" size="10" autocomplete="off" /> 
+		<input type="text" style="display: none;"/>  
+		<button type="button" onclick="goSearch()">검색</button> 
+	</form>	
+</div>
 	
 </div>
+
+
+	
 
 <form name="goViewFrm">
    <input type="hidden" name="mem_userid" />

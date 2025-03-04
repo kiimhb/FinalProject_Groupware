@@ -408,6 +408,7 @@ public class ManagementController {
 	    jsonObj.put("member_email", memberInfo.getMember_email());
 	    jsonObj.put("member_start", memberInfo.getMember_start());
 	    jsonObj.put("member_yeoncha", memberInfo.getMember_yeoncha());
+	    jsonObj.put("member_workingTime", memberInfo.getMember_workingTime());
 
 	    return jsonObj.toString();
 	}

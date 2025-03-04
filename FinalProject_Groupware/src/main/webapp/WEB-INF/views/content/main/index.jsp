@@ -399,7 +399,9 @@ function detailNotice(notice_no) {
 <!-- 공지사항 끝 -->
 
 
-	
+<div class="box_reservation">오늘 환자 예약 명단</div>	
+
+<div class="box_payment">전자결재</div>
 	
 <!-- 일정관리 시작 -->	
 	<div class="box_schedule">
@@ -424,10 +426,10 @@ function detailNotice(notice_no) {
 	
 	
 	
-<div class="box_reservation">오늘 환자 예약 명단</div>
+
 
 <div class="box_weather">날씨</div>
-<div class="box_payment">전자결재</div>
+
 
 </div>
 

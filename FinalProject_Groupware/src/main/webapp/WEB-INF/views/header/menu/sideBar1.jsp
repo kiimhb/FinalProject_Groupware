@@ -96,7 +96,6 @@ $.ajax({
       <i class="fa-solid fa-user-clock sideBarICSS"></i> <span>근태관리</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/attendance">휴가관리</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/attendance">출장관리</a>
             <a class="dropdown-item" href="<%=ctxPath%>/attendance/commute">근태조회</a>
             <a class="dropdown-item" href="<%=ctxPath%>/attendance">근무교대조회</a>
          </div></li>

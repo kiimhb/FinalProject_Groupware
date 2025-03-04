@@ -42,7 +42,7 @@ font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
 
 /* 네비 메뉴바 */
 #myheader > nav > div.navbar_menu {
-    border: solid 1px blue;
+   /*  border: solid 1px blue; */
 }
 
 #myheader > nav > div > a {
@@ -83,7 +83,7 @@ a.logoutcss{
 /* 사이드바 */
 .sidebar {
 	/* border: solid 1px navy; */
-	min-height: 960px;
+	height: 960px;
 	width: 250px;
 	position: absolute; 
 	transition: width 0.3s ease-in-out; 
@@ -172,7 +172,7 @@ span.main_logo2{
 /* meun 알림창*/
 div.navbar_menu{
 	padding: 7px;
-	margin-right: 60px;
+	margin-right: 150px;
 }
 
 button.nav_button_css{
@@ -181,26 +181,27 @@ button.nav_button_css{
 }
 
 i.nav_i_css1, i.nav_i_css2{
-	font-size: 25px;
+	font-size: 30px;
 }
 
 i.nav_i_css1 {
-	background: linear-gradient(to bottom, #FF8C00, #FF6F61);
+	/* background: linear-gradient(to bottom, #FFEB3B, #FFD600);
 	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+	-webkit-text-fill-color: transparent; */
+	 margin-right: 10px;
 }
 
 i.nav_i_css2 {
-	background: linear-gradient(to bottom, #1E90FF, #212121);
+	/* background: linear-gradient(to bottom, #42A5F5, #8E24AA);
 	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+	-webkit-text-fill-color: transparent; */
 }
 
 div.Alarm_box {
   display: none;
   position: absolute;
   top: 65px;
-  right: 50px;
+  right: 220px;
   border: 1px solid #ccc;
   background-color:#FAFAFA;
   padding: 10px;
@@ -215,7 +216,7 @@ div.Alarm_box::after {
   content: '';
   position: absolute;
   top: -8px;
-  right: 26%;
+  right: 30%;
   transform: translateX(-50%);
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;

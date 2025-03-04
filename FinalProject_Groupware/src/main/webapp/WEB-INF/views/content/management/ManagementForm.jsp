@@ -17,7 +17,7 @@ String ctxPath = request.getContextPath();
         const file = inputFile.files[0];
 
         if (!file) { 
-            $("#previewimg").attr("src", "");  // 파일 선택 취소 시 초기화
+            $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png");  // 파일 선택 취소 시 초기화
             return;
         }
         
@@ -27,13 +27,13 @@ String ctxPath = request.getContextPath();
         if (!fileType.match("image/(jpeg|png|jpg)")) {
             alert("jpg 또는 png 형식의 이미지만 업로드 가능합니다.");
             $(this).val(""); // 입력값 초기화
-            $("#previewimg").attr("src", ""); // 초기화
+            $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png"); // 초기화
             return;
         }
         if (fileSize > 3) {
             alert("파일 크기는 3MB 이하로 업로드해야 합니다.");
             $(this).val(""); // 입력값 초기화
-            $("#previewimg").attr("src", ""); // 초기화
+            $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png"); // 초기화
             return;
         }
         
@@ -205,63 +205,6 @@ String ctxPath = request.getContextPath();
         	    const sanitizedValue = input.val().replace(/[^0-9]/g, ""); // 숫자가 아닌 문자를 제거
         	    input.val(sanitizedValue); // 필드에 정제된 값 설정
         	});
-        	
-        	$("input#member_birthday").datepicker(	 {
-  	          dateFormat: 'yy-mm-dd'  //Input Display Format 변경
-  	         ,showOtherMonths: true   //빈 공간에 현재월의 앞뒤월의 날짜를 표시
-  	         ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
-  	         ,changeYear: true        //콤보박스에서 년 선택 가능
-  	         ,changeMonth: true       //콤보박스에서 월 선택 가능
-  	     //  ,showOn: "both"          //button:버튼을 표시하고,버튼을 눌러야만 달력 표시됨. both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시됨.  
-  	     //  ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
-  	     //  ,buttonImageOnly: true   //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
-  	     //  ,buttonText: "선택"       //버튼에 마우스 갖다 댔을 때 표시되는 텍스트
-  	         ,yearSuffix: "년"         //달력의 년도 부분 뒤에 붙는 텍스트
-  	         ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
-  	         ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
-  	         ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
-  	         ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
-  	     //  ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
-  	     //  ,maxDate: "+1M" //최대 선택일자(+1D:하루후, +1M:한달후, +1Y:일년후)
-  	 });
-  	 
-  	 // 초기값을 오늘 날짜로 설정
-  	 // $('input#datepicker').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
-  	 
-  	 
-  	 // === 전체 datepicker 옵션 일괄 설정하기 ===  
-  	 //     한번의 설정으로 $("input#fromDate"), $('input#toDate')의 옵션을 모두 설정할 수 있다.
-       $(function() {
-  		//모든 datepicker에 대한 공통 옵션 설정
-  		$.datepicker.setDefaults({
-          	dateFormat: 'yy-mm-dd' //Input Display Format 변경
-  			,showOtherMonths: true //빈 공간에 현재월의 앞뒤월의 날짜를 표시
-  			,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
-  			,changeYear: true //콤보박스에서 년 선택 가능
-  			,changeMonth: true //콤보박스에서 월 선택 가능                
-  			// ,showOn: "both" //button:버튼을 표시하고,버튼을 눌러야만 달력 표시됨. both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시됨.  
-  			// ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
-  			// ,buttonImageOnly: true //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
-  			// ,buttonText: "선택" //버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
-  			,yearSuffix: "년" //달력의 년도 부분 뒤에 붙는 텍스트
-  			,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
-  			,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
-  			,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
-  			,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
-  			// ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
-  			// ,maxDate: "+1M" //최대 선택일자(+1D:하루후, -1M:한달후, -1Y:일년후)                    
-  		});
-           
-  		// input을 datepicker로 선언
-  		$("input#fromDate").datepicker();                    
-  		$("input#toDate").datepicker();
-  		
-  		// From의 초기값을 오늘 날짜로 설정
-  		$('input#fromDate').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
-           
-  		// To의 초기값을 3일후로 설정
-  		$('input#toDate').datepicker('setDate', '+3D'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
-  	});
         	    
   
         	    
@@ -371,7 +314,7 @@ String ctxPath = request.getContextPath();
 	<form name="ManagementFrom" enctype="multipart/form-data">
 	
 		<div class="mem_profile">
-			<div><img id="previewimg" width="137" height="176" style="object-fit: cover;" /></div>
+			<div><img id="previewimg" width="137" height="176" src="<%=ctxPath%>/resources/profile/default_profile.png" style="object-fit: cover;" /></div>
 			<input type="file" name="attach" class="img_file"  accept="image/*"  />
 		</div>
 	
@@ -435,8 +378,7 @@ String ctxPath = request.getContextPath();
 
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">생년월일</th>
-				<td> <input type="text" name="member_birthday" id="member_birthday" maxlength="10" />
-                       <span class="error">생년월일은 마우스로만 클릭하세요.</span></td>
+				<td> <input type="date" name="member_birthday" id="member_birthday" maxlength="10" />
 			</tr>
 			
 			<tr>

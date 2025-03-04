@@ -75,7 +75,7 @@
 		(
 		SELECT ROW_NUMBER() OVER (ORDER BY m.MEMBER_START DESC) AS RNO,
 		m.member_userid, m.MEMBER_START, m.fk_child_dept_no,
-		c.child_dept_name, m.member_name,
+		c.child_dept_name, m.member_name, m.member_workingTime,
 		m.member_gender, m.member_pro_filename, m.member_position
 		FROM tbl_member m
 		JOIN TBL_CHILD_DEPT c ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
@@ -148,7 +148,7 @@
     <result property="member_email" column="member_email"/>
     <result property="member_start" column="member_start"/>
     <result property="member_yeoncha" column="member_yeoncha"/>
-
+	<result property="member_workingTime" column="member_workingTime"/>
     <!-- Child_deptVO_ga 매핑 -->
     <association property="ChildVO" javaType="Child_deptVO_ga">
         <result property="child_dept_no" column="child_dept_no"/>

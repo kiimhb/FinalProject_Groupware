@@ -29,7 +29,7 @@ div.box_attendance {
 	box-sizing: border-box;
 	border: solid 1px silver;
 	padding:10px;
-	width: 500px;
+	width: 520px;
 	height: 270px;
 }
 
@@ -104,8 +104,20 @@ div.main_article_info{
 /* 오늘 환자 예약 명단 */
 div.box_reservation{
 	border: solid 1px teal;
-	width: 500px;
-	height: 400px;
+	background-color:teal;
+	width: 520px;
+	height: 300px;
+}
+
+
+
+/* 전자결재 */
+div.box_payment{
+	border: solid 1px maroon;
+	background-color:maroon;
+	width: 700px;
+	height: 300px;
+	
 }
 
 
@@ -149,17 +161,12 @@ button.btn_edit {
 /* 오늘의 날씨 */
 div.box_weather{
 	border: solid 1px yellow;
-	width: 500px;
-	height: 400px;
+	background-color: yellow;
+	width: 580px;
+	height: 450px;
 	
 }
 
 
-/* 전자결재 */
-div.box_payment{
-	border: solid 1px maroon;
-	width: 640px;
-	height: 400px;
-	
-}
+
 
