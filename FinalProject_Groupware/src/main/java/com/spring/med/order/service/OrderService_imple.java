@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spring.med.order.domain.CostVO;
 import com.spring.med.order.domain.OrderVO;
 import com.spring.med.order.model.OrderDAO;
 import com.spring.med.patient.model.TreatPatientDAO;
@@ -111,7 +112,7 @@ public class OrderService_imple implements OrderService {
 
 	// 입원 요청하여 입원테이블에 insert 하기 
 	@Override
-	@Transactional(value="transactionManager_mymvc_user", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	@Transactional(value="transactionManager_final_orauser4", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int requestHosp(Map<String, String>paraMap) {
 		
 		int n=0, result=0;		
@@ -125,7 +126,7 @@ public class OrderService_imple implements OrderService {
 
 	// 수술 요청하여 수술테이블에 insert 하기 (트랜잭션)
 	@Override
-	@Transactional(value="transactionManager_mymvc_user", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	@Transactional(value="transactionManager_final_orauser4", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int surgeryConfirm(Map<String, String> paraMap) {
 		
 		int n=0, result=0;		
@@ -145,6 +146,16 @@ public class OrderService_imple implements OrderService {
 		int n = odao.orderDesease(paraMap);		
 		return n;
 		
+	}
+
+
+	// 진료입력 마무리 수술여부, 입원여부, 약처방 등 종합하여 가격 보여주기
+	@Override
+	public List<CostVO> showCostList(String fk_order_no) {
+		
+		List<CostVO> showCostList = odao.showCostList(fk_order_no);
+		
+		return showCostList;
 	}
 
 

@@ -113,7 +113,7 @@
 	<!-- 입원 요청하여 입원테이블에 insert 하기 -->
 	
 	<update id="requestHosp" parameterType="HashMap">		
-		update tbl_order set order_isHosp = 1
+		update tbl_order set order_isHosp = 1, order_howlonghosp = #{order_howlonghosp}
 		where order_no = #{orderNo}
 		and fk_patient_no = #{hiddenPatientNo}
 		and fk_member_userid like #{fk_member_userid}
@@ -197,6 +197,11 @@
 	    </foreach>
 	    SELECT 1 FROM DUAL
 	</insert>
+	
+	<select id="showCostList" parameterType="String">
+		
+	
+	</select>
 
 
 		
