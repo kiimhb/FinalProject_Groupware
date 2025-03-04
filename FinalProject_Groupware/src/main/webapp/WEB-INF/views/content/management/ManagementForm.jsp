@@ -312,9 +312,9 @@ String ctxPath = request.getContextPath();
 	
 
 	<form name="ManagementFrom" enctype="multipart/form-data">
-	
+	 <div class="form-container">
 		<div class="mem_profile">
-			<div><img id="previewimg" width="137" height="176" src="<%=ctxPath%>/resources/profile/default_profile.png" style="object-fit: cover;" /></div>
+			<div><img id="previewimg" src="<%=ctxPath%>/resources/profile/default_profile.png" style="object-fit: cover;" /></div>
 			<input type="file" name="attach" class="img_file"  accept="image/*"  />
 		</div>
 	
@@ -388,7 +388,7 @@ String ctxPath = request.getContextPath();
 
 			<tr>
 				<td colspan="2" class="text-center">
-				<button type="button" id="registerbtn">사원 등록</button>
+				<button type="button" class="member_button" id="registerbtn">사원 등록</button>
 				</td>
 			</tr>
 	
@@ -400,6 +400,7 @@ String ctxPath = request.getContextPath();
 					<input type="hidden" id="member_grade" name="member_grade" />
 					
 					<input type="hidden" id="member_workingTime" name="member_workingTime" />
+		</div>
 	</form>
 </div>
 

@@ -10,7 +10,6 @@ String ctxPath = request.getContextPath();
 <%-- 직접 만든 CSS 1 --%>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/management/managementList.css" />
 
-
 <script type="text/javascript">
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,59 +117,113 @@ function goEdit(member_userid) {
 
             // 모달 HTML 생성 (json 사용)
             const modal_popup = `
-                <div class="modal fade" id="EditView" aria-labelledby="EditViewLabel" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="EditViewLabel">사원 정보 수정</h5>
-                            </div>
-                            <div class="modal-body">
-                            	<img id="previewimg" width="50" height="50" src="<%=ctxPath%>/resources/profile/\${json.member_pro_filename}" alt="프로필">
-                            	<input type="file" name="attach" class="img_file"  accept="image/*"  />
-                            	
-                            	
-                                <input type="text" name="member_userid" id="member_userid" value=\${json.member_userid} readonly />
-                                <input type="text" name="member_name" id="member_name" value=\${json.member_name} />
+            	<div class="modal fade" id="EditView" aria-labelledby="EditViewLabel" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="EditViewLabel">사원 정보 수정</h5>
+                        </div>
+                        <div class="modal-body">
+                            <form name="Managementedt" enctype="multipart/form-data">
                                 
-                                
-                                <select name="parentDept" id="parentDeptSelect">
-                            		<option value="\${json.parent_dept_no}">\${json.parent_dept_name}</option>
-                        		</select>
-                        	
-                                <select name="fk_child_dept_no" >
-                                	<option value="\${json.child_dept_no}">\${json.child_dept_name}</option>
-                            	</select>
-                            	
-            		        	<select name="member_position">
-            						<option value="\${json.member_position}"> \${json.member_position} </option>
-            	            	</select>
-            	            	
-            	            	
-            	            	<input type="text" name="hp1" id="hp1" size="6" maxlength="3" value="010" readonly /> 
-								<input type="text" name="hp2" id="hp2" size="6" maxlength="4" value=\${json.member_mobile.substring(4,8)}  />
-								<input type="text" name="hp3" id="hp3" size="6" maxlength="4" value=\${json.member_mobile.substring(9)} />
-                               
-                                
-                                <input type="date" name="member_birthday" id="member_birthday" value=\${json.member_birthday} />
-                                
-                    				
-                                <input type="text" name="member_gender" id="member_gender" value=\${json.member_gender} />
-                                <input type="text" name="member_email" id="member_email" value=\${json.member_email} />
-                                <input type="date" name="member_start" id="member_start" value=\${json.member_start} />
-                                <input type="text" name="member_yeoncha" id="member_yeoncha" value=\${json.member_yeoncha} readonly />
+                                <div class="form-container">
+                                    <div class="profile-section">
+                                        <img id="previewimg"  width="137" height="176" src="<%=ctxPath%>/resources/profile/\${json.member_pro_filename}" alt="프로필">
+                                        <input type="file" name="attach" class="img_file" accept="image/*">
+                                    </div>
 
-                                <select name="member_workingTime">
-        							<option value="\${json.member_workingTime}"> \${json.member_workingTime} </option>
-        	            		</select>
-        	            	
-                            </div>
-                            <div class="modal-footer">
-                            	<button type="button" class="btn btn-primary" id="saveChanges">수정</button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                            </div>
+                                    <!-- 오른쪽: 입력 필드 -->
+                                    <div class="form-section">
+                                        <div class="input-group">
+                                            <label>사번</label>
+                                            <input type="text" name="member_userid" id="member_userid" value="\${json.member_userid}" readonly />
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>성명</label>
+                                            <input type="text" name="member_name" id="member_name" value="\${json.member_name}" />
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>상위부서</label>
+                                            <select name="parentDept" id="parentDeptSelect">
+                                                <option value="\${json.parent_dept_no}">\${json.parent_dept_name}</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>하위부서</label>
+                                            <select name="fk_child_dept_no">
+                                                <option value="\${json.child_dept_no}">\${json.child_dept_name}</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>직급</label>
+                                            <select name="member_position">
+                                                <option value="\${json.member_position}">\${json.member_position}</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>전화번호</label>
+                                            <div class="phone-group">
+                                                <input type="text" name="hp1" id="hp1" maxlength="3" value="010" readonly />
+                                                <span>-</span>
+                                                <input type="text" name="hp2" id="hp2" maxlength="4" value="\${json.member_mobile.substring(4,8)}" />
+                                                <span>-</span>
+                                                <input type="text" name="hp3" id="hp3" maxlength="4" value="\${json.member_mobile.substring(9)}" />
+                                            </div>
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>생년월일</label>
+                                            <input type="date" name="member_birthday" id="member_birthday" value="\${json.member_birthday}" />
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>성별</label>
+                                            <input type="radio" name="member_gender" value="남" id="male" class="requiredInfo_radio"
+                                                \${json.member_gender == '남' ? 'checked' : ''} />
+                                            <label for="male" style="margin-left: 1.5%;">남자</label>
+
+                                            <input type="radio" name="member_gender" value="여" id="female" class="requiredInfo_radio"
+                                                style="margin-left: 10%;" \${json.member_gender == '여' ? 'checked' : ''} />
+                                            <label for="female" style="margin-left: 1.5%;">여자</label>
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>이메일</label>
+                                            <input type="text" name="member_email" id="member_email" value="\${json.member_email}" />
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>입사일</label>
+                                            <input type="date" name="member_start" id="member_start" value="\${json.member_start}" />
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>연차</label>
+                                            <input type="text" name="member_yeoncha" id="member_yeoncha" value="\${json.member_yeoncha}" readonly />
+                                        </div>
+
+                                        <div class="input-group">
+                                            <label>근무시간</label>
+                                            <select name="member_workingTime">
+                                                <option value="\${json.member_workingTime}">\${json.member_workingTime}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="saveChanges" onclick="submitForm()">수정</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
                         </div>
                     </div>
                 </div>
+            </div>
             `;
      
              
@@ -337,7 +390,7 @@ function goEdit(member_userid) {
 
             // 모달 띄우기
             $('div#EditView').modal('show');
-            
+           	
             
         },
         error: function(request, status, error) {
@@ -346,6 +399,15 @@ function goEdit(member_userid) {
     });
 
 }
+
+function submitForm() {
+    const frm = document.forms["Managementedt"];
+    frm.method = "post";
+    frm.action = "<%= ctxPath %>/management/ManagementForm";  
+    frm.submit(); 
+}
+
+
 
 /* === 회원 퇴사처리 js === */
 function goQuit(member_userid) {
@@ -377,22 +439,79 @@ function goQuit(member_userid) {
 	                    <div class="modal-dialog modal-lg">
 	                        <div class="modal-content">
 	                            <div class="modal-header">
-	                                <h5 class="modal-title" id="EditViewLabel">사원 정보 수정</h5>
+	                                <h5 class="modal-title" id="EditViewLabel">사원 퇴사 처리</h5>
 	                            </div>
 	                            <div class="modal-body">
-	                            	<img width="50" height="50" src="<%=ctxPath%>/resources/profile/\${json.member_pro_filename}" alt="프로필" >
-	                                <input type="text" name="member_userid" id="member_userid" value=\${json.member_userid} readonly />
-	                                <input type="text" name="member_name" id="member_name" value=\${json.member_name} readonly />
-	                                <input type="text" name="child_dept_name" id="child_dept_name" value=\${json.child_dept_name} readonly />
-	                                <input type="text" name="parent_dept_name" id="parent_dept_name" value=\${json.parent_dept_name} readonly />
-	                                <input type="text" name="member_position" id="member_position" value=\${json.member_position} readonly />
-	                                <input type="text" name="member_mobile" id="member_mobile" value=\${json.member_mobile} readonly />
-	                                <input type="text" name="member_birthday" id="member_birthday" value=\${json.member_birthday} readonly />
-	                                <input type="text" name="member_gender" id="member_gender" value=\${json.member_gender} readonly />
-	                                <input type="text" name="member_email" id="member_email" value=\${json.member_email} readonly />
-	                                <input type="text" name="member_start" id="member_start" value=\${json.member_start} readonly />
-	                                <input type="text" name="member_yeoncha" id="member_yeoncha" value=\${json.member_yeoncha} readonly />
-	                               </div>
+	                            <div style="display: flex; align-items: center; width: 100%; max-width: 800px; margin: auto;">
+	                            <!-- 프로필 사진 -->
+	                            <div class="delete_member">
+	                                <img width="137" height="176" src="<%=ctxPath%>/resources/profile/\${json.member_pro_filename}" 
+	                                     alt="프로필">
+	                            </div>
+
+	                            <div class="delete_member0">
+	                                <div class="delete_member1">
+	                                    <label class="delabel">사번</label>
+	                                    <input type="text" name="member_userid" id="member_userid" value="\${json.member_userid}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">성명</label>
+	                                    <input type="text" name="member_name" id="member_name" value="\${json.member_name}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">상위 부서</label>
+	                                    <input type="text" name="child_dept_name" id="child_dept_name" value="\${json.child_dept_name}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">하위 부서</label>
+	                                    <input type="text" name="parent_dept_name" id="parent_dept_name" value="\${json.parent_dept_name}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">직급</label>
+	                                    <input type="text" name="member_position" id="member_position" value="\${json.member_position}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">전화번호</label>
+	                                    <input type="text" name="member_mobile" id="member_mobile" value="\${json.member_mobile}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">생년월일</label>
+	                                    <input type="text" name="member_birthday" id="member_birthday" value="\${json.member_birthday}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">성별</label>
+	                                    <input type="text" name="member_gender" id="member_gender" value="\${json.member_gender}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">이메일</label>
+	                                    <input type="text" name="member_email" id="member_email" value="\${json.member_email}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">입사일</label>
+	                                    <input type="text" name="member_start" id="member_start" value="\${json.member_start}" readonly />
+	                                </div>
+
+	                                <div class="delete_member1">
+	                                    <label class="delabel">연차</label>
+	                                    <input type="text" name="member_yeoncha" id="member_yeoncha" value="\${json.member_yeoncha}" readonly />
+	                                </div>
+	                            </div>
+	                        </div>
+			                        <div style="margin-top: 20px; text-align: center;">
+			                            <span style="font-weight: bold;">\${timeString}</span>
+			                            <p style="color: red;">오늘 날짜로 퇴사처리 됩니다.</p>
+		                        	</div>
+
+
 	                            <div class="modal-footer">
 	                                <button type="button" class="btn btn-primary" id="saveChanges">퇴사처리</button>
 	                                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>

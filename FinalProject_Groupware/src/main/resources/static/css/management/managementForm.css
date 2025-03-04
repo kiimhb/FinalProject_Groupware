@@ -1,45 +1,78 @@
 @charset "UTF-8";
 
 div.subContent {
-	border: solid 1px blue;
-	width: 95%;
-	margin: auto;
+    width: 95%;
+    margin: auto;
 }
 
 div.manag_h3 {
-	border-bottom: solid 2px gray;
-	margin: 30px;
+    border-bottom: solid 2px gray;
+    margin:  30px;
+}
+
+div.form-container {
+    display: flex;
+    align-items: flex-start; 
 }
 
 div.mem_profile {
-    border: solid 1px blue;
     width: 30%;
-    padding: 15px;
     text-align: center;
+    margin-top: 40px;
+    margin-left: 30px;
 }
 
-div.mem_profile img {
-    border-radius: 10px; /* 이미지 둥글게 */
-    border: solid 1px gray;
+img#previewimg{
+     border: solid 1px gray;
+     width:137px;
+     height:176px;
 }
 
 div.mem_profile input[type="file"] {
     margin-top: 10px;
+    margin-left: 70px;
+    border: none;
 }
 
 table.manag_table {
-     border: solid 1px blue;
-    width: 65%; /* 테이블이 더 넓게 차지하도록 설정 */
+    width: 55%;
     border-collapse: collapse;
-    flex-grow: 1; /* 가능한 공간 차지 */
+}
+
+table.manag_table td{
+	border: solid 1px #eee; 
 }
 
 table.manag_table th, table.manag_table td {
-    border: solid 1px blue;
     padding: 10px;
     text-align: left;
 }
 
 table.manag_table th {
-    background-color: #f4f4f4; /* 연한 배경 */
+    background-color: #f4f4f4; 
+}
+
+.text-center {
+    text-align: center;
+}
+
+.error {
+    color: red;
+    display: none; 
+}
+
+.text-center {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#mycontent > div > form > div > table > tbody > tr:nth-child(10) > td{
+	border: none;
+}
+
+button.member_button{
+	padding: 10px;
+	border-radius: 5px;
+	border: none;
+	background-color: #b3d6d2;
 }
