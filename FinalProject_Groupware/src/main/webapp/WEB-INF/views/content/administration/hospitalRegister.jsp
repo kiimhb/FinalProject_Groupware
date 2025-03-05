@@ -92,12 +92,62 @@ $(document).ready(function(){
 	    	center: '',
 	    	end: 'today prev,next'
 	    },
-	    dayMaxEventRows: true, // for all non-TimeGrid views
+	    dayMaxEventRows: 2, // for all non-TimeGrid views
 	    views: {
 	      timeGrid: {
-	        dayMaxEventRows: 3 // adjust to 6 only for timeGridWeek/timeGridDay
+	        dayMaxEventRows: 4 // adjust to 6 only for timeGridWeek/timeGridDay
 	      }
 	    },
+	 	// ===================== DB 와 연동하는 법 시작 ===================== //
+	    events:function(info, successCallback, failureCallback) {
+
+	    	 $.ajax({
+	    		 url: '<%= ctxPath%>/register/hospitalizeSchedule',
+                 dataType: "json",
+                 success:function(json) {
+					 
+                	 // console.log(JSON.stringify(json));
+                	 
+                	 var events = [];
+                	 
+					 var roomColors = {
+						1001:"8ac2bd",
+						1002:"8ac2bd",
+						1003:"8ac2bd",
+						1004:"8ac2bd",
+						2001:"fee4c6",
+						2002:"fee4c6",
+						2003:"fee4c6",
+						2004:"fee4c6",
+						3001:"857c7a",
+						3002:"857c7a",
+						3003:"857c7a",
+						3004:"857c7a"
+					 };
+					 
+                	 // 가져온 데이터를 FullCalendar의 events 배열 형식으로 변환
+                     json.forEach(function(item) {
+                         if (item.hospitalize_start_day && item.hospitalize_end_day) {
+							
+							 var roomColor = roomColors[item.fk_hospitalizeroom_no] || "#509d9c"; // 기본 색상 지정
+							
+                             events.push({
+                                 title: item.fk_hospitalizeroom_no + "호    " + item.patient_name +  " 님",
+                                 start: item.hospitalize_start_day,
+                                 end: item.hospitalize_end_day,
+                                 color: roomColor // 랜덤 색상 지정해주기getRandomColor()
+                             });
+                         }
+                         
+                     });
+                    	successCallback(events); 
+	    	 		},
+			    	error: function(request, status, error){
+				            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				    }	
+	    	 }); // end of  $.ajax
+	    },
+	    // ===================== DB 와 연동하는 법 끝 ===================== //
 	 	// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정에 대한 간단한 설명문 보여줌)
      	dateClick: function(info) {
       	 	// alert('클릭한 Date: ' + info.dateStr); // 클릭한 Date: 2021-11-20
@@ -105,7 +155,7 @@ $(document).ready(function(){
       	    info.dayEl.style.backgroundColor = '#b1b8cd'; // 클릭한 날짜의 배경색 지정하기
       	    $("form > input[name=chooseDate]").val(info.dateStr);
       	    
-      	    alert("상세일정내용");
+      	    //  alert("상세일정내용");
       	  }
 	});
 	/* 캘린더 띄움 끝 */
@@ -222,6 +272,17 @@ $(document).ready(function(){
 	
 	
 });
+	
+// 랜덤색상 생성하기 
+function getRandomColor() {
+	
+	let r = Math.floor((Math.random() * 127) + 128);
+    let g = Math.floor((Math.random() * 127) + 128);
+    let b = Math.floor((Math.random() * 127) + 128);
+
+    return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+	    
+}
 
 // 입원예약하기 클릭 
 function registerHospitalize() {

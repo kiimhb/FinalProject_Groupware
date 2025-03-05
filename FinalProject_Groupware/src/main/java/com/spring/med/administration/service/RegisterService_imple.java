@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spring.med.administration.domain.Calendar_hospitalize_recordVO;
+import com.spring.med.administration.domain.Calendar_surgery_recordVO;
 import com.spring.med.administration.model.RegisterDAO;
 import com.spring.med.hospitalize.domain.HospitalizeVO;
 import com.spring.med.hospitalize.domain.HospitalizeroomVO;
@@ -260,6 +262,20 @@ public class RegisterService_imple  implements RegisterService {
 		
 		// 2.예약이 없다면 예약처리 해준다. 
 		dao.hospitalizeUpdate(paraMap);
+	}
+
+	// 입원실 현황 캘린더 조회
+	@Override
+	public List<Calendar_hospitalize_recordVO> hospitalizeScheduleList() {
+		List<Calendar_hospitalize_recordVO> hospitalizeScheduleList = dao.hospitalizeScheduleList();
+		return hospitalizeScheduleList;
+	}
+
+	// 수술현황 캘린더조회
+	@Override
+	public List<Calendar_surgery_recordVO> surgerySchedule() {
+		List<Calendar_surgery_recordVO> surgerySchedule = dao.surgerySchedule();
+		return surgerySchedule;
 	}
 
 

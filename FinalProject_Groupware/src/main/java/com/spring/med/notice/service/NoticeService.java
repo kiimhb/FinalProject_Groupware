@@ -31,4 +31,7 @@ public interface NoticeService {
 	// 첨부파일 및 사진이미지가 있는 경우의 글삭제
 	int notice_del(Map<String, String> paraMap);
 
+	// 공지사항 수정하기
+	int notice_update(Map<String, String> paraMap);
+
 }

@@ -167,6 +167,16 @@
 		where fk_order_no = #{fk_order_no}
 	</update>
 	
+	<!-- 수술 현황 캘린더조회 -->
+	<select id="surgerySchedule" resultType="Calendar_surgery_recordVO">
+		select surgery_no, surgery_surgeryroom_name,
+		       to_char(surgery_day, 'yyyy-mm-dd') as surgery_day, 
+		       to_char(surgery_start_time, 'hh24:mi:ss') as surgery_start_time, 
+		       to_char(surgery_end_time, 'hh24:mi:ss') as surgery_end_time
+		from tbl_surgery
+		where surgery_day is not null
+	</select>
+	
 	<!-- **************************** 수술예약관련 mapper 끝 **************************** -->
 	
 	
@@ -331,6 +341,21 @@
 		    hospitalize_status = 1
 		where fk_order_no = #{fk_order_no}
 	</update>
+	
+	<!-- 입원실 현황 캘린더조회 -->
+	<select id="hospitalizeScheduleList" resultType="Calendar_hospitalize_recordVO">
+		select fk_hospitalizeroom_no, hospitalize_start_day, hospitalize_end_day, patient_name 
+		from
+		(
+		select  hospitalize_no, fk_hospitalizeroom_no, 
+		        to_char(hospitalize_start_day, 'yyyy-mm-dd') as hospitalize_start_day,
+		        to_char(hospitalize_end_day, 'yyyy-mm-dd') as hospitalize_end_day,
+		        fk_patient_no
+		from tbl_hospitalize a join tbl_order b
+		on a.fk_order_no = b.order_no
+		) a join tbl_patient b
+		on a.fk_patient_no = b.patient_no
+	</select>
 	<!-- **************************** 입원예약관련 mapper 끝 **************************** -->	
 	
 	

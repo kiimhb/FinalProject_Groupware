@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.spring.med.administration.domain.Calendar_hospitalize_recordVO;
+import com.spring.med.administration.domain.Calendar_patient_recordVO;
+import com.spring.med.administration.domain.Calendar_surgery_recordVO;
 import com.spring.med.administration.service.RegisterService;
 import com.spring.med.hospitalize.domain.HospitalizeVO;
 import com.spring.med.hospitalize.domain.HospitalizeroomVO;
@@ -319,6 +325,31 @@ public class RegisterController {
 		}
 	}
 	
+	// 수술 스케줄 캘린더 조회
+	@ResponseBody
+	@GetMapping(value="surgerySchedule", produces="text/plain;charset=UTF-8")
+	public String surgerySchedule(HttpServletRequest request) {
+		
+		// 수술 현황 
+		List<Calendar_surgery_recordVO> surgerySchedule = service.surgerySchedule(); 
+		
+		JSONArray jsArr = new JSONArray();
+		
+		if(surgerySchedule != null && surgerySchedule.size() > 0) {
+			
+			for(Calendar_surgery_recordVO svo : surgerySchedule) {
+				JSONObject jsObj = new JSONObject();
+				jsObj.put("surgery_no", svo.getSurgery_no());
+				jsObj.put("surgery_surgeryroom_name", svo.getSurgery_surgeryroom_name());
+				jsObj.put("surgery_day", svo.getSurgery_day());
+				jsObj.put("surgery_start_time", svo.getSurgery_start_time());
+				jsObj.put("surgery_end_time", svo.getSurgery_end_time());
+				jsArr.put(jsObj);
+			}// end of for-------------------------------------
+		}
+
+		return jsArr.toString();
+	}
 	
 	// ************************************************************* //
 	// **************************** 입원 **************************** //
@@ -409,5 +440,34 @@ public class RegisterController {
 		}
 	}
 
+	// 입원 스케줄 캘린더 조회
+	@ResponseBody
+	@GetMapping(value="hospitalizeSchedule", produces="text/plain;charset=UTF-8")
+	public String hospitalizeSchedule(HttpServletRequest request) {
+		
+		// 입원실 현황 
+		List<Calendar_hospitalize_recordVO> hospitalizeScheduleList = service.hospitalizeScheduleList();
+		
+		JSONArray jsArr = new JSONArray();
+		
+		if(hospitalizeScheduleList != null && hospitalizeScheduleList.size() > 0) {
+			
+			for(Calendar_hospitalize_recordVO hvo : hospitalizeScheduleList) {
+				JSONObject jsObj = new JSONObject();
+				jsObj.put("hospitalize_no", hvo.getHospitalize_no());
+				jsObj.put("fk_hospitalizeroom_no", hvo.getFk_hospitalizeroom_no());
+				jsObj.put("hospitalize_start_day", hvo.getHospitalize_start_day());
+				jsObj.put("hospitalize_end_day", hvo.getHospitalize_end_day());
+				jsObj.put("patient_name", hvo.getPatient_name());
+				jsArr.put(jsObj);
+			}// end of for-------------------------------------
+		}
+
+		return jsArr.toString();
+	}
+	
+	
+	
+	
 	
 }
