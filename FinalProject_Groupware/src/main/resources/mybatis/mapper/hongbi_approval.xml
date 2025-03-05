@@ -424,30 +424,5 @@
 	</select>
 	
 	
-	<!-- ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== -->
-	<resultMap type="HashMap" id="approvalPendingListDetail_Map">
-		<result property="draft_no" 				column="draft_no" 					javaType="String" />
-		<result property="fk_member_userid" 		column="fk_member_userid" 			javaType="String" />
-		<result property="draft_form_type" 			column="draft_form_type" 			javaType="String" />
-		<result property="draft_subject" 			column="draft_subject" 				javaType="String" />
-		<result property="draft_urgent" 			column="draft_urgent" 				javaType="String" />
-		<result property="draft_file_name" 			column="draft_file_name" 			javaType="String" />
-		<result property="draft_file_origin_name" 	column="draft_file_origin_name" 	javaType="String" />
-		<result property="draft_file_size" 			column="draft_file_size" 			javaType="String" />
-		<result property="day_leave_start" 			column="day_leave_start" 			javaType="String" />
-		<result property="day_leave_end" 			column="day_leave_end" 				javaType="String" />
-		<result property="day_leave_cnt" 			column="day_leave_cnt" 				javaType="String" />
-		<result property="day_leave_reason" 		column="day_leave_reason" 			javaType="String" />
-		<result property="work_change_start" 		column="work_change_start" 			javaType="String" />
-		<result property="work_change_end" 			column="work_change_end" 			javaType="String" />
-		<result property="work_change_reason" 		column="work_change_reason" 		javaType="String" />
-		<result property="work_change_member_workingTime" 		column="work_change_member_workingTime" 			javaType="String" />
-		<result property="member_name" 				column="member_name" 			javaType="String" />
-		<result property="parent_dept_name" 		column="parent_dept_name" 			javaType="String" />
-		<result property="child_dept_name" 			column="child_dept_name" 			javaType="String" />
-		<result property="member_position" 			column="member_position" 			javaType="String" />
-	</resultMap>
-	<select id="approvalPendingListDetail" resultMap="approvalPendingListDetail_Map" parameterType="HashMap">
-	</select>
 	
 </mapper>

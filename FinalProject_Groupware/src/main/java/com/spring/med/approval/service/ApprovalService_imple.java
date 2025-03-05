@@ -383,13 +383,6 @@ public class ApprovalService_imple implements ApprovalService {
 		return pendingList;
 	}
 
-	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
-	@Override
-	public HashMap<String, String> approvalPendingListDetail(String draft_no) {
-		HashMap<String, String> approvalvo = mapper_approvalDAO.approvalPendingListDetail(draft_no);
-
-		return approvalvo;
-	}
 
 
 

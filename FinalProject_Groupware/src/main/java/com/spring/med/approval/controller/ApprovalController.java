@@ -515,8 +515,7 @@ public class ApprovalController {
 	@PostMapping("approvalPendingListDetail")
 	public ModelAndView approvalPendingListDetail(ModelAndView mav, @RequestParam String draft_no) {
 
-		HashMap<String, String> approvalvo = approvalService.approvalPendingListDetail(draft_no);
-		System.out.println("확인 : " + approvalvo);
+		HashMap<String, String> approvalvo = approvalService.approvalTemporaryDetail(draft_no);
 		mav.addObject("approvalvo", approvalvo);
 		mav.setViewName("/content/approval/approvalDraft");
 		
