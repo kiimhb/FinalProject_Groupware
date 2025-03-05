@@ -1,5 +1,6 @@
 package com.spring.med.board.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -217,6 +218,71 @@ public class BoardDAO_imple implements BoardDAO {
 	public void insertBookmark(Map<String, String> paraMap) {
 		sqlsession.insert("minji_board.insertBookmark", paraMap);
 	}
+
+
+	// 즐겨찾기 해제
+	@Override
+	public void deleteBookmark(Map<String, String> paraMap) {
+		sqlsession.delete("minji_board.deleteBookmark", paraMap);
+		
+	}
+
+
+	// 즐겨찾기 중복 확인
+	@Override
+	public int checkBookmark(Map<String, String> paraMap) {
+	    return sqlsession.selectOne("minji_board.checkBookmark", paraMap);
+	}
+
+	
+	// 즐겨찾기 한 게시물 조회
+	@Override
+	public List<BoardVO> getBookmarkList(String member_userid) {
+		return sqlsession.selectList("minji_board.getBookmarkList", member_userid);
+	}
+
+	// 검색 포함된 게시물 개수 조회 (페이징)
+    @Override
+    public int getBookmarkCountWithSearch(Map<String, Object> paraMap) {
+        return sqlsession.selectOne("minji_board.getBookmarkCountWithSearch", paraMap);
+    }
+
+    // 검색 적용된 게시물 목록 조회 (페이징)
+    @Override
+    public List<BoardVO> getBookmarkListPagedWithSearch(Map<String, Object> paraMap) {
+        return sqlsession.selectList("minji_board.getBookmarkListPagedWithSearch", paraMap);
+    }
+
+    
+    
+    
+    
+	////////////////////////////////////////////////////////////////////////// 내가 쓴 글 조회 
+    // 내가 쓴 글 조회
+	@Override
+	public List<BoardVO> getMyboard(Map<String, String> paraMap) {
+		return sqlsession.selectList("minji_board.getMyboard", paraMap);
+	}
+
+
+	@Override
+	public int getMyBoardCountWithSearch(Map<String, Object> paraMap) {
+		return sqlsession.selectOne("minji_board.getMyBoardCountWithSearch", paraMap);
+	}
+
+
+	@Override
+	public List<BoardVO> getMyboardPagedWithSearch(Map<String, Object> paraMap) {
+		 return sqlsession.selectList("minji_board.getMyboardPagedWithSearch", paraMap);
+	}
+
+
+	// 처음 페이지 로딩
+	@Override
+	public List<HashMap<String, String>> selectBookmark(String member_userid) {
+		return sqlsession.selectList("minji_board.selectBookmark", member_userid);
+	}
+
 
 
 }

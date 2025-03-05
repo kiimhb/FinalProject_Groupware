@@ -416,6 +416,7 @@ public class BoardController {
 		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
 	    // redirect 되어서 넘어온 데이터가 있는지 꺼내어 와본다.
 		
+
 		if(inputFlashMap != null) { // null이 아니고 redirect 되어서 넘어온 데이터가 있다라면
 			
 			@SuppressWarnings("unchecked")  // 경고 표시를 하지 말라는 뜻이다.
@@ -496,6 +497,8 @@ public class BoardController {
 	 		paraMap.put("searchWord",searchWord);
 		 	// === #108. 이전글제목, 다음글제목 보여줄 때 검색이 있는지 여부를 넘겨주기 끝 === //
 	 		
+
+	 		
 //	 		System.out.println("board_no" + board_no);
 //	 		System.out.println("login_member_userid" + login_member_userid);
 //	 		System.out.println("searchType1111" + searchType);
@@ -541,10 +544,14 @@ public class BoardController {
 				}
 			}
 						
+			mav.addObject("myboard_val", request.getParameter("myboard_val")); //내가 쓴 글 목록에서 넘어갔는지 확인하는 용도
+			mav.addObject("bookmark_val", request.getParameter("bookmark_val")); //즐겨찾기에서 넘어갔는지 확인하는 용도
+			
 			mav.addObject("boardvo", boardvo);
 			
 			// === #112. 이전글제목 보기, 다음글제목 보기 시 POST 방식으로 넘기기 위한 것 === //
 			mav.addObject("paraMap", paraMap);
+
 			
 			// System.out.println("~~~~~~ NumberFormatException 확인" + boardvo);
 			mav.setViewName("content/community/board/view");
@@ -1424,31 +1431,347 @@ public class BoardController {
 
 		
 		
-		/////////////////////////////////////////////////////////////////////////////////////////////// 즐겨찾기 시작
+		/////////////////////////////////////////////////////////////////////////////////////////////// 
+		///                                    즐겨찾기 시작
+		///////////////////////////////////////////////////////////////////////////////////////////////
 		
-		// 즐겨찾기 테이블에 insert(한 행 추가)
+		// 즐겨찾기 insert, insert 중복 확인, delete
 		@PostMapping("bookmark")
 		@ResponseBody
-		public void bookmark(@RequestParam String board_no, HttpServletRequest request) {
-			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~" +board_no);
+		public Map<String, Object> bookmark(@RequestParam String board_no, HttpServletRequest request) {
+			// System.out.println("~~~~~~~~~~~~~~~~~~~~~~~" +board_no);
+			
 			HttpSession session = request.getSession();
 			ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
 			
+			// 글 조회수 증가를 위함 
+			session.setAttribute("readCountPermission", "yes");
+			
 			String member_userid = null;
+			
+			Map<String, Object> resultMap = new HashMap<>();
 			if(loginuser != null) {
 				member_userid = loginuser.getMember_userid();
-				// login_userid 는 로그인 되어진 사용자의 userid 이다. 
+				// login_member_userid 는 로그인 되어진 사용자의 member_userid 이다. 
 				
 				Map<String, String> paraMap=new HashMap<>();
 				
 				paraMap.put("board_no", board_no);
 				paraMap.put("member_userid", member_userid);
 				
-				service.insertBookmark(paraMap);
-				
-			}
-			
+				int count = service.checkBookmark(paraMap);
+		        
+		        if (count == 0) {
+		            service.insertBookmark(paraMap);
+		            resultMap.put("success", true);
+		            resultMap.put("isBookmark", true); // 즐겨찾기 추가됨
+		        } else {
+		            service.deleteBookmark(paraMap);
+		            resultMap.put("success", true);
+		            resultMap.put("isBookmark", false); // 즐겨찾기 삭제됨
+		        }
+		    } else {
+		        resultMap.put("success", false);
+		    }
+		    
+		    return resultMap;
 		}
+		
+		
+		
+		// 즐겨찾기 한 게시물 조회 (페이징 처리 추가)
+		@GetMapping("bookmarkList")
+		public ModelAndView bookmarkList(HttpServletRequest request,
+		                                 ModelAndView mav,
+		                                 @RequestParam(defaultValue = "1") String currentShowPageNo,
+		                                 @RequestParam(defaultValue = "") String searchType,
+		                                 @RequestParam(defaultValue = "") String searchWord) {
+
+		    HttpSession session = request.getSession();
+		    ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+
+		    if (loginuser == null) {
+		        mav.setViewName("redirect:/member/login"); // 로그인 페이지로 이동
+		        return mav;
+		    }
+
+		    String member_userid = loginuser.getMember_userid(); // 로그인한 사용자 ID 가져오기
+		    searchWord = searchWord.trim(); // 검색어 공백 제거
+
+		    // 검색 관련 파라미터 저장
+		    Map<String, Object> paraMap = new HashMap<>();
+		    paraMap.put("member_userid", member_userid);
+		    paraMap.put("searchType", searchType);
+		    paraMap.put("searchWord", searchWord);
+
+		    // ===== 페이징 처리 =====
+		    int totalCount = service.getBookmarkCountWithSearch(paraMap); // 검색 필터링을 포함한 총 게시물 개수
+		    mav.addObject("totalCount", totalCount);
+
+		    int sizePerPage = 10; // 한 페이지당 보여줄 게시물 개수
+		    int totalPage = (int) Math.ceil((double) totalCount / sizePerPage);
+		    if (totalPage == 0) totalPage = 1; // 최소 1페이지는 존재하도록 설정
+
+		    int n_currentShowPageNo;
+		    try {
+		        n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+		        if (n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+		            n_currentShowPageNo = 1;
+		        }
+		    } catch (NumberFormatException e) {
+		        n_currentShowPageNo = 1;
+		    }
+
+		    int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1;
+		    int endRno = startRno + sizePerPage - 1;
+
+		    paraMap.put("startRno", startRno);
+		    paraMap.put("endRno", endRno);
+
+		    // 즐겨찾기한 게시물 조회 (검색 및 페이징 적용)
+		    List<BoardVO> bookmarkList = service.getBookmarkListPagedWithSearch(paraMap);
+		    mav.addObject("bookmarkList", bookmarkList);
+		    
+		    // 검색어 및 검색 유형을 JSP에 전달하여 유지
+		    mav.addObject("searchType", searchType);
+		    mav.addObject("searchWord", searchWord);
+
+		    // ===== 페이지바 만들기 =====
+		    int blockSize = 10;
+		    int loop = 1;
+		    int pageNo = ((n_currentShowPageNo - 1) / blockSize) * blockSize + 1;
+
+		    String pageBar = "<ul style='list-style:none;'>";
+		    String url = "bookmarkList";
+
+		    // [처음] 버튼
+		    pageBar += "<li style='display:inline-block; width:70px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=1'><<</a></li>";
+
+		    // [이전] 버튼
+		    if (pageNo != 1) {
+		        pageBar += "<li style='display:inline-block; width:50px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + (pageNo - 1) + "'>[이전]</a></li>";
+		    }
+
+		    // 페이지 번호
+		    while (!(loop > blockSize || pageNo > totalPage)) {
+		        if (pageNo == n_currentShowPageNo) {
+		            pageBar += "<li style='display:inline-block; width:30px; font-weight:bold;'>" + pageNo + "</li>";
+		        } else {
+		            pageBar += "<li style='display:inline-block; width:30px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
+		        }
+		        loop++;
+		        pageNo++;
+		    }
+
+		    // [다음] 버튼
+		    if (pageNo <= totalPage) {
+		        pageBar += "<li style='display:inline-block; width:50px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + pageNo + "'>[다음]</a></li>";
+		    }
+
+		    // [마지막] 버튼
+		    pageBar += "<li style='display:inline-block; width:70px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + totalPage + "'>>></a></li>";
+		    pageBar += "</ul>";
+
+		    mav.addObject("pageBar", pageBar);
+
+		    // jsp에 데이터 전달
+		    mav.addObject("loginuser", loginuser);
+		    mav.addObject("totalCount", totalCount);
+		    mav.addObject("currentShowPageNo", currentShowPageNo);
+		    mav.addObject("sizePerPage", sizePerPage);
+		    
+		    mav.addObject("searchType", searchType);
+		    mav.addObject("searchWord", searchWord);
+		    
+		    String currentURL =  MyUtil.getCurrentURL(request);   // currentURL : 현재페이지
+		    // System.out.println("~~~ 확인용 currentURL : " + currentURL);
+		    
+		    mav.addObject("goBackURL", currentURL); // 돌아갈 페이지
+
+		    mav.setViewName("content/community/board/bookmarkList");
+		    return mav;
+		}
+
+		
+		// 로그인한 사용자의 즐겨찾기 여부 확인		
+/*
+		@GetMapping("checkBookmark")
+		@ResponseBody
+		public Map<String, Object> checkBookmark(@RequestParam String board_no, HttpServletRequest request) {
+		    HttpSession session = request.getSession();
+		    ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+
+		    Map<String, Object> resultMap = new HashMap<>();
+		    if (loginuser != null) {
+		        String member_userid = loginuser.getMember_userid();
+		        Map<String, String> paraMap = new HashMap<>();
+		        paraMap.put("board_no", board_no);
+		        paraMap.put("member_userid", member_userid);
+
+		        int count = service.checkBookmark(paraMap);
+		        resultMap.put("isBookmarked", count > 0);
+		    } else {
+		        resultMap.put("isBookmarked", false);
+		    }
+
+		    return resultMap;
+		}
+
+*/		
+		
+		
+		
+		/////////////////////////////////////////////////////////////////////////////////////////////// 
+		///                                    즐겨찾기 끝
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		
+		
+		
+		/////////////////////////////////////////////////////////////////////////////////////////////// 
+		///                                  내가 쓴 글 조회 시작
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		@GetMapping("myboard")
+		public ModelAndView getMyboard(HttpServletRequest request,
+		                               ModelAndView mav,
+		                               @RequestParam(defaultValue = "1") String currentShowPageNo,
+		                               @RequestParam(defaultValue = "") String searchType,
+		                               @RequestParam(defaultValue = "") String searchWord) {
+
+		    HttpSession session = request.getSession();
+		    ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+
+		    if (loginuser == null) {
+		        mav.setViewName("redirect:/member/login"); // 로그인 페이지로 이동
+		        return mav;
+		    }
+
+		    String member_userid = loginuser.getMember_userid(); // 로그인한 사용자 ID 가져오기
+		    searchWord = searchWord.trim(); // 검색어 공백 제거
+
+		    // 검색 관련 파라미터 저장
+		    Map<String, Object> paraMap = new HashMap<>();
+		    paraMap.put("member_userid", member_userid);
+		    paraMap.put("searchType", searchType);
+		    paraMap.put("searchWord", searchWord);
+
+		    // ===== 페이징 처리 =====
+		    int totalCount = service.getMyBoardCountWithSearch(paraMap); // 검색 필터링을 포함한 총 게시물 개수
+		    mav.addObject("totalCount", totalCount);
+
+		    int sizePerPage = 10; // 한 페이지당 보여줄 게시물 개수
+		    int totalPage = (int) Math.ceil((double) totalCount / sizePerPage);
+		    if (totalPage == 0) totalPage = 1; // 최소 1페이지는 존재하도록 설정
+
+		    int n_currentShowPageNo;
+		    try {
+		        n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+		        if (n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+		            n_currentShowPageNo = 1;
+		        }
+		    } catch (NumberFormatException e) {
+		        n_currentShowPageNo = 1;
+		    }
+
+		    int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1;
+		    int endRno = startRno + sizePerPage - 1;
+
+		    paraMap.put("startRno", startRno);
+		    paraMap.put("endRno", endRno);
+
+		    // 내가 작성한 게시글 조회 (검색 및 페이징 적용)
+		    List<BoardVO> myBoardList = service.getMyboardPagedWithSearch(paraMap);
+		    mav.addObject("myBoardList", myBoardList);
+
+		    // 검색어 및 검색 유형을 JSP에 전달하여 유지
+		    mav.addObject("searchType", searchType);
+		    mav.addObject("searchWord", searchWord);
+
+		    // ===== 페이지바 만들기 =====
+		    int blockSize = 10;
+		    int loop = 1;
+		    int pageNo = ((n_currentShowPageNo - 1) / blockSize) * blockSize + 1;
+
+		    String pageBar = "<ul style='list-style:none;'>";
+		    String url = "myboard";
+
+		    // [처음] 버튼
+		    pageBar += "<li style='display:inline-block; width:70px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=1'><<</a></li>";
+
+		    // [이전] 버튼
+		    if (pageNo != 1) {
+		        pageBar += "<li style='display:inline-block; width:50px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + (pageNo - 1) + "'>[이전]</a></li>";
+		    }
+
+		    // 페이지 번호
+		    while (!(loop > blockSize || pageNo > totalPage)) {
+		        if (pageNo == n_currentShowPageNo) {
+		            pageBar += "<li style='display:inline-block; width:30px; font-weight:bold;'>" + pageNo + "</li>";
+		        } else {
+		            pageBar += "<li style='display:inline-block; width:30px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
+		        }
+		        loop++;
+		        pageNo++;
+		    }
+
+		    // [다음] 버튼
+		    if (pageNo <= totalPage) {
+		        pageBar += "<li style='display:inline-block; width:50px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + pageNo + "'>[다음]</a></li>";
+		    }
+
+		    // [마지막] 버튼
+		    pageBar += "<li style='display:inline-block; width:70px;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + totalPage + "'>>></a></li>";
+		    pageBar += "</ul>";
+
+		    mav.addObject("pageBar", pageBar);
+
+		    // jsp에 데이터 전달
+		    mav.addObject("loginuser", loginuser);
+		    mav.addObject("totalCount", totalCount);
+		    mav.addObject("currentShowPageNo", currentShowPageNo);
+		    mav.addObject("sizePerPage", sizePerPage);
+		    
+		    mav.addObject("searchType", searchType);
+		    mav.addObject("searchWord", searchWord);
+		    
+		    String currentURL =  MyUtil.getCurrentURL(request);   // currentURL : 현재페이지
+		    // System.out.println("~~~ 확인용 currentURL : " + currentURL);
+		    
+		    mav.addObject("goBackURL", currentURL); // 돌아갈 페이지
+
+		    mav.setViewName("content/community/board/myboard");
+		    return mav;
+		}
+
+
+
+		
+		@GetMapping("selectbookmark")
+		@ResponseBody
+		public List<HashMap<String, String>> selectbookmark(HttpServletRequest request){
+			
+			HttpSession session = request.getSession();
+		    ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+
+		    String member_userid = loginuser.getMember_userid();
+
+		    List<HashMap<String, String>> boardnoList = service.selectBookmark(member_userid);
+			System.out.println("확인용 " +boardnoList);
+		    //mav.addObject("boardnoList",boardnoList);
+			
+			return boardnoList;
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		
