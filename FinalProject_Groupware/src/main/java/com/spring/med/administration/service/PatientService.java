@@ -24,8 +24,8 @@ public interface PatientService {
 	// 개인별 환자 진료목록
 	List<Map<String, String>> order_list(String jubun);
 
-	// 개인별 환자 수술기록
-	List<Map<String, Object>> surgery_list(String seq);
+	// 예정된 환자 수술목록 
+	List<Map<String, Object>> surgery_list(Map<String, String> paraMap);
 
 	// 수술실 목록 불러오기
 	List<SurgeryroomVO> getSurgeryRoom();
@@ -35,6 +35,9 @@ public interface PatientService {
 
 	// 환자의 일정목록을 불러오기 캘린더
 	List<Calendar_patient_recordVO> selectSchedule(String jubun);
+
+	
+
 
 
 

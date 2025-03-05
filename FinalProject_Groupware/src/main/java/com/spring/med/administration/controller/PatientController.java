@@ -7,6 +7,8 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.administration.domain.Calendar_patient_recordVO;
 import com.spring.med.administration.service.PatientService;
-import com.spring.med.patient.domain.PatientVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -125,33 +126,32 @@ public class PatientController {
 		
 		mav.setViewName("content/administration/patient"); 
 		return mav;
-		 
 	}
 	
 	
-	// 환자상세조회 
+	// 환자상세조회
 	@GetMapping("detail/{seq}")
 	public ModelAndView detail_patient(HttpServletRequest request, ModelAndView mav,
-									   @PathVariable String seq) { // seq = 환자번호 patient_no
+									   @PathVariable String seq // seq = 환자번호 patient_no
+									   ) { 
+		
 		
 		String jubun = service.getJubun(seq); // 주민번호로 환자 구분 하기위함
-		
+
 		Map<String, String> detail_patient = service.detail_patient(seq); // 환자 기본 정보
 		List<Map<String, String>> order_list = service.order_list(jubun); // 개인별 환자 진료목록
-		List<Map<String, Object>> surgery_list = service.surgery_list(jubun); // 환자 수술기록
+
 		List<SurgeryroomVO> surgeryroom = service.getSurgeryRoom(); // 수술실 목록 불러오기 (select)
+		
 		List<Map<String, Object>> hospitalize_list = service.hospitalize_list(jubun); // 환자 입원기록 
 		
-		if (surgery_list == null || surgery_list.isEmpty()) {
-	        mav.addObject("surgeryMessage", "수술 기록이 없습니다.");
-	    }
+		
 		if (hospitalize_list == null || hospitalize_list.isEmpty()) {
 	        mav.addObject("hospitalizeMessage", "입원 기록이 없습니다.");
 	    }
 			
 		mav.addObject("detail_patient", detail_patient);
 		mav.addObject("order_list", order_list);
-		mav.addObject("surgery_list", surgery_list);
 		mav.addObject("surgeryroom", surgeryroom);
 		mav.addObject("patient_no", seq);
 		mav.addObject("hospitalize_list", hospitalize_list);
@@ -161,15 +161,49 @@ public class PatientController {
 		return mav;
 	}
 	
+	// 수술목록 
+	@GetMapping("detail/surgeryList")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> surgeryList(HttpServletRequest request, ModelAndView mav,
+									  @RequestParam String seq, // seq = 환자번호 patient_no
+									  @RequestParam(defaultValue = "future") String SurgeryType) { 
+
+		System.out.println("SurgeryType"+SurgeryType+"seq"+seq);
+		
+		String jubun = service.getJubun(seq); // 주민번호로 환자 구분 하기위함
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("SurgeryType", SurgeryType);
+		paraMap.put("jubun", jubun);
+
+		
+		List<Map<String, Object>> surgery_list = service.surgery_list(paraMap); // 예정된 환자 수술기록
+		
+		Map<String, Object> response = new HashMap<>();
+		
+		
+		if (surgery_list == null || surgery_list.isEmpty()) {
+			response.put("surgeryMessage", "수술 기록이 없습니다.");
+		}
+		else {
+			response.put("surgery_list", surgery_list);
+		}
+
+		return new ResponseEntity<>(response, HttpStatus.OK); // JSON 형식으로 응답
+	}
+	
+	
 	// 환자별 일정 조회하기 (진료, 수술, 입원)
 	@ResponseBody
 	@GetMapping(value="selectSchedule", produces="text/plain;charset=UTF-8")
 	public String selectSchedule(HttpServletRequest request) {
 		
 		// 등록된 일정 가져오기
-		String jubun = request.getParameter("jubun");
+		String patient_no = request.getParameter("patient_no");
 		
-		List<Calendar_patient_recordVO> scheduleList = service.selectSchedule(jubun);
+		// System.out.println("patient_no"+patient_no);
+		
+		List<Calendar_patient_recordVO> scheduleList = service.selectSchedule(patient_no);
 		
 		JSONArray jsArr = new JSONArray();
 		
@@ -178,7 +212,7 @@ public class PatientController {
 			for(Calendar_patient_recordVO cvo : scheduleList) {
 				JSONObject jsObj = new JSONObject();
 				jsObj.put("order_no", cvo.getOrder_no());
-				jsObj.put("patient_visitdate", cvo.getPatient_visitdate());
+				jsObj.put("order_createTime", cvo.getOrder_createTime());
 				jsObj.put("hospitalize_start_day", cvo.getHospitalize_start_day());
 				jsObj.put("hospitalize_end_day", cvo.getHospitalize_end_day());
 				jsObj.put("surgery_day", cvo.getSurgery_day());

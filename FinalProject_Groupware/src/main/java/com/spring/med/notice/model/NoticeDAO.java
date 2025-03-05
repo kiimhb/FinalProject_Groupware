@@ -31,4 +31,16 @@ public interface NoticeDAO {
 	// 첨부파일 및 사진이미지가 있는 경우의 글삭제
 	int notice_del(String notice_no);
 
+	// 공지사항수정하기
+	int notice_update(Map<String, String> paraMap);
+
+	// 부서별 사원 아이디 조회하기 
+	List<String> selectMemberId(List<String> fk_child_dept_no);
+
+	// 제목으로 공지사항 번호 알아오기 
+	String selectNoticeNo(String notice_title);
+
+	// 공지사항이 작성되면 알림 테이블에 입력해준다. 
+	void insertNoticeAlarm(Map<String, String> paraMap);
+
 }

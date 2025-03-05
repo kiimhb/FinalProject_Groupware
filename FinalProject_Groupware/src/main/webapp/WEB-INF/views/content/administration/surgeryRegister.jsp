@@ -95,6 +95,42 @@ $(document).ready(function(){
 	        dayMaxEventRows: 3 // adjust to 6 only for timeGridWeek/timeGridDay
 	      }
 	    },
+	    // ===================== DB 와 연동하는 법 시작 ===================== //
+	    events:function(info, successCallback, failureCallback) {
+
+	    	 $.ajax({
+	    		 url: '<%= ctxPath%>/register/surgerySchedule',
+                 dataType: "json",
+                 success:function(json) {
+					 
+                	 console.log(JSON.stringify(json));
+                	 
+                	 var events = [];
+
+                	 // 가져온 데이터를 FullCalendar의 events 배열 형식으로 변환
+                     json.forEach(function(item) {
+
+                         if (item.surgery_day && item.surgery_start_time) {
+                        	 
+                        	 var startDateTime = item.surgery_day + "T" + item.surgery_start_time;  // "2025-03-18T11:30:00"
+                             var endDateTime = item.surgery_day + "T" + item.surgery_end_time;  // "2025-03-18T15:00:00"	 
+
+                             events.push({
+                                 title: "수술실" + item.surgery_surgeryroom_name,
+                                 start: startDateTime,
+                                 end: startDateTime,
+                                 color: "lightcoral"
+                             });
+                         }
+                     });
+                    	successCallback(events); 
+	    	 		},
+			    	error: function(request, status, error){
+				            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				    }	
+	    	 }); // end of  $.ajax
+	    },
+	    // ===================== DB 와 연동하는 법 끝 ===================== //
 	 	// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정에 대한 간단한 설명문 보여줌)
      	dateClick: function(info) {
       	 	// alert('클릭한 Date: ' + info.dateStr); // 클릭한 Date: 2021-11-20
@@ -102,7 +138,7 @@ $(document).ready(function(){
       	    info.dayEl.style.backgroundColor = '#b1b8cd'; // 클릭한 날짜의 배경색 지정하기
       	    $("form > input[name=chooseDate]").val(info.dateStr);
       	    
-      	    alert("상세일정내용");
+      	    // alert("상세일정내용");
       	  }
 	});
 	

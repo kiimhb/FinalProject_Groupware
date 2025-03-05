@@ -3,6 +3,8 @@ package com.spring.med.administration.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.med.administration.domain.Calendar_hospitalize_recordVO;
+import com.spring.med.administration.domain.Calendar_surgery_recordVO;
 import com.spring.med.hospitalize.domain.HospitalizeVO;
 import com.spring.med.hospitalize.domain.HospitalizeroomVO;
 import com.spring.med.surgery.domain.SurgeryVO;
@@ -64,9 +66,11 @@ public interface RegisterService {
 	// 입원 예약 수정하기 
 	void hospitalizeUpdate(Map<String, String> paraMap);
 
+	// 입원실 현황 캘린더 조회
+	List<Calendar_hospitalize_recordVO> hospitalizeScheduleList();
 
-
-
+	// 수술현황 캘린더조회
+	List<Calendar_surgery_recordVO> surgerySchedule();
 
 
 	

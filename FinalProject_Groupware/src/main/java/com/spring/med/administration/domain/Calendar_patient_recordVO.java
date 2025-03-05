@@ -6,7 +6,7 @@ public class Calendar_patient_recordVO {
 	
 	// 진료관련
 	private String order_no;
-	private String patient_visitdate;
+	private String order_createTime;
 	
 	// 입원관련
 	private String hospitalize_start_day;
@@ -23,11 +23,11 @@ public class Calendar_patient_recordVO {
 	public void setOrder_no(String order_no) {
 		this.order_no = order_no;
 	}
-	public String getPatient_visitdate() {
-		return patient_visitdate;
+	public String getOrder_createTime() {
+		return order_createTime;
 	}
-	public void setPatient_visitdate(String patient_visitdate) {
-		this.patient_visitdate = patient_visitdate;
+	public void setOrder_createTime(String order_createTime) {
+		this.order_createTime = order_createTime;
 	}
 	public String getHospitalize_start_day() {
 		return hospitalize_start_day;
