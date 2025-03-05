@@ -115,10 +115,10 @@ $.ajax({
       <i class="fa-solid fa-envelope sideBarICSS"></i> <span>메일</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/mail/mailWrite">메일쓰기</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailReceive">받은메일함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailSend">보낸메일함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailTrash">휴지통</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailStorage">메일보관함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailReceive/${sessionScope.loginuser.member_userid}">받은메일함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailSend/${sessionScope.loginuser.member_userid}">보낸메일함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailTrash/${sessionScope.loginuser.member_userid}">휴지통</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailStorage/${sessionScope.loginuser.member_userid}">메일보관함</a>
 
          </div></li>
 

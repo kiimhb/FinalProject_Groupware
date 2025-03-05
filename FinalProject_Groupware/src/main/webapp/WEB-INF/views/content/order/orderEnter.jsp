@@ -32,7 +32,9 @@
 
 
 
-$(document).ready(function(){  
+$(document).ready(function(){
+	
+	
 
 	var calendarEl = document.getElementById('calendar'); //
 	
@@ -74,25 +76,38 @@ $(document).ready(function(){
 	    this.value = "";
 	});
 
-	
+	$("div#orderHowLongHosp").hide()
 	$("div#orderSurgDetail").hide();
 	
 	$("button#goSurgeryOrder").click(function(){
-		
+		$("div#orderHowLongHosp").hide()
 		$("div#orderSurgDetail").show();
 		
 	})
 	
 	$("button#goHospOrder").click(function(){
+	
+		$("div#orderSurgDetail").hide();
+		$("div#orderHowLongHosp").show();
+	})
+	
+	
+	
+	
+	
+	$("button#hospConfirm").click(function(){
 		
+	
 		const hospYN = confirm("원무과에 입원 일정을 요청하시겠습니까? ")
-				
+		
+		
 		if(hospYN == true){
 			$.ajax({
 				   url:"<%= ctxPath%>/order/requestHosp",
 				   type:"post",
 				   data:{"orderNo":$("input#hiddenOrderNo").val()
-					   	,"hiddenPatientNo":$("input#hiddenPatientNo").val()},
+					   	,"hiddenPatientNo":$("input#hiddenPatientNo").val()
+					   	,"order_howlonghosp":$("input#howLongHosp").val()},
 				   dataType:"json",
 				   success:function(json){
 					   alert("요청 완료되었습니다.");
@@ -865,7 +880,16 @@ button.btn_edit{
 						<div>											
 							<input id="surgeryExplain"style="width:100%;"type="text" placeholder="수술 설명"/>
 						</div>
-					</div>							
+					</div>
+					<div id="orderHowLongHosp"style="margin: 1.3% 0%; border: solid 1px black; width:100%;">
+						<div style=" margin: 1% 0 0 1%; height:25px;">
+							입원 일수를 입력해 주세요
+						</div>	
+						<div style="display: flex">				
+							<input type="number" id="howLongHosp"/>
+							<button id="hospConfirm" type="button" style="width:20%;" ><span id="confirmButton">전송</span></button>	
+						</div>
+					</div>						
 				</div>
 				<div style="float:left; margin:0.4% 0% 0.1% 0.1% ; width:33%;">
 					<div style="margin-bottom:0.2%;">
@@ -902,30 +926,21 @@ button.btn_edit{
 				    <div id="medicineList" style="background-color:white; border:solid 1px gray; margin-left:4.35%; border-top:0px; height:100px;  overflow:auto;">
 					</div>										
 				</div>
-					<div id="pickedMedicine" style="border:solid 1px purple; height:170px; margin:0% 0.1%; position:relative; z-index:2; padding: 0.9% 0.9%; overflow:auto;">
-					</div>
+					<div id="pickedMedicine" style="border:solid 1px purple; height:170px; margin:0% 0.1%; position:relative; z-index:2; padding: 0.9% 0.9%; overflow:auto;"></div>
 				
 				
 				<div id="pay" style="margin:1% 0.1%; border:solid 1px blue; height:150px;">
 					<span style="margin:1% 0.1%;">수납 내역</span>
 					<div class="row">
-					    <div class="col-md-4" style="text-align:center;">감기약</div>
-					    <div class="col-md-4 offset-md-4" style="text-align:center;">20000원</div>
-					</div>
-					<div class="row">
-					    <div class="col-md-4" style="text-align:center;">타이레놀</div>
-					    <div class="col-md-4 offset-md-4" style="text-align:center;">10000원</div>
-					</div>				
-					<div class="row">
-					    <div class="col-md-4" style="">총액</div>
-					    <div class="col-md-4 offset-md-4" style="text-align:center;">30000원</div>
-					</div>
+					    <div class="col-md-4" style="text-align:center;">기본 진료비 청구</div>
+					    <div class="col-md-4 offset-md-4" style="text-align:center;">5000원</div>
+					</div>					
 				</div>
-			</div>
-			
+			</div>	
 	</div> <%-- end of orderEnter --%>
 </div>
 </form>
+
 
 <!-- 숨겨진 인풋 -->
 <input id="hiddenOrderNo"type="hidden" value="${requestScope.newOrderNo }"/>

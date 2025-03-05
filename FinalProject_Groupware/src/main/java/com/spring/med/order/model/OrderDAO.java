@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.spring.med.order.domain.CostVO;
 import com.spring.med.order.domain.OrderVO;
 
 public interface OrderDAO {
@@ -53,6 +54,9 @@ public interface OrderDAO {
 
 	// 질병 고르고 확정눌러서 질병테이블에 insert 하기
 	int orderDesease(Map<String, String> paraMap);
+
+	// 진료입력 마무리 수술여부, 입원여부, 약처방 등 종합하여 가격 보여주기
+	List<CostVO> showCostList(String fk_order_no);
 
 
 
