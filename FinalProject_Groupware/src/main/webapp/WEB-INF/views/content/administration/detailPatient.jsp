@@ -62,7 +62,7 @@ a:hover,
 <script type="text/javascript">
 $(document).ready(function(){
 
-	var calendar;
+	var calendar
 
 	if (calendar) {
         calendar.destroy(); // 이전 캘린더 인스턴스 삭제
@@ -220,7 +220,7 @@ $(document).ready(function(){
 	// 퇴원일 자동 입력하기
 	$("input[name='hospitalize_start_day']").on("change", function(e){
 		// alert("수정")
-		const start_day = $(e.target).val(); // 시작날짜
+		const start_day = $(e.target).val(); // 시작날짜 
 		
 		const order_howlonghosp = $("input.order_howlonghosp").data("id"); // 입원일수
 		
@@ -294,86 +294,8 @@ $(document).ready(function(){
 		}	
 	}); // end of $("input[name='hospitalize_start_day'").on("change", function(){
 	
-	// 수정폼에 이름 자동입력됨 	
-	$("input[name='patient_name']").val($("td#patient_name").text());
-	
-	
-	
-	// 예정된 수술기록 클릭한 경우
-	$("div#futureSurgery").on("click", function(){
-		surgeryList("future");
-	});
-	
-	// 과거 수술기록 클릭한 경우 
-	$("div#lastSurgery").on("click", function(){
-		surgeryList("last");
-	});
-	
-	
-	
+			
 }); //end of ready 
-// 예정, 과거 수술기록 불러오기 
-function surgeryList(type) {
-	
-	const seq = $("input[name='patient_no']").val();
-	// console.log(seq);
-	
-	$.ajax({
-		url:`<%= ctxPath%>/detail/surgeryList`,
-		type: "GET", 
-		data:{"SurgeryType":type,
-			  "seq":seq},
-		dataType: "json",
-		success:function(response){
-			
-			console.log(response);
-			
-			/* $("div#surgeryList").empty();
-			
-			let html = ``;
-			
-			$.each(response, function(index, patient) {
-				
-				html += `<tr>
-							<td><input type="radio" name="radio" class="orderno" data-id="${patient.order_no}" onclick="checkedSurgeryUpdate()" /></td>
-							<td id="surgery_day">${patient.surgery_day}</td>
-							<td><span id="surgery_start_time">${patient.surgery_start_time}</span> ~ 
-							<span id="surgery_end_time">${patient.surgery_end_time}</span></td>`;
-				
-				let surgery_room = '';
-				
-				if(patient.surgery_surgeryroom_name == 1) {
-					surgery_room = 'roomA';
-				}
-				if(patient.surgery_surgeryroom_name == 2) {
-					surgery_room = 'roomB';
-				}
-				if(patient.surgery_surgeryroom_name == 3) {
-					surgery_room = 'roomC';
-				}
-				if(patient.surgery_surgeryroom_name == 4) {
-					surgery_room = 'roomD';
-				}
-				
-				html += `<td class="surgery_room">${surgery_room}</td>
-							<input type="hidden" class="room" value="${patient.surgery_surgeryroom_name}" />
-							<td id="order_surgeryType_name">${patient.order_surgeryType_name}</td>
-							<td><span id="member_name">${patient.member_name}</span>선생님</td>
-						</tr>`;
-
-			}); // end of $.each(response, function(index, patient)
-					
-			$("div#surgeryList").html(html); 
- */
-		},
-  	    error: function(xhr, status, error) {
-  	        console.error("AJAX 요청 실패", status, error);
-	    }
-		
-	});
-	
-		
-}
 
 // 종료 가능한 시간 선택하기 (동일 시간대 동일 수술실 중복 피하기)
 function getAvaliableEndTime(startTime, reservedTime) {
@@ -482,14 +404,6 @@ function checkedHospitalizeUpdate() {
 
 
 // 초기화 클릭한 경우
-function reset2() {
-	// alert("초기화누름")
-	$("input#hospitalize_start_day").val(""); // 수술날짜
-	$("input#hospitalize_end_day").val(""); // 수술 시작시간
-	$("select.hospitalizeroom_no").val(""); // 수술 종료시간
-	
-};
-
 function reset() {
 	// alert("초기화누름")
 	
@@ -665,8 +579,8 @@ function hospitalizeUpdate() {
 	  		<div class="top">
 		  		<div class="menu" style="width:50%;">
 		  			<div class="detail_title">예약 수술 관리</div>
-		  			<div class="list ml-3" id="futureSurgery">수술예정&nbsp;&nbsp;|</div>
-		  			<div class="list" 	   id="lastSurgery">&nbsp;&nbsp;과거수술기록</div>
+		  			<div class="list ml-3"><a href="">수술예정</a>&nbsp;&nbsp;|</div>
+		  			<div class="list">&nbsp;&nbsp;<a href="">과거수술기록</a></div>
 		  		</div>
 		  		
 		  		<div style="width:20px;"></div>
@@ -691,10 +605,39 @@ function hospitalizeUpdate() {
 		  					</tr>
 		  				</thead>
 					<form name="surgeryUpdateFrm">	
-					
-		  				<tbody id="surgeryList">
-							
-							
+		  				<tbody>
+							<c:if test="${not empty requestScope.surgery_list}">
+								<c:forEach var="svo" items="${requestScope.surgery_list}">
+				  					<tr><input type="hidden" name="fk_order_no" value="${svo.order_no}" />
+				  						<td><input type="radio" name="radio" class="orderno" data-id="${svo.order_no}" onclick="checkedSurgeryUpdate()" /></td>
+				  						<td id="surgery_day">${svo.surgery_day}</td>
+				  						<td><span id="surgery_start_time">${svo.surgery_start_time}</span> ~ <span id="surgery_end_time">${svo.surgery_end_time}</span></td>
+										
+										<c:choose>
+											<c:when test="${svo.surgery_surgeryroom_name eq 1}">
+												<td class="surgery_room">roomA</td>
+											</c:when>
+											<c:when test="${svo.surgery_surgeryroom_name eq 2}">
+												<td class="surgery_room">roomB</td>
+											</c:when>
+											<c:when test="${svo.surgery_surgeryroom_name eq 3}">
+												<td class="surgery_room">roomC</td>
+											</c:when>
+											<c:when test="${svo.surgery_surgeryroom_name eq 4}">
+												<td class="surgery_room">roomD</td>
+											</c:when>
+										</c:choose>
+										<input type="hidden" class="room" value="${svo.surgery_surgeryroom_name}" />
+				  						<td id="order_surgeryType_name">${svo.order_surgeryType_name}</td>
+				  						<td><span id="member_name">${svo.member_name}</span>선생님</td>
+				  					</tr>
+								</c:forEach>
+							</c:if>
+							<c:if test="${empty requestScope.surgery_list}">
+								<tr>
+									<td>${requestScope.surgeryMessage}</td>
+								</tr>
+							</c:if>
 		  				</tbody>
 		  			</table>
 		  		</div>
@@ -823,7 +766,7 @@ function hospitalizeUpdate() {
   					</div>
 		  			<div class="button btn2">
   						<button type="button" class="btn" onclick="hospitalizeUpdate()">수정하기</button>
-	  					<button type="reset" class="btn reset" onclick="reset2()">초기화</button>
+	  					<button type="reset" class="btn reset" onclick="reset()">초기화</button>
 		  			</div>
 		  		</div>
 	  	</div>

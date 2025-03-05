@@ -55,11 +55,11 @@ public class PatientDAO_imple implements PatientDAO {
 		return order_list;
 	}
 
-	// 예정된 환자 수술목록 
+	// 개인별 환자 수술기록
 	@Override
-	public List<Map<String, Object>> surgery_list(Map<String, String> paraMap) {
-		List<Map<String, Object>> future_surgery_list = sqlsession.selectList("hyeyeon.surgery_list", paraMap);
-		return future_surgery_list;
+	public List<Map<String, Object>> surgery_list(String jubun) {
+		List<Map<String, Object>> surgery_list = sqlsession.selectList("hyeyeon.surgery_list", jubun);
+		return surgery_list;
 	}
 
 	// 수술실 목록 불러오기
@@ -82,8 +82,6 @@ public class PatientDAO_imple implements PatientDAO {
 		List<Calendar_patient_recordVO> selectSchedule = sqlsession.selectList("hyeyeon.selectSchedule", patient_no);
 		return selectSchedule;
 	}
-
-	
 
 
 }

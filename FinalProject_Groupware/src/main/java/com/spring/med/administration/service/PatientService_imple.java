@@ -53,11 +53,11 @@ public class PatientService_imple implements PatientService {
 		return order_list;
 	}
 
-	// 예정된 환자 수술목록 
+	// 개인별 환자 수술기록
 	@Override
-	public List<Map<String, Object>> surgery_list(Map<String, String> paraMap) {
-		List<Map<String, Object>> future_surgery_list = dao.surgery_list(paraMap);
-		return future_surgery_list;
+	public List<Map<String, Object>> surgery_list(String jubun) {
+		List<Map<String, Object>> surgery_list = dao.surgery_list(jubun);
+		return surgery_list;
 	}
 
 	// 수술실 목록 불러오기
@@ -80,8 +80,6 @@ public class PatientService_imple implements PatientService {
 		List<Calendar_patient_recordVO> selectSchedule = dao.selectSchedule(patient_no);
 		return selectSchedule;
 	}
-
-	
 
 
 	
