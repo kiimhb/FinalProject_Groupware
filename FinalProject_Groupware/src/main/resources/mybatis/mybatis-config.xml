@@ -23,5 +23,7 @@
       <typeAlias type="com.spring.med.notice.domain.NoticeVO" alias="NoticeVO"/>
       <typeAlias type="com.spring.med.order.domain.OrderVO" alias="OrderVO"/>
       <typeAlias type="com.spring.med.administration.domain.Calendar_patient_recordVO" alias="Calendar_patient_recordVO"/>
+      <typeAlias type="com.spring.med.mail.domain.MailSentVO" alias="MailSentVO"/>
+      <typeAlias type="com.spring.med.mail.domain.MailReceiveVO" alias="MailReceiveVO"/>
    </typeAliases>
 </configuration>
