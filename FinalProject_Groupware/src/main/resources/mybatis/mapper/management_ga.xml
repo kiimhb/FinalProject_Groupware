@@ -46,6 +46,7 @@
 		JOIN TBL_CHILD_DEPT c
 		ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
 		where member_userid = #{member_userid} and member_pwd = #{member_pwd}
+		and MEMBER_LAST IS NULL
 	</select>
 
 	<!-- === 총 사원수 구하기 검색이 있을 때와 검색이 없을때 로 나뉜다. === -->
@@ -53,15 +54,16 @@
 		resultType="int">
 		select count(*)
 		from tbl_member
+		where MEMBER_LAST IS NULL
 		<choose>
 			<when test='searchType == "userid" and searchWord != ""'>
-				where lower(member_userid) like '%'|| lower(#{searchWord}) ||'%'
+				and lower(member_userid) like '%'|| lower(#{searchWord}) ||'%'
 			</when>
 			<when test='searchType == "position" and searchWord != ""'>
-				where lower(member_position) like '%'|| lower(#{searchWord}) ||'%'
+				and lower(member_position) like '%'|| lower(#{searchWord}) ||'%'
 			</when>
 			<when test='searchType == "name" and searchWord != ""'>
-				where lower(member_name) like '%'|| lower(#{searchWord}) ||'%'
+				and lower(member_name) like '%'|| lower(#{searchWord}) ||'%'
 			</when>
 			<otherwise></otherwise>
 		</choose>
@@ -79,15 +81,16 @@
 		m.member_gender, m.member_pro_filename, m.member_position
 		FROM tbl_member m
 		JOIN TBL_CHILD_DEPT c ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
+		where MEMBER_LAST IS NULL
 		<choose>
 			<when test='searchType == "userid" and searchWord != ""'>
-				where lower(member_userid) like '%'|| lower(#{searchWord}) ||'%'
+				and lower(member_userid) like '%'|| lower(#{searchWord}) ||'%'
 			</when>
 			<when test='searchType == "position" and searchWord != ""'>
-				where lower(member_position) like '%'|| lower(#{searchWord}) ||'%'
+				and lower(member_position) like '%'|| lower(#{searchWord}) ||'%'
 			</when>
 			<when test='searchType == "name" and searchWord != ""'>
-				where lower(member_name) like '%'|| lower(#{searchWord}) ||'%'
+				and lower(member_name) like '%'|| lower(#{searchWord}) ||'%'
 			</when>
 			<otherwise></otherwise>
 		</choose>
@@ -110,16 +113,16 @@
 			</otherwise>
 		</choose>
 		FROM tbl_member
-		WHERE
+		where MEMBER_LAST IS NULL
 		<choose>
 			<when test='searchType == "userid" and searchWord != ""'>
-				lower(member_userid) LIKE '%' || lower(#{searchWord}) || '%'
+				and lower(member_userid) LIKE '%' || lower(#{searchWord}) || '%'
 			</when>
 			<when test='searchType == "position" and searchWord != ""'>
-				lower(member_position) LIKE '%' || lower(#{searchWord}) || '%'
+				and lower(member_position) LIKE '%' || lower(#{searchWord}) || '%'
 			</when>
 			<otherwise>
-				lower(member_name) LIKE '%' || lower(#{searchWord}) || '%'
+				and lower(member_name) LIKE '%' || lower(#{searchWord}) || '%'
 			</otherwise>
 		</choose>
 		<choose>

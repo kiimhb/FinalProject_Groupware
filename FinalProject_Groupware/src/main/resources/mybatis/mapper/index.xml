@@ -50,6 +50,7 @@
 		    <foreach item="parent_dept_no" collection="parent_deptList" open="(" separator="," close=")">
 		    	#{parent_dept_no}
 		    </foreach>
+		    and MEMBER_LAST IS NULL 
 		    order by notice_fix desc, notice_write_date desc
 		)
 		where rno BETWEEN 1 AND 4

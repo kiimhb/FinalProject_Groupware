@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 div.subContent {
-	border: solid 1px blue;
+	/* border: solid 1px blue; */
 	width: 95%;
 	margin: auto;
 }
@@ -9,6 +9,67 @@ div.subContent {
 div.manag_h3 {
 	border-bottom: solid 2px gray;
 	margin: 30px;
+}
+
+div.subContent>div.manageList {
+	height: 600px;
+	margin: auto;
+}
+
+div.subContent>div.manageList>table.manageListTable {
+	/* border: solid 1px aqua;
+ */
+	width: 95%;
+	margin: auto;
+}
+
+div.subContent>div.manageList>table.manageListTable th, td {
+	padding: 3px;
+	text-align: center;
+}
+
+div.subContent>div.manageList>table.manageListTable th {
+	/* 	border-bottom: 1px solid;  */
+	margin-top: 20px;
+}
+
+div.subContent>div.manageList>table.manageListTable td {
+	border-bottom: 1px solid #eee;
+}
+
+div.subContent>div.manageList>table.manageListTable  thead {
+	background-color: #eee;
+	font-size: 18px;
+}
+
+form[name="searchFrm"] {
+	/* border: solid 1px aqua; */
+	width: 240px;
+	margin-left: 23px;
+	transform: translateY(-60px);
+}
+
+button#EditView1, button#EditView2{
+	border-radius: 5px;
+	border: none;
+	padding: 10px;
+}
+
+button#EditView1{
+	background-color: #B7C3A6;
+}
+button#EditView2{
+	background-color: #CB4154;
+	color: white;
+}
+
+div#displayList {
+	border: solid 1px gray;
+	border-top: 0px;
+	height: 40px;
+	margin-left: 30.8%;
+	margin-top: -1px;
+	overflow: auto;
 }
 
 div.delete_member {

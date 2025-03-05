@@ -546,9 +546,8 @@ function goQuit(member_userid) {
 	</div>
 	
 	
-	<div id="displayList" style="border:solid 1px gray; border-top:0px; height:40px; margin-left:8.6%; margin-top:-1px;  overflow:auto;"></div>
-	
-	<table>
+<div class="manageList">
+	<table class="manageListTable">
 		<thead>
 		    <tr>
 		    	<th>순서</th>
@@ -559,6 +558,8 @@ function goQuit(member_userid) {
 				<th>성별</th>
 				<th>근무시간</th>
 				<th>직급</th>
+				<th>정보수정</th>
+				<th>퇴사처리</th>
 		   </tr>
 		</thead>
 		
@@ -575,8 +576,8 @@ function goQuit(member_userid) {
 	<td>${managementVO_ga.member_gender}</td>
 	<td>${managementVO_ga.member_workingTime}</td>
 	<td>${managementVO_ga.member_position}</td>
-	<td><button type="button" id="EditView" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
-	<td><button type="button" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
+	<td><button type="button" id="EditView1" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
+	<td><button type="button" id="EditView2" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
 	</c:forEach>
 	</c:if>
 	  
@@ -585,25 +586,26 @@ function goQuit(member_userid) {
 	  </c:if>
 		</tbody>
     </table>
-    
+</div>    
 	<div id="EditModal"></div>
     <div id="QuitModal"></div>
     
 <div>
    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">${requestScope.pageBar}</div>
    
-    <form name="searchFrm" style="margin-top: 20px;">
+    
+</div>
+	<form name="searchFrm">
 		<select name="searchType" style="height: 26px;">
 			<option value="userid">사번명</option>
 			<option value="position">직급명</option>
 			<option value="name">사원명</option>
-		</select>
-		<input type="text" name="searchWord" size="10" autocomplete="off" /> 
-		<input type="text" style="display: none;"/>  
-		<button type="button" onclick="goSearch()">검색</button> 
-	</form>	
-</div>
-	
+		</select> <input type="text" name="searchWord" size="10" autocomplete="off" />
+		<input type="text" style="display: none;" />
+		<button type="button" onclick="goSearch()" style="border:none; padding: 3px; width: 55px; ">검색</button>
+
+		<div id="displayList"></div>
+	</form>
 </div>
 
 
