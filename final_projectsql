@@ -303,4 +303,303 @@ on a.order_no = c.fk_order_no
 
 
 
+delete from tbl_notice;
 
+commit;
+
+
+select notice_no, fk_member_userid, notice_title, notice_dept, notice_content, fk_child_dept_no, 
+notice_view_cnt, notice_write_date, notice_fileName, notice_orgFilename, notice_fileSize, notice_fix
+from tbl_notice a join tbl_member b
+on a.fk_member_userid = b.member_userid
+
+update tbl_notice 
+set notice_dept = #{notice_dept},
+    notice_title = #{notice_title}, 
+    notice_content = #{notice_content},
+    notice_fix = #{notice_fix}
+where notice_no = #{notice_no}
+
+select count(*)
+from 
+(
+    SELECT patient_no, child_dept_name, patient_name,
+           patient_jubun, patient_gender, patient_visitdate
+    FROM tbl_patient a 
+    JOIN tbl_child_dept b 
+    ON a.fk_child_dept_no = b.child_dept_no 
+) a join tbl_order b
+on a.patient_no = b.fk_patient_no
+where order_no is not null
+
+select *
+from
+(
+select rownum as rno, patient_no, child_dept_name, patient_name,
+       patient_jubun, patient_gender, patient_visitdate
+from 
+    (
+        SELECT patient_no, child_dept_name, patient_name,
+               patient_jubun, patient_gender, patient_visitdate
+        FROM tbl_patient a 
+        JOIN tbl_child_dept b 
+        ON a.fk_child_dept_no = b.child_dept_no 
+        order by patient_visitdate desc
+    )a join tbl_order b
+    on a.patient_no = b.fk_patient_no 
+) 
+where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+
+
+select patient_no, patient_gender, patient_status, order_no
+     , case when sysdate - to_date( to_char(sysdate, 'yyyy') || substr(patient_jubun, 3, 4), 'yyyymmdd') >= 0
+            then extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) 
+            else extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) - 1
+       end AS age   
+from tbl_patient a join tbl_order b
+on a.patient_no = b.fk_patient_no
+where patient_no = #{seq}
+
+
+
+with
+a as
+(
+    select order_no, patient_no, patient_jubun, fk_child_dept_no, patient_visitdate, patient_symptom, order_symptom_detail
+    from tbl_patient a left join tbl_order b
+    on a.patient_no = b.fk_patient_no
+    where patient_jubun = '991111-1111113'
+)
+select order_no, fk_child_dept_no, child_dept_name, patient_visitdate, patient_symptom, order_symptom_detail
+from a join tbl_child_dept b
+on a.fk_child_dept_no = b.child_dept_no
+order by order_no desc
+
+
+select patient_no, patient_name, patient_gender, patient_status 
+     , case when sysdate - to_date( to_char(sysdate, 'yyyy') || substr(patient_jubun, 3, 4), 'yyyymmdd') >= 0
+                then extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) 
+                else extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) - 1
+           end AS age   
+from tbl_patient 
+where patient_no = 16
+
+
+select *
+from tbl_cost;
+
+commit;
+
+select *
+from tbl_order
+
+select * from tbl_hospitalize;
+select * from tbl_surgery;
+
+select *
+from tbl_member;
+
+select *
+from tbl_patient;
+
+select *
+from tbl_order
+where fk_patient_no = 2;
+
+insert into tbl_order 
+values(seq_order_no.nextval, 59476069, 2, '무지심한감기', '감기수술', 1, 3, 1, '피가 나옴', 0, sysdate);
+
+insert into tbl_hospitalize values(seq_hospitalize_no.nextval, null, 91, null,null,null, 0);
+insert into tbl_hospitalize values(seq_hospitalize_no.nextval, null, 134, null,null,null, 0);
+insert into tbl_hospitalize values(seq_hospitalize_no.nextval, null, 116, null,null,null, 0);
+insert into tbl_hospitalize values(seq_hospitalize_no.nextval, null, 92, null,null,null, 0);
+
+insert into tbl_hospitalize values(seq_hospitalize_no.nextval, null, 30, null,null,null, 0);
+insert into tbl_hospitalize values(seq_hospitalize_no.nextval, null, 123, null,null,null, 0);
+insert into tbl_hospitalize values(seq_hospitalize_no.nextval, null, 137, null,null,null, 0);
+insert into tbl_hospitalize values(seq_hospitalize_no.nextval, null, 96, null,null,null, 0);
+
+select *
+from tbl_order 
+where order_issurg = 1;
+
+insert into tbl_surgery values(seq_surgery_no.nextval, 87, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 141, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 17, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 19, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 21, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 23, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 24, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 27, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 28, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 29, null, null, null, null, null, '큰수술', 0);
+insert into tbl_surgery values(seq_surgery_no.nextval, 34, null, null, null, null, null, '큰수술', 0);
+commit;
+desc tbl_hospitalize
+
+select surgery_no, surgery_surgeryroom_name,
+       to_char(surgery_day, 'yyyy-mm-dd') as surgery_day, 
+       to_char(surgery_start_time, 'hh24:mi:ss') as surgery_start_time, 
+       to_char(surgery_end_time, 'hh24:mi:ss') as surgery_end_time
+from tbl_surgery
+where surgery_day is not null;
+
+commit;
+
+insert into tbl_surgery
+values(seq_surgery_no.nextval, 141, null,null,null,null, null, '목수술 조심히', 0);
+
+with
+a as
+(
+    select order_no, patient_no, patient_jubun, fk_child_dept_no, order_createTime, patient_symptom, order_symptom_detail
+    from tbl_patient a left join tbl_order b
+    on a.patient_no = b.fk_patient_no
+    where patient_jubun = '230404-1000000'
+    order by order_createTime desc
+)
+select order_no, fk_child_dept_no, child_dept_name, order_createTime, patient_symptom, order_symptom_detail
+from a join tbl_child_dept b
+on a.fk_child_dept_no = b.child_dept_no
+
+
+select surgery_no, surgery_surgeryroom_name, 
+       to_char(surgery_day, 'yyyy-mm-dd') as surgery_day, 
+       to_char(surgery_start_time, 'hh24:mi:ss') as surgery_start_time, 
+       to_char(surgery_end_time, 'hh24:mi:ss') as surgery_end_time
+from tbl_surgery
+
+select hospitalize_no, fk_hospitalizeroom_no, hospitalize_start_day, hospitalize_end_day
+from tbl_hospitalize
+
+select *
+from tbl_hospitalize;
+
+delete tbl_hospitalize;
+commit;
+
+select fk_hospitalizeroom_no, hospitalize_start_day, hospitalize_end_day, patient_name 
+from
+(
+select  hospitalize_no, fk_hospitalizeroom_no, 
+        to_char(hospitalize_start_day, 'yyyy-mm-dd') as hospitalize_start_day,
+        to_char(hospitalize_end_day, 'yyyy-mm-dd') as hospitalize_end_day,
+        fk_patient_no
+from tbl_hospitalize a join tbl_order b
+on a.fk_order_no = b.order_no
+) a join tbl_patient b
+on a.fk_patient_no = b.patient_no
+
+select *
+from tbl_hospitalize;
+
+select *
+from tbl_order
+where order_ishosp = 1;
+
+update tbl_order set order_howlonghosp = 3
+where  order_ishosp = 1;
+
+commit;
+
+select *
+from tbl_patient;
+
+
+with
+a as 
+(
+    select fk_patient_no, order_no, order_createTime, patient_jubun
+    from tbl_order a join tbl_patient b
+    on a.fk_patient_no = b.patient_no
+    where patient_jubun = '991111-1111111'
+),
+b as 
+(
+    select fk_order_no, hospitalize_start_day, hospitalize_end_day
+    from tbl_hospitalize
+),
+c as 
+(
+    select fk_order_no, surgery_day, surgery_start_time
+    from tbl_surgery
+)
+select  order_no, order_createTime,
+        hospitalize_start_day, hospitalize_end_day,
+        surgery_day, surgery_start_time
+from a left join b
+on a.order_no = b.fk_order_no
+left join c
+on a.order_no = c.fk_order_no
+
+select *
+from tbl_hospitalize
+where fk_order_no = 141;
+
+
+select *
+from tbl_alarm;
+
+-- 부서별 사원알아오기 1~7 진료부 8~10 간호부 11~13 경영지원부
+select member_userid
+from tbl_member
+where fk_child_dept_no between 8 and 10
+
+select fk_child_dept_no
+from tbl_alarm a join tbl_member b
+on a.fk_member_userid = b.member_userid
+where fk_child_dept_no in (8,9,10);
+
+select *
+from tbl_alarm;
+
+select *
+from tbl_child_dept
+
+
+select member_userid
+from tbl_member
+where fk_child_dept_no in(1,2,3,4,5,6,7);
+
+select *
+from tbl_parent_dept;
+
+insert into tbl_alarm
+values(seq_alarm_no, #{fk_member_userid}, 
+
+select *
+from tbl_child_dept;
+
+-- 공지사항 알림 입력하기 
+insert into tbl_alarm values(seq_alarm_no.nextval, #{fk_member_userid}, '공지사항', #{}, sysdate, 0); 
+
+
+with
+a as
+(
+    select order_no, order_surgeryType_name, member_name, fk_patient_no
+    from tbl_order a join tbl_member b
+    on a.fk_member_userid = b.member_userid
+    where order_issurg = 1
+),
+b as
+(
+    select patient_no, patient_jubun
+    from tbl_patient
+    where patient_jubun = #{jubun}
+),
+c as
+(
+    select fk_order_no, surgery_surgeryroom_name, surgery_day, surgery_start_time, surgery_end_time
+    from tbl_surgery
+    where surgery_status = 1 and surgery_day > current_date
+    order by surgery_day asc
+)
+select order_no, order_surgeryType_name, member_name, surgery_surgeryroom_name,
+       to_char(surgery_day, 'yyyy-mm-dd') as surgery_day,
+       to_char(surgery_start_time, 'HH24:mi') as surgery_start_time, 
+       to_char(surgery_end_time, 'HH24:mi') as surgery_end_time
+from a join b
+on a.fk_patient_no = b.patient_no
+join c
+on a.order_no = c.fk_order_no

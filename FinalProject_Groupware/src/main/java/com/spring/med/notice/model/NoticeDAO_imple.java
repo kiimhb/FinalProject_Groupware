@@ -73,5 +73,32 @@ public class NoticeDAO_imple implements NoticeDAO {
 		return n;
 	}
 
+	// 공지사항수정하기
+	@Override
+	public int notice_update(Map<String, String> paraMap) {
+		int n = sqlsession.update("hyeyeon.notice_update", paraMap);
+		return n;
+	}
+
+	// 부서별 사원 아이디 조회하기 
+	@Override
+	public List<String> selectMemberId(List<String> fk_child_dept_no) {
+		List<String> selectMemberId = sqlsession.selectList("hyeyeon.selectMemberId", fk_child_dept_no);
+		return selectMemberId;
+	}
+
+	// 제목으로 공지사항 번호 알아오기 
+	@Override
+	public String selectNoticeNo(String notice_title) {
+		String selectNoticeNo = sqlsession.selectOne("hyeyeon.selectNoticeNo", notice_title);
+		return selectNoticeNo;
+	}
+
+	// 공지사항이 작성되면 알림 테이블에 입력해준다. 
+	@Override
+	public void insertNoticeAlarm(Map<String, String> paraMap) {
+		sqlsession.insert("hyeyeon.insertNoticeAlarm", paraMap);
+	}
+
 	
 }

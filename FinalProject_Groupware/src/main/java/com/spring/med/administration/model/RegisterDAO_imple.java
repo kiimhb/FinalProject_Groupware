@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.spring.med.administration.domain.Calendar_hospitalize_recordVO;
+import com.spring.med.administration.domain.Calendar_surgery_recordVO;
 import com.spring.med.hospitalize.domain.HospitalizeVO;
 import com.spring.med.surgery.domain.SurgeryVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
@@ -153,6 +155,20 @@ public class RegisterDAO_imple implements RegisterDAO {
 	@Override
 	public void hospitalizeUpdate(Map<String, String> paraMap) {
 		sqlsession.update("hyeyeon.hospitalizeUpdate", paraMap);	
+	}
+
+	// 입원실 현황 캘린더조회
+	@Override
+	public List<Calendar_hospitalize_recordVO> hospitalizeScheduleList() {
+		List<Calendar_hospitalize_recordVO> hospitalizeScheduleList = sqlsession.selectList("hyeyeon.hospitalizeScheduleList");
+		return hospitalizeScheduleList;
+	}
+
+	// 수술현황 캘린더조회
+	@Override
+	public List<Calendar_surgery_recordVO> surgerySchedule() {
+		List<Calendar_surgery_recordVO> surgerySchedule = sqlsession.selectList("hyeyeon.surgerySchedule");
+		return surgerySchedule;
 	}
 	
 }

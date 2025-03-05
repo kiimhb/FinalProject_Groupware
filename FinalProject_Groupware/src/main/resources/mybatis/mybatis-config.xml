@@ -27,5 +27,4 @@
       <typeAlias type="com.spring.med.mail.domain.MailSentVO" alias="MailSentVO"/>
       <typeAlias type="com.spring.med.mail.domain.MailReceiveVO" alias="MailReceiveVO"/>
    </typeAliases>     
-
 </configuration>
