@@ -35,6 +35,16 @@ public class MailService_imple implements MailService {
 		return mailReceiveList;
 	}
 	
+	// 받은 메일 총 갯수 select 하기
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		
+		int n = mdao.getTotalCount(paraMap);
+		
+		return n;
+		
+	}
+	
 	
 	// 작성된 메일 발신메일 테이블에 insert 하기 (트랜잭션)
 	@Transactional(value="transactionManager_final_orauser4", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
@@ -83,4 +93,6 @@ public class MailService_imple implements MailService {
 		}
 		return result;
 	}
+
+
 }
