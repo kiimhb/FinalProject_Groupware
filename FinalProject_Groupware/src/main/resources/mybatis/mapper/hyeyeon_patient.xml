@@ -112,7 +112,7 @@
 		on a.fk_child_dept_no = b.child_dept_no
 	</select>
 	
-	<!-- 환자 수술 목록 가져오기  -->
+	<!-- 수술 목록 가져오기  -->
 	<resultMap id="surgeryMap" type="HashMap">
 		<result property="order_no" 					column="order_no" 					javaType="String" />
 		<result property="order_surgeryType_name" 		column="order_surgeryType_name" 	javaType="String" />
@@ -141,14 +141,7 @@
 		(
 		    select fk_order_no, surgery_surgeryroom_name, surgery_day, surgery_start_time, surgery_end_time
 		    from tbl_surgery
-		    where surgery_status = 1 
-		    <if test="SurgeryType == 'future'">
-		     	and surgery_day &lt; current_date
-		    </if>
-		    <if test="SurgeryType == 'last'">
-		     	and surgery_day &gt;= current_date
-		    </if>
-		   
+		    where surgery_status = 1
 		    order by surgery_day asc
 		)
 		select order_no, order_surgeryType_name, member_name, surgery_surgeryroom_name,
