@@ -37,7 +37,7 @@
 		select mail_sent_no, B.member_name, mail_title, to_char(mail_sent_senddate, 'yyyy-mm-dd')AS mail_sent_senddate,((Round(sysdate-mail_sent_senddate))||'일전') AS timediff, A.fk_member_userid AS fk_member_userid, mail_received_status, mail_received_saved, mail_received_trashdate, mail_received_trashstatus, mail_received_important 
 		from
 		(
-		select mail_title, mail_sent_senddate, S.fk_member_userid AS fk_member_userid, mail_received_status, mail_received_saved, mail_received_trashdate, mail_received_trashstatus, mail_received_important 
+		select mail_sent_no, mail_title, mail_sent_senddate, S.fk_member_userid AS fk_member_userid, mail_received_status, mail_received_saved, mail_received_trashdate, mail_received_trashstatus, mail_received_important 
 		from tbl_mail_received R JOIN tbl_mail_sent S
 		ON R.fk_mail_sent_no = S.mail_sent_no
 		where R.fk_member_userid = #{user_id}
