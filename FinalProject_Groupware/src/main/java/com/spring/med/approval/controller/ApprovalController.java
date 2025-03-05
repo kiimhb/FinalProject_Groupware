@@ -255,7 +255,7 @@ public class ApprovalController {
 		MultipartFile attachFile = mtp_request.getFile("file");	// 첨부한 파일 가져오기
 		
 		if(attachFile != null) {
-			
+
 			// WAS(톰캣)의 절대경로 알아오기
 			HttpSession session = mtp_request.getSession();
 			String root = session.getServletContext().getRealPath("/");
@@ -416,9 +416,8 @@ public class ApprovalController {
 	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
 	@PostMapping("approvalTemporaryDetail")
 	public ModelAndView approvalTemporaryDetail(ModelAndView mav, @RequestParam String draft_no) {
-		System.out.println("확인 draft_no: " + draft_no);
+	
 		HashMap<String, String> approvalvo = approvalService.approvalTemporaryDetail(draft_no);
-		System.out.println("확인 : " + approvalvo);
 		mav.addObject("approvalvo", approvalvo);
 		mav.setViewName("/content/approval/write");
 		
@@ -495,7 +494,34 @@ public class ApprovalController {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 결재문서함 ***
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 === //
+	@GetMapping("approvalPendingList")
+	public ModelAndView approvalPendingList(ModelAndView mav, HttpServletRequest request) {
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		
+		List<Map<String, String>> pendingList = approvalService.approvalPendingList(loginuser.getMember_userid());
+		
+		mav.addObject("pendingList", pendingList);
+		mav.setViewName("content/approval/approvalPendingList");
+		
+		return mav;
+	}
 	
+	
+	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
+	@PostMapping("approvalPendingListDetail")
+	public ModelAndView approvalPendingListDetail(ModelAndView mav, @RequestParam String draft_no) {
+
+		HashMap<String, String> approvalvo = approvalService.approvalPendingListDetail(draft_no);
+		System.out.println("확인 : " + approvalvo);
+		mav.addObject("approvalvo", approvalvo);
+		mav.setViewName("/content/approval/approvalDraft");
+		
+		return mav;
+	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 참조문서함 ***

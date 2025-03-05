@@ -9,9 +9,9 @@ public class ApprovalVO {
 	private String fk_draft_no;        	// 기안문서번호
 	private String fk_member_userid;    // 결재자사번, 결재자사번
 	private String approval_step;       // 결재순서(단계 1/2/3)
-	private String approver_status;     // 결재상태(대기/승인/반려)
-	private String approver_feedback;   // 결재 or 반려 의견
-	private String approver_date;		// 결재일자
+	private String approval_status;     // 결재상태(대기/승인/반려)
+	private String approval_feedback;   // 결재 or 반려 의견
+	private String approval_date;		// 결재일자
 
 	private String draft_no;				// 기안문서번호
 	private String draft_form_type;			// 기안양식종류
@@ -98,23 +98,23 @@ public class ApprovalVO {
 	public void setApproval_step(String approval_step) {
 		this.approval_step = approval_step;
 	}
-	public String getApprover_status() {
-		return approver_status;
+	public String getApproval_status() {
+		return approval_status;
 	}
-	public void setApprover_status(String approver_status) {
-		this.approver_status = approver_status;
+	public void setApproval_status(String approver_status) {
+		this.approval_status = approver_status;
 	}
-	public String getApprover_feedback() {
-		return approver_feedback;
+	public String getApproval_feedback() {
+		return approval_feedback;
 	}
-	public void setApprover_feedback(String approver_feedback) {
-		this.approver_feedback = approver_feedback;
+	public void setApproval_feedback(String approver_feedback) {
+		this.approval_feedback = approver_feedback;
 	}
-	public String getApprover_date() {
-		return approver_date;
+	public String getApproval_date() {
+		return approval_date;
 	}
-	public void setApprover_date(String approver_date) {
-		this.approver_date = approver_date;
+	public void setApproval_date(String approver_date) {
+		this.approval_date = approver_date;
 	}
 	public String getMember_userid() {
 		return member_userid;

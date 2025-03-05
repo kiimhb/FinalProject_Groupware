@@ -289,7 +289,8 @@ $(document).ready(function(){
 					
 					$("span#day_leave_cnt").text("${requestScope.approvalvo.day_leave_cnt}");
 					
-					$("textarea[name='day_leave_reason']").text("${requestScope.approvalvo.day_leave_reason}");	// 휴가사유
+					const temp_day_leave_reason = "${requestScope.approvalvo.day_leave_reason}";
+					$("textarea[name='day_leave_reason']").text(temp_day_leave_reason.replace(/<br\s*\/?>/gi, '\n'));	// 휴가사유
 					$('textarea').trigger('keyup');	// 글자수 세는 함수를 불러오기 위함
 				}
 				
@@ -298,6 +299,29 @@ $(document).ready(function(){
 					setTimeout(function() {
 						const draft_file_origin_name = "${requestScope.approvalvo.draft_file_origin_name}";
 						const draft_file_size = "${requestScope.approvalvo.draft_file_size}";
+						const draft_file_url = "<%= ctxPath%>/resources/draft/" + "${requestScope.approvalvo.draft_file_name}"; // 파일 경로
+						
+						const fileInput = $("input[id='fileInput']")[0]; // 첫 번째 file input 요소 가져오기
+						
+						// File 객체 생성 (기존 파일을 URL로 가져와서 파일 객체로 생성)
+						fetch(draft_file_url)
+			            	.then(response => response.blob())
+			            	.then(blob => {
+			            		// Blob으로 파일 객체 생성
+			            		const file = new File([blob], draft_file_origin_name, { type: blob.type });
+			            		
+			            		// DataTransfer 객체 생성
+			                    const dataTransfer = new DataTransfer();
+			            		
+			                 	// 파일을 DataTransfer에 추가
+			                    dataTransfer.items.add(file);
+
+			                    // 파일을 input[type="file"]의 files 속성에 추가
+			                    fileInput.files = dataTransfer.files;
+			            	})
+			            	.catch(error => {
+				                console.error("파일을 로드하는 중 오류 발생:", error);
+				            });
 						
 						let html = `<div style="display: flex;"><span style="padding-left: 2%;"><i class="fa-solid fa-paperclip"></i>&nbsp;\${draft_file_origin_name}</span><span id="fileSize" style="margin-left: auto; padding-right: 4%;">\${draft_file_size}KB</span><i id="fileDel" class="fa-regular fa-rectangle-xmark" style="margin: auto 1%;">&nbsp;</i></div>`;
 	
@@ -975,7 +999,7 @@ function goTemporaryStored(btnType) {
 function func_goTempAndSubmitDraft(btnType) {
 	
 	// >>> 기안문 insert/update 여부 <<<
-	const draftMode = $("input[id='draftMode']").val();
+	var draftMode = $("input[id='draftMode']").val();
 	
 	// >>> 결재선 가져오기 <<<
 	let approvalLineMember = func_approvalLineMember();
@@ -1104,8 +1128,45 @@ function func_goTempAndSubmitDraft(btnType) {
 		
 	}
 
+
+	// alert 메세지 
+	let titleText = '';
+    let messageText = '';
+
+    
+    
+	// 접근 경로 및 작업에 따라 service 단에서 다르게 처리하기 위한 용도
+	if (draftMode == "update") {
+		if(btnType == "임시저장") {
+			// 임시저장 목록을 통해 들어온 후 --> 임시저장 버튼 클릭
+			draftMode = "update";
+			titleText = "임시 저장 완료";
+			messageText = "임시 저장이 성공적으로 완료되었습니다.";
+		}
+		else if(btnType == "결재요청") {
+			// 임시저장 목록을 통해 들어온 후 --> 결재요청 버튼 클릭
+			draftMode = "update_Submit";
+			titleText = "결재 요청 완료";
+			messageText = "결재 요청이 성공적으로 완료되었습니다.";
+		}
+	}
+	else if (draftMode == "insert") {
+		if(btnType == "임시저장") {
+			// 기안문 작성을 통해 들어온 후 --> 임시저장 버튼 클릭
+			draftMode = "insert"
+			titleText = "임시 저장 완료";
+			messageText = "임시 저장이 성공적으로 완료되었습니다.";
+		}
+		else if(btnType == "결재요청") {
+			// 기안문 작성을 통해 들어온 후 --> 결재요청 버튼 클릭
+			draftMode = "insert_Submit";
+			titleText = "결재 요청 완료";
+			messageText = "결재 요청이 성공적으로 완료되었습니다.";
+		}
+	}
 	
-	<%-- 임시저장하기 위해 데이터 취합 --%>		
+	
+	<%-- 임시저장 및 결재요청하기 위해 데이터 취합 --%>		
 	var formData = new FormData();
 	
 	formData.append("draftMode", draftMode);
@@ -1130,6 +1191,9 @@ function func_goTempAndSubmitDraft(btnType) {
 		formData.append("file", file);
 	}
 	
+	
+	
+	
 	<%-- 임시저장 ajax 요청 --%>
 	$.ajax({
 		url:"<%= ctxPath%>/approval/insertToTemporaryStored",
@@ -1142,15 +1206,15 @@ function func_goTempAndSubmitDraft(btnType) {
 			if(json == 1) {
 				Swal.fire({
 				    icon: 'success',
-				    title: '임시 저장 완료',
-				    text: '임시 저장이 성공적으로 완료되었습니다.'
+				    title: titleText,
+				    text: messageText
 				});
 			}	
 		},
 		error: function() {
 			Swal.fire({
 			    icon: 'error',
-			    title: '임시 저장 실패!',
+			    title: '작업 수행 실패!',
 			    text: '다시 시도해주세요.'
 			});
 		}

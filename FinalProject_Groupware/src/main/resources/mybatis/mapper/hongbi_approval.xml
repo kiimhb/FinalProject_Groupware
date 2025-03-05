@@ -116,10 +116,18 @@
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
 		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '임시저장', to_number(#{draft_urgent}), 1, default, default, default)
 	</insert>
+	<insert id="insertToTemporaryStored_TBL_DRAFT_Submit" parameterType="HashMap">
+		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '대기', to_number(#{draft_urgent}), 0, default, default, default)
+	</insert>
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert_withFile <<< -->
 	<insert id="insertToTemporaryStored_TBL_DRAFT_withFile" parameterType="HashMap">
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
 		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '임시저장', to_number(#{draft_urgent}), 1, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
+	</insert>
+	<insert id="insertToTemporaryStored_TBL_DRAFT_withFile_Submit" parameterType="HashMap">
+		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '대기', to_number(#{draft_urgent}), 0, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
 	</insert>
 	
 	<!-- >>> 2. 기안문 양식 테이블에 insert <<< -->
@@ -129,33 +137,49 @@
 		values(seq_day_leave_no.nextval, #{draft_no}, TO_DATE(#{day_leave_start}, 'YYYY/MM/DD'), TO_DATE(#{day_leave_end}, 'YYYY/MM/DD'), #{day_leave_cnt}, #{day_leave_reason})
 	</insert>
 	
-	<!-- >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert -->
+	<!-- >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert <<< -->
 	<!-- 결재선 목록에 추가한 유저 insert -->
 	<insert id="insertToTemporaryStored_approvalLine1_TBL_APPROVAL" parameterType="HashMap">
-	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
-	    values(seq_approval_no.nextval, #{draft_no}, #{step1}, 1, default, null, null)
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step1}, 1, '결재예정', null, null)
 	</insert>
 	<insert id="insertToTemporaryStored_approvalLine2_TBL_APPROVAL" parameterType="HashMap">
-	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
 	    values(seq_approval_no.nextval, #{draft_no}, #{step2}, 2, default, null, null)
 	</insert>
 	<insert id="insertToTemporaryStored_approvalLine3_TBL_APPROVAL" parameterType="HashMap">
-	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
 	    values(seq_approval_no.nextval, #{draft_no}, #{step3}, 3, default, null, null)
 	</insert>
 
 	<!-- 참조자 목록에 추가한 유저 insert -->
 	<insert id="insertToTemporaryStored_referMember1_TBL_APPROVAL" parameterType="HashMap">
-	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
-	    values(seq_approval_no.nextval, #{draft_no}, #{step1}, 0, default, null, null)
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step1}, 0, '결재예정', null, null)
 	</insert>
 	<insert id="insertToTemporaryStored_referMember2_TBL_APPROVAL" parameterType="HashMap">
-	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
 	    values(seq_approval_no.nextval, #{draft_no}, #{step2}, 0, default, null, null)
 	</insert>
 	<insert id="insertToTemporaryStored_referMember3_TBL_APPROVAL" parameterType="HashMap">
-	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVER_STATUS, APPROVER_FEEDBACK, APPROVER_DATE)
+	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
 	    values(seq_approval_no.nextval, #{draft_no}, #{step3}, 0, default, null, null)
+	</insert>
+	
+	
+	<!-- >>> 4. (결재요청 버튼)알림 테이블에 데이터 넣기 <<< -->
+	<!-- 결재선 목록에 추가한 유저 알림 테이블에 insert -->
+	<insert id="insert_approvalLine1_To_TBL_ALARM" parameterType="HashMap">
+	    insert into tbl_alarm(alarm_no, fk_member_userid, alarm_category, alarm_cateNo, alarm_at, alarm_is_read)
+		values(seq_alarm_no.nextval, #{step1}, '결재', #{draft_no}, sysdate, default)
+	</insert>
+	<insert id="insert_approvalLine2_To_TBL_ALARM" parameterType="HashMap">
+	    insert into tbl_alarm(alarm_no, fk_member_userid, alarm_category, alarm_cateNo, alarm_at, alarm_is_read)
+		values(seq_alarm_no.nextval, #{step2}, '결재', #{draft_no}, sysdate, default)
+	</insert>
+	<insert id="insert_approvalLine3_To_TBL_ALARM" parameterType="HashMap">
+	    insert into tbl_alarm(alarm_no, fk_member_userid, alarm_category, alarm_cateNo, alarm_at, alarm_is_read)
+		values(seq_alarm_no.nextval, #{step3}, '결재', #{draft_no}, sysdate, default)
 	</insert>
 	
 	<!-- /////////////////////////////////////////////////// -->
@@ -175,6 +199,19 @@
 			    DRAFT_FILE_SIZE = DEFAULT   
 			WHERE DRAFT_NO = #{draft_no}
 	</update>
+	<update id="updateToTemporaryStored_TBL_DRAFT_Submit" parameterType="HashMap">
+		UPDATE tbl_draft
+			SET 
+			    DRAFT_SUBJECT = #{draft_subject},
+			    DRAFT_WRITE_DATE = TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'),
+			    DRAFT_STATUS = '대기',
+			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
+			    DRAFT_SAVED = 0,
+			    DRAFT_FILE_ORIGIN_NAME = DEFAULT, 
+			    DRAFT_FILE_NAME = DEFAULT,  
+			    DRAFT_FILE_SIZE = DEFAULT   
+			WHERE DRAFT_NO = #{draft_no}
+	</update>
 	
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 update_withFile <<< -->
 	<update id="updateToTemporaryStored_TBL_DRAFT_withFile" parameterType="HashMap">
@@ -185,6 +222,19 @@
 			    DRAFT_STATUS = '임시저장',
 			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
 			    DRAFT_SAVED = 1,
+			    DRAFT_FILE_ORIGIN_NAME = #{draft_file_origin_name}, 
+			    DRAFT_FILE_NAME = #{draft_file_name},  
+			    DRAFT_FILE_SIZE = #{draft_file_size}   
+			WHERE DRAFT_NO = #{draft_no}
+	</update>
+	<update id="updateToTemporaryStored_TBL_DRAFT_withFile_Submit" parameterType="HashMap">
+		UPDATE tbl_draft
+			SET 
+			    DRAFT_SUBJECT = #{draft_subject},
+			    DRAFT_WRITE_DATE = TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'),
+			    DRAFT_STATUS = '대기',
+			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
+			    DRAFT_SAVED = 0,
 			    DRAFT_FILE_ORIGIN_NAME = #{draft_file_origin_name}, 
 			    DRAFT_FILE_NAME = #{draft_file_name},  
 			    DRAFT_FILE_SIZE = #{draft_file_size}   
@@ -335,6 +385,69 @@
 		                            on C.fk_parent_dept_no = P.parent_dept_no ) B
 		on A.fk_member_userid = B.member_userid
 		where fk_draft_no = to_number(#{draft_no})
+	</select>
+	
+	
+	<!-- ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 ==== -->
+	<select id="approvalPendingList" resultType="ApprovalVO" parameterType="HashMap">
+		select *
+		from
+		(
+		    with A as
+		    (
+		        select fk_draft_no, fk_member_userid, approval_step, approval_status
+		        from tbl_approval
+		        where fk_member_userid = #{member_userid}
+		    ),
+		    B as
+		    (
+		        select draft_no, draft_form_type
+		             , case when length(draft_subject) > 20 then substr(draft_subject, 1, 17) || '...' else draft_subject end as draft_subject
+		             , to_char(draft_write_date, 'yyyy-mm-dd') as draft_write_date, draft_status, draft_urgent, draft_file_origin_name, draft_file_name, draft_file_size
+		             , member_name, parent_dept_name
+		        from tbl_draft D join tbl_member M
+		        on D.fk_member_userid = M.member_userid
+		        join tbl_child_dept C
+		        on M.fk_child_dept_no = C.child_dept_no
+		        join tbl_parent_dept P
+		        on C.fk_parent_dept_no = P.parent_dept_no
+		    )
+		    select rownum as rno, fk_draft_no, fk_member_userid, approval_step, approval_status
+		         , draft_no, draft_form_type, draft_subject, draft_write_date, draft_status, draft_urgent, draft_file_origin_name, draft_file_name, draft_file_size
+		         , member_name, parent_dept_name
+		    from A join B
+		    on A.fk_draft_no = B.draft_no
+		    where approval_status != '대기'
+		    order by fk_draft_no desc
+		)
+		where rno between to_number(1) AND to_number(10)
+	</select>
+	
+	
+	<!-- ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== -->
+	<resultMap type="HashMap" id="approvalPendingListDetail_Map">
+		<result property="draft_no" 				column="draft_no" 					javaType="String" />
+		<result property="fk_member_userid" 		column="fk_member_userid" 			javaType="String" />
+		<result property="draft_form_type" 			column="draft_form_type" 			javaType="String" />
+		<result property="draft_subject" 			column="draft_subject" 				javaType="String" />
+		<result property="draft_urgent" 			column="draft_urgent" 				javaType="String" />
+		<result property="draft_file_name" 			column="draft_file_name" 			javaType="String" />
+		<result property="draft_file_origin_name" 	column="draft_file_origin_name" 	javaType="String" />
+		<result property="draft_file_size" 			column="draft_file_size" 			javaType="String" />
+		<result property="day_leave_start" 			column="day_leave_start" 			javaType="String" />
+		<result property="day_leave_end" 			column="day_leave_end" 				javaType="String" />
+		<result property="day_leave_cnt" 			column="day_leave_cnt" 				javaType="String" />
+		<result property="day_leave_reason" 		column="day_leave_reason" 			javaType="String" />
+		<result property="work_change_start" 		column="work_change_start" 			javaType="String" />
+		<result property="work_change_end" 			column="work_change_end" 			javaType="String" />
+		<result property="work_change_reason" 		column="work_change_reason" 		javaType="String" />
+		<result property="work_change_member_workingTime" 		column="work_change_member_workingTime" 			javaType="String" />
+		<result property="member_name" 				column="member_name" 			javaType="String" />
+		<result property="parent_dept_name" 		column="parent_dept_name" 			javaType="String" />
+		<result property="child_dept_name" 			column="child_dept_name" 			javaType="String" />
+		<result property="member_position" 			column="member_position" 			javaType="String" />
+	</resultMap>
+	<select id="approvalPendingListDetail" resultMap="approvalPendingListDetail_Map" parameterType="HashMap">
 	</select>
 	
 </mapper>
