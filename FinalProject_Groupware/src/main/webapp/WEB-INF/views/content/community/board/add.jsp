@@ -20,6 +20,17 @@ th {
     vertical-align: middle; /* 텍스트 수직 정렬 */
 }
 
+.header > div.title {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 30px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
+}
+
+
 .find-btn{
 	text-align: center;
 }
@@ -125,17 +136,13 @@ th {
 </script>	  
 	  
 <div style="display: flex;">
-  <div style="margin: auto; padding-left: 3%;"> 
-   
-    <%-- === 원글쓰기인 경우 --%>
-	<h2 style="margin-bottom: 30px; padding-top: 3%; font-weight: bold;"><span style="margin-right:10px"; >|</span>글쓰기</h2>
+  <div style="margin: auto; padding-left: 3%;">
 
-	<%-- === 답변글쓰기인 경우 --%>
-   <c:if test='${requestScope.fk_board_no ne ""}'>
-  	 <h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">답변글쓰기</h2>
-   </c:if>
-   
-	<form name="addFrm" enctype="multipart/form-data">
+		<div class="header">
+			<div class="title">글쓰기</div>
+		</div>
+
+		<form name="addFrm" enctype="multipart/form-data">
 	   		<table style="width: 1200px" class="table table-bordered">
 				 <tr>
 					<th style="width: 15%; background-color: #00000; ">성명</th>

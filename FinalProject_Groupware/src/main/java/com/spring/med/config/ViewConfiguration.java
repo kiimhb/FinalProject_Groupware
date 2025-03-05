@@ -8,7 +8,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-// import com.spring.app.excel.ExcelDownloadView;
+// import com.spring.med.excel.ExcelDownloadView;
 
 @Configuration  
 public class ViewConfiguration {

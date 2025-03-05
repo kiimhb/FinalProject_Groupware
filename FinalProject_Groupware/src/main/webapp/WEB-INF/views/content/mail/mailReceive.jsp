@@ -51,14 +51,19 @@ $(document).ready(function(){
 			<tbody  style="border: solid 1px black;">
 				<c:forEach items="${requestScope.mailReceiveList}" var="mrl">
 					<tr>
-						<td>중요</td>
-						<td>${mrl.mail_title}</td>
-						<td>${mrl.member_name}</td>
-						<td>${mrl.mail_sent_senddate}&nbsp;&nbsp;${mrl.timediff }</td>
+						<td style="border-bottom:solid 1px black">중요</td>
+						<td style="border-bottom:solid 1px black">${mrl.mail_title}</td>
+						<td style="border-bottom:solid 1px black">${mrl.member_name}</td>
+						<td style="border-bottom:solid 1px black">${mrl.mail_sent_senddate}&nbsp;&nbsp;${mrl.timediff }</td>
 					</tr>
+					<input type="hidden" value="${mrl.mail_sent_no}" />
 				</c:forEach>
 			</tbody>
 		</table>
+		
+		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+	    	${requestScope.pageBar}
+	    </div>
 	</div>
 </div>
 

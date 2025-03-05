@@ -1,5 +1,6 @@
 package com.spring.med.board.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +83,38 @@ public interface BoardDAO {
 	//////////////////////////////////////////////////////////////////////  즐겨찾기
 	// 즐겨찾기 테이블에 insert(한 행 추가)
 	void insertBookmark(Map<String, String> paraMap);
+
+	// 즐겨찾기 해제
+	void deleteBookmark(Map<String, String> paraMap);
+
+	// 즐겨찾기 중복 확인
+	int checkBookmark(Map<String, String> paraMap);
+
+	// 즐겨찾기 한 게시물 조회
+	List<BoardVO> getBookmarkList(String member_userid);
+
+	// 검색 포함된 게시물 개수 조회 (페이징)
+	int getBookmarkCountWithSearch(Map<String, Object> paraMap);
+
+	// 검색 적용된 게시물 목록 조회 (페이징)
+	List<BoardVO> getBookmarkListPagedWithSearch(Map<String, Object> paraMap);
+
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////// 내가 쓴 글 조회 
+	// 내가 쓴 글 조회
+	List<BoardVO> getMyboard(Map<String, String> paraMap);
+
+	// 검색 포함된 게시물 개수 조회 (페이징)
+	int getMyBoardCountWithSearch(Map<String, Object> paraMap);
+	
+	// 검색 적용된 게시물 목록 조회 (페이징)
+	List<BoardVO> getMyboardPagedWithSearch(Map<String, Object> paraMap);
+
+	// 처음 페이ㅣㅈ 로딩
+	List<HashMap<String, String>> selectBookmark(String member_userid);
+
 
 	
 

@@ -17,7 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.administration.domain.Calendar_patient_recordVO;
 import com.spring.med.administration.service.PatientService;
-import com.spring.med.patient.domain.PatientVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
 
 import jakarta.servlet.http.HttpServletRequest;

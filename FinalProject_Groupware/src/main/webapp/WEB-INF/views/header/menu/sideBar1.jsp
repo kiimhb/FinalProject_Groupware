@@ -131,8 +131,8 @@ $.ajax({
       <i class="fa-solid fa-feather sideBarICSS"></i> <span>커뮤니티</span><i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/board/list">자유게시판</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/community/myboard">내가 작성한 글 목록</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/community/bookmark">즐겨찾기</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/board/myboard">내가 작성한 글</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/board/bookmarkList">즐겨찾기</a>
          </div></li>
 
       <li><a href="#" class="menu-toggle sideBarCSS">

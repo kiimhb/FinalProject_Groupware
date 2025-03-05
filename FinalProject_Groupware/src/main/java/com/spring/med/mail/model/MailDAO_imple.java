@@ -52,4 +52,14 @@ public class MailDAO_imple implements MailDAO {
 		
 		return n;
 	}
+
+
+	// 받은 메일 총 갯수 select 하기
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		
+		int n = sqlsession.selectOne("seonggon_mail.getTotalCount", paraMap);
+		
+		return n;
+	}
 }
