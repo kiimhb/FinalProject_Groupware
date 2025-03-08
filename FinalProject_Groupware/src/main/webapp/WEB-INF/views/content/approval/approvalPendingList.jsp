@@ -79,15 +79,15 @@
 	}
 
 	#btnSearch:hover {
-  		background: #509d9c; /* $pale를 실제 색상으로 대체 */
-  		color: white; /* $white를 실제 색상으로 대체 */
+  		background: #509d9c; 
+  		color: white; 
   		transition: background-color 1s ease-out;
 	}
 
 	#btnSearch {
-  		background: white; /* $white를 실제 색상으로 대체 */
-  		color: #006769; /* $pink를 실제 색상으로 대체 */
- 		border: solid 1px #8ac2bd; /* $pale를 실제 색상으로 대체 */
+  		background: white; 
+  		color: #006769;
+ 		border: solid 1px #8ac2bd; 
 	}
 	
 	<%-- select 태그 --%>
@@ -132,14 +132,20 @@
 	  vertical-align: middle;
 	  text-align: center;
 	  border-bottom: 1px solid rgba(0,0,0,.1);
-  	  background-color: #fff;
+/*   	  background-color: #fff; */
 	}
 	
 	tr:hover {
 		cursor: pointer;
 		color: #999999;
 	}
-
+	
+	<%-- 결재 진행 중 상태일 때 --%>
+	.approved {
+	    background-color: #d4edda;  /* 연두색 배경 */
+	    color: #155724;  /* 어두운 녹색 텍스트 */
+	}
+	
 </style>
 
 
@@ -264,27 +270,53 @@ function goSearch() {
 						<c:if test="${approvalvo.draft_urgent eq '0' || (approvalvo.draft_urgent eq '1' && approvalvo.approval_status ne '결재예정')}">
 							<%-- 첨부파일 없는 경우 --%>
 							<c:if test="${empty approvalvo.draft_file_name}">
-								<tr>
-									<td>${approvalvo.draft_no}</td>
-									<td>${approvalvo.parent_dept_name}</td>
-									<td>${approvalvo.member_name}</td>
-									<td>${approvalvo.draft_form_type}</td>
-									<td style="text-align:left;">${approvalvo.draft_subject}</td>
-									<td>${approvalvo.draft_status}</td>
-									<td>${approvalvo.draft_write_date}</td>
-								</tr>
+								<c:if test="${approvalvo.approval_status == '결재예정'}">
+									<tr>
+										<td>${approvalvo.draft_no}</td>
+										<td>${approvalvo.parent_dept_name}</td>
+										<td>${approvalvo.member_name}</td>
+										<td>${approvalvo.draft_form_type}</td>
+										<td style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}</td>
+										<td>${approvalvo.draft_status}</td>
+										<td>${approvalvo.draft_write_date}</td>
+									</tr>
+								</c:if>
+								<c:if test="${approvalvo.approval_status != '결재예정'}">
+									<tr style="background-color: #f1f9f7;">
+										<td>${approvalvo.draft_no}</td>
+										<td>${approvalvo.parent_dept_name}</td>
+										<td>${approvalvo.member_name}</td>
+										<td>${approvalvo.draft_form_type}</td>
+										<td style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}</td>
+										<td>${approvalvo.draft_status}</td>
+										<td>${approvalvo.draft_write_date}</td>
+									</tr>
+								</c:if>
 							</c:if>	
 							<%-- 첨부파일 있는 경우 --%>
 							<c:if test="${not empty approvalvo.draft_file_name}">
-								<tr>
-									<td>${approvalvo.draft_no}</td>
-									<td>${approvalvo.parent_dept_name}</td>
-									<td>${approvalvo.member_name}</td>
-									<td>${approvalvo.draft_form_type}</td>
-									<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
-									<td>${approvalvo.draft_status}</td>
-									<td>${approvalvo.draft_write_date}</td>
-								</tr>
+								<c:if test="${approvalvo.approval_status == '결재예정'}">
+									<tr>
+										<td>${approvalvo.draft_no}</td>
+										<td>${approvalvo.parent_dept_name}</td>
+										<td>${approvalvo.member_name}</td>
+										<td>${approvalvo.draft_form_type}</td>
+										<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
+										<td>${approvalvo.draft_status}</td>
+										<td>${approvalvo.draft_write_date}</td>
+									</tr>
+								</c:if>	
+								<c:if test="${approvalvo.approval_status != '결재예정'}">
+									<tr style="background-color: #f1f9f7;">
+										<td>${approvalvo.draft_no}</td>
+										<td>${approvalvo.parent_dept_name}</td>
+										<td>${approvalvo.member_name}</td>
+										<td>${approvalvo.draft_form_type}</td>
+										<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
+										<td>${approvalvo.draft_status}</td>
+										<td>${approvalvo.draft_write_date}</td>
+									</tr>
+								</c:if>	
 							</c:if>	
 						</c:if>
 					</c:forEach>

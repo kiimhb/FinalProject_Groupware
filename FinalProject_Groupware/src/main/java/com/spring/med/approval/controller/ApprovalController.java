@@ -1,6 +1,8 @@
 package com.spring.med.approval.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import com.spring.med.common.FileManager;
 import com.spring.med.management.domain.ManagementVO_ga;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 // **** 기안서 및 결재 컨트롤러 **** //
@@ -486,11 +489,12 @@ public class ApprovalController {
 	@GetMapping("getTempApprovalRefer")
 	@ResponseBody
 	public List<Map<String, String>> getTempApprovalRefer(@RequestParam String draft_no) {
-		System.out.println("draft_no :" + draft_no);
+
 		List<Map<String, String>> mapList = approvalService.getTempApprovalRefer(draft_no);
 		return mapList;
 	}
 
+	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 결재문서함 ***
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -513,15 +517,114 @@ public class ApprovalController {
 	
 	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
 	@PostMapping("approvalPendingListDetail")
-	public ModelAndView approvalPendingListDetail(ModelAndView mav, @RequestParam String draft_no) {
+	public ModelAndView approvalPendingListDetail(ModelAndView mav, HttpServletRequest request, @RequestParam String draft_no) {
 
-		HashMap<String, String> approvalvo = approvalService.approvalTemporaryDetail(draft_no);
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		String member_userid = loginuser.getMember_userid();
+		
+		Map<String,String> map = new HashMap<>();
+		map.put("member_userid", member_userid);
+		map.put("draft_no", draft_no);
+		
+		HashMap<String, String> approvalvo = approvalService.approvalPendingListDetail(map);
 		mav.addObject("approvalvo", approvalvo);
 		mav.setViewName("/content/approval/approvalDraft");
 		
 		return mav;
 	}
 	
+	
+	// ==== 결재 의견 불러오기 ==== //
+	@GetMapping("getApprovalFeedback")
+	public ModelAndView getApprovalFeedback(ModelAndView mav, @RequestParam String draft_no) {
+		
+		HashMap<String, String> approvalvo = approvalService.getApprovalFeedback(draft_no);
+		mav.addObject("approvalvo", approvalvo);
+		//mav.setViewName("/content/approval/approvalDraft");
+		
+		return mav;
+	}
+	
+	
+	// ==== 결재문서에서 첨부된 파일 클릭시 다운로드 ==== //
+	@GetMapping("download")
+	public void download(HttpServletRequest request
+			           , HttpServletResponse response
+			           , @RequestParam String draft_file_name
+			           , @RequestParam String draft_file_origin_name) {
+		
+		response.setContentType("text/html; charset=UTF-8");
+		
+		PrintWriter out = null;
+		
+		try {
+			
+			if(draft_file_name == null || draft_file_origin_name == null) {
+				out = response.getWriter();
+				
+				out.println("<script type='text/javascript'>alert('첨부파일이 없으므로 파일다운로드가 불가합니다.'); history.back();</script>");
+				return;
+			}
+			else {
+				// 파일이 존재하는 경우
+								
+				HttpSession session = request.getSession();
+				
+				String root = session.getServletContext().getRealPath("/");  // 파일 위치를 알기위해 webapp 의 절대경로 알아오기
+				String path = root + "resources" + File.separator + "draft"; // 파일이 업로드 된 위치
+				
+				// >>>> 파일 다운로드 <<<< //
+				boolean flag = false;	// 파일다운로드 성공/실패 여부
+				flag = fileManager.doFileDownload(draft_file_name, draft_file_origin_name, path, response);
+				
+				if(!flag) {
+					// 다운로드 실패의 경우
+					out = response.getWriter();
+					
+					out.println("<script type='text/javascript'>alert('파일다운로드가 실패되었습니다.'); history.back();</script>");
+				}
+			}
+		} catch (IOException e) {
+			
+			try {
+				out = response.getWriter();
+
+				out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	
+	// ==== 결재의견 작성 모달에서 승인버튼 클릭 이벤트 ==== //
+	@PostMapping("goApprove")
+	@ResponseBody
+	public int goApprove(@RequestParam String approval_feedback
+						,@RequestParam String fk_draft_no
+						,HttpServletRequest request) {
+		
+		System.out.println("확인용~~ fk_draft_no : " + fk_draft_no);
+		System.out.println("확인용~~ approval_feedback : " + approval_feedback);
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		String member_userid = loginuser.getMember_userid();
+				
+		Map<String, String> map = new HashMap<>();
+		map.put("approval_feedback", approval_feedback);
+		map.put("fk_draft_no", fk_draft_no);
+		map.put("member_userid", member_userid);
+		
+		int n = approvalService.goApprove(map);
+		
+		return n;
+	}
+	
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 참조문서함 ***
 	////////////////////////////////////////////////////////////////////////////////////////////////////////

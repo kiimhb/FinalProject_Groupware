@@ -50,6 +50,18 @@ public interface ApprovalService {
 
 	// ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 === //
 	List<Map<String, String>> approvalPendingList(String member_userid);
+	
+	// ==== 결재 의견 불러오기 ==== //
+	HashMap<String, String> getApprovalFeedback(String draft_no);
+	
+	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
+	HashMap<String, String> approvalPendingListDetail(Map<String, String> map);
+
+	// ==== 결재의견 작성 모달에서 승인버튼 클릭 이벤트 ==== //
+	int goApprove(Map<String, String> map);
+
+
+
 
 
 

@@ -109,7 +109,7 @@
 	</select>
 	
 	
-	<!-- /////////////////////////////////////////////////// -->
+	<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
 	<!-- ==== 기안문 임시저장하기 [insert] ==== -->
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert <<< -->
 	<insert id="insertToTemporaryStored_TBL_DRAFT" parameterType="HashMap">
@@ -155,15 +155,15 @@
 	<!-- 참조자 목록에 추가한 유저 insert -->
 	<insert id="insertToTemporaryStored_referMember1_TBL_APPROVAL" parameterType="HashMap">
 	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
-	    values(seq_approval_no.nextval, #{draft_no}, #{step1}, 0, '결재예정', null, null)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step1}, 0, '참조', null, null)
 	</insert>
 	<insert id="insertToTemporaryStored_referMember2_TBL_APPROVAL" parameterType="HashMap">
 	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
-	    values(seq_approval_no.nextval, #{draft_no}, #{step2}, 0, default, null, null)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step2}, 0, '참조', null, null)
 	</insert>
 	<insert id="insertToTemporaryStored_referMember3_TBL_APPROVAL" parameterType="HashMap">
 	    insert into tbl_approval(APPROVAL_NO, FK_DRAFT_NO, FK_MEMBER_USERID, APPROVAL_STEP, APPROVAL_STATUS, APPROVAL_FEEDBACK, APPROVAL_DATE)
-	    values(seq_approval_no.nextval, #{draft_no}, #{step3}, 0, default, null, null)
+	    values(seq_approval_no.nextval, #{draft_no}, #{step3}, 0, '참조', null, null)
 	</insert>
 	
 	
@@ -182,7 +182,7 @@
 		values(seq_alarm_no.nextval, #{step3}, '결재', #{draft_no}, sysdate, default)
 	</insert>
 	
-	<!-- /////////////////////////////////////////////////// -->
+	<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
 	
 	<!-- ==== 기안문 임시저장하기 [update] ==== -->
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 update <<< -->
@@ -330,6 +330,7 @@
 		<result property="fk_member_userid" 		column="fk_member_userid" 			javaType="String" />
 		<result property="draft_form_type" 			column="draft_form_type" 			javaType="String" />
 		<result property="draft_subject" 			column="draft_subject" 				javaType="String" />
+		<result property="draft_status" 			column="draft_status" 				javaType="String" />
 		<result property="draft_urgent" 			column="draft_urgent" 				javaType="String" />
 		<result property="draft_file_name" 			column="draft_file_name" 			javaType="String" />
 		<result property="draft_file_origin_name" 	column="draft_file_origin_name" 	javaType="String" />
@@ -348,13 +349,13 @@
 		<result property="member_position" 			column="member_position" 			javaType="String" />
 	</resultMap>
 	<select id="approvalTemporaryDetail" resultMap="approvalTemporaryDetail_Map" parameterType="String">
-		select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
+		select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_status, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
 		     , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason
 		     , work_change_start, work_change_end, work_change_reason, work_change_member_workingTime
 		     , member_name, parent_dept_name, child_dept_name, member_position
 		from tbl_member M join
 		(
-		    select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
+		    select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_status, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
 		         , to_char(day_leave_start, 'yyyy-mm-dd') as day_leave_start , to_char(day_leave_end, 'yyyy-mm-dd') as day_leave_end, day_leave_cnt, day_leave_reason
 		         , to_char(work_change_start, 'yyyy-mm-dd') as work_change_start, to_char(work_change_end, 'yyyy-mm-dd') as work_change_end, work_change_reason, work_change_member_workingTime
 		    from tbl_draft D left join tbl_day_leave L
@@ -423,6 +424,121 @@
 		where rno between to_number(1) AND to_number(10)
 	</select>
 	
+	
+	<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+	
+	<!-- ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== -->
+	<resultMap type="HashMap" id="approvalPendingListDetail_Map">
+		<result property="draft_no" 				column="draft_no" 					javaType="String" />
+		<result property="fk_member_userid" 		column="fk_member_userid" 			javaType="String" />
+		<result property="draft_form_type" 			column="draft_form_type" 			javaType="String" />
+		<result property="draft_subject" 			column="draft_subject" 				javaType="String" />
+		<result property="draft_status" 			column="draft_status" 				javaType="String" />
+		<result property="draft_urgent" 			column="draft_urgent" 				javaType="String" />
+		<result property="draft_file_name" 			column="draft_file_name" 			javaType="String" />
+		<result property="draft_file_origin_name" 	column="draft_file_origin_name" 	javaType="String" />
+		<result property="draft_file_size" 			column="draft_file_size" 			javaType="String" />
+		<result property="day_leave_start" 			column="day_leave_start" 			javaType="String" />
+		<result property="day_leave_end" 			column="day_leave_end" 				javaType="String" />
+		<result property="day_leave_cnt" 			column="day_leave_cnt" 				javaType="String" />
+		<result property="day_leave_reason" 		column="day_leave_reason" 			javaType="String" />
+		<result property="work_change_start" 		column="work_change_start" 			javaType="String" />
+		<result property="work_change_end" 			column="work_change_end" 			javaType="String" />
+		<result property="work_change_reason" 		column="work_change_reason" 		javaType="String" />
+		<result property="work_change_member_workingTime" 		column="work_change_member_workingTime" 			javaType="String" />
+		<result property="member_name" 				column="member_name" 			javaType="String" />
+		<result property="parent_dept_name" 		column="parent_dept_name" 			javaType="String" />
+		<result property="child_dept_name" 			column="child_dept_name" 			javaType="String" />
+		<result property="member_position" 			column="member_position" 			javaType="String" />
+		<result property="login_user_approval_status" 			column="login_user_approval_status" 			javaType="String" />
+	</resultMap>
+	<select id="approvalPendingListDetail" resultMap="approvalPendingListDetail_Map" parameterType="String">
+		select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_status, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
+		     , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason
+		     , work_change_start, work_change_end, work_change_reason, work_change_member_workingTime
+		     , member_name, parent_dept_name, child_dept_name, member_position
+		     , (select approval_status from tbl_approval where fk_draft_no = to_number(#{draft_no}) and fk_member_userid = to_number(#{member_userid})) as login_user_approval_status
+		from tbl_member M join
+		(
+		    select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_status, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
+		         , to_char(day_leave_start, 'yyyy-mm-dd') as day_leave_start , to_char(day_leave_end, 'yyyy-mm-dd') as day_leave_end, day_leave_cnt, day_leave_reason
+		         , to_char(work_change_start, 'yyyy-mm-dd') as work_change_start, to_char(work_change_end, 'yyyy-mm-dd') as work_change_end, work_change_reason, work_change_member_workingTime
+		    from tbl_draft D left join tbl_day_leave L
+		    on D.draft_no = L.fk_draft_no
+		    left join tbl_work_change C
+		    on D.draft_no = C.fk_draft_no
+		    where draft_no = to_number(#{draft_no})
+		) D
+		on M.member_userid = D.fk_member_userid
+		join tbl_child_dept C 
+		on M.fk_child_dept_no = C.child_dept_no
+		join tbl_parent_dept P
+		on C.fk_parent_dept_no = P.parent_dept_no
+	</select>
+	
+	
+	<!-- ==== 결재 의견 불러오기 ==== -->
+	<resultMap type="HashMap" id="getApprovalFeedback_Map">
+		<result property="approval_step" 		column="approval_step" 				javaType="String" />
+		<result property="child_dept_name" 		column="child_dept_name" 			javaType="String" />
+		<result property="member_position" 		column="member_position" 			javaType="String" />
+		<result property="member_name" 			column="member_name" 				javaType="String" />
+		<result property="approval_status" 		column="approval_status" 			javaType="String" />
+		<result property="approval_feedback" 	column="approval_feedback" 			javaType="String" />
+	</resultMap>
+	<select id="getApprovalFeedback" resultMap="getApprovalFeedback_Map" parameterType="String">
+		select approval_step, child_dept_name, member_position, member_name, approval_status, approval_feedback
+		from tbl_member M join tbl_child_dept C
+		on M.fk_child_dept_no = C.child_dept_no
+		join tbl_approval A
+		on A.fk_member_userid = M.member_userid
+		where fk_draft_no = #{draft_no}
+		and approval_step != 0
+		and approval_feedback is not null
+	</select>
+	
+	<!-- ================ 기안문 결재하기 ================ -->	
+	<!-- >>> 1-1. (TBL_APPROVAL) 결재/반려의견 update 및 현재 결재자 상태 update <<< -->
+	<update id="updateToApprovalFirst_TBL_APPROVAL_withFeedback" parameterType="HashMap">
+		update tbl_approval set approval_feedback = #{approval_feedback}
+		                      , approval_status = '승인'
+		where fk_draft_no = #{fk_draft_no} and fk_member_userid = #{member_userid}
+	</update>
+	<!-- >>> 1-2. (TBL_APPROVAL) 결재의견 없을 경우 update 및 현재 결재자 상태 update <<< -->
+	<update id="updateToApprovalFirst_TBL_APPROVAL" parameterType="HashMap">
+		update tbl_approval set approval_status = '승인'
+		where fk_draft_no = #{fk_draft_no} and fk_member_userid = #{member_userid}
+	</update>
+	
+	<!-- >>> 2-1. (TBL_APPROVAL)다음 결재자가 있는지 확인 <<< -->
+	<select id="selectNextApproverMember" parameterType="HashMap" resultType="String">
+		select fk_member_userid
+		from tbl_approval
+		where approval_step = (select approval_step +1
+		                       from tbl_approval
+		                       where fk_member_userid = #{member_userid}
+		                       and fk_draft_no = #{fk_draft_no})
+		and fk_draft_no = #{fk_draft_no}
+	</select>
+	
+	<!-- >>> 2-2. (TBL_APPROVAL)다음 결재자가 있을 경우 다음 결재자 상태 update <<< -->
+	<update id="updateToApprovalSecond_TBL_APPROVAL" parameterType="HashMap">
+		update tbl_approval set approval_status = '결재예정'
+		where fk_draft_no = #{fk_draft_no} and fk_member_userid = #{next_member_userid}
+	</update>
+	
+	<!-- >>> 3-1. (TBL_DRAFT) 다음 결재자 있으면 결재상태[draft_status]를 "진행중"으로 update <<< -->
+	<update id="updateToApprovalThird_TBL_DRAFT_ongoing" parameterType="HashMap">
+		update tbl_draft set draft_status = '진행중'
+		where draft_no = #{fk_draft_no}
+	</update>
+	
+	<!-- >>> 3-2. (TBL_DRAFT) 다음 결재자 없으면 결재상태[draft_status]를 "승인완료"으로 update <<< -->
+	<update id="updateToApprovalThird_TBL_DRAFT_end" parameterType="HashMap">
+		update tbl_draft set draft_status = '승인완료'
+		where draft_no = #{fk_draft_no}
+	</update>
+	<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
 	
 	
 </mapper>

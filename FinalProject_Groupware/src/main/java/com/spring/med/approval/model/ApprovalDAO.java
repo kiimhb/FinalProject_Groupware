@@ -95,7 +95,33 @@ public interface ApprovalDAO {
 	List<Map<String, String>> approvalPendingList(String member_userid);
 
 	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
-	HashMap<String, String> approvalPendingListDetail(String draft_no);
+	HashMap<String, String> approvalPendingListDetail(Map<String, String> map);
+	
+	// ==== 결재 의견 불러오기 ==== //
+	HashMap<String, String> getApprovalFeedback(String draft_no);
+	
+	/////////////////////////////////////////////////	
+	// >>> 1-1. (TBL_APPROVAL) 결재의견 있을 경우 update 및 현재 결재자 상태 update <<<
+	int updateToApprovalFirst_TBL_APPROVAL_withFeedback(Map<String, String> map);
+	
+	// >>> 1-2. (TBL_APPROVAL) 결재의견 없을 경우 update 및 현재 결재자 상태 update <<<
+	int updateToApprovalFirst_TBL_APPROVAL(Map<String, String> map);
+
+	// >>> 2-1. (TBL_APPROVAL)다음 결재자가 있는지 확인 <<<
+	String selectNextApproverMember(Map<String, String> map);
+
+	// >>> 2-2. (TBL_APPROVAL)다음 결재자가 있을 경우 다음 결재자 상태 update <<<
+	int updateToApprovalSecond_TBL_APPROVAL(Map<String, String> map);
+
+	// >>> 3-1. (TBL_DRAFT) 다음 결재자 있으면 결재상태[draft_status]를 "진행중"으로 update <<<
+	int updateToApprovalThird_TBL_DRAFT_ongoing(Map<String, String> map);
+
+	// >>> 3-2. (TBL_DRAFT) 다음 결재자 없으면 결재상태[draft_status]를 "승인완료"으로 update <<<
+	int updateToApprovalThird_TBL_DRAFT_end(Map<String, String> map);
+	/////////////////////////////////////////////////	
+
+
+
 
 
 

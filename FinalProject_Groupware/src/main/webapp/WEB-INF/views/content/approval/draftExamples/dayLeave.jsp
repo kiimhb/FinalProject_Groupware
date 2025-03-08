@@ -129,7 +129,7 @@ $(document).ready(function(){
 			// 배열에 해당 파일을 넣는다.
 			file_arr.push(file);
 			
-			let html = `<div style="display: flex;"><span style="padding-left: 2%;"><i class="fa-solid fa-paperclip"></i>&nbsp;\${file.name}</span><span id="fileSize" style="margin-left: auto; padding-right: 4%;">\${file.size}KB</span><i id="fileDel" class="fa-regular fa-rectangle-xmark" style="margin: auto 1%;">&nbsp;</i></div>`;
+			let html = `<div style="display: flex; height: 35px;"><span style="padding-top: 5px; padding-left: 2%;"><i class="fa-solid fa-paperclip"></i>&nbsp;\${file.name}</span><span id="fileSize" style="margin-left: auto; padding-top: 5px; padding-right: 4%;">\${file.size}KB</span><i id="fileDel" class="fa-regular fa-rectangle-xmark" style="margin: auto 1%;">&nbsp;</i></div>`;
 			
 			fileZone.hide();
 			fileAdd.append(html).show();
@@ -148,7 +148,7 @@ $(document).ready(function(){
 		// 배열에 해당 파일을 넣는다.
 		file_arr.push(file);
 			
-			let html = `<div style="display: flex;"><span style="padding-left: 2%;"><i class="fa-solid fa-paperclip"></i>&nbsp;\${file.name}</span><span id="fileSize" style="margin-left: auto; padding-right: 4%;">\${file.size}KB</span><i id="fileDel" class="fa-regular fa-rectangle-xmark" style="margin: auto 1%;">&nbsp;</i></div>`;
+			let html = `<div style="display: flex; height: 35px;"><span style="padding-top: 5px; padding-left: 2%;"><i class="fa-solid fa-paperclip"></i>&nbsp;\${file.name}</span><span id="fileSize" style="margin-left: auto; padding-top: 5px; padding-right: 4%;">\${file.size}KB</span><i id="fileDel" class="fa-regular fa-rectangle-xmark" style="margin: auto 1%;">&nbsp;</i></div>`;
 			
 			fileZone.hide();
 			fileAdd.append(html).show();
@@ -380,7 +380,7 @@ function charCount(text, limit) {
 					<div class="draftInfo" style="display: inline-block;">휴가사유</div>
 					<span id="char_count" class="form-text text-muted" style="display: inline-block; float: right;">0 / 2000</span>
 				</div>
-				<textarea class="form-control" name="day_leave_reason" style="width: 100%;" onkeyup="charCount(this,2000)"></textarea>
+				<textarea class="form-control" name="day_leave_reason" style="width: 100%; height: 150px;" onkeyup="charCount(this,2000)"></textarea>
 			</div>
 			
 			<div id="halfDay" class="input_margin" style="padding: 10px 0;">
@@ -414,9 +414,15 @@ function charCount(text, limit) {
 				</label>
 		    	<input id="fileInput" class="fileInput" accept="image/*" type="file" required multiple hidden="true" />
 		    	<div id="fileAdd" style="cursor: pointer; border-radius: 8px; font-size: 16px; text-align: center; width: 100%; background-color: #eee;"></div>
+			</div> 
+			
+			<div id="feedback" class="input_margin" style="display: none; margin-top: 3%;">
+				<div class="draftInfo" >결재 의견</div>
+				<div id="feedbackContainer" style="border: solid 1px #eee; border-radius: 3px;">
+					<div id="defaultFeedback" style="display: flex; height: 50px; justify-content: center; align-items: center; background-color: #eee;">결재 의견이 비어 있습니다.</div>
+					<div id="addFeedback"></div>
+				</div>
 			</div>
-	
-	        
 		</form>
 	</div>
 </body>	

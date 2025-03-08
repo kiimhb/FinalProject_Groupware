@@ -382,6 +382,72 @@ public class ApprovalService_imple implements ApprovalService {
 		List<Map<String, String>> pendingList =  mapper_approvalDAO.approvalPendingList(member_userid);
 		return pendingList;
 	}
+	
+	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
+	@Override
+	public HashMap<String, String> approvalPendingListDetail(Map<String, String> map) {
+		
+		HashMap<String, String> approvalvo = mapper_approvalDAO.approvalPendingListDetail(map);
+		return approvalvo;
+	}
+	
+	// ==== 결재 의견 불러오기 ==== /
+	@Override
+	public HashMap<String, String> getApprovalFeedback(String draft_no) {
+
+		HashMap<String, String> approvalvo = mapper_approvalDAO.getApprovalFeedback(draft_no);
+		return approvalvo;
+	}
+
+	// ==== 결재의견 작성 모달에서 승인버튼 클릭 이벤트 ==== //
+	@Override
+	@Transactional(value="transactionManager_final_orauser4" , propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class}) // 오류가 발생하면 무조건 rollback
+	public int goApprove(Map<String, String> map) {
+		
+		int n1=0, n2=0, n3=0, result=0;
+		
+		// >>> 1-1. (TBL_APPROVAL) 결재의견 있을 경우 update 및 현재 결재자 상태 update <<<
+		if(map.get("approval_feedback") != null) {
+			n1 = mapper_approvalDAO.updateToApprovalFirst_TBL_APPROVAL_withFeedback(map);
+		}
+		else {
+			// >>> 1-2. (TBL_APPROVAL) 결재의견 없을 경우 update 및 현재 결재자 상태 update <<<
+			n1 = mapper_approvalDAO.updateToApprovalFirst_TBL_APPROVAL(map);
+		}
+		
+		String next_member_userid = null;
+		
+		if(n1 == 1) {
+			// >>> 2-1. (TBL_APPROVAL)다음 결재자가 있는지 확인 <<<
+			next_member_userid = mapper_approvalDAO.selectNextApproverMember(map);
+			
+			// >>> 2-2. (TBL_APPROVAL)다음 결재자가 있을 경우 다음 결재자 상태 update <<<
+			if(next_member_userid != null) {
+				map.put("next_member_userid", next_member_userid);
+				n2 = mapper_approvalDAO.updateToApprovalSecond_TBL_APPROVAL(map);
+			}
+		}
+		
+		// >>> 3-1. (TBL_DRAFT) 다음 결재자 있으면 결재상태[draft_status]를 "진행중"으로 update <<<
+		if(next_member_userid != null) {
+			n3 = mapper_approvalDAO.updateToApprovalThird_TBL_DRAFT_ongoing(map);
+		}
+		else { // >>> 3-2. (TBL_DRAFT) 다음 결재자 없으면 결재상태[draft_status]를 "승인완료"으로 update <<<
+			n3 = mapper_approvalDAO.updateToApprovalThird_TBL_DRAFT_end(map);
+		}
+	
+		if(next_member_userid != null) {
+			result = n1*n2*n3;
+		}
+		else {
+			result = n1*n3;
+		}
+
+		return result;
+	}
+
+
+
 
 
 
