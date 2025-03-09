@@ -149,6 +149,21 @@ public class ManagementService_imple implements ManagementService {
 		return member_one;
 	}
 
+	// === 인사관리 사원퇴사 처리 === //
+	@Override
+	public int managementone_delete(String member_userid) {
+		int n =  manaDAO.management_one_delete(member_userid);
+		return n;
+	}
+
+	// === 인사관리 사원수정 처리 === //
+	@Override
+	public int Managementone_update(ManagementVO_ga managementVO_ga) {
+		
+		int n =  manaDAO.Management_one_update(managementVO_ga);
+		return n;
+	}
+
 
 
 

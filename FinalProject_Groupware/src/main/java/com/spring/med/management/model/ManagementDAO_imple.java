@@ -70,11 +70,25 @@ public class ManagementDAO_imple implements ManagementDAO {
 		return wordList;
 	}
 
-	// 인사관리 회원수정 한명의 멤버 조회 
+	// 인사관리 사원수정 한명의 멤버 조회 
 	@Override
 	public ManagementVO_ga getView_member_one(Map<String, String> paraMap) {
 		ManagementVO_ga member_one = sqlmanag.selectOne("management_ga.getView_member_one", paraMap);
 		return member_one;
+	}
+
+	// 인사관리 사원퇴사
+	@Override
+	public int management_one_delete(String member_userid) {
+		int n = sqlmanag.update("management_ga.management_one_delete", member_userid);
+		return n;
+	}
+
+	// 인사관리 사원정보수정
+	@Override
+	public int Management_one_update(ManagementVO_ga managementVO_ga) {
+		int n = sqlmanag.update("management_ga.Management_one_update", managementVO_ga);
+		return n;
 	}
 
 	

@@ -382,7 +382,7 @@ public class ManagementController {
 	}
 
 	
-	// === 인사관리 회원수정 한명의 멤버 조회 === //
+	// === 인사관리 사원수정,삭제 한명의 멤버 조회 === //
 	@PostMapping("managementone")
 	@ResponseBody
 	public String getMemberInfo(@RequestParam() String member_userid) {
@@ -393,10 +393,12 @@ public class ManagementController {
 	    ManagementVO_ga memberInfo = managService.getView_member_one(paramMap);
 
 	    JSONObject jsonObj = new JSONObject();
-	    jsonObj.put("member_pro_filename", memberInfo.getMember_pro_filename());
 	    jsonObj.put("member_userid", memberInfo.getMember_userid());
+	    jsonObj.put("member_pro_filename", memberInfo.getMember_pro_filename());
+	    jsonObj.put("member_pro_orgfilename", memberInfo.getMember_pro_orgfilename());
+	    jsonObj.put("member_pro_filesize", memberInfo.getMember_pro_filesize());
 	    jsonObj.put("member_name", memberInfo.getMember_name());
-	    jsonObj.put("child_dept_no", memberInfo.getChildVO().getChild_dept_no());
+	    jsonObj.put("fk_child_dept_no", memberInfo.getFk_child_dept_no());
 	    jsonObj.put("child_dept_name", memberInfo.getChildVO().getChild_dept_name());
 	    jsonObj.put("fk_parent_dept_no", memberInfo.getChildVO().getFk_parent_dept_no());
 	    jsonObj.put("parent_dept_name", memberInfo.getParentVO().getParent_dept_name());
@@ -406,12 +408,100 @@ public class ManagementController {
 	    jsonObj.put("member_gender", memberInfo.getMember_gender());
 	    jsonObj.put("member_email", memberInfo.getMember_email());
 	    jsonObj.put("member_start", memberInfo.getMember_start());
+	    jsonObj.put("member_grade", memberInfo.getMember_grade());
 	    jsonObj.put("member_yeoncha", memberInfo.getMember_yeoncha());
 	    jsonObj.put("member_workingTime", memberInfo.getMember_workingTime());
 
 	    return jsonObj.toString();
 	}
-
 	// === 사원목록 페이지 조회 요청 끝 === //
+	
+	// === 사원 퇴사처리 요청 시작 === //
+	@PostMapping("managementone_delete")
+	@ResponseBody
+	public String managementone_delete(@RequestParam() String member_userid) {
+		//System.out.println(member_userid);
+		
+		int n = managService.managementone_delete(member_userid);
+		
+
+		JSONObject jsObj = new JSONObject();
+		jsObj.put("n", n);
+			
+		return jsObj.toString();
+	}
+	// === 사원 퇴사처리 요청 끝 === //
+	
+	
+	// === 사원 수정처리 요청 시작 === //
+	@PostMapping("Managementone_update")
+	public ModelAndView Managementone_update(@RequestParam() String member_userid, ModelAndView mav, HttpServletRequest request, ManagementVO_ga managementVO_ga,
+	                                          MultipartHttpServletRequest mrequest) {
+		
+		MultipartFile attach = managementVO_ga.getAttach(); 
+
+		HttpSession session = mrequest.getSession();
+		String root = session.getServletContext().getRealPath("/");
+		String path = root + "resources" + File.separator + "profile"; 
+
+		if (attach != null && !attach.isEmpty()) {
+		    // 첨부파일이 있을 경우        
+		    String newFileName = "";
+		    byte[] bytes = null;
+		    long fileSize = 0;
+
+		    try {
+		        bytes = attach.getBytes();
+		        String originalFilename = attach.getOriginalFilename();
+		        
+		        // 파일 업로드 처리
+		        newFileName = managfileManager.doFileUpload(bytes, originalFilename, path);
+		        
+		        // 기존 파일 삭제 처리
+		        if (!"default_profile.png".equals(managementVO_ga.getMember_pro_filename())) {
+		            managfileManager.doFileDelete(managementVO_ga.getMember_pro_filename(), path);
+		        }
+		        
+		        // 새로운 파일 정보 업데이트
+		        managementVO_ga.setMember_pro_filename(newFileName);
+		        managementVO_ga.setMember_pro_orgfilename(originalFilename);
+		        
+		        fileSize = attach.getSize(); // 첨부파일 크기
+		        managementVO_ga.setMember_pro_filesize(String.valueOf(fileSize));
+
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		} else {
+		    
+		    String currentFilename = managementVO_ga.getMember_pro_filename();
+		    String currentOriginalFilename = managementVO_ga.getMember_pro_orgfilename();
+		    String currentFileSize = managementVO_ga.getMember_pro_filesize(); 
+		    
+		    System.out.println(currentFilename);
+		    System.out.println(currentOriginalFilename);
+		    System.out.println(currentFileSize);
+		    
+		    managementVO_ga.setMember_pro_filename(currentFilename);  
+		    managementVO_ga.setMember_pro_orgfilename(currentOriginalFilename);  
+		    managementVO_ga.setMember_pro_filesize(currentFileSize); 
+		}
+
+	        
+		int n = managService.Managementone_update(managementVO_ga);
+        
+        if (n == 1) {
+            mav.addObject("message", "사원정보 수정이 완료되었습니다.");
+            mav.addObject("loc", request.getContextPath() + "/management/ManagementList");
+        } else {
+            mav.addObject("message", "사원정보 수정에 실패하였습니다.");
+            mav.addObject("loc", "javascript:history.back()");
+        }
+        
+        mav.setViewName("msg");	
+    
+    return mav;
+}
+
 
 }

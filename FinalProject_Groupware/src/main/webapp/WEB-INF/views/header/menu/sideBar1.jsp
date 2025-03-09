@@ -49,6 +49,7 @@ $.ajax({
 });
 
 
+
 </script>
 
 
@@ -58,8 +59,8 @@ $.ajax({
    
 	 <div class="profile">
 	   <div id="sidebarProfile"></div>
-		  <button type="button" name="mypage" onclick="gomypage('${sessionScope.member_userid}')">마이페이지</button>
-		   <div class="logout"><a href="<%=ctxPath%>/management/logout" class="logoutcss">로그아웃</a> </div>
+	   <a class="mypage"  href="<%=ctxPath%>/mypage/mypage?member_userid=${sessionScope.loginuser.member_userid}">마이페이지</a>
+	  <div class="logout"><a href="<%=ctxPath%>/management/logout" class="logoutcss">로그아웃</a> </div>
 	 </div>
  
  

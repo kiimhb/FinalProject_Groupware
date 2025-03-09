@@ -58,7 +58,7 @@ div.profile {
     text-align: center;
 }
 
-button[name="mypage"] {
+a.mypage {
 	border: none;      
     outline: none;     
     background: none;  

@@ -8,7 +8,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.attendance.service.AttendanceRecordService;
@@ -120,7 +122,46 @@ public class IndexController {
 		}
 		return mav;
 	}
-	
+	   @PostMapping("weatherXMLtoJSON")
+	   @ResponseBody
+	   public String weatherXMLtoJSON(HttpServletRequest request) {
+	      
+	      String str_jsonObjArr = request.getParameter("str_jsonObjArr");
+	      
+	   //   System.out.println(str_jsonObjArr);
+	     
+	      str_jsonObjArr = str_jsonObjArr.substring(1, str_jsonObjArr.length()-1);
+	   //   System.out.println(str_jsonObjArr);
+	      
+	      String[] arr_str_jsonObjArr = str_jsonObjArr.split("\\},");
+	      
+	      for(int i=0; i<arr_str_jsonObjArr.length; i++) {
+	         arr_str_jsonObjArr[i] += "}";
+	      }// end of for-------------
+	      
+	      String[] locationArr = {"서울","인천","수원","춘천","강릉","청주","홍성","대전","안동","포항","대구","전주","울산","부산","창원","여수","광주","목포","제주","울릉도","백령도"}; 
+	      String result = "[";
+	      
+	      for(String jsonObj : arr_str_jsonObjArr) {
+	         
+	         for(int i=0; i<locationArr.length; i++) {
+	            if( jsonObj.indexOf(locationArr[i]) >= 0 && jsonObj.indexOf("북") == -1 && jsonObj.indexOf("서청주") == -1 ) { // 북춘천,춘천,북강릉,강릉,북부산,부산이 있으므로  "북" 이 있는 것은 제외하도록 한다. 또한 서청주(예)도 제외하도록 한다.    
+	               result += jsonObj+",";
+	               break;
+	            }
+	         }// end of for--------------
+	         
+	      }// end of for----------------------
+	      
+	   //   System.out.println(result);	      
+	      result = result.substring(0, result.length()-1);
+	      result = result + "]";
+	      
+	   //   System.out.println(result);
+	      
+	      return result;
+	      
+	   }
 
 
 }
