@@ -162,6 +162,19 @@ public class IndexController {
 	      return result;
 	      
 	   }
-
-
+	   
+	   
+	   @GetMapping("alarm")
+	   @ResponseBody 
+	   public List<Map<String, String>> alarm (HttpServletRequest request, HttpServletResponse response, ManagementVO_ga managementVO_ga) {
+	   HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+		if (loginuser != null) {
+			int totalCount = 0; 
+			
+			Map<String, Object> paraMap = new HashMap<>();
+			
+			totalCount = noticeService.getNoticeCount(paraMap);
+		}
+	   }
 }
