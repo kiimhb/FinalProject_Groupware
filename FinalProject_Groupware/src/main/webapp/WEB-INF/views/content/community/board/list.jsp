@@ -29,6 +29,18 @@
   
   div.button {text-align: right;}
   
+
+.header .title {
+     border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 28px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
+}
+
+  
   button.btn {
 	background-color: #006769;
 	color:white;
@@ -38,50 +50,162 @@
     box-shadow: none; /* 추가적인 파란색 그림자 제거 */
   }
 
+/* 페이지바 */
+div#pageBar a {
+	color: #509d9c;
+	cursor: pointer;
+}
+#pageBar > ul > li {
+	color: #006769;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+div#pageBar a {
+    color: #509d9c;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+#pageBar > ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#pageBar > ul > li {
+    color: #006769;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin: 0 5px;
+    transition: background-color 0.2s ease-in-out;
+}
+
 </style>
 
 
 <script type="text/javascript">
-//즐겨찾기 토글 함수
-function importantboard(board_no) {
+//즐겨찾기 추가/삭제 함수
+function importantboard(board_no, button) {
+    let icon = $(button).find("i"); // 클릭한 버튼 내 아이콘 요소 찾기
+    let isBookmarked = icon.hasClass("fa-star"); // 현재 즐겨찾기 여부 확인
 
-	  /* const icon = button.querySelector("i");
-	  if (icon.classList.contains("fa-star-o")) {
-	    // 비어 있는 별 -> 채워진 별
-	    icon.classList.remove("fa-star-o");
-	    icon.classList.add("fa-star");
-	    icon.style.color = "gold";
-	  } else {
-	    // 채워진 별 -> 비어 있는 별
-	    icon.classList.remove("fa-star");
-	    icon.classList.add("fa-star-o");
-	    icon.style.color = "gray";
-	  } */
-	
-	 let str_board_no = board_no;
-
-	<%-- 즐겨찾기 버튼 --%>
     $.ajax({
         url: "<%= ctxPath%>/board/bookmark",
-        type: "post",
-        data: { "board_no":str_board_no},
+        type: "POST",
+        data: { "board_no": board_no },
         success: function (response) {
-          if (response.success) {
-            if (isFavorite) {
-              icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold");
-            } else {
-              icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
+            if (response.success) {
+                if (!isBookmarked) {
+                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold"); // 즐겨찾기 추가
+                    //localStorage.setItem("bookmark_" + board_no, "true"); // LocalStorage 저장
+                } else {
+                    icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray"); // 즐겨찾기 삭제
+                    //localStorage.removeItem("bookmark_" + board_no); // LocalStorage 삭제
+                }
+
+                // 모든 페이지에서 동일한 글의 아이콘 상태 변경
+                $(".btnstar[data-board-no='" + board_no + "'] i")
+                    .removeClass(isBookmarked ? "fa-star" : "fa-star-o")
+                    .addClass(isBookmarked ? "fa-star-o" : "fa-star")
+                    .css("color", isBookmarked ? "gray" : "gold");
             }
-          }
         },
         error: function () {
-          console.error("즐겨찾기 상태 업데이트 실패");
-        },
-      });
+            console.error("즐겨찾기 상태 업데이트 실패");
+        }
+    });
 }
+
+$(document).ready(function() {
+	
+	
+	
+
+    /* $(".btnstar").each(function() {
+        let board_no = $(this).attr("data-board-no"); // 게시글 번호 가져오기
+        let icon = $(this).find("i");
+
+        //if (localStorage.getItem("bookmark_" + board_no) === "true") {
+        //    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold");
+        //} else {
+        //    icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
+        //}
+    }); */
+
+    // 모든 열린 페이지에서 자동으로 LocalStorage 변경 감지하여 자동 반영(업데이트되도록) window.addEventListener("storage")를 활용.
+    window.addEventListener("storage", function(event) {
+        if (event.key === "updateBookmark") {
+            $(".btnstar").each(function() {
+                let board_no = $(this).attr("data-board-no");
+                let icon = $(this).find("i");
+
+                //if (localStorage.getItem("bookmark_" + board_no) === "true") {
+                //    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold");
+                //} else {
+                //    icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
+                //}
+            });
+        }
+    });
+});
+
+
+
+
+
+
+
 
 
 $(document).ready(function(){
+	
+	// 즐겨찾기 여부 확인
+	$.ajax({
+        url: "<%= ctxPath%>/board/selectbookmark",
+        type: "GET",
+        success: function (response) {
+        	//console.log(response[0].fk_board_no);
+        	//console.log(JSON.stringify(response));
+        	const btnstar = $("button.btnstar");
+        	
+        	//console.log(btnstar);
+        	//sconsole.log(btnstar.data("board-no"));
+        	
+		  	$.each(response, function(index, bookmark) {
+        		//let icon = $(button).find("i"); // 클릭한 버튼 내 아이콘 요소 찾기
+        		
+        		//console.log(bookmark.fk_board_no);
+        		
+     		    $("button.btnstar").each(function(index, btnitem, array){
+	    			//console.log($(btnitem2).data("board-no"));
+	    			//console.log(btnitem2);
+	    			
+	    			var star_btn = $(btnitem).data("board-no");
+	    			//console.log(star_btn);
+	    			
+	        		if(star_btn == bookmark.fk_board_no) {
+	        			console.log($(btnitem).find("i"));
+	        			$(btnitem).find("i").removeClass("fa-star-o").addClass("fa-star").css("color", "gold");
+	        			return;
+	        		}
+            	
+    		
+    			});
+
+        		
+            });
+        	
+
+        },
+        error: function () {
+            console.error("즐겨찾기 상태 업데이트 실패");
+        }
+    });
+
     
     $("span.board_subject").hover(function(e){
        $(e.target).addClass("subjectStyle");
@@ -247,7 +371,9 @@ $(document).ready(function(){
 <div style="display: flex;">
 	<div style="margin: auto; padding-left: 3%;">
 
-		<h2 style="margin-bottom: 30px; padding-top: 3%; font-weight: bold;"><span style="margin-right:10px"; >|</span>자유게시판</h2>
+		<div class="header">
+			<div class="title">자유게시판</div>
+		</div>
 
 		<table style="width: 1200px" class="table table-hover">
 			<thead>
@@ -304,16 +430,12 @@ $(document).ready(function(){
 									<%-- 댓글이 있는 경우 시작 --%>
 									<c:if test="${boardvo.board_depthno == 0 && boardvo.board_commentCount > 0}">
 										<c:if test="${fn:length(boardvo.board_subject) < 30}">
-											<span class="board_subject" onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}<span
-												style="vertical-align: super;">[<span
-													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
-											</span></span>
+											<span class="board_subject" onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}<span style="color: #f68b1f; font-weight: bold; margin-left: 5px;">[${boardvo.board_commentCount}]</span>
+											</span>
 										</c:if>
 										<c:if test="${fn:length(boardvo.board_subject) >= 30}">
 											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..<span
-												style="vertical-align: super;">[<span
-													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
+												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..<span style="color: #f68b1f; font-weight: bold; margin-left: 5px;">[${boardvo.board_commentCount}]</span>
 											</span></span>
 										</c:if>
 									</c:if>
@@ -384,19 +506,13 @@ $(document).ready(function(){
 										test="${boardvo.board_depthno == 0 && boardvo.board_commentCount > 0}">
 										<c:if test="${fn:length(boardvo.board_subject) < 30}">
 											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}&nbsp;<img
-												src="<%= ctxPath%>/images/disk.gif" /><span
-												style="vertical-align: super;">[<span
-													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
-											</span></span>
+												onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color:#509d9c; margin-left: 5px;"></i><span style="color: #f68b1f; font-weight: bold; margin-left: 5px;">[${boardvo.board_commentCount}]</span>
+											</span>
 										</c:if>
 										<c:if test="${fn:length(boardvo.board_subject) >= 30}">
 											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..&nbsp;<img
-												src="<%= ctxPath%>/images/disk.gif" /><span
-												style="vertical-align: super;">[<span
-													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
-											</span></span>
+												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..&nbsp;<i class="fa-solid fa-paperclip" style="color:#509d9c; margin-left: 5px;"></i><span style="color: #f68b1f; font-weight: bold; margin-left: 5px;">[${boardvo.board_commentCount}]</span>
+											</span>
 										</c:if>
 									</c:if>
 									<%-- 댓글이 있는 경우 끝  --%>
@@ -473,11 +589,14 @@ $(document).ready(function(){
 							<td align="center">${boardvo.board_readCount}</td>
 							<td align="center">
 							    <button type="button" class="btnstar btn-link p-0 no-outline" 
-							        onclick="importantboard('${boardvo.board_no}')" 
-							         style="font-size: 1.5rem; color: gray; margin-left: 8px; background-color: transparent; border: none; outline: none;">
+							        data-board-no="${boardvo.board_no}"
+							        onclick="importantboard('${boardvo.board_no}', this)"
+							        style="font-size: 1.5rem; color: gray; margin-left: 8px; background-color: transparent; border: none; outline: none;">
 							        <i class="fa fa-star-o" aria-hidden="true"></i>
 							    </button>
+							    <%-- data-board-no="${boardvo.board_no}" 추가하여 JavaScript에서 게시글 번호를 가져와서 LocalStorage 값 확인 가능 --%>
 							</td>
+
 
 
 						</tr>

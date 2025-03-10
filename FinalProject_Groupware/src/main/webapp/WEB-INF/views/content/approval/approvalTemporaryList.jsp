@@ -119,34 +119,74 @@
 	  border-radius: 5px;
 	  overflow: hidden;
 	}
-	
-	th {
-	  text-align: left;
-	}
 	  
-	thead {
+	thead td{
 	  font-weight: bold;
-	  /* color: #fff; */
+	  color: #fff;
+	  text-align: center;
 	  background-color: #509d9c;
 	}
 	  
-	 td, th {
+	 td {
 	  padding: 1em .5em;
 	  vertical-align: middle;
-	}
-	  
-	 td {
+	  text-align: center;
 	  border-bottom: 1px solid rgba(0,0,0,.1);
-	  background-color: #fff;
+  	  background-color: #fff;
 	}
+	
+	tr:hover {
+		cursor: pointer;
+		color: #999999;
+	}
+
 </style>
 
 
 <script type="text/javascript">
 $(document).ready(function(){
 	
+	<%-- 검색 조건 및 검색어 유지시키기 --%>
+	if(${not empty requestScope.paraMap}) {
+		$("select[name='searchType']").val("${requestScope.paraMap.searchType}");
+        $("input[name='searchWord']").val("${requestScope.paraMap.searchWord}");
+	}
+	
+	<%-- 기안문서 클릭 이벤트 --%>
+	$("tbody > tr").on("click", function(e){
+		
+		const click_draft_no = $(this).children("td").eq(0).text();	// 클릭한 기안문의 문서번호
+		
+		const frm = document.detailTempFrm;
+		$("input[name='draft_no']").val(click_draft_no);
+		frm.method = "post";
+		frm.action = "<%= ctxPath%>/approval/approvalTemporaryDetail";
+		frm.submit();
+		
+	});// end of $("tbody > tr").on("click", function(e){})-----------------------------
+	
 
 });// end of $(document).ready(function(){})----------------
+
+///////////////////////////////////////////////////////////
+<%-- 검색 버튼 클릭 이벤트 --%>
+function goSearch() {
+	
+	const sizePerPage = $("select[name='sizePerPage']").val();
+	const searchType = $("select[name='searchType']").val();
+	const searchWord = $("input[name='searchWord']").val();
+	
+	if(searchType && !searchWord) {
+		Swal.fire("검색어를 입력해주세요!");
+		return;
+	}
+	
+	const frm = document.searchTempListFrm;
+	frm.method = "get";
+	frm.action = "<%= ctxPath%>/approval/approvalTemporaryList";
+	frm.submit();
+}
+
 </script>
 
 <%-- ===================================================================== --%>
@@ -154,21 +194,21 @@ $(document).ready(function(){
 	<h2>임시저장함</h2>
 	
 	<div id="topSearch">
-		<form name="searchTempList">
+		<form name="searchTempListFrm">
 			<select name="sizePerPage" class="topClass top_select">
-				<option value="10개">10개</option>
-				<option value="15개">15개</option>
-				<option value="20개">20개</option>
+				<option value="10">10개</option>
+				<option value="15">15개</option>
+				<option value="20">20개</option>
 			</select>
 			
-			<select name="sizePerPage" class="topClass top_select">
+			<select name="searchType" class="topClass top_select">
 				<option value="">검색조건</option>
 				<option value="draft_form_type">결재양식</option>
 				<option value="draft_subject">제목</option>
 			</select>
 			
 			<input type="text" name="searchWord" class="topClass" placeholder="검색어 입력"/>
-			<button type="button" id="btnSearch" class="topClass">검색</button>
+			<button type="button" id="btnSearch" class="topClass" onclick="goSearch()">검색</button>
 		</form>
 	</div>
 	
@@ -177,18 +217,59 @@ $(document).ready(function(){
 			<thead>
 				<tr>
 					<td>문서번호</td>
-					<td>작성일</td>
 					<td>기안부서</td>
 					<td>기안자</td>
 					<td>결재양식</td>
 					<td>제목</td>
 					<td>상태</td>
+					<td>작성일</td>
 				</tr>
 			</thead>
 			<tbody>
+				<c:if test="${not empty requestScope.temporaryList}">					
+					<c:forEach var="approvalvo" items="${requestScope.temporaryList}" varStatus="temp_status"> 
+						<%-- 첨부파일 없는 경우 --%>
+						<c:if test="${empty approvalvo.draft_file_name}">
+							<tr>
+								<td>${approvalvo.draft_no}</td>
+								<td>${approvalvo.parent_dept_name}</td>
+								<td>${approvalvo.member_name}</td>
+								<td>${approvalvo.draft_form_type}</td>
+								<td style="text-align:left;">${approvalvo.draft_subject}</td>
+								<td>${approvalvo.draft_status}</td>
+								<td>${approvalvo.draft_write_date}</td>
+							</tr>
+						</c:if>	
+						<%-- 첨부파일 있는 경우 --%>
+						<c:if test="${not empty approvalvo.draft_file_name}">
+							<tr>
+								<td>${approvalvo.draft_no}</td>
+								<td>${approvalvo.parent_dept_name}</td>
+								<td>${approvalvo.member_name}</td>
+								<td>${approvalvo.draft_form_type}</td>
+								<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
+								<td>${approvalvo.draft_status}</td>
+								<td>${approvalvo.draft_write_date}</td>
+							</tr>
+						</c:if>	
+					</c:forEach>
+				</c:if>
+				<c:if test="${empty requestScope.temporaryList}">	
+					<tr>
+						<td colspan="7">임시저장된 문서가 없습니다.</td>
+					</tr>
+				</c:if>
 			</tbody>
 		</table>
+		
+		<div id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+			${requestScope.pageBar}
+		</div>
 	</div>
+	
+	<form name="detailTempFrm">
+		<input name="draft_no" />
+	</form>
 	
 </div>
 

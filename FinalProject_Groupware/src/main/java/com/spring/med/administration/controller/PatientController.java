@@ -17,7 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.administration.domain.Calendar_patient_recordVO;
 import com.spring.med.administration.service.PatientService;
-import com.spring.med.patient.domain.PatientVO;
 import com.spring.med.surgery.domain.SurgeryroomVO;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -125,11 +124,10 @@ public class PatientController {
 		
 		mav.setViewName("content/administration/patient"); 
 		return mav;
-		 
 	}
 	
 	
-	// 환자상세조회 
+	// 환자상세조회
 	@GetMapping("detail/{seq}")
 	public ModelAndView detail_patient(HttpServletRequest request, ModelAndView mav,
 									   @PathVariable String seq) { // seq = 환자번호 patient_no
@@ -161,15 +159,18 @@ public class PatientController {
 		return mav;
 	}
 	
+	
 	// 환자별 일정 조회하기 (진료, 수술, 입원)
 	@ResponseBody
 	@GetMapping(value="selectSchedule", produces="text/plain;charset=UTF-8")
 	public String selectSchedule(HttpServletRequest request) {
 		
 		// 등록된 일정 가져오기
-		String jubun = request.getParameter("jubun");
+		String patient_no = request.getParameter("patient_no");
 		
-		List<Calendar_patient_recordVO> scheduleList = service.selectSchedule(jubun);
+		// System.out.println("patient_no"+patient_no);
+		
+		List<Calendar_patient_recordVO> scheduleList = service.selectSchedule(patient_no);
 		
 		JSONArray jsArr = new JSONArray();
 		
@@ -178,7 +179,7 @@ public class PatientController {
 			for(Calendar_patient_recordVO cvo : scheduleList) {
 				JSONObject jsObj = new JSONObject();
 				jsObj.put("order_no", cvo.getOrder_no());
-				jsObj.put("patient_visitdate", cvo.getPatient_visitdate());
+				jsObj.put("order_createTime", cvo.getOrder_createTime());
 				jsObj.put("hospitalize_start_day", cvo.getHospitalize_start_day());
 				jsObj.put("hospitalize_end_day", cvo.getHospitalize_end_day());
 				jsObj.put("surgery_day", cvo.getSurgery_day());

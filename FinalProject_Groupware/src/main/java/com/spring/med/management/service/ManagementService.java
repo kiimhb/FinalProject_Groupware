@@ -37,8 +37,14 @@ public interface ManagementService {
 	// 검색어 입력시 자동글 완성하기
 	List<String> wordSearchShow(Map<String, String> paraMap);
 
-	//인사관리 회원수정 한명의 멤버 조회
+	//인사관리 사원수정 한명의 멤버 조회
 	ManagementVO_ga getView_member_one(Map<String, String> paraMap);
+
+	//인사관리 사원퇴사 처리
+	int managementone_delete(String member_userid);
+
+	//인사관리 사원수정 처리
+	int Managementone_update(ManagementVO_ga managementVO_ga);
 
 
 

@@ -38,7 +38,7 @@ public class ApprovalController {
 	private ApprovalService approvalService;
 	
 	@Autowired
-	private FileManager fileManager;
+	private FileManager fileManager; 
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 기안문작성 ***
@@ -207,9 +207,10 @@ public class ApprovalController {
 	@PostMapping("insertToTemporaryStored")
 	@ResponseBody
 	public int insertToTemporaryStored(MultipartHttpServletRequest mtp_request) {
-		
+
 		Map<String, Object> paraMap = new HashMap<>();
-	
+		
+		paraMap.put("draftMode", mtp_request.getParameter("draftMode"));
 		paraMap.put("fk_member_userid", mtp_request.getParameter("fk_member_userid"));
 		paraMap.put("draft_no", mtp_request.getParameter("draft_no"));
 		paraMap.put("draft_form_type", mtp_request.getParameter("draft_form_type"));
@@ -220,7 +221,6 @@ public class ApprovalController {
 		paraMap.put("day_leave_end", mtp_request.getParameter("day_leave_end"));
 		paraMap.put("day_leave_cnt", mtp_request.getParameter("day_leave_cnt"));
 		paraMap.put("day_leave_reason", mtp_request.getParameter("day_leave_reason"));
-		
 		
 		try {
 			String mtp_approvalLineMember = mtp_request.getParameter("approvalLineMember");
@@ -255,7 +255,7 @@ public class ApprovalController {
 		MultipartFile attachFile = mtp_request.getFile("file");	// 첨부한 파일 가져오기
 		
 		if(attachFile != null) {
-			
+
 			// WAS(톰캣)의 절대경로 알아오기
 			HttpSession session = mtp_request.getSession();
 			String root = session.getServletContext().getRealPath("/");
@@ -291,7 +291,7 @@ public class ApprovalController {
 	    }
 		
 		int result = 0;
-		
+
 		// ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== //
 		if(attachFile == null) {
 			result = approvalService.insertToTemporaryStored(paraMap);
@@ -300,7 +300,7 @@ public class ApprovalController {
 		else if(attachFile != null) {
 			result = approvalService.insertToTemporaryStored_withFile(paraMap);
 		}
-		
+	
 		return result;
 	}
 	
@@ -314,16 +314,214 @@ public class ApprovalController {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ==== 임시저장함 폼페이지 요청 ==== //
 	@GetMapping("approvalTemporaryList")
-	public ModelAndView approvalTemporaryList(ModelAndView mav) {
+	public ModelAndView approvalTemporaryList(ModelAndView mav
+			                                , HttpServletRequest request
+			                                , @RequestParam(defaultValue = "") String searchType
+			                                , @RequestParam(defaultValue = "") String searchWord
+			                                , @RequestParam(defaultValue = "10") int sizePerPage
+			                                , @RequestParam(defaultValue = "1") int currentShowPageNo) {
+
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("member_userid", loginuser.getMember_userid());
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+
+		// >>> 총 게시물 건수 구하기 <<< ///
+		int totalCount = 0;
+		int totalPage = 0;
+		
+		totalCount = approvalService.getTotalCount(paraMap);
+		
+		// 페이지 당 보여줄 기안문 개수에 따라 총 페이지 수 구하기
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+			
+		try {
+			// url 에 잘못된 페이지번호가 입력 될 경우 첫 페이지로 처리
+			if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+				currentShowPageNo = 1;
+			}
+		} catch (NumberFormatException e) {
+			currentShowPageNo = 1;
+		}
+		
+		
+		// >>> 페이지당 보여줄 목록 가져오기 <<< //
+		int startRno = ((currentShowPageNo - 1) * sizePerPage) + 1; // 범위시작
+		int endRno = startRno + sizePerPage -1;	// 범위끝
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		// >>> 임시저장함 기안문 불러오기 <<< //
+		List<ApprovalVO> temporaryList = approvalService.selectTemporaryList(paraMap);
+		mav.addObject("temporaryList", temporaryList);
+		
+		// 검색어 유지시키기 위해 데이터 전달
+		if("draft_form_type".equals(searchType) || "draft_subject".equals(searchType)) {	
+			mav.addObject("paraMap", paraMap);
+		}
+		
+		// >>> 페이지바 생성 <<< //
+		int blockSize = 10;	// 한 줄에 보이는 페이지 번호 개수
+		int loop = 1;		// 페이지바의 다음 줄을 보여주는데 사용
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<ul style='list-style:none;'>";
+	    String url = "approvalTemporaryList";
+	    
+	    // === [맨처음][이전] 만들기 === //
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'><<</a></li>";
+       
+	    if(pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때(맨처음 페이지라면 [이전]이 없음)
+	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><</a></li>";
+	    }
+      
+	    while( !(loop > blockSize || pageNo > totalPage) ) {   // 10 보다 크거나 totalPage 보다 크면 안 된다
+          
+          
+	    	if(pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지(현재페이지는 a태그 뺌)
+            	pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border: solid 1px gray; color:red; padding:2px 4px'>"+pageNo+"</li>";
+	    	}
+	    	else { 
+	    		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
+	    	}
+             
+	    	loop++;
+	    	pageNo++;
+	    }  // end of while ------------------------------ (10번을 반복하면 빠져나옴)
+       
+       
+	    // === [다음][마지막] 만들기 === //
+	    if(pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
+	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>></a></li>";
+	    }
+ 
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>>></a></li>";
+         
+	    pageBar += "</ul>"; 
+       
+	    mav.addObject("pageBar", pageBar); // modelandview(뷰단페이지에 페이지바를 나타냄)
+
 		mav.setViewName("content/approval/approvalTemporaryList");
+
+		return mav;
+	}
+	
+		
+	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
+	@PostMapping("approvalTemporaryDetail")
+	public ModelAndView approvalTemporaryDetail(ModelAndView mav, @RequestParam String draft_no) {
+	
+		HashMap<String, String> approvalvo = approvalService.approvalTemporaryDetail(draft_no);
+		mav.addObject("approvalvo", approvalvo);
+		mav.setViewName("/content/approval/write");
 		
 		return mav;
+	}
+	
+	
+	// ==== 임시저장한 기존의 기안 양식 가져오기 ==== //
+	@GetMapping("writeDraftTemp")
+	public ModelAndView writeDraftTemp(ModelAndView mav,
+								   	   HttpServletRequest request,
+								   	   @RequestParam String typeSelect
+								   		) {
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		Map<String, Object> paraMap = new HashMap<>();
+		
+		if(loginuser != null) {
+			
+			// 기안자 정보 불러오기
+			//ApprovalVO memverInfo = approvalService.insertToApprovalLine(loginuser.getMember_userid());
+			
+			// 문서번호 생성
+			//String draft_no = approvalService.createDraftNo();
+			
+			// 기안일자 
+			LocalDate now = LocalDate.now();	// 현재날짜
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+			String now_date = now.format(formatter);
+
+			//paraMap.put("memverInfo", memverInfo);
+			//paraMap.put("draft_no", draft_no);		
+			paraMap.put("now_date", now_date);
+		}
+		
+		
+		if(typeSelect.equals("휴가신청서")) {
+			
+			// 잔여 연차 조회
+			String member_yeoncha = approvalService.leftoverYeoncha(loginuser.getMember_userid());
+			paraMap.put("member_yeoncha", member_yeoncha);	
+			
+			// 문서 양식
+			mav.setViewName("/content/approval/draftExamples/dayLeave");
+		}
+		else if(typeSelect.equals("지출결의서")) {
+			
+			mav.setViewName("/content/approval/draftExamples/dayLeave");
+		}
+		else if(typeSelect.equals("근무 변경 신청서")) {
+			mav.setViewName("/content/approval/draftExamples/dayLeave");			
+		}
+		else if(typeSelect.equals("출장신청서")) {
+			mav.setViewName("/content/approval/draftExamples/dayLeave");
+		}
+
+		mav.addObject("paraMap", paraMap);
+		
+		return mav;
+	}
+	
+	
+	// ==== 임시저장한 내용 중 결재선/참조자 목록 불러오기 ==== //
+	@GetMapping("getTempApprovalRefer")
+	@ResponseBody
+	public List<Map<String, String>> getTempApprovalRefer(@RequestParam String draft_no) {
+		System.out.println("draft_no :" + draft_no);
+		List<Map<String, String>> mapList = approvalService.getTempApprovalRefer(draft_no);
+		return mapList;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 결재문서함 ***
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 === //
+	@GetMapping("approvalPendingList")
+	public ModelAndView approvalPendingList(ModelAndView mav, HttpServletRequest request) {
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		
+		List<Map<String, String>> pendingList = approvalService.approvalPendingList(loginuser.getMember_userid());
+		
+		mav.addObject("pendingList", pendingList);
+		mav.setViewName("content/approval/approvalPendingList");
+		
+		return mav;
+	}
 	
+	
+	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
+	@PostMapping("approvalPendingListDetail")
+	public ModelAndView approvalPendingListDetail(ModelAndView mav, @RequestParam String draft_no) {
+
+		HashMap<String, String> approvalvo = approvalService.approvalPendingListDetail(draft_no);
+		System.out.println("확인 : " + approvalvo);
+		mav.addObject("approvalvo", approvalvo);
+		mav.setViewName("/content/approval/approvalDraft");
+		
+		return mav;
+	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 참조문서함 ***

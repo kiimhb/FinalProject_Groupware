@@ -50,9 +50,30 @@
 		    <foreach item="parent_dept_no" collection="parent_deptList" open="(" separator="," close=")">
 		    	#{parent_dept_no}
 		    </foreach>
+		    and MEMBER_LAST IS NULL 
 		    order by notice_fix desc, notice_write_date desc
 		)
 		where rno BETWEEN 1 AND 4
+	</select>
+	
+	
+	<resultMap id="alarm_map" type="HashMap">
+		<result property="alarm_no" column="alarm_no" />
+		<result property="fk_member_userid" column="fk_member_userid" />
+		<result property="alarm_category" column="alarm_category"  />
+		<result property="alarm_cateno" column="alarm_cateno"  />
+		<result property="alarm_at" column="alarm_at" />
+		<result property="alarm_is_read" column="alarm_is_read" />
+	<association property="ManagementVO" javaType="ManagementVO_ga">
+		<result property="member_last" column="member_last"/>
+    </association>
+	</resultMap>
+	<select id="get_alarm_totalCount" resultType="int" parameterType="HashMap">
+	select count(*) 
+	from tbl_alarm a
+	join tbl_member m
+	on a.fk_member_userid = m.member_userid
+	where fk_member_userid = #{member_userid} and ALARM_IS_READ = 0 and MEMBER_LAST IS NULL
 	</select>
 	
 </mapper>

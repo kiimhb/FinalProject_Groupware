@@ -63,8 +63,7 @@ a:hover,
 $(document).ready(function(){
 
 	var calendar
-	// alert($("input[name='jubun']").val());
-	
+
 	if (calendar) {
         calendar.destroy(); // 이전 캘린더 인스턴스 삭제
     }
@@ -94,11 +93,11 @@ $(document).ready(function(){
 
 	    	 $.ajax({
 	    		 url: '<%= ctxPath%>/patient/selectSchedule',
-                 data:{"jubun":$("input[name='jubun']").val()},
+                 data:{"patient_no":$("input[name='patient_no']").val()},
                  dataType: "json",
                  success:function(json) {
 					 
-                	 console.log(JSON.stringify(json));
+                	 // console.log(JSON.stringify(json));
                 	 
                 	 var events = [];
 
@@ -119,10 +118,10 @@ $(document).ready(function(){
                                  color: "lightgreen"
                              });
                          }
-                         if (item.patient_visitdate) {
+                         if (item.order_createTime) {
                              events.push({
-                                 title: "charno." + item.order_no,
-                                 start: item.patient_visitdate,
+                                 title: item.order_no,
+                                 start: item.order_createTime,
                                  color: "lightcoral"
                              });
                          }
@@ -142,7 +141,7 @@ $(document).ready(function(){
       	    info.dayEl.style.backgroundColor = '#b1b8cd'; // 클릭한 날짜의 배경색 지정하기
       	    $("form > input[name=chooseDate]").val(info.dateStr);
       	    
-      	    alert("상세일정내용");
+      	    // alert("상세일정내용");
       	  }
 	});
 	/* 캘린더 띄움 끝 */
@@ -335,11 +334,16 @@ function getAvaliableEndTime(startTime, reservedTime) {
 }
 	
 	
-	
+// 진료상세설명 보여주기
 function trlist(order_detail, orderno) {
-	
-	$("div.detailrecord").html(order_detail);
-	
+
+	if(order_detail == "") {
+		$("div.detailrecord").html("진료 설명이 없습니다.").css("color","gray");
+	} else {
+		$("div.detailrecord").html(order_detail).css("color","black");
+		
+	}
+
 };
 
 // 수술 수정하기 체크박스 체크할 경우
@@ -481,7 +485,6 @@ function hospitalizeUpdate() {
 	 	}
 	});
 
-	
 }
 
 </script>
@@ -495,7 +498,7 @@ function hospitalizeUpdate() {
 				<table class="table table-bordered chart">
 					<thead class="charthead">
 						<tr>
-							<th>차트번호</th>
+							<th>환자번호</th>
 							<th>이름</th>
 							<th>성별</th>
 							<th>나이</th>
@@ -504,7 +507,8 @@ function hospitalizeUpdate() {
 					</thead>
 					<tbody>
 						<tr><input type="hidden" name="jubun" value="${requestScope.jubun}"/>
-							<td>${requestScope.detail_patient.order_no}</td>
+							<input type="hidden" name="patient_no" value="${requestScope.detail_patient.patient_no}"/>
+							<td>${requestScope.detail_patient.patient_no}</td>
 							<td id="patient_name">${requestScope.detail_patient.patient_name}</td>
 							<td>${requestScope.detail_patient.patient_gender}</td>
 							<td>${requestScope.detail_patient.age}</td>
@@ -543,7 +547,7 @@ function hospitalizeUpdate() {
 	  				<tbody>
 						<c:forEach var="pvo" items="${requestScope.order_list}">
 		  					<tr class="trlist" data-id="${pvo.order_no}" onclick="trlist('${pvo.order_symptom_detail}',${pvo.order_no})">
-		  						<td>${pvo.patient_visitdate}</td>
+		  						<td>${pvo.order_createTime}</td>
 								<td>${pvo.patient_symptom}</td>
 		  						<td>${pvo.child_dept_name}</td>
 		  					</tr>

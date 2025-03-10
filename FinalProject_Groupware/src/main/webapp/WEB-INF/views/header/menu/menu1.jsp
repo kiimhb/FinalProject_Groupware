@@ -83,7 +83,7 @@ function toggleAlarm() {
 
 			<div id="Alarm_box" class="Alarm_box">
 				<div class="Alarm_main_box"> <p>빨리합시다.</p><p>빨리합시다.</p><p>빨리합시다.</p><p>빨리합시다.</p></div>
-				<div  class="Alarm_sub_box"> 알림이 0건 있습니다. </div>
+				<div  class="Alarm_sub_box"> 알림이 json.alarm_totalCount 건 있습니다. </div>
 			</div>
 	
 

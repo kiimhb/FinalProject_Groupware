@@ -13,4 +13,10 @@ public interface IndexDAO {
 
 	List<NoticeVO> notice_list(Map<String, Object> paraMap);
 
+	int get_alarm_totalCount(Map<String, String> paraMap);
+
+	List<Map<String, String>> get_alarm_view(String member_userid);
+
+	
+
 }

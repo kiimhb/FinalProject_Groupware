@@ -115,3 +115,56 @@ button.backbtn {
 	color:white;
 
 }
+/* 모달 */
+div.modal_title > input.input,
+div.modal_header > select.notice_dept
+ {
+	width:850px;
+	height:40px;
+	border:1px solid #ccc;
+}
+div.modal_content > textarea.content {
+	border:1px solid #ccc;
+}
+div.modal_header {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	height:80px;
+	text-align: center;
+}
+div.modal_title {
+	border-bottom: 1px solid #ccc;
+	height:100px;
+	text-align: center;
+}
+div.modal_content {
+	border-bottom: 1px solid #ccc;
+	height:350px;
+	text-align: center;
+}
+div.modal_file {
+	border-bottom: 1px solid #ccc;
+	height:50px;
+	text-align: center;
+}
+div.modal_fixcheck {
+	border-bottom: 1px solid #ccc;
+	height:50px;
+	text-align: center;
+}
+div.modal_header,
+div.modal_title,
+div.modal_content,
+div.modal_fixcheck,
+div.modal_file {
+	display: flex;
+	align-items: center;
+}
+div.subtitle {
+	width:200px;
+	margin-right: 2%;
+}
+button.noticeWite {
+	background-color: #006769;
+	color:white;
+}

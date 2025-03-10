@@ -36,4 +36,16 @@ public class IndexDAO_imple implements IndexDAO {
 		return notice_list;
 	}
 
+	@Override
+	public int get_alarm_totalCount(Map<String, String> paraMap) {
+		int n = sqlsession.selectOne("index.get_alarm_totalCount", paraMap);
+		return n;
+	}
+
+	@Override
+	public List<Map<String, String>> get_alarm_view(String member_userid) {
+		List<Map<String, String>> get_alarm_view = sqlsession.selectList("index.get_alarm_view", member_userid);
+		return get_alarm_view;
+	}
+
 }

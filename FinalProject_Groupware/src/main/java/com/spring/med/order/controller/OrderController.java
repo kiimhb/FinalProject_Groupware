@@ -18,10 +18,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 import com.spring.med.management.domain.ManagementVO_ga;
+import com.spring.med.order.domain.CostVO;
 import com.spring.med.order.domain.OrderVO;
 import com.spring.med.order.service.OrderService;
-import com.spring.med.patient.domain.TreatPatientVO;
-import com.spring.med.patient.service.TreatPatientService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -53,6 +52,17 @@ public class OrderController {
 		// 빈 오더 생성위해 담당의사 사번 알아오기
 		HttpSession session = request.getSession();		
 		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+		
+		if(loginuser == null) {
+			
+			String message = "진료정보 입력을 위해서 로그인 해주세요";
+			
+			request.setAttribute("message", message);
+			mav.setViewName("content/management/login" );
+		}
+		
+		else {
+							
 		
 		// 환자클릭으로 온거
 		String nameClickPatient_no = request.getParameter("nameClickPatient_no");		
@@ -145,7 +155,8 @@ public class OrderController {
 		mav.addObject("firstPatient", firstPatient);		
 		mav.setViewName("content/order/orderEnter");
 		}
-
+		
+		} // end of else
 		
 		return mav;
 	}
@@ -312,14 +323,14 @@ public class OrderController {
 		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
 		
 		String fk_member_userid = loginuser.getMember_userid();		
-		String orderNo = request.getParameter("orderNo");
-		String hiddenPatientNo = request.getParameter("hiddenPatientNo");
+		//String orderNo = request.getParameter("orderNo");
+		//String hiddenPatientNo = request.getParameter("hiddenPatientNo");
 		
 		// System.out.println("맞잖아요"+hiddenPatienNo);
 		
 		paraMap.put("fk_member_userid", fk_member_userid);
-		paraMap.put("orderNo", orderNo);		
-		paraMap.put("hiddenPatientNo", hiddenPatientNo);
+		//paraMap.put("orderNo", orderNo);		
+		//paraMap.put("hiddenPatientNo", hiddenPatientNo);
 		
 		int n = service.requestHosp(paraMap); // 입원 요청하여 입원테이블에 insert 하기
 		
@@ -359,6 +370,19 @@ public class OrderController {
 		return n;
 	}
 	
+	
+	// 진료입력 마무리 수술여부, 입원여부, 약처방 등 종합하여 가격 보여주기
+	@GetMapping
+	public List<CostVO> showCostList (HttpServletRequest request) {
+		
+		
+		String fk_order_no = request.getParameter("orderNo");
+		
+		List<CostVO> showCostList = service.showCostList(fk_order_no);
+		
+		return showCostList;
+		
+	}
 	
 
 	

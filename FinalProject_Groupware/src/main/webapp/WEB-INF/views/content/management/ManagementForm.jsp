@@ -195,10 +195,10 @@ String ctxPath = request.getContextPath();
         		    $("#hp_error").hide();
         		});
         	    
-        	    $("input#hp2").on("input", (e) => {
-        		    const input = $(e.target);
-        		    const sanitizedValue = input.val().replace(/[^0-9]/g, ""); // 숫자가 아닌 문자를 제거
-        		    input.val(sanitizedValue); // 필드에 정제된 값 설정
+       	    $("input#hp2").on("input", (e) => {
+       		    const input = $(e.target);
+       		    const sanitizedValue = input.val().replace(/[^0-9]/g, ""); // 숫자가 아닌 문자를 제거
+       		    input.val(sanitizedValue); // 필드에 정제된 값 설정
         	});
         	$("input#hp3").on("input", (e) => {
         	    const input = $(e.target);
@@ -210,7 +210,7 @@ String ctxPath = request.getContextPath();
         	    
     	    $("button#registerbtn").click(function () {
     	        
-    	        const name = $("#name").val().trim();
+    	        const name = $("#member_name").val().trim();
     	        const regExp_Name = /^[가-힣\s]{2,10}$/;
     	        if (name === "" || !regExp_Name.test(name)) {
     	            alert("이름을 올바르게 입력하세요.");
@@ -236,7 +236,7 @@ String ctxPath = request.getContextPath();
     	            return;
     	        }
 
-    	        if ($("#email").val().trim() == "") {
+    	        if ($("#member_email").val().trim() == "") {
     	            alert("이메일을 입력하세요.");
     	            $("#email").focus();
     	            return;

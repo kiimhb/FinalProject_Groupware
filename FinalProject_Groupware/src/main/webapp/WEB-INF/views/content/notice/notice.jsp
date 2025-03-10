@@ -32,6 +32,7 @@ $(document).ready(function(){
 		if(confirm("공지사항을 작성 하시겠습니까?")) {
 			
 			const checkbox = $("input[name='notice_fix']");
+
 			
 			if(checkbox.prop("checked")) {
 				checkbox.val("1"); // 체크 되었다면 value 값을 1로 설정한다.
@@ -74,7 +75,7 @@ function detailNotice(notice_no) {
 				  		</div>
 			  		</c:if>	
 						
-			  		<%-- modal 만들기 시작 --%>
+			  		<!-- modal 만들기 시작 -->
 					<div class="modal fade" id="noticeWrite" data-backdrop="static">
 						<div class="modal-dialog modal-dialog-centered modal-xl">
 						  <div class="modal-content">
@@ -132,49 +133,73 @@ function detailNotice(notice_no) {
       	</div>
 	
       
-      <div class="notice">
-      
-      	<div class="article">
-	      	<c:forEach var="nvo" items="${requestScope.notice_list}">
-	      		<div class="one_row" data-id="${nvo.notice_fix}" onclick="detailNotice(`${nvo.notice_no}`)">
-	      			
-	      			<div class="article_main">
-	      			
-      					<div class="article_title" style="${nvo.notice_fix eq '1' ? 'color:black; font-weight:bold;' : ''}">${nvo.notice_title}
-      						<c:if test="${not empty nvo.notice_fileName}">
-		      						<i class="fa-solid fa-paperclip" style="color:#509d9c;"></i>
-	      					</c:if>
-      					</div>
-	      				
-      					<div class="fix">
-      						<c:if test="${nvo.notice_fix eq '1'}"><i class="fa-solid fa-thumbtack"></i></c:if> 
-      					</div>
-	      				
-      				</div>	
-      				
-	      			<div class="article_info">${nvo.notice_write_date}
-	      			<c:choose>
-						<c:when test="${nvo.fk_child_dept_no >= 1 and nvo.fk_child_dept_no <= 7}">
-							<td>진료부</td>
-						</c:when>
-						<c:when test="${nvo.fk_child_dept_no >= 8 and nvo.fk_child_dept_no <= 10}">
-							<td>간호부</td>
-						</c:when>
-						<c:when test="${nvo.fk_child_dept_no >= 11 and nvo.fk_child_dept_no <= 13}">
-							<td>경영지원부</td>
-						</c:when>
-					</c:choose>
-	      			</div> 		
-      			</div>
-	   		</c:forEach>
-      	</div>
-      	
-      </div>
-      
-      
-      <%-- 페이지바 === --%>
-      <div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-			${requestScope.pageBar}
-   	   </div>
-  
+	      <div class="notice">
+	      
+	      	<div class="article">
+	      		<c:if test="${not empty requestScope.notice_list}" > 
+			      	<c:forEach var="nvo" items="${requestScope.notice_list}">
+			      		<div class="one_row" data-id="${nvo.notice_fix}" onclick="detailNotice(`${nvo.notice_no}`)">
+			      			
+			      			<div class="article_main">
+			      			
+		      					<div class="article_title" style="${nvo.notice_fix eq '1' ? 'color:black; font-weight:bold;' : ''}"><c:choose>
+								<c:when test="${nvo.notice_dept eq 0}">
+									[전체]
+								</c:when>
+								<c:when test="${nvo.notice_dept eq 1}">
+									[진료부]
+								</c:when>
+								<c:when test="${nvo.notice_dept eq 2}">
+									[간호부]
+								</c:when>
+								<c:when test="${nvo.notice_dept eq 3}">
+									[원무과]
+								</c:when>
+							</c:choose>${nvo.notice_title}
+		      						<c:if test="${not empty nvo.notice_fileName}">
+				      						<i class="fa-solid fa-paperclip" style="color:#509d9c;"></i>
+			      					</c:if>
+		      					</div>
+			      				
+		      					<div class="fix">
+		      						<c:if test="${nvo.notice_fix eq '1'}"><i class="fa-solid fa-thumbtack"></i></c:if> 
+		      					</div>
+			      				
+		      				</div>	
+		      				
+			      			<div class="article_info">${nvo.notice_write_date}
+			      			<c:choose>
+								<c:when test="${nvo.fk_child_dept_no >= 1 and nvo.fk_child_dept_no <= 7}">
+									<td>진료부</td>
+								</c:when>
+								<c:when test="${nvo.fk_child_dept_no >= 8 and nvo.fk_child_dept_no <= 10}">
+									<td>간호부</td>
+								</c:when>
+								<c:when test="${nvo.fk_child_dept_no >= 11 and nvo.fk_child_dept_no <= 13}">
+									<td>경영지원부</td>
+								</c:when>
+							</c:choose>
+			      			</div> 		
+		      			</div>
+			   		</c:forEach>
+		   		</c:if>
+		   		<c:if test="${empty requestScope.notice_list}" > 
+		   			<div class="one_row">
+		   				등록된 공지사항이 없습니다.
+		   			</div>	
+		   		</c:if>
+	      	</div>
+	      </div>
+	      
+	      
+	      <%-- 페이지바 === --%>
+	      <c:if test="${not empty requestScope.notice_list}" > 
+	      		<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+					${requestScope.pageBar}
+	   	   		</div>
+	   	   </c:if>
+	   	   <c:if test="${empty requestScope.notice_list}" > 
+	   	   		
+	   	   </c:if>
+  	
 <jsp:include page="../../footer/footer1.jsp" />   

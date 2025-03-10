@@ -354,13 +354,78 @@ public class BoardService_imple implements BoardService {
 	}
 
 
+	// 즐겨찾기 해제
+	@Override
+	public void deleteBookmark(Map<String, String> paraMap) {
+		dao.deleteBookmark(paraMap);
+		
+	}
 
 
+	// 즐겨찾기 insert 중복확인
+	@Override
+	public int checkBookmark(Map<String, String> paraMap) {
+		 return dao.checkBookmark(paraMap);
+	}
 
 
+	// 즐겨찾기 한 게시물 조회
+	@Override
+	public List<BoardVO> getBookmarkList(String member_userid) {
+		return dao.getBookmarkList(member_userid);
+	}
+
+	
+	// 검색 포함된 게시물 개수 조회 (페이징)
+	@Override
+	public int getBookmarkCountWithSearch(Map<String, Object> paraMap) {
+		return dao.getBookmarkCountWithSearch(paraMap);
+	}
+
+	
+	// 검색 적용된 게시물 목록 조회 (페이징)
+	@Override
+	public List<BoardVO> getBookmarkListPagedWithSearch(Map<String, Object> paraMap) {
+		return dao.getBookmarkListPagedWithSearch(paraMap);
+	}
 
 
+	
+	
+	////////////////////////////////////////////////////////////////////////// 내가 쓴 글 조회 
+	// 내가 쓴 글 조회
+	@Override
+	public List<BoardVO> getMyboard(Map<String, String> paraMap) {
+		
+		String myboard = "";
+		System.out.println("조회된 내 게시글: " + myboard);
+		return dao.getMyboard(paraMap);
+	}
 
+
+	// 검색 포함된 게시물 개수 조회 (페이징)
+	@Override
+	public int getMyBoardCountWithSearch(Map<String, Object> paraMap) {
+		return dao.getMyBoardCountWithSearch(paraMap);
+	}
+
+
+	// 검색 적용된 게시물 목록 조회 (페이징)
+	@Override
+	public List<BoardVO> getMyboardPagedWithSearch(Map<String, Object> paraMap) {
+		return dao.getMyboardPagedWithSearch(paraMap);
+	}
+
+
+	// 처음 페이지 로딩
+	@Override
+	public List<HashMap<String, String>> selectBookmark(String member_userid) {
+		 List<HashMap<String, String>> boardnoList = dao.selectBookmark(member_userid);
+		return boardnoList;
+	}
+
+	
+	
 
 }
 

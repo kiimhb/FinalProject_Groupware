@@ -1,7 +1,8 @@
 @charset "UTF-8";
 
+/* 사원 리스트 css */
 div.subContent {
-	border: solid 1px blue;
+	/* border: solid 1px blue; */
 	width: 95%;
 	margin: auto;
 }
@@ -11,31 +12,59 @@ div.manag_h3 {
 	margin: 30px;
 }
 
-div.delete_member {
-	display: flex;
-	align-items: center;
-	padding: 20px;
-	margin-left: 30px;
+div.subContent>div.manageList {
+	height: 600px;
+	margin: auto;
 }
 
-div.delete_member1 {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 10px;
-	margin-left: 40px;
+div.subContent>div.manageList>table.manageListTable {
+	/* border: solid 1px aqua;
+ */
+	width: 95%;
+	margin: auto;
 }
 
-.delabel {
-	width: 80px;
-	font-weight: bold;
+div.subContent>div.manageList>table.manageListTable th, td {
+	padding: 3px;
+	text-align: center;
 }
 
-.delete_member1 input {
-	width: 350px;
-	padding: 8px;
+div.subContent>div.manageList>table.manageListTable th {
+	/* 	border-bottom: 1px solid;  */
+	margin-top: 20px;
 }
 
+div.subContent>div.manageList>table.manageListTable td {
+	border-bottom: 1px solid #eee;
+}
+
+div.subContent>div.manageList>table.manageListTable  thead {
+	background-color: #eee;
+	font-size: 18px;
+}
+
+form[name="searchFrm"] {
+	/* border: solid 1px aqua; */
+	width: 240px;
+	margin-left: 23px;
+	transform: translateY(-60px);
+}
+
+button#EditView1, button#EditView2{
+	border-radius: 5px;
+	border: none;
+	padding: 10px;
+}
+
+button#EditView1{
+	background-color: #8ac2bd;
+}
+button#EditView2{
+	background-color: #CB4154;
+	color: white;
+}
+
+/* 사원 수정 css  */
 .form-container {
 	display: flex;
 	gap: 20px;
@@ -90,4 +119,68 @@ div.delete_member1 {
 .phone-group input {
 	width: 80px;
 	text-align: center;
+}
+
+
+/* 사원 삭제 css  */
+div#displayList {
+	border: solid 1px gray;
+	border-top: 0px;
+	height: 40px;
+	margin-left: 30.8%;
+	margin-top: -1px;
+	overflow: auto;
+}
+
+div.delete_member {
+	display: flex;
+	align-items: center;
+	padding: 20px;
+	margin-left: 30px;
+}
+
+div.delete_member1 {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	margin-left: 40px;
+}
+
+.delabel {
+	width: 80px;
+	font-weight: bold;
+}
+
+.delete_member1 input {
+	width: 350px;
+	padding: 8px;
+}
+
+/* 회원삭제 컨펌 css  */
+.delect_one_icon{
+	color: #CB4154 !important;
+}
+
+.delect_one_confirm_button {
+    background-color: #CB4154 !important; 
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    padding: 10px 20px !important;
+}
+
+.delect_one_confirm_cancel_button {
+    color: white !important;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    padding: 10px 20px !important;
+}
+
+.delect_one_popup, .delect_one_cancel_popup {
+    border-radius: 15px !important; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+.delect_one_cancel_icon{
+	color: #b3d6d2 !important;
 }

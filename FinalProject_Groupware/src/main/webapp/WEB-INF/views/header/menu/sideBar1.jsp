@@ -49,6 +49,7 @@ $.ajax({
 });
 
 
+
 </script>
 
 
@@ -58,8 +59,8 @@ $.ajax({
    
 	 <div class="profile">
 	   <div id="sidebarProfile"></div>
-		  <button type="button" name="mypage" onclick="gomypage('${sessionScope.member_userid}')">마이페이지</button>
-		   <div class="logout"><a href="<%=ctxPath%>/management/logout" class="logoutcss">로그아웃</a> </div>
+	   <a class="mypage"  href="<%=ctxPath%>/mypage/mypage?member_userid=${sessionScope.loginuser.member_userid}">마이페이지</a>
+	  <div class="logout"><a href="<%=ctxPath%>/management/logout" class="logoutcss">로그아웃</a> </div>
 	 </div>
  
  
@@ -115,10 +116,10 @@ $.ajax({
       <i class="fa-solid fa-envelope sideBarICSS"></i> <span>메일</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/mail/mailWrite">메일쓰기</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailReceive">받은메일함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailSend">보낸메일함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailTrash">휴지통</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailStorage">메일보관함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailReceive/${sessionScope.loginuser.member_userid}">받은메일함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailSend/${sessionScope.loginuser.member_userid}">보낸메일함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailTrash/${sessionScope.loginuser.member_userid}">휴지통</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailStorage/${sessionScope.loginuser.member_userid}">메일보관함</a>
 
          </div></li>
 
@@ -131,8 +132,8 @@ $.ajax({
       <i class="fa-solid fa-feather sideBarICSS"></i> <span>커뮤니티</span><i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/board/list">자유게시판</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/community/myboard">내가 작성한 글 목록</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/community/bookmark">즐겨찾기</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/board/myboard">내가 작성한 글</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/board/bookmarkList">즐겨찾기</a>
          </div></li>
 
       <li><a href="#" class="menu-toggle sideBarCSS">

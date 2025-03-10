@@ -23,7 +23,7 @@
 			    	</when>
 		    	</choose>
 			) a join tbl_order b
-		    on a.patient_no = b.fk_patient_no 
+		    on a.patient_no = b.fk_patient_no
 		    where order_no is not null
 	</select>
 	
@@ -75,17 +75,16 @@
 	    <result property="patient_name" 		column="patient_name" 		javaType="String" />
 	    <result property="patient_gender"  		column="patient_gender" 	javaType="String" />
 	    <result property="patient_status" 	 	column="patient_status" 	javaType="String" />
-	    <result property="order_no" 			column="order_no"    		javaType="String" />
+	    <result property="patient_no" 			column="patient_no"    		javaType="String" />
 	    <result property="age"   				column="age" 	  			javaType="String" />
 	</resultMap>
 	<select id="detail_patient" parameterType="String" resultMap="chartMap"> 
-		select patient_name, patient_gender, patient_status, order_no
+		select patient_no, patient_name, patient_gender, patient_status 
 		     , case when sysdate - to_date( to_char(sysdate, 'yyyy') || substr(patient_jubun, 3, 4), 'yyyymmdd') >= 0
 		                then extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) 
 		                else extract(year from sysdate) - to_number( case when substr(patient_jubun, 8, 1) in('1','2') then '19' else '20' end || substr(patient_jubun, 1, 2) ) - 1
 		           end AS age   
-		from tbl_patient a join tbl_order b
-		on a.patient_no = b.fk_patient_no
+		from tbl_patient
 		where patient_no = #{seq}
 	</select>
 	
@@ -94,7 +93,7 @@
 	    <result property="order_no" 		 	column="order_no" 			  javaType="String" />
 	    <result property="fk_child_dept_no"  	column="fk_child_dept_no" 	  javaType="String" />
 	    <result property="child_dept_name" 	 	column="child_dept_name" 	  javaType="String" />
-	    <result property="patient_visitdate" 	column="patient_visitdate"    javaType="String" />
+	    <result property="order_createTime" 	column="order_createTime"    javaType="String" />
 	    <result property="patient_symptom"   	column="patient_symptom" 	  javaType="String" />
 	    <result property="order_symptom_detail" column="order_symptom_detail" javaType="String" />
 	</resultMap>
@@ -102,15 +101,15 @@
 		with
 		a as
 		(
-			select order_no, fk_child_dept_no, patient_visitdate, patient_symptom, order_symptom_detail
-			from tbl_patient a left join tbl_order b
-			on a.patient_no = b.fk_patient_no
+		    select order_no, patient_no, fk_child_dept_no, order_createTime, patient_symptom, order_symptom_detail
+		    from tbl_patient a left join tbl_order b
+		    on a.patient_no = b.fk_patient_no
 			where patient_jubun = #{jubun}
+			order by order_createTime desc
 		)
-		select order_no, fk_child_dept_no, child_dept_name, patient_visitdate, patient_symptom, order_symptom_detail
+		select order_no, fk_child_dept_no, child_dept_name, order_createTime, patient_symptom, order_symptom_detail
 		from a join tbl_child_dept b
 		on a.fk_child_dept_no = b.child_dept_no
-		order by patient_visitdate desc
 	</select>
 	
 	<!-- 수술 목록 가져오기  -->
@@ -177,6 +176,7 @@
 			    from tbl_hospitalize a join tbl_order b
 			    on a.fk_order_no = b.order_no
 			    where hospitalize_status = 1 and order_ishosp = 1
+			    order by hospitalize_start_day
 			) a join tbl_patient b
 			on a.fk_patient_no = b.patient_no
 			where patient_jubun = #{patient_jubun}
@@ -186,25 +186,27 @@
 	<!-- 캘린더를 위한 환자의 일정조회 -->
 	<select id="selectSchedule" resultType="Calendar_patient_recordVO">
 		with
-		a as <!-- 오더테이블 -->
+		a as 
 		(
-		    select fk_patient_no, order_no, patient_visitdate
+		    select fk_patient_no, order_no, order_createTime
 		    from tbl_order a join tbl_patient b
 		    on a.fk_patient_no = b.patient_no
-		    where patient_jubun = #{jubun}
+		    where fk_patient_no = #{patient_no}
+		    order by order_createTime desc
 		),
-		b as <!-- 입원테이블조회  -->
+		b as 
 		(
 		    select fk_order_no, hospitalize_start_day, hospitalize_end_day
 		    from tbl_hospitalize
 		),
-		c as <!-- 수술테이블 -->
+		c as 
 		(
 		    select fk_order_no, surgery_day, surgery_start_time
 		    from tbl_surgery
 		)
-		select order_no, patient_visitdate,
-		       hospitalize_start_day, hospitalize_end_day,
+		select order_no, order_createTime,
+		       to_char(hospitalize_start_day, 'yyyy-mm-dd') as hospitalize_start_day, 
+		       to_char(hospitalize_end_day, 'yyyy-mm-dd') as hospitalize_end_day,
 		       surgery_day, surgery_start_time
 		from a left join b
 		on a.order_no = b.fk_order_no

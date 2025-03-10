@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="seonggon_mail">
+
+
+
+<select id="getTotalCount" parameterType="HashMap" resultType="int">
+	select count(*)
+	from tbl_mail_received R JOIN tbl_mail_sent S
+	ON R.fk_mail_sent_no = S.mail_sent_no
+	where R.fk_member_userid = #{user_id}
+</select>
+
+
+
+
+	<resultMap id="receiveMap" type="HashMap">
+		<result property="member_name"   				column="member_name" 				javaType="String" />    
+	    <result property="mail_title"   				column="mail_title" 				javaType="String" />
+	    <result property="mail_sent_senddate" 			column="mail_sent_senddate"    		javaType="String" />
+	    <result property="fk_member_userid"    			column="fk_member_userid" 			javaType="String" />
+	    <result property="mail_received_status" 		column="mail_received_status" 		javaType="String" />
+	    <result property="mail_received_saved" 			column="mail_received_saved" 		javaType="String" />
+	    <result property="mail_received_trashdate" 		column="mail_received_trashdate" 	javaType="String" />
+	    <result property="mail_received_trashstatus" 	column="mail_received_trashstatus" 	javaType="String" />
+	    <result property="mail_received_important" 		column="mail_received_important" 	javaType="String" />
+	    <result property="timediff" 					column="timediff" 					javaType="String" />	   	
+	</resultMap>
+
+	<!-- 받은 메일함 select 해오기 -->
+	<select id="selectMailReceiveList" parameterType="String" resultMap="receiveMap">
+		
+		select mail_sent_no, B.member_name, mail_title, to_char(mail_sent_senddate, 'yyyy-mm-dd')AS mail_sent_senddate,((Round(sysdate-mail_sent_senddate))||'일전') AS timediff, A.fk_member_userid AS fk_member_userid, mail_received_status, mail_received_saved, mail_received_trashdate, mail_received_trashstatus, mail_received_important 
+		from
+		(
+		select mail_title, mail_sent_senddate, S.fk_member_userid AS fk_member_userid, mail_received_status, mail_received_saved, mail_received_trashdate, mail_received_trashstatus, mail_received_important 
+		from tbl_mail_received R JOIN tbl_mail_sent S
+		ON R.fk_mail_sent_no = S.mail_sent_no
+		where R.fk_member_userid = #{user_id}
+		) A JOIN tbl_member B
+		on A.fk_member_userid = B.member_userid
+	
+	</select>
+
+
+
+	<!-- 작성된 메일 insert 하기 (트랜잭션)-->
+	<insert id="insertMailWrite" parameterType="MailSentVO">
+		insert into tbl_mail_sent (mail_sent_no, fk_member_userid, mail_title, mail_sent_content, mail_sent_senddate, mail_sent_important)
+		values (SEQ_MAIL_SENT_NO.nextval , #{fk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, nvl(#{mail_sent_important}, 0))
+	</insert>
+
+	<!-- 작성된 메일 insert 하기 with 파일첨부 (트랜잭션)-->
+	<insert id="insertMailWriteWithFile" parameterType="MailSentVO">
+		insert into tbl_mail_sent (mail_sent_no, fk_member_userid, mail_title, mail_sent_content, mail_sent_senddate, mail_sent_important, mail_sent_file, mail_sent_file_origin, mail_sent_filesize)
+		values (seq_mail_sent_no.nextval , #{fk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, nvl(#{mail_sent_important}, 0), #{mail_sent_file},#{mail_sent_file_origin},#{mail_sent_filesize})
+	</insert>
+	
+	<!-- 작성된 메일 수신메일에 insert 하기 -->
+	<insert id="insertMailReceive" parameterType="HashMap">
+		insert into tbl_mail_received (fk_mail_sent_no, fk_member_userid)
+		values (seq_mail_sent_no.currval, #{fk_member_userid})
+	</insert>
+	
+
+</mapper>

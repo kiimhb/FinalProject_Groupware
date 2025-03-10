@@ -15,4 +15,14 @@ public interface IndexService {
 	
 //	공지사항
 	List<NoticeVO> notice_list(Map<String, Object> paraMap);
+
+//	알람 총개수
+	int get_alarm_totalCount(Map<String, String> paraMap);
+
+//	알람 가져오기
+	List<Map<String, String>> get_alarm_view(String member_userid);
+
+
+
+	
 }

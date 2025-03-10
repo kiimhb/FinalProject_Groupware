@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <%
 String ctxPath = request.getContextPath();
 //     /med-groupware
@@ -111,10 +112,12 @@ function goEdit(member_userid) {
         type: "post",
         dataType: "json",
         success: function(json) {
-
+    
+            const member_pro_filename = "<%=ctxPath%>/resources/profile/\${json.member_pro_filename}";
+            
             // 모달을 띄울 위치
             const EditModal_container = $("div#EditModal");
-
+            
             // 모달 HTML 생성 (json 사용)
             const modal_popup = `
             	<div class="modal fade" id="EditView" aria-labelledby="EditViewLabel" tabindex="-1" aria-hidden="true">
@@ -132,7 +135,6 @@ function goEdit(member_userid) {
                                         <input type="file" name="attach" class="img_file" accept="image/*">
                                     </div>
 
-                                    <!-- 오른쪽: 입력 필드 -->
                                     <div class="form-section">
                                         <div class="input-group">
                                             <label>사번</label>
@@ -154,7 +156,7 @@ function goEdit(member_userid) {
                                         <div class="input-group">
                                             <label>하위부서</label>
                                             <select name="fk_child_dept_no">
-                                                <option value="\${json.child_dept_no}">\${json.child_dept_name}</option>
+                                                <option value="\${json.fk_child_dept_no}">\${json.child_dept_name}</option>
                                             </select>
                                         </div>
 
@@ -182,14 +184,15 @@ function goEdit(member_userid) {
                                         </div>
 
                                         <div class="input-group">
-                                            <label>성별</label>
-                                            <input type="radio" name="member_gender" value="남" id="male" class="requiredInfo_radio"
-                                                \${json.member_gender == '남' ? 'checked' : ''} />
-                                            <label for="male" style="margin-left: 1.5%;">남자</label>
+                                        <label>성별</label>
+                                        <input type="radio" name="member_gender" value="남" id="male" class="requiredInfo_radio"
+                                            \${json.member_gender == '남' ? 'checked' : ''} />
+                                        <label for="male" style="margin-left: 1.5%;">남자</label>
 
-                                            <input type="radio" name="member_gender" value="여" id="female" class="requiredInfo_radio"
-                                                style="margin-left: 10%;" \${json.member_gender == '여' ? 'checked' : ''} />
-                                            <label for="female" style="margin-left: 1.5%;">여자</label>
+                                        <input type="radio" name="member_gender" value="여" id="female" class="requiredInfo_radio"
+                                            style="margin-left: 10%;" \${json.member_gender == '여' ? 'checked' : ''} />
+                                        <label for="female" style="margin-left: 1.5%;">여자</label>
+
                                         </div>
 
                                         <div class="input-group">
@@ -208,18 +211,25 @@ function goEdit(member_userid) {
                                         </div>
 
                                         <div class="input-group">
-                                            <label>근무시간</label>
-                                            <select name="member_workingTime">
-                                                <option value="\${json.member_workingTime}">\${json.member_workingTime}</option>
-                                            </select>
-                                        </div>
+                                        <label>근무시간</label>
+                                        <select name="member_workingTime">
+                                        	<option value="\${json.member_workingTime}">\${json.member_workingTime}</option>
+                                        </select>
+                                    	</div>
+
+                                        
+                                        <input type="hidden" id="member_mobile" name="member_mobile" />
+                                        <input type="hidden" id="member_grade" name="member_grade" value="\${json.member_grade}" />
+                                       	<input type="hidden" id="member_pro_orgfilename" name="member_pro_orgfilename" value="\${json.member_pro_orgfilename}" />
+                                       	<input type="hidden" id="member_pro_filename" name="member_pro_filename" value="\${json.member_pro_filename}" />
+                                       	<input type="hidden" id="member_pro_filesize" name="member_pro_filesize" value="\${json.member_pro_filesize}" />
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="saveChanges" onclick="submitForm()">수정</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                            <button type="button" class="btn" id="saveChanges" style="background-color: #8ac2bd;" onclick="submitForm()">수정</button>
+                            <button type="button" class="btn" data-dismiss="modal" style="background-color: #eee;">닫기</button>
                         </div>
                     </div>
                 </div>
@@ -230,13 +240,13 @@ function goEdit(member_userid) {
             // 모달 HTML 삽입
             EditModal_container.html(modal_popup);
             
-        	
+            
             $(document).on("change", "input.img_file", function(e) {
                 const inputFile = $(e.target).get(0);
                 const file = inputFile.files[0];
 
                 if (!file) { 
-                    $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png");  // 파일 선택 취소 시 초기화
+                	$("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png");  
                     return;
                 }
                 
@@ -246,13 +256,13 @@ function goEdit(member_userid) {
                 if (!fileType.match("image/(jpeg|png|jpg)")) {
                     alert("jpg 또는 png 형식의 이미지만 업로드 가능합니다.");
                     $(this).val(""); // 입력값 초기화
-                    $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png"); // 초기화
+                    $("#previewimg").attr("src", "\${member_pro_filename}");  
                     return;
                 }
                 if (fileSize > 3) {
                     alert("파일 크기는 3MB 이하로 업로드해야 합니다.");
                     $(this).val(""); // 입력값 초기화
-                    $("#previewimg").attr("src", "<%=ctxPath%>/resources/profile/default_profile.png"); // 초기화
+                    $("#previewimg").attr("src", "\${member_pro_filename}");  
                     return;
                 }
                 
@@ -267,8 +277,8 @@ function goEdit(member_userid) {
                
             
             //상위부서 데이터값 불러오기
-            const parentDeptSelect = $("#parentDeptSelect");
-		    let ParentValue = parentDeptSelect.val(); // 기존 선택된 값 저장
+             const parentDeptSelect = $("#parentDeptSelect");
+   			 let ParentValue = parentDeptSelect.val(); 
 	
            // AJAX로 상위 부서 목록을 불러오기
            $.ajax({
@@ -276,16 +286,18 @@ function goEdit(member_userid) {
                dataType: "json",
                success: function(json) {
             	   
-            	   // 기존 옵션 초기화
-       		       parentDeptSelect.empty();
+            	   //parentDeptSelect.empty();
 
-            	   json.forEach(function(item) {
+                   json.forEach(function(item) {
+                       // 받은 부서 데이터에서, 기존 선택된 부서가 있다면 selected 속성 추가
                        let isSelected = (item.parent_dept_no == ParentValue) ? "selected" : "";
-                       parentDeptSelect.append('<option value="' + item.parent_dept_no ${isSelected}+ '">' + item.parent_dept_name + '</option>');
-                   });
-            	   
-            	   ParentValue = parentDeptSelect.val();
 
+                       // 새로운 option 추가
+                       parentDeptSelect.append('<option value="' + item.parent_dept_no + '" ' + isSelected + '>' + item.parent_dept_name + '</option>');
+                   });
+
+                   // 기존의 서버에서 받은 값을 선택된 상태로 유지하기
+                   parentDeptSelect.val(ParentValue);
                   
                },
                error: function(request, status, error) {
@@ -379,12 +391,16 @@ function goEdit(member_userid) {
                	  
                	});
                
-               	const workingTime = $("select[name='member_workingTime']"); 
-               	workingTime.empty();
-               	
-               	workingTime.append('<option value="day"> day </option>')
-               	workingTime.append('<option value="evening"> evening </option>')
-               	workingTime.append('<option value="night"> night </option>')
+                const workingTimeSelect = $("select[name='member_workingTime']");
+                const currentValue = workingTimeSelect.val();
+
+                workingTimeSelect.empty();
+
+                workingTimeSelect.append('<option value="' + currentValue + '">' + currentValue + '</option>');
+
+                workingTimeSelect.append('<option value="evening">evening</option>');
+                workingTimeSelect.append('<option value="night">night</option>');
+
                 
                 
 
@@ -399,30 +415,113 @@ function goEdit(member_userid) {
     });
 
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function submitForm() {
-    const frm = document.forms["Managementedt"];
+	        
+	        const name = $("#member_name").val().trim();
+	        const regExp_Name = /^[가-힣\s]{2,10}$/;
+	        if (name === "" || !regExp_Name.test(name)) {
+	            alert("이름을 올바르게 입력하세요.");
+	            $("#name").focus();
+	            return;
+	        }
+
+	        const parentDept = $("select[name='parentDept']").val().trim();
+	        if (parentDept == "") {
+	            alert("상위 부서를 선택하세요.");
+	            return;
+	        }
+
+	        const childDept = $("select[name='fk_child_dept_no']").val().trim();
+	        if (childDept == "") {
+	            alert("하위 부서를 선택하세요.");
+	            return;
+	        }
+
+	        const position = $("select[name='member_position']").val().trim();
+	        if (position == "") {
+	            alert("직급을 선택하세요.");
+	            return;
+	        }
+
+	        if ($("#member_email").val().trim() == "") {
+	            alert("이메일을 입력하세요.");
+	            $("#email").focus();
+	            return;
+	        }
+	        if ($("#hp2").val().trim() == "") {
+	            alert("전화번호 중간 자리를 입력하세요.");
+	            $("#hp2").focus();
+	            return;
+	        } else {
+	            $('#hp_error').hide();  
+	        }
+	        if ($("#hp3").val().trim() == "") {
+	            alert("전화번호 마지막 자리를 입력하세요.");
+	            $("#hp3").focus();
+	            return;
+	        } else {
+	            $('#hp_error').hide();  
+	        }
+
+	        if ($("input:radio[name='member_gender']:checked").length == 0) {
+	            alert("성별을 선택하셔야 합니다.");
+	            return;
+	        }
+
+	        const birthday = $("input#member_birthday").val().trim();
+
+	        if (birthday == "") {
+	            alert("생년월일을 입력하셔야 합니다.");
+	            return;
+	        }
+	       
+	        if (isNaN(new Date(birthday).getTime())) {
+	            alert("올바른 생년월일을 입력하세요.");
+	            $("#member_birthday").focus();
+	            return;
+	        }
+	        
+	        const startDate = $("#member_start").val().trim();
+	        if (!startDate) {
+	            alert("입사일을 입력하세요.");
+	            $("#member_start").focus();
+	            return;
+	        }
+	        if (isNaN(new Date(startDate).getTime())) {
+	            alert("올바른 입사일을 입력하세요.");
+	            $("#member_start").focus();
+	            return;
+	        }
+	        
+	       
+	const member_mobile = $('#hp1').val() + '-' + $('#hp2').val() + '-' + $('#hp3').val();
+	   
+    const frm = document.forms["Managementedt"]; 
+    $('#member_mobile').val(member_mobile); 
+    
     frm.method = "post";
-    frm.action = "<%= ctxPath %>/management/ManagementForm";  
+    frm.action = "<%= ctxPath %>/management/Managementone_update";  
     frm.submit(); 
+ 
+
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const now = new Date();
+const daysOfWeek = ["일","월","화","수","목","금","토"];
+const dayOfWeek = daysOfWeek[now.getDay()];
+const year = now.getFullYear();
+const month = (now.getMonth()+1).toString().padStart(2, '0');
+const day = now.getDate().toString().padStart(2, '0')
 
-/* === 회원 퇴사처리 js === */
+const timeString = `\${year}-\${month}-\${day}`
+
+/* === 사원 퇴사처리 js === */
 function goQuit(member_userid) {
-	
-	const now = new Date();
- 	const daysOfWeek = ["일","월","화","수","목","금","토"];
- 	const dayOfWeek = daysOfWeek[now.getDay()];
- 	const year = now.getFullYear();
- 	const month = (now.getMonth()+1).toString().padStart(2, '0');
- 	const day = now.getDate().toString().padStart(2, '0')
- 	
 
- 	const timeString = `\${year}-\${month}-\${day}`
-	
-	
 	 $.ajax({
 	        url: "<%= ctxPath%>/management/managementone",
 	        data: { "member_userid": member_userid },
@@ -430,10 +529,8 @@ function goQuit(member_userid) {
 	        dataType: "json",
 	        success: function(json) {
 	        	
-	            // 모달을 띄울 위치
 	            const EditModal_container = $("div#EditModal");
-	            console.log(timeString);
-	            // 모달 HTML 생성 (json 사용)
+	           
 	            const modal_popup = `
 	                <div class="modal fade" id="EditView" aria-labelledby="EditViewLabel" tabindex="-1" aria-hidden="true">
 	                    <div class="modal-dialog modal-lg">
@@ -513,8 +610,8 @@ function goQuit(member_userid) {
 
 
 	                            <div class="modal-footer">
-	                                <button type="button" class="btn btn-primary" id="saveChanges">퇴사처리</button>
-	                                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+	                                <button type="button" class="btn" id="delete_member_userid" style="background-color: #CB4154; color: white;">퇴사처리</button>
+	                                <button type="button" class="btn" data-dismiss="modal"  style="background-color: #eee;">닫기</button>
 	                            </div>
 	                        </div>
 	                    </div>
@@ -528,6 +625,11 @@ function goQuit(member_userid) {
 	            // 모달 띄우기
 	            $('div#EditView').modal('show');
 	            
+	         // 수정 완료 버튼 클릭
+	            $('button#delete_member_userid').on('click', function(e) {
+	            	delete_member_userid(e, member_userid);
+	            });
+	            
 	            
 	        },
 	        error: function(request, status, error) {
@@ -535,6 +637,66 @@ function goQuit(member_userid) {
 	        }
 	    });
 }
+
+function delete_member_userid(e, member_userid) {
+    const parent_dept_name = document.querySelector("input[name='parent_dept_name']").value;
+    const member_name = document.querySelector("input[name='member_name']").value;
+    
+    Swal.fire({
+        title: `\${parent_dept_name} \${member_name} 사원 퇴사처리를 진행하시겠습니까?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#CB4154",
+        cancelButtonColor: "#999",
+        confirmButtonText: "퇴사처리 진행",
+        cancelButtonText: "취소",
+       	customClass: {
+       			icon:"delect_one_icon",
+               confirmButton: "delect_one_confirm_button",
+               cancelButton: "delect_one_confirm_cancel_button",
+               popup: "delect_one_popup"
+           }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "<%=ctxPath%>/management/managementone_delete",
+                type: "post",
+                data: { "member_userid": member_userid },
+                dataType: "json",
+                success: function(json) {
+                	
+                    if (json.n == 1) {
+                        Swal.fire({
+                            title: "처리 완료!",
+                            text: `\${timeString} 일자로 \${parent_dept_name} \${member_name} 사원 퇴사 처리가 완료되었습니다.`,
+                            icon: "success"
+                        }).then(() => {
+                            location.href = "<%=ctxPath%>/management/ManagementList"; // 성공 시 리다이렉트
+                        });
+                    }
+                },
+                error: function(request, status, error) {
+                    Swal.fire({
+                        title: "오류 발생",
+                        text: `code: ${request.status}\nmessage: ${request.responseText}\nerror: ${error}`,
+                        icon: "error"
+                    });
+                }
+            });
+        } else {
+            Swal.fire({
+                text: `\${parent_dept_name} \${member_name} 사원 퇴사 처리를 취소하셨습니다.`,
+                icon: "info",
+               	customClass: {
+               		icon:"delect_one_cancel_icon",
+               		confirmButton:"delect_one_cancel_Button",
+                    popup: "delect_one_cancel_popup"
+                }
+            });
+        }
+    });
+}
+
 
 
 </script>
@@ -546,9 +708,8 @@ function goQuit(member_userid) {
 	</div>
 	
 	
-	<div id="displayList" style="border:solid 1px gray; border-top:0px; height:40px; margin-left:8.6%; margin-top:-1px;  overflow:auto;"></div>
-	
-	<table>
+<div class="manageList">
+	<table class="manageListTable">
 		<thead>
 		    <tr>
 		    	<th>순서</th>
@@ -559,6 +720,8 @@ function goQuit(member_userid) {
 				<th>성별</th>
 				<th>근무시간</th>
 				<th>직급</th>
+				<th>정보수정</th>
+				<th>퇴사처리</th>
 		   </tr>
 		</thead>
 		
@@ -575,8 +738,8 @@ function goQuit(member_userid) {
 	<td>${managementVO_ga.member_gender}</td>
 	<td>${managementVO_ga.member_workingTime}</td>
 	<td>${managementVO_ga.member_position}</td>
-	<td><button type="button" id="EditView" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
-	<td><button type="button" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
+	<td><button type="button" id="EditView1" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
+	<td><button type="button" id="EditView2" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
 	</c:forEach>
 	</c:if>
 	  
@@ -585,25 +748,26 @@ function goQuit(member_userid) {
 	  </c:if>
 		</tbody>
     </table>
-    
+</div>    
 	<div id="EditModal"></div>
     <div id="QuitModal"></div>
     
 <div>
    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">${requestScope.pageBar}</div>
    
-    <form name="searchFrm" style="margin-top: 20px;">
+    
+</div>
+	<form name="searchFrm">
 		<select name="searchType" style="height: 26px;">
 			<option value="userid">사번명</option>
 			<option value="position">직급명</option>
 			<option value="name">사원명</option>
-		</select>
-		<input type="text" name="searchWord" size="10" autocomplete="off" /> 
-		<input type="text" style="display: none;"/>  
-		<button type="button" onclick="goSearch()">검색</button> 
-	</form>	
-</div>
-	
+		</select> <input type="text" name="searchWord" size="10" autocomplete="off" />
+		<input type="text" style="display: none;" />
+		<button type="button" onclick="goSearch()" style="border:none; padding: 3px; width: 55px; ">검색</button>
+
+		<div id="displayList"></div>
+	</form>
 </div>
 
 

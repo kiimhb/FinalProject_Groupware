@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.attendance.service.AttendanceRecordService;
@@ -121,6 +124,30 @@ public class IndexController {
 		return mav;
 	}
 	
+	
+	
+	@ModelAttribute("alarm")
+	public String alarm(HttpServletRequest request, HttpServletResponse response) {
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+		if (loginuser != null) {
+		String member_userid = loginuser.getMember_userid();
+		
+		Map<String, String> paraMap = new HashMap<>();
+		
+		paraMap.put("member_userid", member_userid);
+	
+		int alarm_totalCount = 0;
+		alarm_totalCount = service.get_alarm_totalCount(paraMap);
 
+		//List<Map<String, String>> get_alarm_view = service.get_alarm_view(member_userid);
 
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("alarm_totalCount", alarm_totalCount);
+
+		//System.out.println("맻개 :"+alarm_totalCount);
+
+		return jsonObj.toString();
+	}return "";}
+	
 }

@@ -45,7 +45,7 @@
 	<!-- 글 1개 조회하기 -->
 	<select id="noticeView" resultType="NoticeVO" parameterType="map">	
 		select notice_no, fk_member_userid, notice_title, notice_dept, notice_content, fk_child_dept_no, 
-		notice_view_cnt, notice_write_date, notice_fileName, notice_orgFilename, notice_fileSize
+		notice_view_cnt, notice_write_date, notice_fileName, notice_orgFilename, notice_fileSize, notice_fix
 		from tbl_notice a join tbl_member b
 		on a.fk_member_userid = b.member_userid
 		where notice_no = #{notice_no}
@@ -85,6 +85,39 @@
 		delete tbl_notice
 		where notice_no = #{notice_no}
 	</delete>
+	
+	<!-- 공지사항 수정하기 -->
+	<update id="notice_update" parameterType="HashMap">
+		update tbl_notice 
+		set notice_dept = #{notice_dept},
+		    notice_title = #{notice_title}, 
+		    notice_content = #{notice_content},
+		    notice_fix = #{notice_fix}
+		where notice_no = #{notice_no}
+	</update>
+	
+	<!-- 알림 받을 사원들의 아이디 불러오기  -->
+	<select id="selectMemberId" parameterType="String" resultType="String">
+		select member_userid
+		from tbl_member
+		where fk_child_dept_no in
+		<foreach item="no" collection="list" open="(" separator="," close=")">
+	    	#{no}
+	    </foreach>
+	</select>
+	
+	<!-- 제목으로 공지사항 번호 알아오기 -->
+	<select id="selectNoticeNo" parameterType="String" resultType="String">
+		select notice_no
+		from tbl_notice
+		where notice_title = #{notice_title}
+	</select>
+	
+	<!-- 공지사항이 작성되면 알림 테이블에 입력해준다.  -->
+	<insert id="insertNoticeAlarm">
+		insert into tbl_alarm 
+		values(seq_alarm_no.nextval, #{fk_member_userid}, '공지사항', #{notice_no}, sysdate, 0)
+	</insert>
 	
 
 </mapper>

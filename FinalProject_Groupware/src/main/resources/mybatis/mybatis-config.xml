@@ -2,7 +2,6 @@
 
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-
    <!-- domain(VO) package -->
    <typeAliases>
       <typeAlias type="com.spring.med.board.domain.BoardVO" alias="BoardVO"/>
@@ -23,5 +22,9 @@
       <typeAlias type="com.spring.med.notice.domain.NoticeVO" alias="NoticeVO"/>
       <typeAlias type="com.spring.med.order.domain.OrderVO" alias="OrderVO"/>
       <typeAlias type="com.spring.med.administration.domain.Calendar_patient_recordVO" alias="Calendar_patient_recordVO"/>
-   </typeAliases>
+      <typeAlias type="com.spring.med.administration.domain.Calendar_hospitalize_recordVO" alias="Calendar_hospitalize_recordVO"/>
+       <typeAlias type="com.spring.med.administration.domain.Calendar_surgery_recordVO" alias="Calendar_surgery_recordVO"/>
+      <typeAlias type="com.spring.med.mail.domain.MailSentVO" alias="MailSentVO"/>
+      <typeAlias type="com.spring.med.mail.domain.MailReceiveVO" alias="MailReceiveVO"/>
+   </typeAliases>     
 </configuration>

@@ -78,8 +78,8 @@ public class PatientDAO_imple implements PatientDAO {
 
 	// 환자의 일정목록을 불러오기 캘린더
 	@Override
-	public List<Calendar_patient_recordVO> selectSchedule(String jubun) {
-		List<Calendar_patient_recordVO> selectSchedule = sqlsession.selectList("hyeyeon.selectSchedule", jubun);
+	public List<Calendar_patient_recordVO> selectSchedule(String patient_no) {
+		List<Calendar_patient_recordVO> selectSchedule = sqlsession.selectList("hyeyeon.selectSchedule", patient_no);
 		return selectSchedule;
 	}
 

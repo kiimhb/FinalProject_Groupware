@@ -661,10 +661,50 @@ $("div#pageBar").html(pageBar_HTML);
 		<%-- ==== 이전글제목, 다음글제목 보기 끝 ==== --%>
 		
 	 <br>
+
+	 <c:choose>
+	    <c:when test="${empty requestScope.myboard_val and empty requestScope.bookmark_val}">
+	        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+	            onclick="javascript:location.href='<%= ctxPath%>/board/list'">전체목록보기</button>
+	    </c:when>
+	    <c:when test="${not empty requestScope.myboard_val}">
+	        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+	            onclick="javascript:location.href='<%= ctxPath%>/board/myboard'">내가쓴글목록보기</button>
+	    </c:when>
+	    <c:when test="${not empty requestScope.bookmark_val}">
+	        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+	            onclick="javascript:location.href='<%= ctxPath%>/board/bookmarkList'">즐겨찾기목록보기</button>
+	    </c:when>
+	</c:choose>
 	 
-	 <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/list'">전체목록보기</button>
-	 <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
 	 
+	 
+	 <c:choose>
+    <c:when test="${empty requestScope.myboard_val and empty requestScope.bookmark_val}">
+        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기(전체)</button>
+    </c:when>
+    <c:when test="${not empty requestScope.myboard_val}">
+        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기(내가쓴)</button>
+    </c:when>
+    <c:when test="${not empty requestScope.bookmark_val}">
+        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기(즐찾)</button>
+    </c:when>
+</c:choose>
+	 
+	 
+	 
+	 
+<%--	 
+	 <c:if test="${empty requestScope.myboard_val}">
+	 	<button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
+	 </c:if>
+	 <c:if test="${not empty requestScope.myboard_val}">
+	 	<button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
+	 </c:if>
+	 --%> 
 	 <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.member_userid == requestScope.boardvo.fk_member_userid}">
 	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/edit/${requestScope.boardvo.board_no}'">글수정</button>
 	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/del/${requestScope.boardvo.board_no}'">글삭제</button>

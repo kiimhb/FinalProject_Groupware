@@ -3,6 +3,7 @@ package com.spring.med.order.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.med.order.domain.CostVO;
 import com.spring.med.order.domain.OrderVO;
 
 public interface OrderService {
@@ -49,6 +50,9 @@ public interface OrderService {
 
 	// 수술 요청하여 수술테이블에 insert 하기 (트랜잭션)
 	int surgeryConfirm(Map<String, String> paraMap);
+
+	// 진료입력 마무리 수술여부, 입원여부, 약처방 등 종합하여 가격 보여주기
+	List<CostVO> showCostList(String fk_order_no);
 
 
 

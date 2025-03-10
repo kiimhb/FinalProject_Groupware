@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.spring.med.order.domain.CostVO;
 import com.spring.med.order.domain.OrderVO;
 
 @Repository
@@ -132,6 +133,14 @@ public class OrderDAO_imple implements OrderDAO {
 	public int orderDesease(Map<String, String> paraMap) {
 		int n = sqlsession.insert("seonggon_order.orderDesease", paraMap);
 		return n;
+	}
+
+	// 진료입력 마무리 수술여부, 입원여부, 약처방 등 종합하여 가격 보여주기
+	@Override
+	public List<CostVO> showCostList(String fk_order_no) {
+		
+		List<CostVO> showCostList = sqlsession.selectList("seonggon_order.showCostList", fk_order_no);
+		return showCostList;
 	}
 
 
