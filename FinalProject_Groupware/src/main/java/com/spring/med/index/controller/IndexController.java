@@ -124,30 +124,5 @@ public class IndexController {
 		return mav;
 	}
 	
-	
-	
-	@ModelAttribute("alarm")
-	public String alarm(HttpServletRequest request, HttpServletResponse response) {
-		HttpSession session = request.getSession();
-		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
-		if (loginuser != null) {
-		String member_userid = loginuser.getMember_userid();
-		
-		Map<String, String> paraMap = new HashMap<>();
-		
-		paraMap.put("member_userid", member_userid);
-	
-		int alarm_totalCount = 0;
-		alarm_totalCount = service.get_alarm_totalCount(paraMap);
 
-		//List<Map<String, String>> get_alarm_view = service.get_alarm_view(member_userid);
-
-		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("alarm_totalCount", alarm_totalCount);
-
-		//System.out.println("맻개 :"+alarm_totalCount);
-
-		return jsonObj.toString();
-	}return "";}
-	
 }

@@ -64,16 +64,52 @@
 		<result property="alarm_cateno" column="alarm_cateno"  />
 		<result property="alarm_at" column="alarm_at" />
 		<result property="alarm_is_read" column="alarm_is_read" />
+		<result property="approval_status" column="approval_status" /> 
+	    <result property="alarm_title" column="alarm_title" /> 
+	    <result property="notice_dept" column="notice_dept" /> 
 	<association property="ManagementVO" javaType="ManagementVO_ga">
 		<result property="member_last" column="member_last"/>
     </association>
 	</resultMap>
 	<select id="get_alarm_totalCount" resultType="int" parameterType="HashMap">
-	select count(*) 
-	from tbl_alarm a
-	join tbl_member m
-	on a.fk_member_userid = m.member_userid
-	where fk_member_userid = #{member_userid} and ALARM_IS_READ = 0 and MEMBER_LAST IS NULL
+	SELECT COUNT(*) 
+	FROM tbl_alarm a
+	LEFT JOIN tbl_approval p ON a.alarm_cateno = p.fk_draft_no
+	LEFT JOIN tbl_draft d ON p.fk_draft_no = d.draft_no
+	LEFT JOIN tbl_notice n ON a.alarm_cateno = n.notice_no
+	LEFT JOIN tbl_member u ON n.fk_member_userid = u.member_userid
+	WHERE a.fk_member_userid = #{member_userid} 
+	  AND a.ALARM_IS_READ = 0
+	  AND (
+    (p.approval_status = '결재예정' AND p.approval_step != 0) 
+    OR (n.notice_no IS NOT NULL)
+  )
+	</select>
+	
+	<select id="get_alarm_view" parameterType="HashMap" resultMap="alarm_map">
+	select 
+	    m.fk_member_userid, m.alarm_no, a.approval_status, null notice_dept, m.alarm_category,
+	    case when length(d.draft_subject) > 20 then substr(d.draft_subject,1,15) || ' ..' else d.draft_subject end as alarm_title,
+	      m.alarm_cateno,
+	    to_char(m.alarm_at, 'yyyy-mm-dd') as alarm_at, m.alarm_is_read
+	from tbl_alarm m
+	join tbl_approval a on m.alarm_cateno = a.fk_draft_no
+	join tbl_draft d on a.fk_draft_no = d.draft_no
+	where m.fk_member_userid = #{member_userid} 
+	  and a.approval_status = '결재예정' 
+	  and a.approval_step != 0
+	
+	union all
+	
+	select 
+	    m.fk_member_userid, m.alarm_no, null as approval_status, n.notice_dept, m.alarm_category,
+	     case when length(n.notice_title) > 20 then substr(n.notice_title,1,15) || ' ..' else n.notice_title end as alarm_title,
+	      m.alarm_cateno,  
+	    to_char(m.alarm_at, 'yyyy-mm-dd') as alarm_at, m.alarm_is_read
+	from tbl_alarm m
+	join tbl_notice n on m.alarm_cateno = n.notice_no
+	join tbl_member u on n.fk_member_userid = u.member_userid
+	where m.fk_member_userid = #{member_userid} 
 	</select>
 	
 </mapper>

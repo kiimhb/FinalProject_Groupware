@@ -387,7 +387,7 @@ function detailNotice(notice_no) {
 									[간호부]
 								</c:when>
 								<c:when test="${nvo.notice_dept eq 3}">
-									[원무과]
+									[경영지원부]
 								</c:when>
 							</c:choose>${nvo.notice_title}
 							<c:if test="${not empty nvo.notice_fileName}">

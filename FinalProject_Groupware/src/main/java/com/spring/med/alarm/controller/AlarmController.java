@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping(value = "*/alarm")
+@RequestMapping(value = "/alarm")
 public class AlarmController {
 
 	@Autowired
@@ -40,11 +40,12 @@ public class AlarmController {
 		int alarm_totalCount = 0;
 		alarm_totalCount = service.get_alarm_totalCount(paraMap);
 
-		//List<Map<String, String>> get_alarm_view = service.get_alarm_view(member_userid);
+		List<Map<String, String>> get_alarm_view = service.get_alarm_view(member_userid);
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("alarm_totalCount", alarm_totalCount);
-
+		jsonObj.put("get_alarm_view", get_alarm_view);
+	
 		return jsonObj.toString();
 	}return "";}
 

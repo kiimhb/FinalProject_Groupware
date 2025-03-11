@@ -206,7 +206,7 @@ div.Alarm_box {
   background-color:#FAFAFA;
   padding: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  width: 320px;
   height:400px;
   border-radius: 5px;
   z-index: 999;
@@ -227,7 +227,7 @@ div.Alarm_box::after {
 
 /* 주요 알림 박스 */
 div.Alarm_main_box {
-	width: 280px;
+	width: 300px;
 	height: 340px;
 	font-size: 16px;
 	border: 1px solid #ccc;
