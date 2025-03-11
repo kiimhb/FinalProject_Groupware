@@ -48,4 +48,22 @@ public class IndexDAO_imple implements IndexDAO {
 		return get_alarm_view;
 	}
 
+	@Override
+	public int alarm_is_read_1(int alarm_no) {
+		int n = sqlsession.update("index.alarm_is_read_1",alarm_no);
+		return n;
+	}
+
+	@Override
+	public List<Map<String, String>> patientList() {
+		List<Map<String, String>> patientList = sqlsession.selectList("index.patientList");
+		return patientList;
+	}
+
+	@Override
+	public List<Map<String, String>> approvalPendingList(String member_userid) {
+		List<Map<String, String>> PendingList = sqlsession.selectList("index.approvalPendingList",member_userid);
+		return PendingList;
+	}
+
 }

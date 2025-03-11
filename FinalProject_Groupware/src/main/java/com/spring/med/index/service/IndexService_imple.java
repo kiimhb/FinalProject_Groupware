@@ -55,5 +55,26 @@ public class IndexService_imple implements IndexService {
 		return alarm_view;
 	}
 
+	//알람 업데이트
+	@Override
+	public int alarm_is_read_1(int alarm_no) {
+		int n = indexdao.alarm_is_read_1(alarm_no);
+		return n;
+	}
+
+	//오늘 진료환자 목록
+	@Override
+	public List<Map<String, String>> patientList() {
+		List<Map<String, String>> patientList = indexdao.patientList();
+		return patientList;
+	}
+
+	//결재문서함
+	@Override
+	public List<Map<String, String>> approvalPendingList(String member_userid) {
+		List<Map<String, String>> pendingList =  indexdao.approvalPendingList(member_userid);
+		return pendingList;
+	}
+
 
 }

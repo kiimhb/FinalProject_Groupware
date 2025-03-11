@@ -176,6 +176,8 @@ div.navbar_menu{
 }
 
 button.nav_button_css{
+	position: relative;
+    display: inline-block; 
 	border: none;
 	background-color: transparent;
 }
@@ -185,23 +187,24 @@ i.nav_i_css1, i.nav_i_css2{
 }
 
 i.nav_i_css1 {
+	 position: relative;
 	/* background: linear-gradient(to bottom, #FFEB3B, #FFD600);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent; */
-	 margin-right: 10px;
 }
 
 i.nav_i_css2 {
 	/* background: linear-gradient(to bottom, #42A5F5, #8E24AA);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent; */
+	margin-left: 10px;
 }
 
 div.Alarm_box {
   display: none;
   position: absolute;
-  top: 65px;
-  right: 220px;
+  top: 70px;
+  right: 120px;
   border: 1px solid #ccc;
   background-color:#FAFAFA;
   padding: 10px;
@@ -212,17 +215,6 @@ div.Alarm_box {
   z-index: 999;
 }
 
-div.Alarm_box::after {
-  content: '';
-  position: absolute;
-  top: -8px;
-  right: 30%;
-  transform: translateX(-50%);
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #FAFAFA; 
-  z-index: 1000;
-}
 
 
 /* 주요 알림 박스 */

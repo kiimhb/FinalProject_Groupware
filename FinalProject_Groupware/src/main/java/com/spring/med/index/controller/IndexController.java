@@ -5,13 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.attendance.service.AttendanceRecordService;
@@ -47,6 +44,8 @@ public class IndexController {
 	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mav = Index_commuteRecord(request, response, new ModelAndView("content/main/index"));
 		 mav = requiredLogin_notice_list(request, response, mav); 
+		 mav = Index_Patient_list(request, mav);
+		 mav = Index_ApprovalPendingList(request, mav);
 
 		return mav;
 	}
@@ -120,6 +119,32 @@ public class IndexController {
 		List<NoticeVO> notice_list = service.notice_list(paraMap);
 //		System.out.println(notice_list);
 		mav.addObject("notice_list", notice_list);
+		}
+		return mav;
+	}
+	
+	@GetMapping("Index_Patient_list")
+	public ModelAndView Index_Patient_list(HttpServletRequest request, ModelAndView mav) {
+		new ModelAndView("content/main/index");
+		
+		List<Map<String, String>> patientList = service.patientList();
+		
+		mav.addObject("patientList", patientList);
+		
+		return mav;
+	}
+	
+	@GetMapping("Index_ApprovalPendingList")
+	public ModelAndView Index_ApprovalPendingList(HttpServletRequest request, ModelAndView mav) {
+		new ModelAndView("content/main/index");
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		if (loginuser != null) {
+		List<Map<String, String>> pendingList = service.approvalPendingList(loginuser.getMember_userid());
+		
+		mav.addObject("pendingList", pendingList);
 		}
 		return mav;
 	}

@@ -478,9 +478,9 @@ public class ManagementController {
 		    String currentOriginalFilename = managementVO_ga.getMember_pro_orgfilename();
 		    String currentFileSize = managementVO_ga.getMember_pro_filesize(); 
 		    
-		    System.out.println(currentFilename);
-		    System.out.println(currentOriginalFilename);
-		    System.out.println(currentFileSize);
+//		    System.out.println(currentFilename);
+//		    System.out.println(currentOriginalFilename);
+//		    System.out.println(currentFileSize);
 		    
 		    managementVO_ga.setMember_pro_filename(currentFilename);  
 		    managementVO_ga.setMember_pro_orgfilename(currentOriginalFilename);  

@@ -298,11 +298,8 @@ function detailNotice(notice_no) {
 
 	<!-- 출퇴근 현황 시작 -->
 	<div class="box_attendance">
-		<input type="hidden" class="member_userid"
-			value="${requestScope.member_userid}" />
-		<h6 class="main_h6">
-			<a class="sideBarCSS" href="<%=ctxPath%>/commuteRecord">출퇴근 현황</a>
-		</h6>
+		<input type="hidden" class="member_userid" value="${requestScope.member_userid}" />
+		<a class="main_h6" href="<%=ctxPath%>/commuteRecord">출퇴근 현황</a>
 
 		<div class="main_time">
 			<div class="today">Today</div>
@@ -359,12 +356,13 @@ function detailNotice(notice_no) {
 	<!-- 출퇴근 현황 끝 -->
 
 
+
+
 	<!-- 공지사항 시작 -->
 	<div class="box_notice">
-		<h6 class="main_h6">
-			<a class="sideBarCSS" href="<%=ctxPath%>/notice/list">공지사항 총 <span
-				style="color: #f68b1f;">${requestScope.totalCount}건</span></a>
-		</h6>
+	
+		<a  class="main_h6" href="<%=ctxPath%>/notice/list">공지사항 총 <span style="color: #f68b1f;">&nbsp;${requestScope.totalCount}건</span></a>
+		
 
 		<c:if test="${not empty requestScope.notice_list}" > 
 			 <c:forEach var="nvo" items="${requestScope.notice_list}">
@@ -422,14 +420,130 @@ function detailNotice(notice_no) {
 <!-- 공지사항 끝 -->
 
 
-<div class="box_reservation">오늘 환자 예약 명단</div>	
 
-<div class="box_payment">전자결재</div>
+
+<!-- 오늘의 환자 명단 시작 -->	
+<div class="box_reservation">
+<a class="main_h6" href="<%=ctxPath%>/patient/list">오늘의 환자 명단</a>
+
+<table class="index_patient">
+<thead>
+	<tr>
+		<th>진료번호</th>
+		<th>진료일자</th>
+		<th>진료과</th>
+		<th>환자명</th>
+	</tr>
+</thead>
+<tbody>
+	<c:if test="${not empty requestScope.patientList}">
+		<c:forEach var="pvo" items="${requestScope.patientList}">
+			<tr class="index_patient_tr" onclick="javascript:location.href='<%= ctxPath%>/patient/detail/${pvo.patient_no}'" >
+				<td>${pvo.patient_no}</td>
+				<td>${pvo.patient_visitdate}</td>
+				<td>${pvo.child_dept_name}</td>
+				<td>${pvo.patient_name}</td>
+			</tr>
+		</c:forEach>
+	</c:if>
+	<c:if test="${empty requestScope.patientList}">
+		<tr><td>진료기록이 있는 환자가 없습니다</td></tr>
+	</c:if>
+	</tbody>
+</table>
+</div>	
+<!-- 오늘의 환자 명단 끝 -->	
+
+
+
+<!-- 결재문서함 시작 -->	
+<div class="box_payment">
+	<a class="main_h6" class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList">전자결재</a>
+
+		<table>
+			<thead>
+				<tr>
+					<td>기안부서</td>
+					<td>기안자</td>
+					<td>제목</td>
+					<td>상태</td>
+					<td>작성일</td>
+				</tr>
+			</thead>
+			<tbody>
+				<c:if test="${not empty requestScope.pendingList}">			
+					<%-- ============ 긴급한 기안문 ============ --%>		
+					<c:forEach var="approvalvo" items="${requestScope.pendingList}" varStatus="pending_status"> 
+						<c:if test="${approvalvo.draft_urgent eq '1' && approvalvo.approval_status eq '결재예정'}">
+							<%-- 첨부파일 없는 경우 --%>
+							<c:if test="${empty approvalvo.draft_file_name}">
+									<input type="hidden" value="${approvalvo.draft_no}"/>
+								<tr>
+									<td>${approvalvo.parent_dept_name}</td>
+									<td>${approvalvo.member_name}</td>
+									<td style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}</td>
+									<td>${approvalvo.draft_status}</td>
+									<td>${approvalvo.draft_write_date}</td>
+								</tr>
+							</c:if>	
+							<%-- 첨부파일 있는 경우 --%>
+							<c:if test="${not empty approvalvo.draft_file_name}">
+									<input type="hidden" value="${approvalvo.draft_no}"/>
+								<tr>									
+									<td>${approvalvo.parent_dept_name}</td>
+									<td>${approvalvo.member_name}</td>
+									<td style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
+									<td>${approvalvo.draft_status}</td>
+									<td>${approvalvo.draft_write_date}</td>
+								</tr>
+							</c:if>	
+						</c:if>
+					</c:forEach>
+					
+					<%-- ============ 일반 기안문 ============ --%>	
+					<c:forEach var="approvalvo" items="${requestScope.pendingList}" varStatus="pending_status"> 
+						<c:if test="${approvalvo.draft_urgent eq '0' || (approvalvo.draft_urgent eq '1' && approvalvo.approval_status ne '결재예정')}">
+							<%-- 첨부파일 없는 경우 --%>
+							<c:if test="${empty approvalvo.draft_file_name}">
+									<input type="hidden" value="${approvalvo.draft_no}"/>
+								<tr>
+									<td>${approvalvo.parent_dept_name}</td>
+									<td>${approvalvo.member_name}</td>
+									<td style="text-align:left;">${approvalvo.draft_subject}</td>
+									<td>${approvalvo.draft_status}</td>
+									<td>${approvalvo.draft_write_date}</td>
+								</tr>
+							</c:if>	
+							<%-- 첨부파일 있는 경우 --%>
+							<c:if test="${not empty approvalvo.draft_file_name}">
+								<input type="hidden" value="${approvalvo.draft_no}"/>
+								<tr>
+									<td>${approvalvo.parent_dept_name}</td>
+									<td>${approvalvo.member_name}</td>
+									<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
+									<td>${approvalvo.draft_status}</td>
+									<td>${approvalvo.draft_write_date}</td>
+								</tr>
+							</c:if>	
+						</c:if>
+					</c:forEach>
+				</c:if>
+				<c:if test="${empty requestScope.pendingList}">	
+					<tr>
+						<td colspan="7">결재 예정인 문서가 없습니다.</td>
+					</tr>
+				</c:if>
+			</tbody>
+		</table>
+
+</div>
+<!-- 결재문서함 끝 -->		
+	
 	
 <!-- 일정관리 시작 -->	
 	<div class="box_schedule">
 		<div>
-		<h6 class="main_h6"><a class="sideBarCSS" href="<%=ctxPath%>/schedule/scheduleManagement" >일정관리</a></h6>
+		<a class="main_h6" href="<%=ctxPath%>/schedule/scheduleManagement" >일정관리</a>
 			<div id="wrapper1">
 				<input type="hidden" value="${sessionScope.loginuser.member_userid}"
 					id="fk_member_userid" />

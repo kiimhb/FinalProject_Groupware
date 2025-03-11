@@ -56,6 +56,73 @@
 		where rno BETWEEN 1 AND 4
 	</select>
 	
+	<!-- 오늘 진료환자 목록 -->
+	<resultMap id="PatientListMap" type="HashMap">
+	    <result property="patient_no" 			column="patient_no" 		javaType="String" />
+	    <result property="child_dept_name"  	column="child_dept_name" 	javaType="String" />
+	    <result property="patient_name" 		column="patient_name" 		javaType="String" />
+	    <result property="patient_gender"   	column="patient_gender" 	javaType="String" />
+	    <result property="patient_visitdate"    column="patient_visitdate" 	javaType="String" />
+	</resultMap>
+	<select id="patientList" parameterType="HashMap" resultMap="PatientListMap">
+		select *
+		from
+		(
+		select rownum as rno, patient_no, child_dept_name, patient_name,
+		       patient_gender, patient_visitdate
+		from 
+		    (
+		        SELECT patient_no, child_dept_name, patient_name,
+		               patient_gender, to_char(patient_visitdate, 'yyyy-mm-dd') as patient_visitdate
+		        FROM tbl_patient a 
+		        JOIN tbl_child_dept b 
+		        ON a.fk_child_dept_no = b.child_dept_no 
+		        WHERE TRUNC(patient_visitdate) = to_char(TRUNC(SYSDATE))
+			    order by patient_visitdate desc
+		    )a join tbl_order b
+		    on a.patient_no = b.fk_patient_no 
+		    where order_no is not null
+		) 
+		where rno BETWEEN 1 AND 5
+	</select>
+	
+	
+	
+	<!-- 결재문서함 -->
+	<select id="approvalPendingList" resultType="ApprovalVO" parameterType="HashMap">
+		select *
+		from
+		(
+		    with A as
+		    (
+		        select fk_draft_no, fk_member_userid, approval_step, approval_status
+		        from tbl_approval
+		        where fk_member_userid = #{member_userid}
+		    ),
+		    B as
+		    (
+		        select draft_no, draft_form_type
+		             , case when length(draft_subject) > 15 then substr(draft_subject, 1, 13) || '..' else draft_subject end as draft_subject
+		             , to_char(draft_write_date, 'yyyy-mm-dd') as draft_write_date, draft_status, draft_urgent, draft_file_origin_name, draft_file_name, draft_file_size
+		             , member_name, parent_dept_name
+		        from tbl_draft D join tbl_member M
+		        on D.fk_member_userid = M.member_userid
+		        join tbl_child_dept C
+		        on M.fk_child_dept_no = C.child_dept_no
+		        join tbl_parent_dept P
+		        on C.fk_parent_dept_no = P.parent_dept_no
+		    )
+		    select rownum as rno, fk_draft_no, fk_member_userid, approval_step, approval_status
+		         , draft_no, draft_form_type, draft_subject, draft_write_date, draft_status, draft_urgent, draft_file_origin_name, draft_file_name, draft_file_size
+		         , member_name, parent_dept_name
+		    from A join B
+		    on A.fk_draft_no = B.draft_no
+		    where approval_status != '대기'
+		    order by fk_draft_no desc
+		)
+		where rno between 1 AND  5
+		</select>
+	
 	
 	<resultMap id="alarm_map" type="HashMap">
 		<result property="alarm_no" column="alarm_no" />
@@ -110,6 +177,12 @@
 	join tbl_notice n on m.alarm_cateno = n.notice_no
 	join tbl_member u on n.fk_member_userid = u.member_userid
 	where m.fk_member_userid = #{member_userid} 
+	order by alarm_no desc
 	</select>
+	
+	<update id="alarm_is_read_1" parameterType="int">
+		update tbl_alarm set alarm_is_read = 1
+		where alarm_no = #{alarm_no}
+	</update>
 	
 </mapper>
