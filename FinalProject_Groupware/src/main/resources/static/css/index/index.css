@@ -33,7 +33,7 @@ font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
     min-height: 960px;
     margin-left: 250px;  /* 사이드바가 열렸을 때 */
     transition: margin-left 0.3s ease-in-out; /* 사이드바와 함께 콘텐츠의 이동을 부드럽게 */
-    border: solid 1px red;
+   /*  border: solid 1px red; */
 }
 
 #mycontent.full {
@@ -64,13 +64,13 @@ a.mypage {
     background: none;  
     cursor: pointer;   
     font-size: 14px;
-    margin-bottom: 13px; 
     text-decoration: underline;
 	color:#8ac2bd;
 }
 
 div.logout{
 	margin:0 60px 0 60px;
+	margin-top:13px;
 	padding:2px;
 	background-color:  #006769;
 	border-radius: 5px;

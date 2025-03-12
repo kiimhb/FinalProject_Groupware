@@ -69,9 +69,20 @@ public class ManagementVO_ga {
        진짜파일 ==> WAS(톰캣) 디스크에 저장됨.
     */
 	
+	private MultipartFile sign_attach;
+	
+	public MultipartFile getSign_attach() {
+		return sign_attach;
+	}
+
+	public void setSign_attach(MultipartFile sign_attach) {
+		this.sign_attach = sign_attach;
+	}
+
+
+
+
 	public ManagementVO_ga() {}
-	
-	
 	
 
 	public ManagementVO_ga(String member_userid, String fk_child_dept_no, String member_pwd, String member_name,
@@ -79,7 +90,8 @@ public class ManagementVO_ga {
 			String member_start, String member_last, String member_pro_filename, String member_pro_orgfilename,
 			String member_pro_filesize, String member_position, String member_yeoncha, String member_grade,
 			String member_workingTime, String member_sign_filename, String member_sign_orgfilename,
-			String member_sign_filesize, MultipartFile attach) {
+			String member_sign_filesize, String child_dept_name, Child_deptVO_ga childVO, Parent_deptVO_ga parentVO,
+			MultipartFile attach, MultipartFile sign_attach) {
 		super();
 		this.member_userid = member_userid;
 		this.fk_child_dept_no = fk_child_dept_no;
@@ -101,7 +113,11 @@ public class ManagementVO_ga {
 		this.member_sign_filename = member_sign_filename;
 		this.member_sign_orgfilename = member_sign_orgfilename;
 		this.member_sign_filesize = member_sign_filesize;
+		this.child_dept_name = child_dept_name;
+		ChildVO = childVO;
+		ParentVO = parentVO;
 		this.attach = attach;
+		this.sign_attach = sign_attach;
 	}
 
 

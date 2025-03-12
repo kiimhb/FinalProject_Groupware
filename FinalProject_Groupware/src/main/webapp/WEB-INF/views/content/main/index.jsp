@@ -289,6 +289,85 @@ function detailNotice(notice_no) {
 	// alert(notice_no);	
 	window.location.href = `<%= ctxPath%>/notice/detail/\${notice_no}`;
 }
+
+
+
+function getWeatherForecast() {
+    const apiKey = "562694b7b66f34fecf5ea59b127756f2";  // 발급받은 API 키를 여기에 넣으세요.
+
+    // 위치 정보 받기 (위도, 경도)
+    const getWeatherData = (lat, lon) => {
+    	const url = `https://api.openweathermap.org/data/2.5/forecast?lat=\${lat}&lon=\${lon}&units=metric&lang=kr&appid=\${apiKey}`;
+
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.cod === "200") {
+                    let forecastHTML = '';
+                    let forecastData = [];
+                    
+                    
+
+                    data.list.forEach((forecast) => {
+                        const date = new Date(forecast.dt * 1000);
+                        const month = date.getMonth() + 1; 
+                        const day = date.getDate(); 
+
+                        const dateString = `\${month}월 \${day}일`;
+                        
+                        const weatherDescription = forecast.weather[0].description;
+
+                        let translatedDescription = weatherDescription;
+
+                        if (!forecastData.some(item => item.date === dateString)) {
+                            forecastData.push({
+                                date: dateString,
+                                temp: forecast.main.temp.metric,
+                                description: translatedDescription,  
+                                icon: forecast.weather[0].icon,
+                                highTemp: forecast.main.temp_max, 
+                                lowTemp: forecast.main.temp_min 
+                            });
+                        }
+                    });
+                 
+                    forecastData.forEach((forecast) => {
+                        forecastHTML += `
+                            <div class="forecast-item">
+                                <h6>\${forecast.date}</h6>
+                                <img src="https://openweathermap.org/img/wn/\${forecast.icon}@2x.png" alt="날씨 아이콘">
+                                <div class="temps">
+	                                <p class="high">🌡 \${forecast.highTemp}°C</p>
+	                                <p class="low">🌡 \${forecast.lowTemp}°C</p>
+                           		 </div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('status').textContent = `\${data.city.name} 날씨 예보`;
+                    document.getElementById('weather-info').innerHTML = forecastHTML;
+                } else {
+                    document.getElementById('status').textContent = `오류 발생: \${data.message}`;
+                }
+            })
+            .catch(() => {
+                document.getElementById('status').textContent = "날씨 정보를 불러올 수 없습니다.";
+            });
+    };
+
+    // 위치 정보 받기 (위도, 경도)
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => getWeatherData(position.coords.latitude, position.coords.longitude), // 위치 기반 날씨
+            () => getWeatherData(37.5665, 126.9780) // 위치 정보 없으면 서울
+        );
+    } else {
+        getWeatherData(37.5665, 126.9780);  // 위치 정보 지원하지 않으면 서울
+    }
+};
+
+window.onload = getWeatherForecast;
+
 </script>
 
 
@@ -564,10 +643,21 @@ function detailNotice(notice_no) {
 	
 	
 
-
-<div class="box_weather">날씨</div>
-
-
+<!-- 날씨 시작 -->
+	<div class="box_weather">
+		<p class="main_h6" id="status" class="loading"></p>
+		<div class="weather-container">
+			<div class="weather-info" id="weather-info"></div>
+		</div>
+	</div>
+	<!-- 날씨 끝 -->	
+	
+	
+	
+	
+	
+	
+	
 </div>
 
 <jsp:include page="../../footer/footer1.jsp" />    
