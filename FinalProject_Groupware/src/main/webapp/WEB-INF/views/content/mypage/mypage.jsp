@@ -234,14 +234,15 @@ $("button#mypage_edit").click(function() {
     }
     
     const member_mobile = $('#hp1').val() + '-' + $('#hp2').val() + '-' + $('#hp3').val();
-    const member_workingTime = "day";
 
     const frm = document.mypageEdit;
     $('#member_mobile').val(member_mobile); 
-
+    
+   /*  console.log(frm); */
+    
     frm.method = "post";
     frm.action = "<%= ctxPath%>/mypage/mypageEdit";
-    //frm.submit();
+    frm.submit();
 });
 });
 </script>
@@ -311,7 +312,7 @@ $("button#mypage_edit").click(function() {
             <th>사인이미지</th>
             <td colspan="2" class="text-center">
                 <div style="display: flex; align-items: center; gap: 20px;">
-                    <img id="previewimg2" width="137" height="176" src="<%=ctxPath%>/resources/profile/${sessionScope.loginuser.member_sign_filename}" alt="사인">
+                    <img id="previewimg2" width="137" height="176" src="<%=ctxPath%>/resources/sign/${sessionScope.loginuser.member_sign_filename}" alt="사인">
                     <input type="file" name="sign_attach" class="img_file2" accept="image/*">
                 </div>
              </td>
@@ -322,6 +323,18 @@ $("button#mypage_edit").click(function() {
 				</td>
 			</tr>
 		</table>
+		
+		<input type="hidden" id="member_mobile" name="member_mobile" />
+		
+		<input type="hidden" id="member_pro_orgfilename" name="member_pro_orgfilename" value="${sessionScope.loginuser.member_pro_orgfilename}" />
+      	<input type="hidden" id="member_pro_filename" name="member_pro_filename" value="${sessionScope.loginuser.member_pro_filename}" />
+      	<input type="hidden" id="member_pro_filesize" name="member_pro_filesize" value="${sessionScope.loginuser.member_pro_filesize}" />
+      	
+      	<input type="hidden" id="member_sign_orgfilename" name="member_sign_orgfilename" value="${sessionScope.loginuser.member_sign_orgfilename}" />
+      	<input type="hidden" id="member_sign_filename" name="member_sign_filename" value="${sessionScope.loginuser.member_sign_filename}" />
+      	<input type="hidden" id="member_sign_filesize" name="member_sign_filesize" value="${sessionScope.loginuser.member_sign_filesize}" />
+      	
+      	
 </form>
 
 

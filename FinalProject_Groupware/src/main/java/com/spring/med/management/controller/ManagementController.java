@@ -208,7 +208,6 @@ public class ManagementController {
 		// /myspring/src/main/webapp/JSP 파일을 실행시켰을 때 IP 주소가 제대로 출력되기위한 방법.txt 참조할 것!!!
 		String clientip = request.getRemoteAddr();
 		paraMap.put("clientip", clientip);
-		
 		mav = managService.login(mav, request, paraMap);
 		
 		return mav;

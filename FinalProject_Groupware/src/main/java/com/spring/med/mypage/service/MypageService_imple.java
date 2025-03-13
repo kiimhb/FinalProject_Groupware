@@ -14,15 +14,16 @@ public class MypageService_imple implements MypageService {
 	private MypageDAO dao;
 
 	@Override
-	public int mypageEdit_update(ManagementVO_ga managementVO_ga) {
+	public int mypageEdit_update(ManagementVO_ga managementVO_ga, String member_pwd) {
 		
-		String member_pwd = Sha256.encrypt(String.valueOf("member_pwd"));
+		member_pwd = Sha256.encrypt(member_pwd);
 		managementVO_ga.setMember_pwd(member_pwd);
+		
+		//System.out.println(member_pwd);
 		
 		int n = dao.mypageEdit_update(managementVO_ga);
 		return n;
 	}
 
-	
 
 }

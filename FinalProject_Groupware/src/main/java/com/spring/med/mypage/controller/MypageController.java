@@ -45,6 +45,9 @@ public class MypageController {
 	public ModelAndView mypageEdit(@RequestParam() String member_userid, ModelAndView mav, HttpServletRequest request, ManagementVO_ga managementVO_ga,
 	                                          MultipartHttpServletRequest mrequest) {
 		
+		String member_pwd = request.getParameter("member_pwd");
+		//System.out.println(member_pwd);
+		
 		MultipartFile attach = managementVO_ga.getAttach(); 
 
 		HttpSession session = mrequest.getSession();
@@ -142,11 +145,11 @@ public class MypageController {
 		
 
 	        
-		int n = service.mypageEdit_update(managementVO_ga);
+		int n = service.mypageEdit_update(managementVO_ga, member_pwd);
         
         if (n == 1) {
             mav.addObject("message", "정보 수정이 완료되었습니다.");
-            mav.addObject("loc", request.getContextPath() + "/management/ManagementList");
+            mav.addObject("loc", request.getContextPath() + "/mypage/mypage");
         } else {
             mav.addObject("message", "정보 수정에 실패하였습니다.");
             mav.addObject("loc", "javascript:history.back()");

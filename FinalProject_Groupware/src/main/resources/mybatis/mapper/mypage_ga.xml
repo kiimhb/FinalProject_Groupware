@@ -6,7 +6,7 @@
 
 <select id="mypageEdit_update" parameterType="ManagementVO_ga">
 	update tbl_member set member_pwd=#{member_pwd},member_name=#{member_name},member_mobile=#{member_mobile},member_email=#{member_email},member_pro_filename=#{member_pro_filename},
-	member_pro_orgfilename=#{member_pro_orgfilename},member_pro_filesize=#{member_pro_filesize},member_sign_filename=#{member_sign_filename},member_sign_orgfilename=#{member_sign_orgfilename},member_sign_filesize=#{member_sign_orgfilename}
+	member_pro_orgfilename=#{member_pro_orgfilename},member_pro_filesize=#{member_pro_filesize},member_sign_filename=#{member_sign_filename},member_sign_orgfilename=#{member_sign_orgfilename},member_sign_filesize=#{member_sign_filesize}
 	where member_userid = #{member_userid}
 </select>
 

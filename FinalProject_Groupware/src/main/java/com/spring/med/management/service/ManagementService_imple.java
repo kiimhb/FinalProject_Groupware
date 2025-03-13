@@ -65,6 +65,7 @@ public class ManagementService_imple implements ManagementService {
 		int member_userid = Integer.parseInt(paraMap.get("member_userid"));
 		paraMap.put("member_userid", String.valueOf(member_userid));
 		
+		//System.out.println(paraMap.get("member_pwd"));
 		
 		ManagementVO_ga loginuser = manaDAO.getLoginMember(paraMap);
 

@@ -188,7 +188,6 @@ $(document).ready(function () {
 
     	if (alarm_is_read == 1) {
     		alarm_link(alarm_category, alarm_cateno);
-            return;
         }
     	else if (alarm_is_read == 0) {
 	    	$.ajax({
@@ -208,13 +207,28 @@ $(document).ready(function () {
 	    		}
 	        });
 	    }
+    	
     });
 
 
 
 	function alarm_link(alarm_category, alarm_cateno) {
+		console.log(alarm_cateno);
+
 	    if (alarm_category == "결재") {
-	        window.location.href = `<%= ctxPath%>/approval/approvalPendingListDetail/\${alarm_cateno}`;
+	    	
+	    	$.ajax({
+	    		url: "<%= ctxPath%>/approval/approvalPendingListDetail_TBL_ALARM",
+	    		type: "POST",
+	    		data: {"draft_no": alarm_cateno},
+	    		success: function(response) {  
+	    			
+	    			
+	    		},  error: function(request, status, error){
+			   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+	    	});
+	       
 	    } else if (alarm_category == "공지사항") {
 	        window.location.href = `<%= ctxPath%>/notice/detail/\${alarm_cateno}`;
 	    }
