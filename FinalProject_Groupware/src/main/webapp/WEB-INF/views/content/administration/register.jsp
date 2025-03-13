@@ -20,8 +20,6 @@ $(document).ready(function(){
 	
 	
 });
-
-
 </script>
 	
 	<div class="content">
@@ -32,7 +30,7 @@ $(document).ready(function(){
 	  			수술대기 ( ${requestScope.totalCount} )
 	  		</div>
 	  		<div class="list">
-	  			<table class="table">
+	  			<table class="table table-hover" style="box-shadow: 0 2px 5px rgba(0,0,0,.25); border-radius: 5px;">
 	  				<thead class="bg-light">
 	  					<tr>
 	  						<th>차트번호</th>
@@ -82,7 +80,7 @@ $(document).ready(function(){
 	  			입원대기 ( ${requestScope.totalCount2} )
 	  		</div>
 			<div class="list">
-	  			<table class="table">
+	  			<table class="table table-hover">
 	  				<thead class="bg-light">
 	  					<tr>
 	  						<th>차트번호</th>

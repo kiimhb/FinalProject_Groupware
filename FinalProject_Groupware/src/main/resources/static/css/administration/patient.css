@@ -7,6 +7,7 @@
 	width: 80%;
 	padding-top: 2%;
 }
+/* 상단 타이틀 */
 .header > div.title {
 	border-left: 5px solid #006769;	
 	padding-left: 1%;
@@ -19,10 +20,7 @@
 	display: flex;
 	align-items: center;
 }
-div.search > input {
-	height: 37px;
-	width: 300px;
-}
+
 .header > div.search > button {
 	width: 100px;
 	height: 30px;
@@ -32,9 +30,36 @@ div.search > input {
 }
 button.btn {
 	background-color: #006769;
-	color:white;
-	/* font-weight: bold; */
+	color:white; 
 }
+
+/* input 태그 */
+input {
+	/* background: #f0f0f0;  */
+  	width: 20%;
+  	color: #006769;
+  	border: none;
+  	border-bottom: 1px solid #999999; 
+  	padding: 9px;
+  	margin: 7px;
+}
+
+input:placeholder {
+  	color: rgba(255, 255, 255, 1);
+  	font-weight: 100;
+}
+
+input:focus {
+  	color: #006769;
+  	outline: none;
+  	border-bottom: 1.3px solid #006769; 
+  	transition: .8s all ease;
+}
+
+input:focus::placeholder {
+  	opacity: 0;
+}
+
 /* 상단 */
 div.patientList {
 	/*border: 1px solid black;*/
