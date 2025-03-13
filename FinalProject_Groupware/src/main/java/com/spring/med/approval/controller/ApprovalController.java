@@ -375,17 +375,17 @@ public class ApprovalController {
 	    String url = "approvalRequestList";
 	    
 	    // === [맨처음][이전] 만들기 === //
-	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' class='page-link'>&lt;&lt;</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'>&lt;&lt;</a></li>";
 
 	    if (pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때
-	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' class='page-link'>&lt;</a></li>";
+	        pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>&lt;</a></li>";
 	    }
 
 	    while (!(loop > blockSize || pageNo > totalPage)) {  // 10 보다 크거나 totalPage 보다 크면 안 된다
 	        if (pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지
-	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageNo + "</span></li>";
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; padding:2px 4px;'>" + pageNo + "</li>";
 	        } else {
-	            pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>" + pageNo + "</a></li>";
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>" + pageNo + "</a></li>";
 	        }
 	        
 	        loop++;
@@ -394,10 +394,10 @@ public class ApprovalController {
 
 	    // === [다음][마지막] 만들기 === //
 	    if (pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
-	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>&gt;</a></li>";
+	        pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>&gt;</a></li>";
 	    }
 
-	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' class='page-link'>&gt;&gt;</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px;  font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>&gt;&gt;</a></li>";
 
 	    pageBar += "</ul>";
 			    
@@ -478,17 +478,17 @@ public class ApprovalController {
 	    String url = "approvalTemporaryList";
 	    
 	    // === [맨처음][이전] 만들기 === //
-	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' class='page-link'>&lt;&lt;</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'>&lt;&lt;</a></li>";
 
 	    if (pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때
-	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' class='page-link'>&lt;</a></li>";
+	        pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>&lt;</a></li>";
 	    }
 
 	    while (!(loop > blockSize || pageNo > totalPage)) {  // 10 보다 크거나 totalPage 보다 크면 안 된다
 	        if (pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지
-	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageNo + "</span></li>";
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; padding:2px 4px;'>" + pageNo + "</span></li>";
 	        } else {
-	            pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>" + pageNo + "</a></li>";
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>" + pageNo + "</a></li>";
 	        }
 	        
 	        loop++;
@@ -497,10 +497,10 @@ public class ApprovalController {
 
 	    // === [다음][마지막] 만들기 === //
 	    if (pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
-	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>&gt;</a></li>";
+	        pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>&gt;</a></li>";
 	    }
 
-	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' class='page-link'>&gt;&gt;</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px;  font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>&gt;&gt;</a></li>";
 
 	    pageBar += "</ul>";
 
@@ -659,17 +659,17 @@ public class ApprovalController {
 	    String url = "approvalPendingList";
 		
 	 // === [맨처음][이전] 만들기 === //
-	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' class='page-link'>&lt;&lt;</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'>&lt;&lt;</a></li>";
 
 	    if (pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때
-	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' class='page-link'>&lt;</a></li>";
+	        pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>&lt;</a></li>";
 	    }
 
 	    while (!(loop > blockSize || pageNo > totalPage)) {  // 10 보다 크거나 totalPage 보다 크면 안 된다
 	        if (pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지
-	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageNo + "</span></li>";
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; padding:2px 4px;'>" + pageNo + "</li>";
 	        } else {
-	            pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>" + pageNo + "</a></li>";
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>" + pageNo + "</a></li>";
 	        }
 	        
 	        loop++;
@@ -678,10 +678,10 @@ public class ApprovalController {
 
 	    // === [다음][마지막] 만들기 === //
 	    if (pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
-	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>&gt;</a></li>";
+	        pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>&gt;</a></li>";
 	    }
 
-	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' class='page-link'>&gt;&gt;</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px;  font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>&gt;&gt;</a></li>";
 
 	    pageBar += "</ul>";
 
@@ -905,17 +905,17 @@ public class ApprovalController {
 	    String url = "referenceApprovalList";
 	    
 	    // === [맨처음][이전] 만들기 === //
-	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' class='page-link'>&lt;&lt;</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'>&lt;&lt;</a></li>";
 
 	    if (pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때
-	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' class='page-link'>&lt;</a></li>";
+	        pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>&lt;</a></li>";
 	    }
 
 	    while (!(loop > blockSize || pageNo > totalPage)) {  // 10 보다 크거나 totalPage 보다 크면 안 된다
 	        if (pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지
-	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageNo + "</span></li>";
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; padding:2px 4px;'>" + pageNo + "</li>";
 	        } else {
-	            pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>" + pageNo + "</a></li>";
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>" + pageNo + "</a></li>";
 	        }
 	        
 	        loop++;
@@ -924,10 +924,10 @@ public class ApprovalController {
 
 	    // === [다음][마지막] 만들기 === //
 	    if (pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
-	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>&gt;</a></li>";
+	        pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>&gt;</a></li>";
 	    }
 
-	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' class='page-link'>&gt;&gt;</a></li>";
+	    pageBar += "<li style='display:inline-block; width:70px;  font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>&gt;&gt;</a></li>";
 
 	    pageBar += "</ul>";
        

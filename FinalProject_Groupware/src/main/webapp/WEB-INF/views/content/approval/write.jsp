@@ -29,102 +29,112 @@
 <style>
 	
 	div.writeContainer {
-		border: solid 1px red;
-		width: 95%;
-		margin: auto;
-		margin-top: 2%;
-	}
-	
-	div#draft {
-	    width: 100% !important;
-	    margin: auto;
-	    overflow: hidden;
-	}
-	
-	h2 {
-		margin-left: 4%;
-		margin-top: 4%;
-		margin-bottom: 3%;
-		font-weight: bold;
-		letter-spacing: 4px !important;
-	}
-	
-	button#btnType {
-		float: left;
-		margin-left: 2%;
-	}
-	
-	span#btnRight {
-	    float: right;
-	    margin-left: 10px;
-	    margin-right: 2%;
-	}
-	
-	div.modalDraftType button {
-		float: right;
-	}
-	
-	<%-- 결재선 모달 --%>
-	.custom-modal-size {
-		max-width: 650px !important;
-	}
-	
-	<%-- 결재선/참조자 >> 버튼 able 효과 --%>
-	.insertBtn.able {
-		color: black;
-		cursor: pointer;
-	}
-	
-	.insertBtn.able:hover {
-		color: #006709;
-	}
-	
-	<%-- 결재선/참조자 << 버튼 able 효과 --%>
-	.deleteBtn.able,
-	#referLeftBtn.able,
-	#lineLeftBtn.able {
-		color: black;
-		cursor: pointer;
-	}
-	.deleteBtn.able:hover,
-	#referLeftBtn.able,
-	#lineLeftBtn.able {
-		color: #f68b1f;
-	}
+      border: solid 1px #D3D3D3;
+      border-radius: 5px;
+      width: 95%;
+      height: 860px;
+      margin: auto;
+      margin-top: 4%;
+   }
+   
+   div#draft {
+       width: 100% !important;
+       margin: auto;
+       overflow: hidden;
+   }
+   
+   h2 {
+      margin-left: 3%;
+      margin-top: 4%;
+      margin-bottom: 3%;
+      font-weight: bold;
+      letter-spacing: 4px !important;
+   }
+   
+   h2.reload {
+      margin-left: 4%;
+      margin-top: 4%;
+      margin-bottom: 3%;
+      font-weight: bold;
+      letter-spacing: 4px !important;
+   }
+   
+   button#btnType {
+      float: left;
+      margin-left: 2%;
+   }
+   
+   span#btnRight {
+       float: right;
+       margin-left: 10px;
+       margin-right: 2%;
+   }
+   
+   div.modalDraftType button {
+      float: right;
+   }
+   
+   <%-- 결재선 모달 --%>
+   .custom-modal-size {
+      max-width: 650px !important;
+   }
+   
+   <%-- 결재선/참조자 >> 버튼 able 효과 --%>
+   .insertBtn.able {
+      color: black;
+      cursor: pointer;
+   }
+   
+   .insertBtn.able:hover {
+      color: #006709;
+   }
+   
+   <%-- 결재선/참조자 << 버튼 able 효과 --%>
+   .deleteBtn.able,
+   #referLeftBtn.able,
+   #lineLeftBtn.able {
+      color: black;
+      cursor: pointer;
+   }
+   .deleteBtn.able:hover,
+   #referLeftBtn.able,
+   #lineLeftBtn.able {
+      color: #f68b1f;
+   }
 
-	
-	<%-- 결재선/참조자 >> 버튼 disable 효과 --%>
-	.insertBtn.disabled {
-	    color: #ccc;
-	    cursor: not-allowed;
-	}
-	
-	.insertBtn.disabled {
-	    color: #ccc;
-	    cursor: not-allowed;
-	}
-	
-	<%-- 결재선/참조자 << 버튼 disable 효과 --%>
-	.deleteBtn.disabled {
-	    color: #ccc;
-	    cursor: not-allowed;
-	}
-	
-	.insertBtn.disabled {
-	    color: #ccc;
-	    cursor: not-allowed;
-	}
-	
-	<%-- 결재선목록/참조자목록 선택 효과 --%>
-	tr.referenceMember_V,
-	tr.approvalMember_V {
-		cursor: pointer;
-	}
-	
-	tr.referenceMember_V:hover,
-	tr.approvalMember_V:hover {
-		background-color: #eee;
-	}
+   
+   <%-- 결재선/참조자 >> 버튼 disable 효과 --%>
+   .insertBtn.disabled {
+       color: #ccc;
+       cursor: not-allowed;
+   }
+   
+   .insertBtn.disabled {
+       color: #ccc;
+       cursor: not-allowed;
+   }
+   
+   <%-- 결재선/참조자 << 버튼 disable 효과 --%>
+   .deleteBtn.disabled {
+       color: #ccc;
+       cursor: not-allowed;
+   }
+   
+   .insertBtn.disabled {
+       color: #ccc;
+       cursor: not-allowed;
+   }
+   
+   <%-- 결재선목록/참조자목록 선택 효과 --%>
+   tr.referenceMember_V,
+   tr.approvalMember_V {
+      cursor: pointer;
+   }
+   
+   tr.referenceMember_V:hover,
+   tr.approvalMember_V:hover {
+      background-color: #eee;
+   }
 </style>
 
 
@@ -135,10 +145,23 @@ let arr_referenceMembers = [];		// 참조자에 추가된 멤버
 	
 $(document).ready(function(){
 	
-	<%-- 결재양식선택 전엔 상단 버튼 감추기 --%>
-	$("button#btnSaved").hide();
-	$("button#btnLine").hide();
-	$("button#btnRequest").hide();
+	if(${empty requestScope.approvalvo}) {
+		<%-- 첫 페이지에서 휴가신청서 보이기 --%>
+		  $.ajax({
+		     url: "<%= ctxPath%>/approval/writeDraft",
+		     data: {"typeSelect":"휴가신청서"},
+		     type: "get",
+		     success: function(draftForm) {
+		        
+		        $("button#btn_cancel").trigger('click');
+		        
+		        $("div#draft").html(draftForm);
+		     },
+		     error: function() {
+		        swal('양식 불러오기 실패!',"다시 시도해주세요",'error');
+		     }
+		  });
+	}
 	
 	////////////////////////////////////////////////////////////////////////////////
 
@@ -434,68 +457,68 @@ function setApprovalLine() {
 	
 	// 모달 구조
 	const modal_popup = `
-						<div class="modal fade" id="selectApprovalLine">
-							<div class="modal-dialog custom-modal-size">
-						    	<div class="modal-content" style="display: flex; flex-direction: column; height: 100%;">
-						    
-							      	<!-- Modal Header -->
-							      	<div class="modal-header">
-							        	<h3>결재선지정</h3>
-							      	</div>
-					
-							      	<!-- Modal Body -->
-							      	<div class="modal-body" style="border: solid 1px blue; display: flex; flex-wrap: wrap; flex: 1; overflow-y: auto;">
-							        	<div style="border: solid 1px gray; border-radius: 3px; flex: 4; height: 450px; overflow: auto;">
-							        		<div id="treeView" style="margin: 0 0 5% 2%; "></div>
-							        	</div>
-							        	<div id="selectDiv" style="border: solid 1px gray; flex: 1; font-size: 19pt;">
-							        		<div id="btnTop" style="display: flex; flex-direction: column; justify-content: center; margin-top: 85px; align-items: center;">
-								        		<span class="insertBtn" id="lineRightBtn"><i class="fa-solid fa-angles-right"></i></span>
-								        		<span class="deleteBtn" id="lineLeftBtn"><i class="fa-solid fa-angles-left"></i></span>
-							        		</div>
-							        		<div id="btnBottom" style="display: flex; flex-direction: column; justify-content: center; margin-top: 150px; align-items: center;">
-								        		<span class="insertBtn" id="referRightBtn"><i class="fa-solid fa-angles-right"></i></span>
-								        		<span class="deleteBtn" id="referLeftBtn"><i class="fa-solid fa-angles-left"></i></span>
-							        		</div>
-							        	</div>
-							        <div id="selectMember" style="border: solid 1px red; flex: 5; padding-top: 3%;">
-							          	<div id="modal_rightTop">
-							            	<h5>결재선</h5>
-							            	<div id="approvalLineMember" style="border: solid 1px gray; border-radius: 3px; height: 150px;">
-							            		<table id="approvalLineMember_T" class="table-bordered" style="width: 100%;">
-							            			<tr>
-							            				<td>부문</td>
-							            				<td>부서</td>
-							            				<td>직급</td>
-							            				<td>성명</td>
-							            			</tr>
-							            		</table>
-							            	</div>
-							          	</div>
-							          	<div id="modal_rightBottom" style="margin-top: 13%;">
-							            	<h5>참조자</h5>
-							            	<div id="referenceMember" style="border: solid 1px gray; border-radius: 3px; height: 150px;">
-								            	<table id="referenceMember_T" class="table-bordered" style="width: 100%;">
-							            			<tr>
-							            				<td>부문</td>
-							            				<td>부서</td>
-							            				<td>직급</td>
-							            				<td>성명</td>
-							            			</tr>
-							            		</table>
-							            	</div>
-							          	</div>
-							        </div>
-								</div>
-				
-				      			<!-- Modal Footer -->
-				      			<div class="modal-footer" style="margin-top: auto;">
-				        			<button type="button" class="btn btn-primary" id="goAddLine">결재선지정</button>
-				        			<button type="button" class="btn btn-secondary" id="btn_madal_cancel" data-dismiss="modal">취소</button>
-				      			</div>
-					    	</div>
-					  	</div>
-					</div>`;
+	                  <div class="modal fade" id="selectApprovalLine">
+	                     <div class="modal-dialog custom-modal-size">
+	                         <div class="modal-content" style="display: flex; flex-direction: column; height: 100%;">
+	                      
+	                              <!-- Modal Header -->
+	                              <div class="modal-header">
+	                                <h3 style="margin-bottom: -1.5%; font-weight: bold;">결재선지정</h3>
+	                              </div>
+	               
+	                              <!-- Modal Body -->
+	                              <div class="modal-body" style="border: solid 0px blue; display: flex; flex-wrap: wrap; flex: 1; overflow-y: auto;">
+	                                <div style="border: solid 1px gray; border-radius: 3px; flex: 4; height: 450px; overflow: auto;">
+	                                   <div id="treeView" style="margin: 0 0 5% 2%; "></div>
+	                                </div>
+	                                <div id="selectDiv" style="border: solid 0px gray; flex: 1; font-size: 19pt;">
+	                                   <div id="btnTop" style="display: flex; flex-direction: column; justify-content: center; margin-top: 85px; align-items: center;">
+	                                      <span class="insertBtn" id="lineRightBtn"><i class="fa-solid fa-angles-right"></i></span>
+	                                      <span class="deleteBtn" id="lineLeftBtn"><i class="fa-solid fa-angles-left"></i></span>
+	                                   </div>
+	                                   <div id="btnBottom" style="display: flex; flex-direction: column; justify-content: center; margin-top: 150px; align-items: center;">
+	                                      <span class="insertBtn" id="referRightBtn"><i class="fa-solid fa-angles-right"></i></span>
+	                                      <span class="deleteBtn" id="referLeftBtn"><i class="fa-solid fa-angles-left"></i></span>
+	                                   </div>
+	                                </div>
+	                             <div id="selectMember" style="border: solid 0px red; flex: 5; padding-top: 3%;">
+	                                  <div id="modal_rightTop">
+	                                    <h5 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">결재선</h5>
+	                                    <div id="approvalLineMember" style="border: solid 1px gray; border-radius: 3px; height: 150px;">
+	                                       <table id="approvalLineMember_T" class="table-bordered" style="width: 100%; line-height: 2.142;">
+	                                          <tr class="bg-light" style="text-align: center;">
+	                                             <th>부문</th>
+	                                             <th>부서</th>
+	                                             <th>직급</th>
+	                                             <th>성명</th>
+	                                          </tr>
+	                                       </table>
+	                                    </div>
+	                                  </div>
+	                                  <div id="modal_rightBottom" style="margin-top: 13%;">
+	                                    <h5 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">참조자</h5>
+	                                    <div id="referenceMember" style="border: solid 1px gray; border-radius: 3px; height: 150px;">
+	                                       <table id="referenceMember_T" class="table-bordered" style="width: 100%; line-height: 2.11;">
+	                                          <tr class="bg-light" style="text-align: center;">
+	                                             <th>부문</th>
+	                                             <th>부서</th>
+	                                             <th>직급</th>
+	                                             <th>성명</th>
+	                                          </tr>
+	                                       </table>
+	                                    </div>
+	                                  </div>
+	                             </div>
+	                        </div>
+	            
+	                           <!-- Modal Footer -->
+	                           <div class="modal-footer" style="margin-top: auto;">
+	                             <button type="button" class="btn btn-primary" id="goAddLine">결재선지정</button>
+	                             <button type="button" class="btn btn-secondary" id="btn_madal_cancel" data-dismiss="modal">취소</button>
+	                           </div>
+	                      </div>
+	                    </div>
+	               </div>`;
 	
 	// 모달 띄우기
 	container.html(modal_popup);
@@ -509,6 +532,10 @@ function setApprovalLine() {
 	// 조직도 페이지 가져오기
 	$("div#treeView").load("<%=ctxPath%>/organization/selectApprovalLine", function() {
         
+		// load 로 인해 css 가 덮어씌워져서 다시 적용
+	      $('body *').not('i').css('font-family', "'NEXON Lv1 Gothic OTF', sans-serif");
+	      $('h2').addClass("reload");
+		  
 		// << >> 버튼 모두 비활성화
 		$("span.insertBtn").addClass("disabled");
 		$("span.deleteBtn").addClass("disabled");
@@ -638,23 +665,29 @@ function setApprovalLine() {
                 			data:{"member_userid":member_userid},
                 			type:"post",			
                 			success:function(json){
-                				
+								const login_userid = $("span#member_userid").text();
+								
                 				if(arr_approvalLineMembers.length < 3) {
                 					// 결재선 목록에 있는 사원이 3명 미만인경우
                 					
 	                				if(!arr_referenceMembers.includes(member_userid) && !arr_approvalLineMembers.includes(member_userid)){
 	                					// 결재선 및 참조자 목록에 없는 사원일 경우만 목록에 추가
-	                					arr_approvalLineMembers.push(member_userid);
-		                				
-		                				let html = `<tr class="approvalMember_V">
-			               							 	<td>\${json.parent_dept_name}</td>
-			               							 	<td>\${json.child_dept_name}</td>
-			               							 	<td>\${json.member_position}</td>
-			               							 	<td>\${json.member_name}</td>
-			               							 </tr>`;
-				 
-		           						$("table#approvalLineMember_T").append(html);
-
+										
+										if(member_userid != login_userid){
+		                					arr_approvalLineMembers.push(member_userid);
+			                				
+			                				let html = `<tr class="approvalMember_V">
+				               							 	<td>\${json.parent_dept_name}</td>
+				               							 	<td>\${json.child_dept_name}</td>
+				               							 	<td>\${json.member_position}</td>
+				               							 	<td>\${json.member_name}</td>
+				               							 </tr>`;
+					 
+			           						$("table#approvalLineMember_T").append(html);
+										}
+										else {
+											swal('기안자를 결재선에 넣을 수 없습니다.',"다시 시도해주세요",'warning');
+										}
 	                				}
 	                				else {
 	                					swal('이미 선택된 사원입니다.',"다시 시도해주세요",'warning');
@@ -684,23 +717,29 @@ function setApprovalLine() {
                 			data:{"member_userid":member_userid},
                 			type:"post",			
                 			success:function(json){
-
+								const login_userid = $("span#member_userid").text();
+								
                 				if(arr_referenceMembers.length < 3) {
                 					// 참조자 목록에 있는 사원이 3명 미만인경우
                 					
 	                				if(!arr_referenceMembers.includes(member_userid) && !arr_approvalLineMembers.includes(member_userid)){
 	                					// 결재선 및 참조자 목록에 없는 사원일 경우만 목록에 추가
-	                					arr_referenceMembers.push(member_userid);
-		                				
-		                				let html = `<tr class="referenceMember_V">
-			               							 	<td>\${json.parent_dept_name}</td>
-			               							 	<td>\${json.child_dept_name}</td>
-			               							 	<td>\${json.member_position}</td>
-			               							 	<td>\${json.member_name}</td>
-			               							 </tr>`;
-				 
-		           						$("table#referenceMember_T").append(html);
-
+	                					
+										if(member_userid != login_userid){
+											arr_referenceMembers.push(member_userid);
+			                				
+			                				let html = `<tr class="referenceMember_V">
+				               							 	<td>\${json.parent_dept_name}</td>
+				               							 	<td>\${json.child_dept_name}</td>
+				               							 	<td>\${json.member_position}</td>
+				               							 	<td>\${json.member_name}</td>
+				               							 </tr>`;
+					 
+			           						$("table#referenceMember_T").append(html);
+										}
+										else {
+											swal('기안자를 참조자에 넣을 수 없습니다.',"다시 시도해주세요",'warning');
+										}
 	                				}
 	                				else {
 	                					swal('이미 선택된 사원입니다.',"다시 시도해주세요",'warning');
@@ -866,7 +905,13 @@ function func_goAddLine() {
 						$("tr#approvalLine_2").append(`<td style="width: 120px;">\${item.member_position}</td>`);
 						$("tr#approvalLine_3").append(`<td style="width: 120px;"><span class="span_member_userid" style="display: none;">\${item.member_userid}</span>\${item.child_dept_name}</td>`);
 						$("tr#approvalLine_4").append(`<td style="width: 120px;">\${item.member_name}</td>`);
-						$("tr#approvalLine_5").append(`<td style="width: 120px;"><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>`);
+						$("tr#approvalLine_5").append(`<td style="width: 120px; padding: 2%;">
+			                                                      <div style="border: solid 2px gray; width: 80px; border-radius: 50%; height: 80px; margin: auto; font-size: 17pt; display: flex; justify-content: center; align-items: center;  box-sizing: border-box; padding: 5px; border-radius: 50%; background: white; position: relative;">
+			                                                     <div style="border: solid 1px gray; width: 100%; height: 100%; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+			                                                         대기
+			                                                     </div>   
+			                                              </div>
+			                                          </td>`);
 					});
 				
 				},200);
@@ -1259,15 +1304,15 @@ function func_referMember() {
 
 <%-- ===================================================================== --%>
 <div class="writeContainer">
-	<h2>기안문작성</h2>
+	<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">기안문작성</h2>
 	
-	<button type="button" id="btnType">결재양식선택</button>
+	<button type="button" id="btnType" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">결재양식선택</button>
 
 	<span id="btnRight">
-		<button type="button" id="btnSaved" onclick="goTemporaryStored('임시저장')">임시저장</button>
-		<button type="button" id="btnLine" onclick="setApprovalLine()">결재선지정</button>
-		<button type="button" id="btnRequest" onclick="goTemporaryStored('결재요청')">결재요청</button>
-	</span>
+    	<button type="button" id="btnSaved" onclick="goTemporaryStored('임시저장')" style="background-color: #006769; padding: 5px; border-color: #006769; border-radius: 5px; color: white;">임시저장</button>
+      	<button type="button" id="btnLine" onclick="setApprovalLine()" style="background-color: #006769; padding: 5px; border-color: #006769; border-radius: 5px; color: white;">결재선지정</button>
+      	<button type="button" id="btnRequest" onclick="goTemporaryStored('결재요청')" style="background-color: #f68b1f; padding: 5px; border-color: #f68b1f; border-radius: 5px; color: white;">결재요청</button>
+   	</span>
 
 	<div id="modalDraftType"></div>
 	<div id="approvalLine"></div>

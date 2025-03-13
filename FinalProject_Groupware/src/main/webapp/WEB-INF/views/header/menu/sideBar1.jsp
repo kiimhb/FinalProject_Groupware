@@ -103,7 +103,7 @@ $.ajax({
             <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalRequestList">결재상신함</a>
             <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalTemporaryList">임시저장함</a> 
             <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList"">결재문서함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/approval/referenceApprovals">참조문서함</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/referenceApprovalList">참조문서함</a> 
          </div></li>
 
 

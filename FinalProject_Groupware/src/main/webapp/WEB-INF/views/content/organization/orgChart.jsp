@@ -20,19 +20,33 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/themes/proton/style.min.css" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.js"></script>
+
 
 <style>
 	div.orgContainer {
-		border: solid 0px red;
+		border: solid 1px #D3D3D3;
+		border-radius: 5px !important;
 		width: 95%;
+		height: 860px;
 		margin: auto;
-		margin-top: 2%;
+		margin-top: 4%;
 	}
 	
 	h2 {
-		margin-left: 2%;
-		margin-top: 1%;
-		margin-bottom: 3%;
+		margin-left: 3%;
+      	margin-top: 4%;
+      	margin-bottom: 3%;
+      	letter-spacing: 4px !important;
+		border-left: 5px solid #006769;   
+		padding-left: 1%;
+		margin-bottom: 1%;
+		color: #4c4d4f;
+		font-weight: bold;
 	}
 	
 	<%-- show/hide/검색 --%>
@@ -40,15 +54,27 @@
 		margin: 5% 5% 2% 5%;		
 	}
 	
-	<%-- show/hide 버튼 --%>
-	button {
-		border-radius: 5px;
+	<%-- 검색창 --%>
+	input#member_name {
+	  width: 500px;
+	  height: 40px;
+	  font-size: 15px;
+	  border: 0;
+	  border-radius: 15px;
+	  outline: none;
+	  padding-left: 10px;
+	  background-color: rgb(233, 233, 233);
 	}
-	
+
 	<%-- 조직도 --%>
 	#tree {
 	    margin-top: 5%;
 	    margin-left: 5%;
+		font-size: 14pt;
+	}
+	
+	.jstree li {
+	  line-height: 1.5 !important; /* 원하는 line-height 값 */
 	}
 	
 	<%-- employee-icon 클래스로 아이콘을 설정 --%>
@@ -185,6 +211,8 @@ $(document).ready(function(){
 	        
 	        // 배열을 이용해 트리 구조 생성하기
 	        jsTreeView(treeData);
+			
+			$('#tree').css('font-family', "'NEXON Lv1 Gothic OTF', sans-serif");
 	    },
 	    error: function() {
 			swal('조직도 불러오기 실패!',"다시 시도해주세요",'error');
@@ -213,30 +241,30 @@ $(document).ready(function(){
 					//console.log(JSON.stringify(json));
 					
 					let html = `<div id="memberInfo">
-									<h3>\${json.member_name}&nbsp;님 정보</h3>
+									<h3><span style="color: #006769; font-weight: bold;">\${json.member_name}&nbsp;</span>님 정보<span id="info_member_userid" style="display: none;">\${member_userid}</span></h3>
 									<table  id="memberInfotable" style="table-layout: fixed; width: 100%;">
 										<tbody>
 											<tr>
 												<td rowspan="4" style="width:40%; text-align:center;"><img width="137" height="176" src="<%= ctxPath%>/resources/profile/\${json.member_pro_filename}" / ></td>
-												<td style="width:50%;">성명<span class="tableSpan">\${json.member_name}</span></td>
+												<td style="width:50%;"><span style="font-weight: bold;">성명</span><span class="tableSpan">\${json.member_name}</span></td>
 											</tr>
 											<tr>
-												<td style="width:50%;">부문<span class="tableSpan">\${json.parent_dept_name}</span></td>
+												<td style="width:50%;"><span style="font-weight: bold;">부문</span><span class="tableSpan">\${json.parent_dept_name}</span></td>
 											</tr>
 											<tr>
-												<td style="width:50%;">부서<span class="tableSpan">\${json.child_dept_name}</span></td>
+												<td style="width:50%;"><span style="font-weight: bold;">부서</span><span class="tableSpan">\${json.child_dept_name}</span></td>
 											</tr>
 											<tr>
-												<td style="width:50%;">직급<span class="tableSpan">\${json.member_position}</span></td>
+												<td style="width:50%;"><span style="font-weight: bold;">직급</span><span class="tableSpan">\${json.member_position}</span></td>
 											</tr>
 											<tr>
-												<td colspan="2">핸드폰<span class="tableSpan">\${json.member_mobile}</span></td>
+												<td colspan="2"><span style="font-weight: bold;">핸드폰</span><span class="tableSpan">\${json.member_mobile}</span></td>
 											</tr>
 											<tr>
-												<td colspan="2">이메일<span class="tableSpan">\${json.member_email}</span></td>
+												<td colspan="2"><span style="font-weight: bold;">이메일</span><span class="tableSpan">\${json.member_email}</span></td>
 											</tr>
 											<tr>
-												<td colspan="2">입사일자<span class="tableSpanHriedate">\${json.member_start}</span></td>
+												<td colspan="2"><span style="font-weight: bold;">입사일자</span><span class="tableSpanHriedate">\${json.member_start}</span></td>
 											</tr>
 										</tbody>
 						            </table>
@@ -269,6 +297,31 @@ $(document).ready(function(){
 		const member_name = $(e.target).val();
 		$('#tree').jstree(true).search(member_name);
 		
+	});
+	
+	//////////////////////////////////////////////////////////////////////////
+	
+	<%-- 사원 정보에서 메일보내기 버튼 클릭 --%>
+	$(document).on("click", "button[id='mailBtn']", function(e){
+		
+		const member_userid = $("span#info_member_userid").text();
+		
+		$.ajax({
+			url:"<%= ctxPath%>/organization/mailWrite_Organ",
+			data: {"member_userid":member_userid},
+			type:"get",			
+			success:function(json){
+
+			},
+			error: function() {
+				Swal.fire({
+				    icon: 'error',
+				    title: '작업 수행 실패!',
+				    text: '다시 시도해주세요.'
+				});
+			}
+		});
+
 	});
 	
 });// end of $(document).ready(function(){})-----------------------------------------
@@ -307,17 +360,16 @@ function jsTreeView(jsonData) {
 <%-- ===================================================================== --%>
 
 <div class="orgContainer">
-	<h2>조직도</h2>
+	<h2>아삭병원 조직도</h2>
 	
 	<div style="display: flex; flex-wrap: wrap; margin: 2%;">
 	
-		<div style="border:solid 1px gray; border-radius: 3px; flex: 4.5; height: 600px; overflow: auto;">
+		<div style="border:solid 1px gray; border-radius: 3px; flex: 4.5; height: 650px; overflow: auto;">
 			<div id="orgTop">
-				<button type="button" id="btnShow">Show</button>
-				<button type="button" id="btnHide">Hide</button>
+				<button type="button" id="btnShow" class="btn" style="background-color: #006769; color:white; margin-right: 1.5%;">Show</button>
+				<button type="button" id="btnHide" class="btn" style="background-color: #857c7a; color:white;">Hide</button>
 				<span style="float: right;">
-					<input name="member_name" type="text" style="width: 160px;" placeholder="사원명 입력" />
-					<!-- <button type="button" id="btnSearch">검색</button> -->
+					<input name="member_name" id="member_name" type="text" style="width: 160px;" placeholder="사원명 입력" />
 				</span>
 			</div>
 			<div id="tree"></div>
@@ -327,8 +379,8 @@ function jsTreeView(jsonData) {
 			<div id="memberInfoBorder" style="border: solid 0px gray; margin: 8%; border-radius: 3px;">
 				<div id="memberInfo" ></div>
 				<div id="memberBtns">
-					<button type="button" id="chatBtn"><i class="fa-regular fa-comments fa-xl"></i></button>
-					<button type="button" id="mailBtn"><i class="fa-regular fa-envelope fa-xl"></i></button>
+					<button type="button" id="chatBtn" class="btn" style="background-color: #4c4d4f; color:white;"><i class="fa-regular fa-comments fa-xl"></i></button>
+					<button type="button" id="mailBtn" class="btn" style="background-color: #4c4d4f; color:white;"><i class="fa-regular fa-envelope fa-xl"></i></button>
 				</div>
 			</div>
 		</div>

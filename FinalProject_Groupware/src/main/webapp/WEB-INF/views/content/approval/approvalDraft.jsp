@@ -29,10 +29,12 @@
 <style>
 	
 	div.writeContainer {
-		border: solid 1px red;
+		border: solid 1px #D3D3D3;
+		border-radius: 5px;
 		width: 95%;
-		margin: auto;
-		margin-top: 2%;
+		height: 860px;
+     	margin: auto;
+      	margin-top: 4%;
 	}
 	
 	div#draft {
@@ -42,9 +44,11 @@
 	}
 	
 	h2 {
-		margin-left: 2%;
-		margin-top: 1%;
-		margin-bottom: 3%;
+		margin-left: 3%;
+      	margin-top: 4%;
+      	margin-bottom: 3%;
+      	font-weight: bold;
+      	letter-spacing: 4px !important;
 	}
 	
 	button#btnType {
@@ -697,12 +701,12 @@ function func_goAddLine() {
 
 <%-- ===================================================================== --%>
 <div class="writeContainer">
-	<h2>결재안</h2>
+	<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">결재안</h2>
 
 	<span id="btnRight">
 		<button type="button" id="btnApprove">결재승인</button>
 		<button type="button" id="btnSendBack">결재반려</button>
-		<button type="button" id="btnGoBackList" onclick="window.location.href='<%= ctxPath%>/approval/approvalPendingList'">목록</button>
+		<button type="button" id="btnGoBackList" onclick="window.location.href='<%= ctxPath%>/approval/approvalPendingList'" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">목록</button>
 	</span>
 
 	<div id="modalDraftType"></div>
