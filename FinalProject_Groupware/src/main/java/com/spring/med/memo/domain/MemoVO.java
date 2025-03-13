@@ -1,23 +1,23 @@
 package com.spring.med.memo.domain;
 
+
 public class MemoVO {
 
-	private String memo_no;             	// 메모번호
+	private int memo_no;             	// 메모번호
 	private String fk_member_userid;		// 사번
 	private String memo_title;				// 메모제목
 	private String memo_contents;			// 메모내용
 	private String memo_importance;			// 중요메모여부(중요:1, 중요x:0)
-	private String memo_deletestatus;		// 삭제여부
+	private String memo_deletestatus;		// 삭제여부(삭제:1, 삭제x:0)
 	private String memo_registerday;		// 생성날짜
-	private String memo_trash_deleteday;	// 삭제된 날짜
+	private String memo_trash_deleteday;	// 삭제된 날짜(메모가 아직 삭제되지 않은 경우)
 	
 	
-	
-	public String getMemo_no() {
+	public int getMemo_no() {
 		return memo_no;
 	}
 	
-	public void setMemo_no(String memo_no) {
+	public void setMemo_no(int memo_no) {
 		this.memo_no = memo_no;
 	}
 	

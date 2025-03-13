@@ -43,6 +43,25 @@
 		font-size: 12pt;
 		padding: 3px 0px;
 	}
+	
+	.header .title {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 28px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
+}
+
+  button.btn {
+	background-color: #006769;
+	color:white;
+	
+	.no-outline:focus {
+    outline: none; /* 포커스 시 파란 테두리 제거 */
+    box-shadow: none; /* 추가적인 파란색 그림자 제거 */
+  }
 
 </style>
 
@@ -141,7 +160,11 @@
 
 <div style="margin-left: 80px; width: 88%;">
 	<div>
-		<h3 style="display: inline-block;">일정 검색결과</h3>&nbsp;&nbsp;<a href="<%= ctxPath%>/schedule/scheduleManagement"><span>◀캘린더로 돌아가기</span></a>
+		<div class="header">
+		
+	  		<div class="title">일정 검색결과</div>
+		 </div>
+	 &nbsp;&nbsp;<a href="<%= ctxPath%>/schedule/scheduleManagement"><span>◀캘린더로 돌아가기</span></a>
 
 		<div id="searchPart" style="float: right; margin-top: 50px;">
 			<form name="searchScheduleFrm">
@@ -168,7 +191,7 @@
 						<option value="20">20</option>
 					</select>&nbsp;&nbsp;
 					<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" /> <%-- ${sessionScope.loginuser.member_userid} --%>
-					<button type="button" class="btn_normal" style="display: inline-block;" onclick="goSearch()">검색</button>
+					<button type="button" class="btn ml-2" style="display: inline-block;" onclick="goSearch()">검색</button>
 				</div>
 			</form>
 		</div>

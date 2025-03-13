@@ -49,6 +49,7 @@ $.ajax({
 });
 
 
+
 </script>
 
 
@@ -56,11 +57,11 @@ $.ajax({
    
    <button type="button" id="toggleBtn">☰</button>
    
-	 <div class="profile">
-	   <div id="sidebarProfile"></div>
-		  <button type="button" name="mypage" onclick="gomypage('${sessionScope.member_userid}')">마이페이지</button>
-		   <div class="logout"><a href="<%=ctxPath%>/management/logout" class="logoutcss">로그아웃</a> </div>
-	 </div>
+    <div class="profile">
+      <div id="sidebarProfile"></div>
+      <a class="mypage"  href="<%=ctxPath%>/mypage/mypage?member_userid=${sessionScope.loginuser.member_userid}">마이페이지</a>
+     <div class="logout"><a href="<%=ctxPath%>/management/logout" class="logoutcss">로그아웃</a> </div>
+    </div>
  
  
    <ul>
@@ -77,7 +78,6 @@ $.ajax({
             <a class="dropdown-item" href="<%=ctxPath%>/patient/patientReg">환자등록</a>
             <a class="dropdown-item" href="<%=ctxPath%>/patient/patientWaiting">대기환자</a> 
             <a class="dropdown-item" href="<%=ctxPath%>/order/orderEnter">진료정보입력</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/order/orderNpay">처방전 및 수납</a>
          </div></li>
 
       <li>
@@ -86,7 +86,6 @@ $.ajax({
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/patient/list">환자조회</a>
              <a class="dropdown-item" href="<%=ctxPath%>/register/list">예약</a>
-             <a class="dropdown-item" href="<%=ctxPath%>">입원실현황</a> 
              <a class="dropdown-item" href="<%=ctxPath%>/pay/wait">수납</a>
          </div></li>
          
@@ -97,18 +96,17 @@ $.ajax({
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/attendance">휴가관리</a> 
             <a class="dropdown-item" href="<%=ctxPath%>/attendance/commute">근태조회</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/attendance">근무교대조회</a>
          </div></li>
 
       <li><a href="#" class="menu-toggle sideBarCSS">
       <i class="fa-solid fa-square-poll-horizontal sideBarICSS"></i>  <span>전자결재</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/approval/write">기안문작성</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalRequestList">결재상신함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalTemporaryList">임시저장함</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList"">결재문서함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList">결재문서함</a>
             <a class="dropdown-item" href="<%=ctxPath%>/approval/referenceApprovals">참조문서함</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>">결재양식관리</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList"">결재문서함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/referenceApprovalList">참조문서함</a> 
+            
          </div></li>
 
       <li><a href="#" class="menu-toggle sideBarCSS">
@@ -118,8 +116,6 @@ $.ajax({
             <a class="dropdown-item" href="<%=ctxPath%>/mail/mailReceive/${sessionScope.loginuser.member_userid}">받은메일함</a>
             <a class="dropdown-item" href="<%=ctxPath%>/mail/mailSend/${sessionScope.loginuser.member_userid}">보낸메일함</a>
             <a class="dropdown-item" href="<%=ctxPath%>/mail/mailTrash/${sessionScope.loginuser.member_userid}">휴지통</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/mail/mailStorage/${sessionScope.loginuser.member_userid}">메일보관함</a>
-
          </div></li>
 
       <li><a class="sideBarCSS" href="<%=ctxPath%>/notice/list"><i class="fa-solid fa-bullhorn sideBarICSS"></i> <span>공지사항</span></a>  </li>
@@ -138,9 +134,9 @@ $.ajax({
       <li><a href="#" class="menu-toggle sideBarCSS">
       <i class="fa-solid fa-marker sideBarICSS"></i> <span>메모</span><i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>/memo/memowrite">메모장</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/memo/importantmemo">중요메모</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/memo/trash">휴지통</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/memo/memolist">메모장</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/memo/importantmemolist">중요메모</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/memo/trashlist">휴지통</a>
          </div></li>
 
       <li><a href="#" class="menu-toggle sideBarCSS">
