@@ -19,35 +19,35 @@ import jakarta.servlet.DispatcherType;
 @EnableMethodSecurity
 public class SecurityConfig { 
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	
-		http
-    		.csrf((csrfConfig) -> csrfConfig
-    			.disable()
-    		);
-		
-		http
-	        .authorizeHttpRequests((auth) -> auth
+   @Bean
+   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+   
+      http
+          .csrf((csrfConfig) -> csrfConfig
+             .disable()
+          );
+      
+      http
+           .authorizeHttpRequests((auth) -> auth
                     .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()  // DispatcherType 을 import 시 jakarta.servlet.DispatcherType 으로 함.
                     .requestMatchers("/**").permitAll()
                     .anyRequest().permitAll()     // 위에서 설정한 페이지를 제외한 나머지 다른 모든 페이지는 허용한다. 즉, 로그인을 하지 않아도 접속이 된다.  
-	        );
-		
-		http
-			.headers((headerConfig) -> headerConfig
-						.frameOptions((frameOptionsConfig) -> frameOptionsConfig
-								.sameOrigin())
-			);
-		
-		return http.build(); // 메소드로 빈을 생성하는 것이므로 return 해줘야 한다.
-	}
-	
+           );
+      
+      http
+         .headers((headerConfig) -> headerConfig
+                  .frameOptions((frameOptionsConfig) -> frameOptionsConfig
+                        .sameOrigin())
+         ); 
+      
+      return http.build(); // 메소드로 빈을 생성하는 것이므로 return 해줘야 한다.
+   }
+   
    @Bean
    public HttpFirewall httpFirewall() {
        StrictHttpFirewall strictHttpFirewall = new StrictHttpFirewall();
        strictHttpFirewall.setAllowUrlEncodedDoubleSlash(true);
        return strictHttpFirewall;
    }
-	
+   
 }

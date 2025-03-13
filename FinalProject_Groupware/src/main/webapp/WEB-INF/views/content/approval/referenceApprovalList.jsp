@@ -230,7 +230,6 @@ $(document).ready(function(){
 	if(${not empty requestScope.paraMap}) {
 		$("select[name='searchType']").val("${requestScope.paraMap.searchType}");
         $("input[name='searchWord']").val("${requestScope.paraMap.searchWord}");
-        
 	}
 	$("select[name='sizePerPage']").val("${requestScope.sizePerPage}");
 	
@@ -239,13 +238,14 @@ $(document).ready(function(){
 		
 		const click_draft_no = $(this).children("td").eq(0).text();	// 클릭한 기안문의 문서번호
 		
-		if(${not empty requestScope.temporaryList}) {
+		if(${not empty requestScope.referenceApprovalList}) {
 			const frm = document.detailTempFrm;
 			$("input[name='draft_no']").val(click_draft_no);
 			frm.method = "post";
-			frm.action = "<%= ctxPath%>/approval/approvalTemporaryDetail";
+			frm.action = "<%= ctxPath%>/approval/approvalPendingListDetail";
 			frm.submit();
 		}
+		
 	});// end of $("tbody > tr").on("click", function(e){})-----------------------------
 	
 
@@ -264,9 +264,9 @@ function goSearch() {
 		return;
 	}
 	
-	const frm = document.searchTempListFrm;
+	const frm = document.searchReferListFrm;
 	frm.method = "get";
-	frm.action = "<%= ctxPath%>/approval/approvalTemporaryList";
+	frm.action = "<%= ctxPath%>/approval/referenceApprovalList";
 	frm.submit();
 }
 
@@ -274,10 +274,10 @@ function goSearch() {
 
 <%-- ===================================================================== --%>
 <div class="tempListContainer">
-	<h2><a href="<%= ctxPath%>/approval/approvalTemporaryList" style="text-decoration: none; color: inherit; ">임시저장함</a></h2>
+	<h2><a href="<%= ctxPath%>/approval/referenceApprovalList" style="text-decoration: none; color: inherit; ">참조문서함</a></h2>
 	
 	<div id="topSearch">
-		<form name="searchTempListFrm">
+		<form name="searchReferListFrm">
 			<select name="sizePerPage" class="topClass top_select">
 				<option value="10">10개</option>
 				<option value="15">15개</option>
@@ -288,6 +288,8 @@ function goSearch() {
 				<option value="">검색조건</option>
 				<option value="draft_form_type">결재양식</option>
 				<option value="draft_subject">제목</option>
+				<option value="member_name">기안자</option>
+				<option value="parent_dept_name">기안부서</option>
 			</select>
 			
 			<input type="text" name="searchWord" class="topClass" placeholder="검색어 입력"/>
@@ -309,8 +311,8 @@ function goSearch() {
 				</tr>
 			</thead>
 			<tbody>
-				<c:if test="${not empty requestScope.temporaryList}">					
-					<c:forEach var="approvalvo" items="${requestScope.temporaryList}" varStatus="temp_status"> 
+				<c:if test="${not empty requestScope.referenceApprovalList}">					
+					<c:forEach var="approvalvo" items="${requestScope.referenceApprovalList}" varStatus="temp_status"> 
 						<%-- 첨부파일 없는 경우 --%>
 						<c:if test="${empty approvalvo.draft_file_name}">
 							<tr>
@@ -319,7 +321,7 @@ function goSearch() {
 								<td>${approvalvo.member_name}</td>
 								<td>${approvalvo.draft_form_type}</td>
 								<td style="text-align:left;">${approvalvo.draft_subject}</td>
-								<td><span style="border: solid 1px gray; border-radius: 5px; padding: 6.5px; background-color: gray; color: white;">${approvalvo.draft_status}</span></td>
+								<td><span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span></td>
 								<td>${approvalvo.draft_write_date}</td>
 							</tr>
 						</c:if>	
@@ -331,22 +333,22 @@ function goSearch() {
 								<td>${approvalvo.member_name}</td>
 								<td>${approvalvo.draft_form_type}</td>
 								<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
-								<td><span style="border: solid 1px gray; border-radius: 5px; padding: 6.5px; background-color: gray; color: white;">${approvalvo.draft_status}</span></td>
+								<td><span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span></td>
 								<td>${approvalvo.draft_write_date}</td>
 							</tr>
 						</c:if>	
 					</c:forEach>
 				</c:if>
-				<c:if test="${empty requestScope.temporaryList}">	
+				<c:if test="${empty requestScope.referenceApprovalList}">	
 					<tr>
-						<td colspan="7">임시저장된 문서가 없습니다.</td>
+						<td colspan="7">참조된 문서가 없습니다.</td>
 					</tr>
 				</c:if>
 			</tbody>
 		</table>
 		
-		<c:if test="${not empty requestScope.temporaryList}">
-			<div id="pageBar" style="text-align: center; margin-top: 5%;" class="pagination-container">
+		<c:if test="${not empty requestScope.referenceApprovalList}">
+			<div id="pageBar" style="text-align: center; margin-top: 5%;"  class="pagination-container">
 				${requestScope.pageBar}
 			</div>
 		</c:if>

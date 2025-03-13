@@ -52,7 +52,16 @@ public interface OrderService {
 	int surgeryConfirm(Map<String, String> paraMap);
 
 	// 진료입력 마무리 수술여부, 입원여부, 약처방 등 종합하여 가격 보여주기
-	List<CostVO> showCostList(String fk_order_no);
+	// List<CostVO> showCostList(String fk_order_no);
+
+	// 확정한 수술 비용 가져오기
+	Map<String, String> callSurgeryPrice(String surgeryType_no);
+
+	// 확정한 약 정보랑 가격 가져오기
+	List<Map<String, String>> callMedicinePrice(List<String> medicineNameList);
+
+	// 오더확정하면 오더확정유무 0->1로바꾸기
+	int sendOrderConfirm(Map<String, String> map);
 
 
 

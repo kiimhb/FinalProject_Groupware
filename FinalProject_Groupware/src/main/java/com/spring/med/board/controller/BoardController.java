@@ -822,7 +822,7 @@ public class BoardController {
 			
 			
 			if(n==1) {
-				mav.addObject("message", "글 삭제 성공!!");
+				mav.addObject("message", "글 삭제를 성공하셨습니다");
 			    mav.addObject("loc", request.getContextPath()+"/board/list");
 			    mav.setViewName("msg");
 			}
@@ -1591,34 +1591,6 @@ public class BoardController {
 		    mav.setViewName("content/community/board/bookmarkList");
 		    return mav;
 		}
-
-		
-		// 로그인한 사용자의 즐겨찾기 여부 확인		
-/*
-		@GetMapping("checkBookmark")
-		@ResponseBody
-		public Map<String, Object> checkBookmark(@RequestParam String board_no, HttpServletRequest request) {
-		    HttpSession session = request.getSession();
-		    ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
-
-		    Map<String, Object> resultMap = new HashMap<>();
-		    if (loginuser != null) {
-		        String member_userid = loginuser.getMember_userid();
-		        Map<String, String> paraMap = new HashMap<>();
-		        paraMap.put("board_no", board_no);
-		        paraMap.put("member_userid", member_userid);
-
-		        int count = service.checkBookmark(paraMap);
-		        resultMap.put("isBookmarked", count > 0);
-		    } else {
-		        resultMap.put("isBookmarked", false);
-		    }
-
-		    return resultMap;
-		}
-
-*/		
-		
 		
 		
 		/////////////////////////////////////////////////////////////////////////////////////////////// 
@@ -1744,7 +1716,7 @@ public class BoardController {
 
 
 
-		
+		// 즐겨찾기 한 게시물 조회
 		@GetMapping("selectbookmark")
 		@ResponseBody
 		public List<HashMap<String, String>> selectbookmark(HttpServletRequest request){

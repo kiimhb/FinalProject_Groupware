@@ -42,9 +42,11 @@
 	}
 	
 	h2 {
-		margin-left: 2%;
-		margin-top: 1%;
+		margin-left: 4%;
+		margin-top: 4%;
 		margin-bottom: 3%;
+		font-weight: bold;
+		letter-spacing: 4px !important;
 	}
 	
 	button#btnType {
@@ -323,7 +325,7 @@ $(document).ready(function(){
 				                console.error("파일을 로드하는 중 오류 발생:", error);
 				            });
 						
-						let html = `<div style="display: flex;"><span style="padding-left: 2%;"><i class="fa-solid fa-paperclip"></i>&nbsp;\${draft_file_origin_name}</span><span id="fileSize" style="margin-left: auto; padding-right: 4%;">\${draft_file_size}KB</span><i id="fileDel" class="fa-regular fa-rectangle-xmark" style="margin: auto 1%;">&nbsp;</i></div>`;
+						let html = `<div style="display: flex; height: 35px;"><span style="padding-top: 5px; padding-left: 2%;"><i class="fa-solid fa-paperclip"></i>&nbsp;\${draft_file_origin_name}</span><span id="fileSize" style="margin-left: auto; padding-top: 5px; padding-right: 4%;">\${draft_file_size}KB</span><i id="fileDel" class="fa-regular fa-rectangle-xmark" style="margin: auto 1%;">&nbsp;</i></div>`;
 	
 					    // 기존 파일을 fileAdd에 추가
 						const fileZone =  $("label#fileLabel");
@@ -1191,9 +1193,7 @@ function func_goTempAndSubmitDraft(btnType) {
 		formData.append("file", file);
 	}
 	
-	
-	
-	
+
 	<%-- 임시저장 ajax 요청 --%>
 	$.ajax({
 		url:"<%= ctxPath%>/approval/insertToTemporaryStored",
