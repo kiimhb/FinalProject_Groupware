@@ -71,11 +71,13 @@ $(document).ready(function(){
 	
 	
 	
-
+	/*
 	document.getElementById("readyToSymptomDetail").addEventListener("click", function() {
 	    this.value = "";
 	});
-
+	*/
+	
+	
 	$("div#orderHowLongHosp").hide()
 	$("div#orderSurgDetail").hide();
 	
@@ -100,6 +102,9 @@ $(document).ready(function(){
 	
 		const hospYN = confirm("원무과에 입원 일정을 요청하시겠습니까? ")
 		
+		const order_howlonghosp = $("input#howLongHosp").val();
+		const hospPrice = 20000*order_howlonghosp
+		
 		
 		if(hospYN == true){
 			$.ajax({
@@ -107,10 +112,19 @@ $(document).ready(function(){
 				   type:"post",
 				   data:{"orderNo":$("input#hiddenOrderNo").val()
 					   	,"hiddenPatientNo":$("input#hiddenPatientNo").val()
-					   	,"order_howlonghosp":$("input#howLongHosp").val()},
+					   	,"order_howlonghosp":order_howlonghosp},
 				   dataType:"json",
 				   success:function(json){
 					   alert("요청 완료되었습니다.");
+					   
+						v_html = ``;
+						
+						v_html +=`<td>입원 \${order_howlonghosp} 일</td>
+									<td class="price">\${hospPrice} 원</td>`;
+									
+						$("tr#hosp").html(v_html);
+			   
+					   
 				   },
 				   error: function(request, status, error){
 					   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -131,6 +145,16 @@ $(document).ready(function(){
 			
 			const surgeryType_name = $("select#selectSurgery").val();
 			const surgery_description = $("input#surgeryExplain").val();
+			const orderNo = $("input#hiddenOrderNo").val();
+			const hiddenPatientNo = $("input#hiddenPatientNo").val();
+			
+			
+			const select = document.getElementById("selectSurgery");
+		    const selectedOption = select.options[select.selectedIndex];
+			const surgeryType_no = selectedOption.getAttribute("data-no");
+			
+			//console.log(surgeryType_no);
+			
 			
 			if(surgeryType_name != "" && surgery_description != ""){							
 			
@@ -138,15 +162,41 @@ $(document).ready(function(){
 				  url:"<%= ctxPath%>/order/surgeryConfirm",
 				  data:{"surgeryType_name":surgeryType_name
 					   ,"surgery_description":surgery_description
-					   ,"orderNo":$("input#hiddenOrderNo").val()
-					   ,"hiddenPatientNo":$("input#hiddenPatientNo").val()},
+					   ,"orderNo":orderNo
+					   ,"hiddenPatientNo":hiddenPatientNo},
 				  type:"post",
-				  contentType: "application/json; charset=utf-8",
 				  dataType:"json",
 				  success:function(json){
 					  console.log(JSON.stringify(json));
 					  alert("요청 완료되었습니다.");
 					  $("#confirmButton").text("요청완료");
+					  
+	
+					  $.ajax({
+						  url:"<%= ctxPath%>/order/callSurgeryPrice",
+						  data:{"surgeryType_no":surgeryType_no},
+						  type:"post",
+						  dataType:"json",
+						  success:function(response){
+							  
+						  console.log(response);
+							  
+							  let v_html = ``;
+							  
+							  v_html += `<td>\${response.surgeryType_name}</td>
+							  			<td class="price">\${response.surgeryType_Price}원</td>`;
+							  
+							$("tr#surgeryName").html(v_html);
+							  			
+							  			
+						  },
+						  error: function(request, status, error){
+						      alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+						  }					  
+					  					  
+					  
+					  }) // end of ajax
+					  
 					  
 				  },
 				  error: function(request, status, error){
@@ -548,9 +598,71 @@ $(document).ready(function(){
 					contentType: "application/json; charset=utf-8",
 					type:"post",
 					dataType:"json",
-					success:function(json){
+					success:function(prescribeJson){
 						
-						alert("처방 전송 완료");	
+	
+						
+						alert("처방 전송 완료");
+						
+						$.ajax({
+							
+							url:"<%= ctxPath%>/order/callMedicinePrice",
+							data:JSON.stringify(medicineList),
+							contentType: "application/json; charset=utf-8",
+							type:"post",
+							dataType:"json",
+							success:function(priceJson){
+								
+								console.log("prescribeJson:", prescribeJson);
+								console.log("priceJson:", priceJson);
+								
+							let result = prescribeJson.map(prescribeItem => {
+						    // 🔥 공백 제거 & 대소문자 통일 (소문자로 변환)
+						    let prescribeName = prescribeItem.prescribe_name.trim().toLowerCase();
+						    
+						    let priceItem = priceJson.find(price => price.medicine_name.trim().toLowerCase() === prescribeName);
+						
+						    if (priceItem) {
+						        return {
+						            medicine_name: priceItem.medicine_name,
+						            medicine_price: priceItem.medicine_price,
+						            totalPrice: parseInt(prescribeItem.prescribe_perday) * parseInt(priceItem.medicine_price)
+						        };
+						    }
+						    return null;
+						}).filter(item => item !== null);
+								
+								console.log("result잘나와라젭알", result);
+								
+								v_html = ``;
+								
+								$.each(result, function(index, item){
+									
+									
+
+									
+									v_html += `<tr>
+							                    <td>\${item.medicine_name}</td>
+							                    <td class="price">\${item.medicine_price}원</td>
+							                  </tr>`;
+											
+								});
+								
+								$("tr#medicine").after(v_html); 
+								
+								
+							},
+							error: function(request, status, error){
+								   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+							}
+							
+						});
+						
+						
+						
+						
+						
+						
 					},
 					error: function(request, status, error){
 						   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -639,6 +751,62 @@ function goWaiting(){
 	window.location.href = "<%= ctxPath%>/patient/patientWaiting";
 }
 
+
+function sumPrice(){
+	
+	let total = 0; // total 변수 초기화
+	
+	$("td.price").each(function() {
+        // "원" 제거하고 값만 가져오기
+        let price = parseInt($(this).text().replace("원", "").trim());
+        
+        // 총합에 더하기
+        total += price;
+        
+        console.log(total);
+              
+    });
+		
+	let sumTotal = total+5000;
+	
+	let v_html = ``;
+	
+	v_html += `<td>총 수납금액</td>
+				<td>\${sumTotal} 원</td><input type="hidden" id="sumTotal" value="sumTotal" />`;
+				
+	$("tr#sumPriceResult").html(v_html)
+	
+}
+
+
+function orderFinalConfirm(){
+	
+	const detailSymptom = $("textarea#readyToSymptomDetail").val()
+	const orderNo = $("input#hiddenOrderNo").val();
+	console.log("디테이이일 : ", detailSymptom)
+	
+	$.ajax({
+			
+		url:"<%= ctxPath%>/order/sendOrderConfirm",
+		data:{"order_symptom_detail":detailSymptom
+			  ,"orderNo":orderNo},
+		type:"post",	  
+		dataType:"json",
+		success:function(json){
+		 console.log(JSON.stringify(json));
+		 
+		 	alert("오더가 확정되었습니다 !!")
+			
+		},
+		error: function(request, status, error){
+		    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+	
+	
+	});
+	
+	
+};
 
 
 
@@ -867,13 +1035,13 @@ button.btn_edit{
 				<div style="margin: 0% 0.16%; border:solid 1px black; float:right; width:33%; height:385px;">
 					<div id="calendar" style=""></div>
 					
-					<div id="orderSurgDetail"style="margin: 1.3% 0%; border: solid 1px black; width:100%;">	
+					<div id="orderSurgDetail"style="margin: 2% 0%; border: solid 1px black; width:100%;">	
 						<div style="display:flex;">					
 							<select id="selectSurgery" style="height:29px; width: 80%; margin-bottom:0.2%;">
 									<option value="">수술 종류</option>
 								<c:forEach items="${requestScope.surgeryList}" var="surgeryList">						
-									<option value="${surgeryList.surgeryType_name}">${surgeryList.surgeryType_name}&nbsp;&nbsp; <span style="color:red;">[수술번호 : ${surgeryList.surgeryType_no}]</span></option>
-								</c:forEach>
+									<option value="${surgeryList.surgeryType_name}" data-no="${surgeryList.surgeryType_no}">${surgeryList.surgeryType_name}&nbsp;&nbsp; <span style="color:red;">[수술번호 : ${surgeryList.surgeryType_no}]</span></option>
+								</c:forEach>								
 							</select>
 							<button id="surgeryConfirm" type="button" style="width:20%;" ><span id="confirmButton">전송</span></button>	
 						</div>
@@ -881,7 +1049,7 @@ button.btn_edit{
 							<input id="surgeryExplain"style="width:100%;"type="text" placeholder="수술 설명"/>
 						</div>
 					</div>
-					<div id="orderHowLongHosp"style="margin: 1.3% 0%; border: solid 1px black; width:100%;">
+					<div id="orderHowLongHosp"style="margin: 2% 0%; border: solid 1px black; width:100%;">
 						<div style=" margin: 1% 0 0 1%; height:25px;">
 							입원 일수를 입력해 주세요
 						</div>	
@@ -901,7 +1069,7 @@ button.btn_edit{
 				</div>
 			</div>
 			
-			<div id="orderNpay" style="height:630px; border:solid 1px red; position:relative;">
+			<div id="orderNpay" style=" border:solid 1px red; position:relative;">
 			
 				<div id="orderSearch" style="margin:1% 1%;">
 					<span>질병 검색</span><input type="hidden" value="searchDeseaseType" name="searchDeseaseType"/>
@@ -929,22 +1097,50 @@ button.btn_edit{
 					<div id="pickedMedicine" style="border:solid 1px purple; height:170px; margin:0% 0.1%; position:relative; z-index:2; padding: 0.9% 0.9%; overflow:auto;"></div>
 				
 				
-				<div id="pay" style="margin:1% 0.1%; border:solid 1px blue; height:150px;">
-					<span style="margin:1% 0.1%;">수납 내역</span>
-					<div class="row">
-					    <div class="col-md-4" style="text-align:center;">기본 진료비 청구</div>
-					    <div class="col-md-4 offset-md-4" style="text-align:center;">5000원</div>
-					</div>					
+				<div id="pay" style="margin:1% 0.1%; border:solid 1px blue;">
+				
+					<span style="margin:1% 1%;">수납 내역</span>
+					<button style="float:right"type="button" onclick="sumPrice()">총 수납비용 보기</button>
+
+					
+					<table style="text-align:center; width:100%; border:solid 1px green;" >
+						<tr>
+							<td style="border:solid 1px green;">기본진료</td>
+							<td style="border:solid 1px green;">5,000원</td>
+						</tr>
+						
+						<tr id="surgeryName">
+
+						</tr>
+						
+						<tr id="hosp">
+
+						</tr>
+						<tr id="medicine">
+
+						</tr>
+						<tr id="sumPriceResult">
+
+						</tr>																					
+					
+					</table>
+					
+										
 				</div>
 			</div>	
+			
+			<button style="float:right" type="button" onclick="orderFinalConfirm()">오더 확정</button>
 	</div> <%-- end of orderEnter --%>
+	
 </div>
 </form>
 
 
+
+
 <!-- 숨겨진 인풋 -->
 <input id="hiddenOrderNo"type="hidden" value="${requestScope.newOrderNo }"/>
-<input id="hiddenPatientNo" type="hidden" value="${requestScope.clickPatient.patient_no }"/>
+<input id="hiddenPatientNo" type="hidden" value="${requestScope.clickPatient.patient_no}"/>
 
 
 

@@ -9,20 +9,20 @@
 
 
 
-<script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script> 
+<script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
 <script type="text/javascript">
 
 
 $(document).ready(function(){  
-	  
-	  <%--  ==== 스마트 에디터 구현 시작 ====
+
+	   	// ==== 스마트 에디터 구현 시작 ====
 		//전역변수
 	    var obj = [];
 	    
 	    //스마트에디터 프레임생성
 	    nhn.husky.EZCreator.createInIFrame({
 	        oAppRef: obj,
-	        elPlaceHolder: "content",
+	        elPlaceHolder: "mail_sent_content",
 	        sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
 	        htParams : {
 	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
@@ -33,12 +33,13 @@ $(document).ready(function(){
 	            bUseModeChanger : true,
 	        }
 	    });
- --%>
+
 	  
-	 //  obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+	   
 	  
 	  $("button#btnWrite").click(function(){
 		  
+		  obj.getById["mail_sent_content"].exec("UPDATE_CONTENTS_FIELD", []);
 		  // const fk_member_userid = $("input:hidden[name='fk_member_userid']").val()
 		  
 		  <%-- 메일 폼 전송하기--%>
@@ -80,7 +81,6 @@ $(document).ready(function(){
 			 <tr>
 				<th style="width: 15%; background-color: #b3d6d2;">받는사람 <%-- 수신자 --%>
 					<span style="float:right;"><input type="checkbox" name="mail_sent_important" value="1"/>&nbsp;중요</span>
-					<input type="hidden" name="mail_sent_important" value="0"; />
 				</th>
 			    <td>
 			       <input type="text" name="mail_received_userid">
@@ -99,7 +99,7 @@ $(document).ready(function(){
    		     <tr>
 				<th style="width: 15%; background-color: #b3d6d2;">내용</th> 
 				<td>
-				    <textarea style="width: 100%; height: 440px;" name="mail_sent_content" id=""></textarea>
+				    <textarea style="width: 100%; height: 440px;" name="mail_sent_content" id="mail_sent_content"></textarea>
 				</td>
 			 </tr>
 			 

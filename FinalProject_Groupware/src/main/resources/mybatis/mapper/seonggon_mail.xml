@@ -7,64 +7,505 @@
 <mapper namespace="seonggon_mail">
 
 
-
-<select id="getTotalCount" parameterType="HashMap" resultType="int">
-	select count(*)
-	from tbl_mail_received R JOIN tbl_mail_sent S
-	ON R.fk_mail_sent_no = S.mail_sent_no
-	where R.fk_member_userid = #{user_id}
-</select>
-
-
-
-
-	<resultMap id="receiveMap" type="HashMap">
-		<result property="member_name"   				column="member_name" 				javaType="String" />    
-	    <result property="mail_title"   				column="mail_title" 				javaType="String" />
-	    <result property="mail_sent_senddate" 			column="mail_sent_senddate"    		javaType="String" />
-	    <result property="fk_member_userid"    			column="fk_member_userid" 			javaType="String" />
-	    <result property="mail_received_status" 		column="mail_received_status" 		javaType="String" />
-	    <result property="mail_received_saved" 			column="mail_received_saved" 		javaType="String" />
-	    <result property="mail_received_trashdate" 		column="mail_received_trashdate" 	javaType="String" />
-	    <result property="mail_received_trashstatus" 	column="mail_received_trashstatus" 	javaType="String" />
-	    <result property="mail_received_important" 		column="mail_received_important" 	javaType="String" />
-	    <result property="timediff" 					column="timediff" 					javaType="String" />	   	
-	</resultMap>
-
-	<!-- 받은 메일함 select 해오기 -->
-	<select id="selectMailReceiveList" parameterType="String" resultMap="receiveMap">
-		
-		select mail_sent_no, B.member_name, mail_title, to_char(mail_sent_senddate, 'yyyy-mm-dd')AS mail_sent_senddate,((Round(sysdate-mail_sent_senddate))||'일전') AS timediff, A.fk_member_userid AS fk_member_userid, mail_received_status, mail_received_saved, mail_received_trashdate, mail_received_trashstatus, mail_received_important 
-		from
-		(
-		select mail_title, mail_sent_senddate, S.fk_member_userid AS fk_member_userid, mail_received_status, mail_received_saved, mail_received_trashdate, mail_received_trashstatus, mail_received_important 
+	<!-- 받은 메일 총 갯수 가져오기 -->
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">		
+		select count(*)
 		from tbl_mail_received R JOIN tbl_mail_sent S
 		ON R.fk_mail_sent_no = S.mail_sent_no
-		where R.fk_member_userid = #{user_id}
-		) A JOIN tbl_member B
-		on A.fk_member_userid = B.member_userid
-	
+		where rk_member_userid = #{user_id}
+		and R.mail_received_trashstatus = 0
 	</select>
+
+	<select id="getTotalCountSent" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_mail_sent S JOIN tbl_mail_received R
+		ON R.fk_mail_sent_no = S.mail_sent_no
+		where sk_member_userid = #{user_id}
+        and S.mail_sent_trashstatus = 0
+	</select>
+
+
+
 
 
 
 	<!-- 작성된 메일 insert 하기 (트랜잭션)-->
 	<insert id="insertMailWrite" parameterType="MailSentVO">
-		insert into tbl_mail_sent (mail_sent_no, fk_member_userid, mail_title, mail_sent_content, mail_sent_senddate, mail_sent_important)
-		values (SEQ_MAIL_SENT_NO.nextval , #{fk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, nvl(#{mail_sent_important}, 0))
+		insert into tbl_mail_sent (mail_sent_no, sk_member_userid, mail_title, mail_sent_content, mail_sent_senddate, mail_sent_important)
+		values (SEQ_MAIL_SENT_NO.nextval , #{fk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, #{mail_sent_important})
 	</insert>
 
 	<!-- 작성된 메일 insert 하기 with 파일첨부 (트랜잭션)-->
 	<insert id="insertMailWriteWithFile" parameterType="MailSentVO">
-		insert into tbl_mail_sent (mail_sent_no, fk_member_userid, mail_title, mail_sent_content, mail_sent_senddate, mail_sent_important, mail_sent_file, mail_sent_file_origin, mail_sent_filesize)
-		values (seq_mail_sent_no.nextval , #{fk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, nvl(#{mail_sent_important}, 0), #{mail_sent_file},#{mail_sent_file_origin},#{mail_sent_filesize})
+		insert into tbl_mail_sent (mail_sent_no, sk_member_userid, mail_title, mail_sent_content, mail_sent_senddate, mail_sent_important, mail_sent_file, mail_sent_file_origin, mail_sent_filesize)
+		values (seq_mail_sent_no.nextval , #{fk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, #{mail_sent_important}, #{mail_sent_file},#{mail_sent_file_origin},#{mail_sent_filesize})
 	</insert>
 	
-	<!-- 작성된 메일 수신메일에 insert 하기 -->
+	<!-- 작성된 메일 수신메일에 insert 하기 (트랜잭션)-->
 	<insert id="insertMailReceive" parameterType="HashMap">
-		insert into tbl_mail_received (fk_mail_sent_no, fk_member_userid)
-		values (seq_mail_sent_no.currval, #{fk_member_userid})
-	</insert>
+		insert into tbl_mail_received (fk_mail_sent_no, rk_member_userid, mail_received_status, mail_received_saved, mail_received_trashstatus, mail_received_important)
+		values (seq_mail_sent_no.currval, #{fk_member_userid}, default, default, default, #{mail_received_important} )
+	</insert> 
 	
+	
+	<resultMap id="receiveMap" type="HashMap">
+		<result property="mail_sent_no"   				column="mail_sent_no" 				javaType="String" />
+		<result property="member_name"   				column="member_name" 				javaType="String" />    
+	    <result property="mail_title"   				column="mail_title" 				javaType="String" />
+	    <result property="mail_sent_senddate" 			column="mail_sent_senddate"    		javaType="String" />
+	    <result property="fk_member_userid"    			column="sk_member_userid" 			javaType="String" />
+	    <result property="mail_received_status" 		column="mail_received_status" 		javaType="String" />
+	    <result property="mail_received_saved" 			column="mail_received_saved" 		javaType="String" />
+	    <result property="mail_received_trashdate" 		column="mail_received_trashdate" 	javaType="String" />
+	    <result property="mail_received_trashstatus" 	column="mail_received_trashstatus" 	javaType="String" />
+	    <result property="mail_received_important" 		column="mail_received_important" 	javaType="String" />
+	    <result property="timediff" 					column="timediff" 					javaType="String" />
+	    <result property="rno" 							column="rno" 						javaType="String" />	   	
+	</resultMap>
+
+	<!-- 받은 메일함 페이징 select 해오기 -->
+	<select id="selectMailReceiveList" parameterType="String" resultMap="receiveMap">
+		
+		select rno, mail_sent_no, mail_title, member_name, timediff, sk_member_userid, mail_received_status, mail_received_saved, mail_sent_senddate
+        , mail_received_trashdate, mail_received_trashstatus, mail_received_important, mail_sent_file
+		from
+		(       
+		select rownum as rno, A.*, B.member_name as member_name
+		from
+		(
+		select mail_sent_file, mail_sent_no, mail_title, to_char(mail_sent_senddate, 'yyyy-mm-dd hh24:mi:ss')AS mail_sent_senddate, (TRUNC(SYSDATE - mail_sent_senddate) || '일전') AS timediff
+			 , sk_member_userid , mail_received_status, mail_received_saved, mail_received_trashdate, mail_received_trashstatus, mail_received_important 
+		from tbl_mail_received R JOIN tbl_mail_sent S       
+		ON R.fk_mail_sent_no = S.mail_sent_no       
+		where rk_member_userid = #{user_id}
+		and R.mail_received_trashstatus = 0
+		order by mail_sent_senddate desc
+		) A JOIN tbl_member B
+		on A.sk_member_userid = B.member_userid
+		) C
+		where rno between #{startRno} and #{endRno}
+	
+	</select>
+	
+	
+	
+	<resultMap id="sentMap" type="HashMap">
+		<result property="member_name"   				column="member_name" 				javaType="String" />    
+	    <result property="mail_title"   				column="mail_title" 				javaType="String" />
+	    <result property="mail_sent_senddate" 			column="mail_sent_senddate"    		javaType="String" />
+	    <result property="fk_member_userid"    			column="rk_member_userid" 			javaType="String" />
+	    <result property="mail_sent_trashstatus" 		column="mail_sent_trashstatus" 		javaType="String" />
+	    <result property="mail_sent_important" 			column="mail_sent_important" 		javaType="String" />
+	    <result property="timediff" 					column="timediff" 					javaType="String" />	
+	    <result property="rno" 							column="rno" 						javaType="String" />
+	    <result property="mail_sent_file" 				column="mail_sent_file"					javaType="String" />
+	    <result property="mail_sent_no" 				column="mail_sent_no"					javaType="String" />
+	    <result property="mail_received_status" 		column="mail_received_status"				javaType="String" />   	
+	</resultMap>
+
+	<!-- 보낸 메일함 페이징 select 해오기 -->
+	<select id="selectMailSentList" parameterType="String" resultMap="sentMap">
+		
+		select mail_sent_file, rno, mail_sent_no, mail_title, member_name, timediff, mail_sent_senddate, rk_member_userid, mail_received_status
+        , mail_sent_trashstatus, mail_sent_important
+		from
+		(       
+		select rownum as rno, A.*, B.member_name as member_name
+		from
+		(
+		select mail_sent_file, mail_sent_no, mail_title, to_char(mail_sent_senddate, 'yyyy-mm-dd hh24:mi:ss')AS mail_sent_senddate
+		        , (TRUNC(SYSDATE - mail_sent_senddate) || '일전') AS timediff
+		        , rk_member_userid, mail_received_status
+		        , mail_sent_trashstatus, mail_sent_important 
+		from tbl_mail_received R JOIN tbl_mail_sent S       
+		ON fk_mail_sent_no = S.mail_sent_no       
+		where sk_member_userid = #{user_id}
+		and S.mail_sent_trashstatus = 0
+		order by mail_sent_senddate desc
+		) A JOIN tbl_member B
+		on rk_member_userid = B.member_userid
+		) C
+		where rno between #{startRno} and #{endRno}
+	
+	</select>
+	
+	
+	<!-- 받은메일함 페이지 불러올때 중요메일인지 확인 -->
+	<resultMap type="HashMap" id="isImportantMail_Map">
+		<result property="fk_mail_sent_no" 					column="fk_mail_sent_no" 			javaType="String"/>
+		<result property="fk_member_userid" 				column="rk_member_userid" 			javaType="String"/>
+		<result property="mail_received_important" 			column="mail_received_important" 			javaType="String"/>
+	</resultMap>
+	<select id="isImportantMail" parameterType="String" resultMap="isImportantMail_Map">
+
+		select fk_mail_sent_no, rk_member_userid, mail_received_important
+		from tbl_mail_received R JOIN tbl_mail_sent S
+		ON sk_member_userid = rk_member_userid
+		where rk_member_userid = #{member_userid}
+	</select>
+	
+	
+	<!-- 받은메일함 중요메일로 바꾸기 -->
+	<update id="updateImportant" parameterType="HashMap">
+		
+		update tbl_mail_received
+		set mail_received_important = 1
+		where fk_mail_sent_no = #{fk_mail_sent_no}
+		and rk_member_userid = #{user_id}
+	
+	</update>
+	
+	<!-- 
+	<update id="updateImportant2" parameterType="HashMap">
+		
+		update tbl_mail_sent
+		set mail_sent_important = 1
+		where mail_sent_no = #{fk_mail_sent_no}
+	
+	</update>
+	 -->
+	 
+	<!-- 받은 메일함 일반메일로 바꾸기 -->
+	<update id="updateImportantreturn" parameterType="HashMap">
+		
+		update tbl_mail_received
+		set mail_received_important = 0
+		where fk_mail_sent_no = #{fk_mail_sent_no}
+		and rk_member_userid = #{user_id}
+	
+	</update>
+	<!-- 
+	<update id="updateImportantreturn2" parameterType="HashMap">
+		
+		update tbl_mail_sent
+		set mail_sent_important = 0
+		where mail_sent_no = #{fk_mail_sent_no}
+	</update>
+	 -->
+	
+	
+	
+	<!-- 받은 메일함 체크한 메일들 보관함으로 옮기기 -->
+	<update id="sendMailStorage" parameterType="map">
+	    UPDATE tbl_mail_received 
+	    SET mail_received_saved = 1
+	    WHERE fk_mail_sent_no IN 
+	    <foreach item="mailNo" collection="mailNos" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	    and rk_member_userid = #{user_id}
+	</update>
+	<!-- 
+	<update id="sendMailStorage2" parameterType="map">
+	    UPDATE tbl_mail_received 
+	    SET mail_received_saved = 1
+	    WHERE fk_mail_sent_no IN 
+	    <foreach item="mailNo" collection="list" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	</update>
+	 -->
+	 
+	<!-- 받은메일함 체크한 메일들 휴지통으로 옮기기 -->
+	
+	<update id="sendMailTrash" parameterType="map">
+	    UPDATE tbl_mail_received 
+	    SET mail_received_trashstatus = 1 , mail_received_trashdate = sysdate
+	    WHERE fk_mail_sent_no IN 
+	    <foreach item="mailNo" collection="mailNos" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	    and rk_member_userid = #{user_id}
+	</update>
+	
+	<!-- 
+	<update id="sendMailTrash2" parameterType="map">
+	    UPDATE tbl_mail_sent 
+	    SET mail_sent_trashstatus = 1 , mail_sent_trashdate = sysdate
+	    WHERE mail_sent_no IN 
+	    <foreach item="mailNo" collection="list" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	</update>
+	 -->
+	
+	
+	 <!-- 보낸메일함 페이지 불러올때 중요메일인지 확인 -->
+	<resultMap type="HashMap" id="isImportantMailSent_Map">
+		<result property="mail_sent_no" 					column="mail_sent_no" 			javaType="String"/>
+		<result property="fk_member_userid" 				column="sk_member_userid" 			javaType="String"/>
+		<result property="mail_sent_important" 			column="mail_sent_important" 			javaType="String"/>
+	</resultMap>
+	<select id="isImportantMailSent" parameterType="String" resultMap="isImportantMailSent_Map">
+		select mail_sent_no, sk_member_userid, mail_sent_important
+		from tbl_mail_sent S left JOIN tbl_mail_received R
+		ON sk_member_userid = rk_member_userid
+		where sk_member_userid = #{member_userid}
+	</select>
+	
+	
+		<!-- 보낸메일함 중요메일로 바꾸기 -->
+	<update id="updateImportantSent" parameterType="HashMap">
+		update tbl_mail_sent
+		set mail_sent_important = 1
+		where mail_sent_no = #{mail_sent_no}
+		and sk_member_userid = #{user_id}	
+	</update>
+	<!-- 
+	<update id="updateImportantSent2" parameterType="HashMap">		
+		update tbl_mail_received
+		set mail_received_important = 1
+		where fk_mail_sent_no = #{mail_sent_no}
+	</update>
+	 -->
+	<!-- 보낸메일함 일반메일로 바꾸기 -->
+	<update id="updateImportantreturnSent" parameterType="HashMap">
+		
+		update tbl_mail_sent
+		set mail_sent_important = 0
+		where mail_sent_no = #{mail_sent_no}
+		and sk_member_userid = #{user_id}	
+	</update>
+	<!-- 
+	<update id="updateImportantreturnSent2" parameterType="HashMap">		
+		update tbl_mail_received
+		set mail_received_important = 0
+		where fk_mail_sent_no = #{mail_sent_no}
+	</update>
+	 -->
+	<!-- 보낸 메일함 체크한 메일들 휴지통으로 옮기기 -->	
+	<update id="sendMailTrashSent" parameterType="map">
+		UPDATE tbl_mail_sent 
+	    SET mail_sent_trashstatus = 1 , mail_sent_trashdate = sysdate
+	    WHERE mail_sent_no IN 
+	    <foreach item="mailNo" collection="mailNos" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	    and sk_member_userid = #{user_id}
+	</update>
+	
+	<!-- 
+	<update id="sendMailTrashSent2" parameterType="map">
+		UPDATE tbl_mail_received 
+	    SET mail_received_trashstatus = 1 , mail_received_trashdate = sysdate
+	    WHERE fk_mail_sent_no IN 
+	    <foreach item="mailNo" collection="list" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	</update>
+	 -->
+	
+	
+	<!-- // 보낸메일함 휴지통 총 메일갯수 가져오기 -->
+	<select id="getSentTrashTotalCount" parameterType="HashMap" resultType="int">
+	select count(*)
+	from tbl_mail_sent
+	where sk_member_userid = #{user_id}
+	and mail_sent_trashstatus = 1
+	and mail_sent_deleted = 0
+	</select>
+		
+	<!-- // 받은메일함 휴지통 총 메일갯수 가져오기 -->
+	<select id="getReceivedTrashTotalCount" parameterType="HashMap" resultType="int">
+	select count(*)
+	from tbl_mail_received
+	where rk_member_userid = #{user_id}
+	and mail_received_trashstatus = 1
+	and mail_received_deleted = 0
+	</select>
+	
+	
+	<resultMap id="TrashMap" type="HashMap">
+		<result property="member_name"   				column="member_name" 				javaType="String" />    	    
+	    <result property="mail_sent_senddate" 			column="mail_sent_senddate"    		javaType="String" />
+	    <result property="sk_member_userid"    			column="sk_member_userid" 			javaType="String" />
+	    <result property="mail_title"   				column="mail_title" 				javaType="String" />
+	    <result property="mail_sent_trashstatus" 		column="mail_sent_trashstatus" 		javaType="String" />	
+	    <result property="rno" 							column="rno" 						javaType="String" />	    
+	    <result property="mail_sent_no" 				column="mail_sent_no"					javaType="String" />
+	</resultMap>
+		
+	<select id="selectMailTrashList" parameterType="String" resultMap="TrashMap">	
+
+		select *
+		from
+		(
+		SELECT rownum as rno, mail_sent_no, mail_sent_trashstatus, mail_title, rk_member_userid
+		       sk_member_userid, B.member_name as member_name, mail_sent_senddate
+		FROM (
+		    SELECT mail_sent_no, mail_sent_trashstatus, mail_title, 
+		           rk_member_userid, mail_sent_senddate,
+		           mail_sent_trashdate
+		    FROM tbl_mail_sent  
+		    LEFT JOIN tbl_mail_received ON mail_sent_no = fk_mail_sent_no
+		    WHERE sk_member_userid = #{user_id}
+		    AND mail_sent_trashstatus = 1
+		    and mail_sent_deleted = 0
+		    order by mail_sent_senddate
+		) A 
+		left JOIN tbl_member B ON rk_member_userid = B.member_userid
+		) C
+		where rno between #{startRno} and #{endRno}
+
+	</select>
+	
+	
+	
+		<resultMap id="TrashReceivedMap" type="HashMap">
+		<result property="member_name"   				column="member_name" 				javaType="String" />    	    
+	    <result property="mail_sent_senddate" 			column="mail_sent_senddate"    		javaType="String" />
+	    <result property="sk_member_userid"    			column="sk_member_userid" 			javaType="String" />
+	    <result property="rk_member_userid"    			column="rk_member_userid" 			javaType="String" />
+	    <result property="mail_title"   				column="mail_title" 				javaType="String" />
+	    <result property="mail_received_trashstatus" 		column="mail_sent_trashstatus" 		javaType="String" />
+	    <result property="mail_received_trashdate" 		column="mail_sent_trashstatus" 		javaType="String" />	
+	    <result property="rno" 							column="rno" 						javaType="String" />	    
+	    <result property="fk_mail_sent_no" 				column="fk_mail_sent_no"				javaType="String" />
+	</resultMap>
+		
+	<select id="selectReceivedMailTrashList" parameterType="String" resultMap="TrashReceivedMap">	
+
+		select *
+		from
+		(
+		SELECT rownum as rno, fk_mail_sent_no, mail_received_trashstatus, mail_title, rk_member_userid, sk_member_userid,
+		       B.member_name as member_name, mail_sent_senddate, mail_received_trashdate
+		FROM (
+		    SELECT fk_mail_sent_no, mail_received_trashstatus, mail_title, sk_member_userid, rk_member_userid
+		           ,mail_sent_senddate, mail_received_trashdate
+		    FROM tbl_mail_received  
+		    LEFT JOIN tbl_mail_sent ON mail_sent_no = fk_mail_sent_no
+		    WHERE rk_member_userid = #{user_id}
+		    AND mail_received_trashstatus = 1
+		    and mail_received_deleted = 0
+		    order by mail_sent_senddate
+		) A 
+		left JOIN tbl_member B ON sk_member_userid = B.member_userid
+		) C
+		where rno between #{startRno} and #{endRno}
+
+	</select>
+	
+	
+	
+	
+	<!-- // 보관함 총 메일갯수 가져오기 -->
+	<select id="getStorageTotalCount" parameterType="HashMap" resultType="int">		
+		
+        SELECT COUNT(*)
+		FROM (
+		    SELECT mail_sent_file, mail_sent_no, mail_title, mail_sent_senddate, mail_sent_trashdate,
+		           rk_member_userid, mail_received_trashstatus, mail_received_saved, mail_sent_trashstatus
+		    FROM tbl_mail_sent S 
+		    JOIN tbl_mail_received R ON R.fk_mail_sent_no = S.mail_sent_no
+		    WHERE rk_member_userid = #{user_id}
+		    AND R.mail_received_saved = 1
+		    AND R.mail_received_trashstatus = 0
+		)
+	</select>
+	
+	
+	
+	
+	<resultMap id="StorageMap" type="HashMap">
+		<result property="member_name"   				column="member_name" 				javaType="String" />    
+	    <result property="mail_title"   				column="mail_title" 				javaType="String" />
+	    <result property="mail_sent_senddate" 			column="mail_sent_senddate"    		javaType="String" />
+	    <result property="fk_member_userid"    			column="rk_member_userid" 			javaType="String" />
+	    <result property="mail_sent_trashstatus" 		column="mail_sent_trashstatus" 		javaType="String" />
+	    <result property="timediff" 					column="timediff" 					javaType="String" />	
+	    <result property="rno" 							column="rno" 						javaType="String" />
+	    <result property="mail_sent_file" 				column="mail_sent_file"					javaType="String" />
+	    <result property="mail_sent_no" 				column="mail_sent_no"					javaType="String" />
+	    <result property="mail_received_trashstatus" 	column="mail_received_trashstatus"					javaType="String" />
+	</resultMap>
+		
+	<select id="selectMailStorageList" parameterType="String" resultMap="StorageMap">	
+		
+		select mail_sent_file, rno, mail_sent_no, mail_title, member_name, timediff, mail_sent_senddate, rk_member_userid
+		, mail_sent_trashstatus, mail_received_trashstatus
+		from
+		(       
+		select rownum as rno, A.*, B.member_name as member_name
+		from
+		(
+		select mail_sent_file, mail_sent_no, mail_title, to_char(mail_sent_senddate, 'yyyy-mm-dd hh24:mi:ss')AS mail_sent_senddate
+		        , (TRUNC(SYSDATE - mail_sent_senddate) || '일전') AS timediff, mail_sent_trashdate
+		        , rk_member_userid , mail_received_trashstatus, mail_received_saved
+		        , mail_sent_trashstatus 
+		from tbl_mail_sent S JOIN tbl_mail_Received R       
+		ON R.fk_mail_sent_no = S.mail_sent_no       
+		where rk_member_userid = #{user_id}
+		and R.mail_received_saved = 1
+		and R.mail_received_trashstatus = 0
+		order by mail_sent_senddate desc
+		) A JOIN tbl_member B
+		on rk_member_userid = B.member_userid
+		) C
+		where rno between #{startRno} and #{endRno}
+	</select>
+	
+	<!-- 받은메일 보낸메일 구별하기 -->	
+	<!-- 
+	<resultMap id="SRmap" type="HashMap">
+		<result property="mail_sent_no"   				column="mail_sent_no" 				javaType="String" />    
+	</resultMap>
+	
+	<select id="isSR" parameterType="map" resultMap="SRmap">
+		SELECT mail_sent_no
+        FROM tbl_mail_sent S 
+        LEFT JOIN tbl_mail_received R ON S.mail_sent_no = R.fk_mail_sent_no
+        WHERE sk_member_userid = #{user_id}
+        AND S.mail_sent_trashstatus = 1 		
+	</select>
+	 -->
+	
+	
+	
+	<!-- 보낸메일들 휴지통 메일 복구시키기 -->
+	<update id="sentMailRestore" parameterType="map">
+		UPDATE tbl_mail_sent 
+	    SET mail_sent_trashstatus = 0
+	    WHERE mail_sent_no IN 
+	    <foreach item="mailNo" collection="mailNos" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	    and sk_member_userid = #{user_id}
+	</update>
+	
+	<!-- 받은메일들 휴지통 메일 복구시키기 -->
+	<update id="receivedMailRestore" parameterType="map">
+	    UPDATE tbl_mail_received 
+	    SET mail_received_trashstatus = 0
+	    WHERE fk_mail_sent_no IN 
+	    <foreach item="mailNo" collection="mailNos" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	    and rk_member_userid = #{user_id}
+	</update>
+	
+	
+	<!-- 보낸메일들 휴지통 영구삭제시키기 -->
+
+	<update id="sentMailDelete" parameterType="map">
+		UPDATE tbl_mail_sent 
+	    SET mail_sent_deleted = 1
+	    WHERE mail_sent_no IN 
+	    <foreach item="mailNo" collection="mailNos" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	    and sk_member_userid = #{user_id}
+	</update>
+	
+	<!--  받은메일들 휴지통 영구삭제시키기 -->
+	<update id="receivedMailDelete" parameterType="map">
+	    UPDATE tbl_mail_received 
+	    SET mail_received_deleted = 1
+	    WHERE fk_mail_sent_no IN 
+	    <foreach item="mailNo" collection="mailNos" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	    and rk_member_userid = #{user_id}
+	</update>
 
 </mapper>
