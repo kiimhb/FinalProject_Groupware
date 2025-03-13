@@ -45,10 +45,11 @@
 	
 	<!-- 어제 출근하지 않은 사원들의 아이디 알아오기 -->
 	<select id="yesterday_notWork_userid" resultType="String" parameterType="String">
-		select member_userid, trunc(sysdate - 1) as work_recorddate
+		select member_userid
 		from tbl_member a left join tbl_work b
 		on a.member_userid = b.fk_member_userid
 		and work_recorddate = trunc(sysdate - 1)
+		and b.work_recorddate &gt; trunc(sysdate)
 		where work_recorddate is null
 	</select>
 	

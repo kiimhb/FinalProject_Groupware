@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.spring.med.patient.domain.PrescribeVO;
+
 @Repository
 public class PayDAO_imple implements PayDAO {
 
@@ -35,6 +37,21 @@ public class PayDAO_imple implements PayDAO {
 	@Override
 	public void pay_success(String order_no) {	
 		sqlsession.update("hyeyeon.pay_success", order_no);
+	}
+
+
+	// 환자정보 불러오기
+	@Override
+	public Map<String, String> pay_patientInfo(String order_no) {
+		Map<String, String> pay_patientInfo = sqlsession.selectOne("hyeyeon.pay_patientInfo", order_no);
+		return pay_patientInfo;
+	}
+
+	// 처방약 정보 불러오기
+	@Override
+	public List<PrescribeVO> prescribe_list(String order_no) {
+		List<PrescribeVO> prescribe_list = sqlsession.selectList("hyeyeon.prescribe_list", order_no);
+		return prescribe_list;
 	}
 	
 	

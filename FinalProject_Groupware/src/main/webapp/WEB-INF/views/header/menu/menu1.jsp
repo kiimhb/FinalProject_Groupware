@@ -12,7 +12,30 @@
 <%
 	String ctxPath = request.getContextPath();
     //     /myspring
-%>    
+%> 
+
+<%
+    // === (#웹채팅관련2) === 
+    // === 서버 IP 주소 알아오기(사용중인 IP주소가 유동IP 이라면 IP주소를 알아와야 한다.) ===
+    
+    InetAddress inet = InetAddress.getLocalHost();
+     String serverIP = inet.getHostAddress();
+     
+ 	// System.out.println("serverIP : " + serverIP);
+ 	// serverIP : 192.168.0.219
+ 
+    // === 서버 포트번호 알아오기 === //
+    int portnumber = request.getServerPort();
+ 	// System.out.println("portnumber : " + portnumber);
+ 	// portnumber : 9090
+ 
+    String serverName = "http://"+serverIP+":"+portnumber;
+ 	// System.out.println("serverName : " + serverName);
+ 	// serverName : http://192.168.0.208:9090
+
+%>
+
+   
 <%-- 직접 만든 CSS 1 --%>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
@@ -87,6 +110,8 @@ function toggleAlarm() {
 			</div>
 	
 
-		<button type="button" class="nav_button_css" ><i class="fa-solid fa-comments nav_i_css2"></i></button>
+		<button type="button" class="nav_button_css" >
+		<i class="fa-solid fa-comments nav_i_css2" onclick="location.href='<%=ctxPath%>/chatting/chat'"></i>
+		</button>
 		</div>
 	</nav>

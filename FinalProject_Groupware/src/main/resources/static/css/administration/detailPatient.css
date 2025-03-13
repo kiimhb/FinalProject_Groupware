@@ -100,8 +100,10 @@ button.back {
 	background-color: #006769;
 	color:white;
 }
-
-
+td.fasttr {
+	font-size: 10pt;
+	background-color: #F7F7F7;
+}
 /* input 디자인 */
 div.input {
 	display:flex;

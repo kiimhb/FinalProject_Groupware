@@ -28,7 +28,7 @@ function nameSearch() {
       <div class="header">
 		
 	  		<div class="title">
-	  			진료기록조회
+	  			진료환자조회
 	  		</div>
 	  		
 			<form name="searchFrm">
@@ -46,22 +46,22 @@ function nameSearch() {
 		<table class="table table-hover">
 			<thead>
 				<tr>
-					<th>진료번호</th>
-					<th>진료일자</th>
+					<th>no</th>
 					<th>진료과</th>
 					<th>환자명</th>
+					<th>진료일자</th>
 					<th>성별</th>
 					<th>주민등록번호</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:if test="${not empty requestScope.patientList}">
-					<c:forEach var="pvo" items="${requestScope.patientList}">
+					<c:forEach var="pvo" items="${requestScope.patientList}" varStatus="status">
 						<tr class="patientList" onclick="javascript:location.href='<%= ctxPath%>/patient/detail/${pvo.patient_no}'" >
-							<td>${pvo.patient_no}</td>
-							<td>${pvo.patient_visitdate}</td>
+							<td> ${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (status.index) }</td>
 							<td>${pvo.child_dept_name}</td>
 							<td>${pvo.patient_name}</td>
+							<td>${pvo.patient_visitdate}</td>
 							<td>${pvo.patient_gender}</td>
 							<td>${pvo.patient_jubun}</td>
 						</tr>

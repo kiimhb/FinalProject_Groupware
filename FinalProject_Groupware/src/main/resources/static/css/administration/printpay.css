@@ -1,0 +1,25 @@
+@charset "UTF-8";
+
+/* 상단 */
+
+div.all {
+	border:1px solid black;
+
+	width: 80%;
+	height:1000px;
+}
+
+@media print {
+	
+	body {
+	       width: 100%;
+	       height: 100%;
+	       margin: 0; /* 기본 여백 없애기 */
+	       padding: 0; /* 기본 패딩 없애기 */
+	}
+	
+	.printheader {
+	    background-color: #8ac2bd !important;
+	
+	}
+}

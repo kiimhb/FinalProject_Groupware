@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.med.administration.model.PayDAO;
+import com.spring.med.patient.domain.PrescribeVO;
 
 @Service
 public class PayService_imple implements PayService {
@@ -39,6 +40,20 @@ public class PayService_imple implements PayService {
 			dao.pay_success(order_no.get(i));
 		}
 		
+	}
+	
+	// 환자정보 불러오기
+	@Override
+	public Map<String, String> pay_patientInfo(String order_no) {
+		Map<String, String> pay_patientInfo = dao.pay_patientInfo(order_no);
+		return pay_patientInfo;
+	}
+
+	// 처방약 정보 불러오기
+	@Override
+	public List<PrescribeVO> prescribe_list(String order_no) {
+		List<PrescribeVO> prescribe_list = dao.prescribe_list(order_no);
+		return prescribe_list;
 	}
 	
 }

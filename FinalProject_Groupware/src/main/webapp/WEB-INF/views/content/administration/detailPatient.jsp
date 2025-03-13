@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%
 	String ctxPath = request.getContextPath();
@@ -62,7 +63,7 @@ a:hover,
 <script type="text/javascript">
 $(document).ready(function(){
 
-	var calendar
+	var calendar;
 
 	if (calendar) {
         calendar.destroy(); // 이전 캘린더 인스턴스 삭제
@@ -159,26 +160,26 @@ $(document).ready(function(){
 		if (surgery_room && surgery_day) {
 
 			$.ajax({
-					 url:"<%= ctxPath%>/register/oktime",
-					 type: "GET", 
-					 data:{"surgeryroom_no":surgery_room, 
-						   "surgery_day":surgery_day},
-					 dataType: "json",
-		    	     success:function(availableTimes){
-		    	    	
-						let startTime = $("select#surgery_start_time");
-						
-						startTime.empty(); // 비우기
-						startTime.append('<option value="" disabled>시작시간</option>');
-						
-						availableTimes.forEach(time => {
-							startTime.append(`<option value="\${time}">\${time}</option>`);
-						});
-		    	     },
-		  	    	    error: function(request, status, error){
-					   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-					 }
-				}); // end of $.ajax
+				 url:"<%= ctxPath%>/register/oktime",
+				 type: "GET", 
+				 data:{"surgeryroom_no":surgery_room, 
+					   "surgery_day":surgery_day},
+				 dataType: "json",
+	    	     success:function(availableTimes){
+	    	    	
+					let startTime = $("select#surgery_start_time");
+					
+					startTime.empty(); // 비우기
+					startTime.append('<option value="" disabled>시작시간</option>');
+					
+					availableTimes.forEach(time => {
+						startTime.append(`<option value="\${time}">\${time}</option>`);
+					});
+	    	     },
+	  	    	    error: function(request, status, error){
+				   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				 }
+			}); // end of $.ajax
 		}
 		
 	}); // end of $("select#surgery_surgeryroom_name, input#surgery_day").on("
@@ -406,7 +407,6 @@ function checkedHospitalizeUpdate() {
 // 초기화 클릭한 경우
 function reset() {
 	// alert("초기화누름")
-	
 	const room = $("input.room").val();
 	
 	$("select.room").val(room); // 수술실 이름
@@ -486,7 +486,6 @@ function hospitalizeUpdate() {
 	});
 
 }
-
 </script>
 	
       <div class="header">
@@ -578,9 +577,7 @@ function hospitalizeUpdate() {
 	  		
 	  		<div class="top">
 		  		<div class="menu" style="width:50%;">
-		  			<div class="detail_title">예약 수술 관리</div>
-		  			<div class="list ml-3"><a href="">수술예정</a>&nbsp;&nbsp;|</div>
-		  			<div class="list">&nbsp;&nbsp;<a href="">과거수술기록</a></div>
+		  			<div class="detail_title">수술예약 관리</div>
 		  		</div>
 		  		
 		  		<div style="width:20px;"></div>
@@ -592,9 +589,12 @@ function hospitalizeUpdate() {
 	  	
 	  		<div class="bottom">
 	  		
+		  		<!-- 현재 날짜를 가져온다. 과거기록인지 미래기록인지 구분을 위해 -->
+				<c:set var="today" value="<%= new java.text.SimpleDateFormat(\"yyyy-MM-dd\").format(new java.util.Date()) %>" />
+			
 		  		<div class="reservation2">
 		  			<table class="table">
-		  				<thead >
+		  				<thead>
 		  					<tr>
 			  					<th>선택</th>
 			  					<th>수술일</th>
@@ -607,30 +607,73 @@ function hospitalizeUpdate() {
 					<form name="surgeryUpdateFrm">	
 		  				<tbody>
 							<c:if test="${not empty requestScope.surgery_list}">
+							
+								<c:set var="pastRecordSurgery" value="false" />	
+								
+								
+								
 								<c:forEach var="svo" items="${requestScope.surgery_list}">
-				  					<tr><input type="hidden" name="fk_order_no" value="${svo.order_no}" />
-				  						<td><input type="radio" name="radio" class="orderno" data-id="${svo.order_no}" onclick="checkedSurgeryUpdate()" /></td>
-				  						<td id="surgery_day">${svo.surgery_day}</td>
-				  						<td><span id="surgery_start_time">${svo.surgery_start_time}</span> ~ <span id="surgery_end_time">${svo.surgery_end_time}</span></td>
+								
+									<c:set var="surgeryPast" value="${svo.surgery_day < today}" />
+									<c:choose>
+										<c:when test="${!surgeryPast}">
+											<tr>
+												<input type="hidden" name="fk_order_no" value="${svo.order_no}" />
+					  						<td><input type="radio" name="radio" class="orderno" data-id="${svo.order_no}" onclick="checkedSurgeryUpdate()" /></td>
+					  						<td id="surgery_day">${svo.surgery_day}</td>
+					  						<td><span id="surgery_start_time">${svo.surgery_start_time}</span> ~ <span id="surgery_end_time">${svo.surgery_end_time}</span></td>
+											
+											<c:choose>
+												<c:when test="${svo.surgery_surgeryroom_name eq 1}">
+													<td class="surgery_room">roomA</td>
+												</c:when>
+												<c:when test="${svo.surgery_surgeryroom_name eq 2}">
+													<td class="surgery_room">roomB</td>
+												</c:when>
+												<c:when test="${svo.surgery_surgeryroom_name eq 3}">
+													<td class="surgery_room">roomC</td>
+												</c:when>
+												<c:when test="${svo.surgery_surgeryroom_name eq 4}">
+													<td class="surgery_room">roomD</td>
+												</c:when>
+											</c:choose>
+											<input type="hidden" class="room" value="${svo.surgery_surgeryroom_name}" />
+					  						<td id="order_surgeryType_name">${svo.order_surgeryType_name}</td>
+					  						<td><span id="member_name">${svo.member_name}</span>선생님</td>
+				  							</tr>
+										</c:when>
 										
-										<c:choose>
-											<c:when test="${svo.surgery_surgeryroom_name eq 1}">
-												<td class="surgery_room">roomA</td>
-											</c:when>
-											<c:when test="${svo.surgery_surgeryroom_name eq 2}">
-												<td class="surgery_room">roomB</td>
-											</c:when>
-											<c:when test="${svo.surgery_surgeryroom_name eq 3}">
-												<td class="surgery_room">roomC</td>
-											</c:when>
-											<c:when test="${svo.surgery_surgeryroom_name eq 4}">
-												<td class="surgery_room">roomD</td>
-											</c:when>
-										</c:choose>
-										<input type="hidden" class="room" value="${svo.surgery_surgeryroom_name}" />
-				  						<td id="order_surgeryType_name">${svo.order_surgeryType_name}</td>
-				  						<td><span id="member_name">${svo.member_name}</span>선생님</td>
-				  					</tr>
+										<c:otherwise>
+											<c:if test="${pastRecordSurgery == 'false'}">
+												<tr class="trText">
+													<td class="fasttr" colspan="6" style="text-align: center;">지난수술기록</td>
+												</tr>
+												<c:set var="pastRecordSurgery" value="true" />
+												<tr>
+													<td>x</td>
+													<td id="surgery_day">${svo.surgery_day}</td>
+					  								<td><span id="surgery_start_time">${svo.surgery_start_time}</span> ~ <span id="surgery_end_time">${svo.surgery_end_time}</span></td>
+					  								<c:choose>
+														<c:when test="${svo.surgery_surgeryroom_name eq 1}">
+															<td class="surgery_room">roomA</td>
+														</c:when>
+														<c:when test="${svo.surgery_surgeryroom_name eq 2}">
+															<td class="surgery_room">roomB</td>
+														</c:when>
+														<c:when test="${svo.surgery_surgeryroom_name eq 3}">
+															<td class="surgery_room">roomC</td>
+														</c:when>
+														<c:when test="${svo.surgery_surgeryroom_name eq 4}">
+															<td class="surgery_room">roomD</td>
+														</c:when>
+													</c:choose>
+					  								<td id="order_surgeryType_name">${svo.order_surgeryType_name}</td>
+					  								<td><span id="member_name">${svo.member_name}</span>선생님</td>
+												</tr>
+											</c:if>
+										</c:otherwise>
+										
+									</c:choose>
 								</c:forEach>
 							</c:if>
 							<c:if test="${empty requestScope.surgery_list}">
@@ -694,9 +737,7 @@ function hospitalizeUpdate() {
 	  		
 		  		<div class="top">
 		  		<div class="menu" style="width:50%;">
-		  			<div class="detail_title">예약 입원 관리</div>
-		  			<div class="list ml-3">입원예정 |</div>
-		  			<div class="list">&nbsp;과거입원기록</div>
+		  			<div class="detail_title">입원예약 관리</div>
 		  		</div>
 		  		
 		  		<div style="width:20px;"></div>
@@ -719,17 +760,47 @@ function hospitalizeUpdate() {
 		  					</tr>
 		  				</thead>
 		  				<tbody>
+
 							<c:if test="${not empty requestScope.hospitalize_list}">
-									<c:forEach var="hvo" items="${requestScope.hospitalize_list}">
-										<tr><input type="hidden" class="hospitalize_no"  value="${hvo.hospitalize_no}"/>
-											<input type="hidden" class="order_howlonghosp" data-id="${hvo.order_howlonghosp}"> 
-					  						<td><input type="radio" name="radio2" class="${hvo.hospitalize_no}" value="${hvo.order_no}" onclick="checkedHospitalizeUpdate()" /></td>
-					  						<td class="hospitalize_start_day">${hvo.hospitalize_start_day}</td>
-					  						<td class="hospitalize_end_day">${hvo.hospitalize_end_day}</td>
-					  						<td class="fk_hospitalizeroom_no" data-id="${hvo.fk_hospitalizeroom_no}">${hvo.fk_hospitalizeroom_no}호</td>
-					  					</tr>
-									</c:forEach>
+							
+						 		<c:set var="pastRecordsPrinted" value="false" />	
+						 		
+								<c:forEach var="hvo" items="${requestScope.hospitalize_list}">
+
+								    <input type="hidden" class="hospitalize_no"  value="${hvo.hospitalize_no}"/>
+									<input type="hidden" class="order_howlonghosp" data-id="${hvo.order_howlonghosp}">
+
+									<c:set var="isPast" value="${hvo.hospitalize_start_day < today}" />
+									
+										<c:choose>
+											<c:when test="${!isPast}">
+												<tr class="future">
+													<td><input type="radio" name="radio2" class="${hvo.hospitalize_no}" value="${hvo.order_no}" onclick="checkedHospitalizeUpdate()" /></td>
+							  						<td class="hospitalize_start_day">${hvo.hospitalize_start_day}</td>
+							  						<td class="hospitalize_end_day">${hvo.hospitalize_end_day}</td>
+							  						<td class="fk_hospitalizeroom_no" data-id="${hvo.fk_hospitalizeroom_no}">${hvo.fk_hospitalizeroom_no}호</td>
+												</tr>	
+											</c:when>
+												
+											<c:otherwise>
+												<c:if test="${pastRecordsPrinted == 'false'}">
+													<tr class="trText">
+														<td class="fasttr" colspan="4" style="text-align: center;">지난입원기록</td>
+													</tr>
+													<c:set var="pastRecordsPrinted" value="true" />
+												</c:if>
+												
+												<tr class="past">
+													<td>x</td>
+													<td class="hospitalize_start_day">${hvo.hospitalize_start_day}</td>
+							  						<td class="hospitalize_end_day">${hvo.hospitalize_end_day}</td>
+							  						<td class="fk_hospitalizeroom_no" data-id="${hvo.fk_hospitalizeroom_no}">${hvo.fk_hospitalizeroom_no}호</td>
+												</tr>
+											</c:otherwise>								
+										</c:choose>
+								</c:forEach>
 							</c:if>
+							
 							<c:if test="${empty requestScope.hospitalize_list}">
 									<tr><td>${requestScope.hospitalizeMessage}</td></tr>
 							</c:if>
@@ -740,7 +811,7 @@ function hospitalizeUpdate() {
 		  		<div style="width:20px;"></div>
 		  		
 		  		<div class="reservation2 updatefrm">
-		  		
+		  			
 		  			<div class="input">
 		  				<div class="text">환자명</div>
 		  				<input type="text" class="patientinput" name="patient_name" disabled/>
@@ -772,8 +843,7 @@ function hospitalizeUpdate() {
 	  	</div>
   	</div>
   	<!-- second 끝  -->
-  	
-  	
+
   	</div>
   	
   	<div class="backbtn">

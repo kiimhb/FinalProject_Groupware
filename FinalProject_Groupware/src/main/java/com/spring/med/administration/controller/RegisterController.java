@@ -263,7 +263,7 @@ public class RegisterController {
 	@PostMapping("reservedTime")
 	@ResponseBody
 	public List<Map<String, String>> reservedTime(@RequestParam int surgeryroom_no, 
-									 			  										@RequestParam String surgery_day) {
+									 			  @RequestParam String surgery_day) {
 		
 		Map<String, Object> paraMap = new HashMap<>();
 		paraMap.put("surgery_surgeryroom_name", surgeryroom_no);

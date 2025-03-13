@@ -10,9 +10,9 @@
     //     /myspring
 %>
 
-<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/administration/pay.css" />
-
 <jsp:include page="../../header/header1.jsp" /> 
+
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/administration/pay.css" />
 
 <script type="text/javascript">
 $(document).ready(function(){  
@@ -22,10 +22,6 @@ $(document).ready(function(){
 			paySearch();
 		}
 	});
-	
-	
-	
-	
 
 });
 
@@ -63,7 +59,7 @@ function pay_success() {
 	
 	// 체크박스를 선택하지 않고 수납처리 버튼을 클릭한 경우 
 	if($("input:checkbox[name='finishCheck']:checked").length == 0) {
-		alert("수납처리할 회원을 선택하세요");
+		alert("수납처리할 환자를 선택하세요");
 		return;
 	}
 	
@@ -81,6 +77,15 @@ function pay_success() {
 		alert("수납처리가 취소되었습니다.");
 	}
 	
+}
+
+// 출력화면 띄우기
+function openAndPrint(url) {
+	
+	var newWindow = window.open(url, '_blank');
+	newWindow.onload = function() {
+		newWindow.print();
+	};
 }
 
 </script>
@@ -142,7 +147,7 @@ function pay_success() {
 						<td>${pvo.patient_gender}</td>
 						<td>${fn:substring(pvo.patient_jubun, 0, 8)}******</td>
 						<td><fmt:formatNumber value="${pvo.cost}" pattern="#,###"/>원</td>
-						<td><input type="button" value="출력" id="print" class="btn print" onclick="window.print()"></td>
+						<td><input type="button" value="출력" id="print" class="btn print" onclick="openAndPrint('<%= ctxPath%>/pay/print/${pvo.order_no}')"></td>
 						<td><input type="button" value="출력" id="print" class="btn print" onclick="window.print()"></td>
 					</tr>
 				</c:forEach>
