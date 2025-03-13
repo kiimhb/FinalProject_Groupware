@@ -82,7 +82,7 @@ function trclick(patient_no){
 
 <div style="border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;"><span>진료대기환자</span></div>
 <div>${requestScope.firstPatient_no}</div>
-<div style="border:solid 1px blue;">	
+<div style="border:solid 0px blue;">	
 	<div style="border:solid 1px green; margin:0 10% 2% 10%;"class="">
 		
 		<table class="table text-center" id="patientWaiting">
@@ -95,6 +95,7 @@ function trclick(patient_no){
 					<th style="border:solid 1px black">증상</th>				
 				</tr>
 			<form name="patientGoToOrder">
+				<c:if test="${not empty requestScope.patientList}">
 				<c:forEach var="pvo" items="${requestScope.patientList}">
 					<tr onclick="trclick(${pvo.patient_no})">
 						<td>${pvo.rno}</td>
@@ -105,6 +106,12 @@ function trclick(patient_no){
 						<td>${pvo.patient_symptom}</td>				
 					</tr>					
 				</c:forEach>
+				</c:if>
+				<c:if test="${empty requestScope.patientList}">
+					<tr style="">
+						<td style="border:solid 1px black;"colspan="6">해당된 환자가 없습니다.</td>
+					</tr>
+				</c:if>
 				<input type="hidden" name="nameClickPatient_no" id="idClickPatient_no"/>				
 			</form>				
 		</table>
