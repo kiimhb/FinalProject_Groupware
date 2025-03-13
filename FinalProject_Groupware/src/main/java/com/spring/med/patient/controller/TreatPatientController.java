@@ -52,10 +52,13 @@ public class TreatPatientController {
 		else {				
 		
 		String member_userid = loginuser.getMember_userid();
+		String fk_child_dept_no = loginuser.getFk_child_dept_no();
+		
 	
 		Map<String, String> paraMap = new HashMap<>();
 		
 		paraMap.put("member_userid", member_userid);
+		paraMap.put("fk_child_dept_no", fk_child_dept_no);
 		
 		int totalCount = 0;          // 총 게시물 건수
 		int sizePerPage = 10;        // 한 페이지당 보여줄 게시물 건수

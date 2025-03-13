@@ -16,6 +16,7 @@
 			from tbl_patient a join tbl_child_dept b
 			on a.fk_child_dept_no = b.child_dept_no
 			where patient_waiting = 1
+			and fk_child_dept_no = #{fk_child_dept_no}
 			)
 	</select>
 	
