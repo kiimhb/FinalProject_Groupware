@@ -15,6 +15,7 @@
 
 <style>
 	.draftContainer {
+	
 		border: solid 1px gray;
 		border-radius: 3px;
 		margin: 2%;
@@ -31,7 +32,7 @@
 	
 	.draftInfo {
 		font-weight: bold;
-		font-size: 14pt;
+		font-size: 15.5pt;
 		margin-bottom: 1%;
 	}
 	
@@ -49,7 +50,7 @@
 	}
 	
 	.table_header {
-		font-size: 13pt !important;
+		font-size: 15pt !important;
 		font-weight: bold !important;
 		padding-bottom: 4%;
 	}
@@ -61,7 +62,7 @@
 	}
 	
 	.topTables {
-		font-size: 10pt;
+		font-size: 11.5pt;
 		margin-bottom: 5%;
 	}
 	
@@ -290,7 +291,7 @@ function charCount(text, limit) {
 
 <%-- ===================================================================== --%>
 <body>
-	<div class="draftContainer" style="height: 600px; overflow: auto;">
+	<div class="draftContainer" style="height: 650px; overflow: auto;">
 		<input type="hidden" id="draftMode" value="insert" /> 
 		<h2 id="draftSubject" style="text-align: center;">휴가신청서</h2>
 
@@ -298,7 +299,7 @@ function charCount(text, limit) {
 			<div class="topTables" style="display: flex;">
 				<div style="border: solid 0px blue; flex: 2; vertical-align: top;">
 					<div class="table_header" style="padding-bottom: 4%">문서정보</div>
-					<table class="table-bordered" style="width: 80%;">
+					<table class="table-bordered" style="width: 80%; line-height: 2.3;">
 						<tr>
 							<td class="table_title">기안자</td>
 							<td id="member_name"><span id="member_userid" style="display: none;">${requestScope.paraMap.memverInfo.member_userid}</span>${requestScope.paraMap.memverInfo.member_name}</td>
@@ -330,7 +331,7 @@ function charCount(text, limit) {
 					<div id="undesignated_line_total" style="border: solid 0px orange; float: right; width: 73%;">
 						<div class="table_header">결재선</div>
 						<div id="undesignated_line" style="width: 100%; height: 174px; background-color: #eee"></div>
-						<table id="designated_line_Table" class="table-bordered table_approval table-bordered" style="display: none; float: right;">	
+						<table id="designated_line_Table" class="table-bordered table_approval table-bordered" style="display: none; float: right; line-height: 2.3;">	
 							<tr class="approvalLine_view" id="approvalLine_1"></tr>
 							<tr class="approvalLine_view" id="approvalLine_2"></tr>
 							<tr class="approvalLine_view" id="approvalLine_3"></tr>
@@ -342,7 +343,7 @@ function charCount(text, limit) {
 					<div id="undesignated_refer_total" style="border: solid 0px orange; float: right; width: 80%; margin-top: 8%;">
 						<div class="table_header">참조자</div>
 						<div id="undesignated_refer" style="width: 100%; height: 60px; background-color: #eee"></div>
-						<table id="undesignated_refer_Table" class="table-bordered" style="width: 100%; display:none;">
+						<table id="undesignated_refer_Table" class="table-bordered" style="width: 100%; display:none; line-height: 2.3;">
 						</table>
 					</div>
 				</div>
@@ -398,8 +399,9 @@ function charCount(text, limit) {
 			
 			<div class="input_margin">
 				<div class="draftInfo">참고</div>
-				<div style="font-size: 9pt; border: solid 1px gray; border-radius: 3px; padding: 0.5%;">
-					1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다. 단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.<br>
+				<div style="font-size: 10pt; border: solid 1px gray; border-radius: 3px; padding: 0.5%;">
+					1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다. <br>
+					&nbsp;&nbsp;&nbsp;(단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.)<br>
 					2. 경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출<br>
 					3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
 				</div>
@@ -420,7 +422,6 @@ function charCount(text, limit) {
 				<div class="draftInfo" >결재 의견</div>
 				<div id="feedbackContainer" style="border: solid 1px #eee; border-radius: 3px;">
 					<div id="defaultFeedback" style="display: flex; height: 50px; justify-content: center; align-items: center; background-color: #eee;">결재 의견이 비어 있습니다.</div>
-					<div id="addFeedback"></div>
 				</div>
 			</div>
 		</form>

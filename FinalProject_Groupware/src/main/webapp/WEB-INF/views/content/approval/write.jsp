@@ -42,9 +42,11 @@
 	}
 	
 	h2 {
-		margin-left: 2%;
-		margin-top: 1%;
+		margin-left: 4%;
+		margin-top: 4%;
 		margin-bottom: 3%;
+		font-weight: bold;
+		letter-spacing: 4px !important;
 	}
 	
 	button#btnType {

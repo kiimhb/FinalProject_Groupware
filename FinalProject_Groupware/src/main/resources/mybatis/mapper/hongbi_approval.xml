@@ -30,6 +30,7 @@
 		     , child_dept_name
 		     , member_name
 		     , member_userid
+		     , member_sign_filename
 		from  tbl_child_dept c join tbl_member m
 		on c.child_dept_no = m.fk_child_dept_no 
 		where member_userid in
@@ -108,6 +109,70 @@
 		where member_userid = to_number(#{member_userid})
 	</select>
 	
+	
+	<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- ==== [결재상신함] 내가 작성한(결재요청한) 기안문 리스트 불러오기  ==== -->
+	<select id="approvalRequestList" resultType="ApprovalVO" parameterType="HashMap">
+		select *
+		from
+		(
+		    with A as
+		    (
+		        select draft_no, to_char(draft_write_date, 'yyyy/mm/dd') as draft_write_date
+		             , draft_form_type
+		             , case when length(draft_subject) > 14 then substr(draft_subject, 1, 11) || '...' else draft_subject end as draft_subject
+		             , draft_status, fk_member_userid, draft_file_name
+		        from tbl_draft
+		        where draft_saved = 0
+		        <choose>
+					<when test="searchType == 'draft_form_type' and searchWord != ''">
+						and lower(draft_form_type) like '%' || lower(#{searchWord}) ||'%'
+					</when>
+					<when test="searchType == 'draft_subject' and searchWord != ''">
+						and lower(draft_subject) like '%' || lower(#{searchWord}) ||'%'
+					</when>
+					<otherwise></otherwise>
+				</choose>
+				order by draft_no desc
+		    ),
+		    B as
+		    (
+		        select parent_dept_name, member_name, member_userid
+		        from tbl_member m join tbl_child_dept d
+		        on m.fk_child_dept_no = d.child_dept_no
+		        join tbl_parent_dept p
+		        on d.fk_parent_dept_no = p.parent_dept_no
+		        where member_userid=#{member_userid}
+		    )
+		    select rownum AS rno, draft_no, draft_write_date, draft_form_type, draft_subject, draft_status, draft_file_name
+		         , parent_dept_name, member_name
+		         , case when A.draft_status in ('승인완료', '반려완료') 
+                        then (select to_char(max(approval_date), 'yyyy-mm-dd') 
+                              from tbl_approval 
+                              where fk_draft_no = A.draft_no)
+                        else null end as approval_date
+		    from A join B
+		    on A.fk_member_userid = B.member_userid
+		)
+		where rno between to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	<!-- ==== 결재상신함 총 게시물 건수 구하기 ==== -->
+	<select id="getTotalCount_approvalRequest" resultType="int" parameterType="HashMap">
+		select count(*)
+		from tbl_draft
+		where draft_saved = 0
+		and fk_member_userid = #{member_userid}
+		<choose>
+			<when test="searchType == 'draft_form_type' and searchWord != ''">
+				and lower(draft_form_type) like '%' || lower(#{searchWord}) ||'%'
+			</when>
+			<when test="searchType == 'draft_subject' and searchWord != ''">
+				and lower(draft_subject) like '%' || lower(#{searchWord}) ||'%'
+			</when>
+			<otherwise></otherwise>
+		</choose>
+	</select>
 	
 	<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
 	<!-- ==== 기안문 임시저장하기 [insert] ==== -->
@@ -306,7 +371,7 @@
 	</select>
 	
 	
-	<!-- ==== 총 게시물 건수 구하기 ==== -->
+	<!-- ==== 임시저장함 총 게시물 건수 구하기 ==== -->
 	<select id="getTotalCount" resultType="int" parameterType="HashMap">
 		select count(*) 
 		from tbl_draft
@@ -419,11 +484,70 @@
 		    from A join B
 		    on A.fk_draft_no = B.draft_no
 		    where approval_status != '대기'
+		    and approval_step != 0
+   		    <choose>
+				<when test="searchType == 'draft_form_type' and searchWord != ''">
+					and lower(draft_form_type) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'draft_subject' and searchWord != ''">
+					and lower(draft_subject) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'member_name' and searchWord != ''">
+					and lower(member_name) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'parent_dept_name' and searchWord != ''">
+					and lower(parent_dept_name) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<otherwise></otherwise>
+			</choose>
 		    order by fk_draft_no desc
 		)
-		where rno between to_number(1) AND to_number(10)
+		where rno between to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
 	
+	
+	<!-- ==== 결재문서함 총 게시물 건수 구하기 ==== -->
+	<select id="getTotalCount_approvalPending" resultType="int" parameterType="HashMap">
+		with A as
+			(
+			select fk_draft_no, fk_member_userid, approval_step, approval_status
+			from tbl_approval
+			where fk_member_userid = #{member_userid}
+			),
+			B as
+			(
+			select draft_no, draft_form_type
+			     , case when length(draft_subject) > 20 then substr(draft_subject, 1, 17) || '...' else draft_subject end as draft_subject
+			     , to_char(draft_write_date, 'yyyy-mm-dd') as draft_write_date, draft_status, draft_urgent, draft_file_origin_name, draft_file_name, draft_file_size
+			     , member_name, parent_dept_name
+			from tbl_draft D join tbl_member M
+			on D.fk_member_userid = M.member_userid
+			join tbl_child_dept C
+			on M.fk_child_dept_no = C.child_dept_no
+			join tbl_parent_dept P
+			on C.fk_parent_dept_no = P.parent_dept_no
+			)
+			select count(*)
+			from A join B
+			on A.fk_draft_no = B.draft_no
+			where approval_status != '대기'
+			and approval_step != 0
+			<choose>
+				<when test="searchType == 'draft_form_type' and searchWord != ''">
+					and lower(draft_form_type) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'draft_subject' and searchWord != ''">
+					and lower(draft_subject) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'member_name' and searchWord != ''">
+					and lower(member_name) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'parent_dept_name' and searchWord != ''">
+					and lower(parent_dept_name) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<otherwise></otherwise>
+			</choose>
+	</select>
 	
 	<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
 	
@@ -485,9 +609,10 @@
 		<result property="member_name" 			column="member_name" 				javaType="String" />
 		<result property="approval_status" 		column="approval_status" 			javaType="String" />
 		<result property="approval_feedback" 	column="approval_feedback" 			javaType="String" />
+		<result property="member_pro_filename" 	column="member_pro_filename" 			javaType="String" />
 	</resultMap>
 	<select id="getApprovalFeedback" resultMap="getApprovalFeedback_Map" parameterType="String">
-		select approval_step, child_dept_name, member_position, member_name, approval_status, approval_feedback
+		select approval_step, child_dept_name, member_position, member_name, approval_status, approval_feedback, member_pro_filename
 		from tbl_member M join tbl_child_dept C
 		on M.fk_child_dept_no = C.child_dept_no
 		join tbl_approval A
@@ -495,18 +620,49 @@
 		where fk_draft_no = #{draft_no}
 		and approval_step != 0
 		and approval_feedback is not null
+		order by 1
+	</select>
+	
+	
+	<!-- ==== 결재선 결재순위 지정(결재 한 경우 사인 이미지) ==== -->
+	<resultMap type="HashMap" id="orderByApprovalStep_withSign_Map">
+		<result property="member_step" 				column="member_step" 			javaType="String" />
+		<result property="member_position" 			column="member_position" 		javaType="String" />
+		<result property="child_dept_name" 			column="child_dept_name" 		javaType="String" />
+		<result property="member_name" 				column="member_name" 			javaType="String" />
+		<result property="member_userid" 			column="member_userid" 			javaType="String" />
+		<result property="approval_status" 			column="approval_status" 		javaType="String" />
+		<result property="member_sign_filename" 	column="member_sign_filename" 	javaType="String" />
+	</resultMap>
+	<select id="orderByApprovalStep_withSign" resultMap="orderByApprovalStep_withSign_Map" parameterType="String">
+		select DENSE_RANK() over (order by member_grade desc, member_start desc) as member_step
+		     , member_position
+		     , child_dept_name
+		     , member_name
+		     , member_userid
+		     , approval_status
+             , case when approval_status in ('승인', '반려') then nvl(member_sign_filename, 'noSign')
+                                                          else cast('미결재' as nvarchar2(10)) end as member_sign_filename
+		from  tbl_child_dept c join tbl_member m
+		on c.child_dept_no = m.fk_child_dept_no 
+        join tbl_approval a
+        on m.member_userid = a.fk_member_userid
+		where fk_draft_no = #{draft_no}
+        and approval_step != 0
 	</select>
 	
 	<!-- ================ 기안문 결재하기 ================ -->	
-	<!-- >>> 1-1. (TBL_APPROVAL) 결재/반려의견 update 및 현재 결재자 상태 update <<< -->
+	<!-- >>> 1-1. (TBL_APPROVAL) 결재의견 update 및 현재 결재자 상태 update <<< -->
 	<update id="updateToApprovalFirst_TBL_APPROVAL_withFeedback" parameterType="HashMap">
 		update tbl_approval set approval_feedback = #{approval_feedback}
 		                      , approval_status = '승인'
+		                      , approval_date = sysdate
 		where fk_draft_no = #{fk_draft_no} and fk_member_userid = #{member_userid}
 	</update>
 	<!-- >>> 1-2. (TBL_APPROVAL) 결재의견 없을 경우 update 및 현재 결재자 상태 update <<< -->
 	<update id="updateToApprovalFirst_TBL_APPROVAL" parameterType="HashMap">
 		update tbl_approval set approval_status = '승인'
+							  , approval_date = sysdate
 		where fk_draft_no = #{fk_draft_no} and fk_member_userid = #{member_userid}
 	</update>
 	
@@ -538,7 +694,97 @@
 		update tbl_draft set draft_status = '승인완료'
 		where draft_no = #{fk_draft_no}
 	</update>
+	
+	
+	<!-- ================ 기안문 반려하기 ================ -->	
+	<!-- >>> 1. (TBL_APPROVAL) 반려의견 update 및 현재 결재자 상태 update <<< -->
+	<update id="updateToSendBackFirst_TBL_APPROVAL_withFeedback" parameterType="HashMap">
+		update tbl_approval set approval_feedback = #{approval_feedback}
+		                      , approval_status = '반려'
+		                      , approval_date = sysdate
+		where fk_draft_no = #{fk_draft_no} and fk_member_userid = #{member_userid}
+	</update>
+	
+	<!-- >>> 2. (TBL_DRAFT) 결재상태[draft_status]를 "반려완료"으로 update <<< -->
+	<update id="updateToSendBackSecond_TBL_DRAFT_end" parameterType="HashMap">
+		update tbl_draft set draft_status = '반려완료'
+		where draft_no = #{fk_draft_no}
+	</update>
+	
 	<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
 	
+	<!-- ==== 참조문서함 목록 불러오기 ==== -->
+	<select id="selectreferenceApprovalList" resultType="ApprovalVO" parameterType="HashMap">
+		select *
+		from
+		(
+		    with A as
+		    (
+		        select fk_draft_no, fk_member_userid, approval_step, approval_status
+		        from tbl_approval
+		        where fk_member_userid = #{member_userid}
+		    ),
+		    B as
+		    (
+		        select draft_no, draft_form_type
+		             , case when length(draft_subject) > 20 then substr(draft_subject, 1, 17) || '...' else draft_subject end as draft_subject
+		             , to_char(draft_write_date, 'yyyy-mm-dd') as draft_write_date, draft_status, draft_file_origin_name, draft_file_name, draft_file_size
+		             , member_name, parent_dept_name
+		        from tbl_draft D join tbl_member M
+		        on D.fk_member_userid = M.member_userid
+		        join tbl_child_dept C
+		        on M.fk_child_dept_no = C.child_dept_no
+		        join tbl_parent_dept P
+		        on C.fk_parent_dept_no = P.parent_dept_no
+		        where draft_saved = 0
+				order by draft_no desc
+		    )
+		    select rownum as rno, fk_draft_no, fk_member_userid, approval_step, approval_status
+		         , draft_no, draft_form_type, draft_subject, draft_write_date, draft_status, draft_file_origin_name, draft_file_name, draft_file_size
+		         , member_name, parent_dept_name
+		    from A join B
+		    on A.fk_draft_no = B.draft_no
+		    where approval_step = 0
+		    and draft_status = '승인완료'
+			<choose>
+				<when test="searchType == 'draft_form_type' and searchWord != ''">
+					and lower(draft_form_type) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'draft_subject' and searchWord != ''">
+					and lower(draft_subject) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'member_name' and searchWord != ''">
+					and lower(member_name) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<when test="searchType == 'parent_dept_name' and searchWord != ''">
+					and lower(parent_dept_name) like '%' || lower(#{searchWord}) ||'%'
+				</when>
+				<otherwise></otherwise>
+			</choose>
+		    order by fk_draft_no desc
+		)
+		where rno between to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	
+	<!-- ==== 참조문서함 총 게시물 건수 구하기 ==== -->
+	<select id="getTotalCount_referenceApproval" resultType="int" parameterType="HashMap">
+		select count(*)
+		from tbl_draft D join tbl_approval A
+		on D.draft_no = A.fk_draft_no
+		where draft_saved = 0
+		and approval_step = 0
+		and draft_status = '승인완료'
+		and A.fk_member_userid = #{member_userid}
+		<choose>
+			<when test="searchType == 'draft_form_type' and searchWord != ''">
+				and lower(draft_form_type) like '%' || lower(#{searchWord}) ||'%'
+			</when>
+			<when test="searchType == 'draft_subject' and searchWord != ''">
+				and lower(draft_subject) like '%' || lower(#{searchWord}) ||'%'
+			</when>
+			<otherwise></otherwise>
+		</choose>
+	</select>
 	
 </mapper>

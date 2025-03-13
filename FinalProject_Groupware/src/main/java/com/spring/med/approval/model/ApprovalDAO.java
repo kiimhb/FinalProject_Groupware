@@ -82,7 +82,7 @@ public interface ApprovalDAO {
 	// ==== 임시저장함 기안문 불러오기 ==== //
 	List<ApprovalVO> selectTemporaryList(Map<String, String> paraMap);
 
-	// ==== 총 게시물 건수 구하기 ==== ///
+	// ==== 임시저장함 총 게시물 건수 구하기 ==== ///
 	int getTotalCount(Map<String, String> paraMap);
 
 	// ==== 임시저장함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
@@ -90,15 +90,23 @@ public interface ApprovalDAO {
 
 	// ==== 임시저장한 내용 중 결재선/참조자 목록 불러오기 ==== //
 	List<Map<String, String>> getTempApprovalRefer(String draft_no);
-
+	
+	/////////////////////////////////////////////////	
+	
 	// ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 ==== //
-	List<Map<String, String>> approvalPendingList(String member_userid);
+	List<Map<String, String>> approvalPendingList(Map<String, String> paraMap);
+	
+	// ==== 결재문서함 총 게시물 건수 구하기 ==== //
+	int getTotalCount_approvalPending(Map<String, String> paraMap);
 
 	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
 	HashMap<String, String> approvalPendingListDetail(Map<String, String> map);
 	
 	// ==== 결재 의견 불러오기 ==== //
-	HashMap<String, String> getApprovalFeedback(String draft_no);
+	List<Map<String, String>> getApprovalFeedback(String draft_no);
+	
+	// ==== 결재선 결재순위 지정(결재 한 경우 사인 이미지) ==== // 
+	List<HashMap<String, String>> orderByApprovalStep_withSign(String draft_no);
 	
 	/////////////////////////////////////////////////	
 	// >>> 1-1. (TBL_APPROVAL) 결재의견 있을 경우 update 및 현재 결재자 상태 update <<<
@@ -119,6 +127,30 @@ public interface ApprovalDAO {
 	// >>> 3-2. (TBL_DRAFT) 다음 결재자 없으면 결재상태[draft_status]를 "승인완료"으로 update <<<
 	int updateToApprovalThird_TBL_DRAFT_end(Map<String, String> map);
 	/////////////////////////////////////////////////	
+
+	// >>> 1. (TBL_APPROVAL) 현재 결재자 상태 "반려'로 update <<<
+	int updateToSendBackFirst_TBL_APPROVAL_withFeedback(Map<String, String> map);
+
+	// >>> 2. (TBL_DRAFT) 결재상태[draft_status]를 "반려완료"으로 update <<<
+	int updateToSendBackSecond_TBL_DRAFT_end(Map<String, String> map);
+	/////////////////////////////////////////////////	
+
+	// ==== 내가 작성한(결재요청한) 기안문 리스트 불러오기 ==== //
+	List<ApprovalVO> approvalRequestList(Map<String, String> paraMap);
+
+	// ==== 결재상신함 총 게시물 건수 구하기 ==== //
+	int getTotalCount_approvalRequest(Map<String, String> paraMap);
+	
+	/////////////////////////////////////////////////	
+	
+	// ==== 참조문서함 목록 불러오기 ==== //
+	List<ApprovalVO> selectreferenceApprovalList(Map<String, String> paraMap);
+
+	// ==== 참조문서함 총 게시물 건수 구하기 ==== //
+	int getTotalCount_referenceApproval(Map<String, String> paraMap);
+
+
+
 
 
 

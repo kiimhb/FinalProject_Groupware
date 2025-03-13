@@ -266,6 +266,44 @@ $(document).ready(function(){
 	});
 	
 	
+	<%-- 결재반려 버튼 클릭 이벤트 --%>
+	$("button#btnSendBack").on("click",function(e){
+		
+		// 모달을 넣을 위치
+		const container = $("div#modalClickBtn");
+		
+		// 모달 구조
+		const modal_popup = `
+							<div class="modal fade" id="btnApproveModal" style="top:20%;">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										
+										<div class="modal-header">
+											<h4 style="margin-top: 2%;">결재반려</h4>	
+										</div>
+										
+										<div class="modal-body">
+											<div style="font-size: 16pt; margin-bottom: 3%;">결재의견<span style="font-size: 14pt;">&nbsp;(필수)</span></div>
+											<form name="btnApproveModal_Frm">
+												<input type="text" name="approval_feedback" style="width: 100%;" placeholder="반려의견을 입력해주세요.(50자 이내)"/>
+											</form>
+										</div>
+										
+										<div class="modal-footer">
+											<button type="button" class="btn btn-primary" style="background-color: #509d9c; border-color: #509d9c;" onclick="goSendBackConfirm()">반려</button>
+											<button type="button" class="btn btn-secondary" id="btn_cancel" data-dismiss="modal">취소</button>
+										</div>
+										
+									</div>
+								</div>
+							</div>`;
+		
+		// 모달 띄우기
+		container.html(modal_popup);
+		$("div#btnApproveModal").modal("show");
+	});
+	
+	
 	
 	
 });// end of $(document).ready(function(){})-----------------------------------------
@@ -306,8 +344,11 @@ function goApprovalConfirm() {
 					if(json == 1) {
 						Swal.fire({
 						    icon: 'success',
-						    title: "승인이 완료되었습니다.",
-						});
+						    title: "결재승인이 완료되었습니다.",
+						}).then(() => {
+	                        // "확인" 버튼을 클릭하면 페이지 새로고침
+	                        location.reload();
+	                    });
 						
 						$("button#btnApprove").hide();
 						$("button#btnSendBack").hide();
@@ -327,6 +368,75 @@ function goApprovalConfirm() {
 	});
 	
 }// end of function goApprovalConfirm() {}--------------------------------
+
+
+<%-- 반려의견 작성 모달에서 반려버튼 클릭 이벤트 --%>
+function goSendBackConfirm() {
+	
+	Swal.fire({
+		title: "결재 반려",
+		text: "반려하시겠습니까?",
+		showCancelButton: true,
+		confirmButtonColor: '#f68b1f',
+		cancelButtonColor: '#857c7a',
+		confirmButtonText: '확인',
+		cancelButtonText: '취소',    
+		width: 350,  // 너비 조정
+	    padding: '20px',  // 패딩 조정
+	}).then((result) => {
+		
+		if (result.isConfirmed) {
+			
+			const fk_draft_no = "${requestScope.approvalvo.draft_no}";
+			const approval_feedback = $("input[name='approval_feedback']").val();
+			
+			if (approval_feedback == "") {
+				
+				Swal.fire({
+				    icon: 'info',
+				    title: '반려 의견은 필수 기입사항입니다.',
+				    text: '다시 시도해주세요.'
+				});
+				
+				return;
+				
+			}
+			else {
+				<%-- 반려의견 및 반려 처리 요청 --%>
+				$.ajax({
+					url:"<%= ctxPath%>/approval/goSendBack",
+					data: {fk_draft_no:fk_draft_no
+						  ,approval_feedback:approval_feedback},
+					type:"post",			
+					success:function(json){
+	
+						if(json == 1) {
+							Swal.fire({
+							    icon: 'success',
+							    title: "결재반려가 완료되었습니다.",
+							}).then(() => {
+		                        // "확인" 버튼을 클릭하면 페이지 새로고침
+		                        location.reload();
+		                    });
+							
+							$("button#btnApprove").hide();
+							$("button#btnSendBack").hide();
+						}	
+					},
+					error: function() {
+						Swal.fire({
+						    icon: 'error',
+						    title: '반려 처리 수행 실패!',
+						    text: '다시 시도해주세요.'
+						});
+					}
+				});
+			}
+		}
+
+	});
+}// end of function goSendBackConfirm() {}---------------------------------
+
 
 
 <%-- ==== 기안문의 결재선/참조자 목록 불러오기 ==== --%>
@@ -365,7 +475,7 @@ function getTempApprovalRefer(draft_no) {
 
 
 
-<%-- 결재의견 불러오기 --%>
+<%-- ==== 결재의견 불러오기 ==== --%>
 function getApprovalFeedback(draft_no) {
 
 	$.ajax({
@@ -373,16 +483,30 @@ function getApprovalFeedback(draft_no) {
 		data: {"draft_no":draft_no},
 		type: "get",
 		success: function(json) {
-			console.log(JSON.stringify(json));
-			/* $.each(json, function(index, item){	
-				if(item.approval_step != "0") {
-					arr_approvalLineMembers.push(item.fk_member_userid);
-				}
-				else if(item.approval_step == "0") {
-					arr_referenceMembers.push(item.fk_member_userid);
-				}
-			}); */
 
+			const addFeedback = $("div#feedbackContainer");
+			
+			let html = `<table id="Feedback_T" class="table" style="width: 100%; border: 1px #a39485 solid; box-shadow: 0 2px 5px rgba(0,0,0,.25); width: 100%; border-collapse: collapse; border-radius: 5px;">`;
+			
+			$.each(json, function(index, item){
+				
+				html += `<tr style="height: 40px; ">
+							<td style="vertical-align:middle;">\${item.approval_step}</td>
+							<td style="vertical-align:middle;"><img width="50" height="50" style="border-radius: 50%;" src="<%= ctxPath%>/resources/profile/\${item.member_pro_filename}" / >&nbsp;&nbsp;\${item.child_dept_name}</td>
+							<td style="vertical-align:middle;">\${item.member_position}</td>
+							<td style="vertical-align:middle;">\${item.member_name}</td>
+							<td style="vertical-align:middle;">\${item.approval_status}</td>
+							<td style="vertical-align:middle; text-align: left; padding-left: 1%; width: 60%; white-space: normal; word-wrap: break-word;">\${item.approval_feedback}</td>
+						</tr>`;
+			});
+			
+			html += `</table>`;
+			
+			$("div#defaultFeedback").hide();
+
+			addFeedback.css({"border":"0px"});
+			addFeedback.html(html);
+			
 		},
 		error: function() {
 			Swal.fire({
@@ -396,13 +520,17 @@ function getApprovalFeedback(draft_no) {
 }// end of function getApprovalFeedback((draft_no) {})--------------------------------
 
 
+<%-- ==== 결재선 결재순위 지정 / 참조자 목록 순서 지정 ==== --%>
 function func_goAddLine() {
 	
 	<%-- ==== 결재선 결재순위 지정 ==== --%> 
 	if(arr_approvalLineMembers.length > 0) {
+		
+		const draft_no = "${requestScope.approvalvo.draft_no}";
+		
 		$.ajax({
-			url:"<%= ctxPath%>/approval/orderByApprovalStep",
-			data:{"arr_approvalLineMembers":arr_approvalLineMembers},
+			url:"<%= ctxPath%>/approval/orderByApprovalStep_withSign",
+			data:{"draft_no":draft_no},
 			type:"post",			
 			success:function(json){
 				
@@ -425,7 +553,7 @@ function func_goAddLine() {
 					if($("table#designated_line_Table tr#approvalLine_1 > td").length == 0) {
 						// 현재 결재선에 추가된 사람이 없을 경우
 						$("tr#approvalLine_1").append(`<td class="table_title" style="width: 110px;">순서</td>`);
-						$("tr#approvalLine_2").append(`<td class="table_title" style="width: 110px;">직책</td>	`);
+						$("tr#approvalLine_2").append(`<td class="table_title" style="width: 110px;">직책</td>`);
 						$("tr#approvalLine_3").append(`<td class="table_title" style="width: 110px;">부서</td>`);
 						$("tr#approvalLine_4").append(`<td class="table_title" style="width: 110px;">성명</td>`);
 						$("tr#approvalLine_5").append(`<td class="table_title" style="width: 110px;">결재상태</td>`);
@@ -436,14 +564,51 @@ function func_goAddLine() {
 						$("tr#approvalLine_2").append(`<td style="width: 120px;">\${item.member_position}</td>`);
 						$("tr#approvalLine_3").append(`<td style="width: 120px;"><span class="span_member_userid" style="display: none;">\${item.member_userid}</span>\${item.child_dept_name}</td>`);
 						$("tr#approvalLine_4").append(`<td style="width: 120px;">\${item.member_name}</td>`);
-						$("tr#approvalLine_5").append(`<td style="width: 120px;"><div style="border: solid 1px gray; width: 70%; height: 80px; margin: auto;"></div></td>`);
+						if(item.member_sign_filename != '미결재') {
+							
+							if(item.approval_status == '승인' && item.member_sign_filename != 'noSign') {
+								
+								$("tr#approvalLine_5").append(`<td style="width: 120px;"><img width="50" height="50" style="border-radius: 50%;" src="<%= ctxPath%>/resources/profile/\${item.member_sign_filename}" / </td>`);
+							}
+							else if (item.approval_status == '승인' && item.member_sign_filename == 'noSign') {
+								$("tr#approvalLine_5").append(`<td style="width: 120px; padding: 2%;">
+								   		<div style="border: solid 2px blue; width: 80px; border-radius: 50%; height: 80px; margin: auto; font-size: 17pt; display: flex; justify-content: center; align-items: center;  box-sizing: border-box; padding: 5px; border-radius: 50%; background: white; position: relative;">
+									        	<div style="border: solid 1px blue; width: 100%; height: 100%; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: blue;">
+									            	승인
+									        	</div>
+									    	</div>
+									   </td>`);
+							}
+							else if (item.approval_status == '반려' && item.member_sign_filename == 'noSign') {
+								$("tr#approvalLine_5").append(`<td style="width: 120px; padding: 2%;">
+															   		<div style="border: solid 2px red; width: 80px; border-radius: 50%; height: 80px; margin: auto; font-size: 17pt; display: flex; justify-content: center; align-items: center;  box-sizing: border-box; padding: 5px; border-radius: 50%; background: white; position: relative;">
+															        	<div style="border: solid 1px red; width: 100%; height: 100%; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: red;">
+															            	반려
+															        	</div>
+															    	</div>
+															   </td>`);
+							}
+						}	
+						else if(item.member_sign_filename == '미결재') {
+							$("tr#approvalLine_5").append(`<td style="width: 120px; padding: 2%;">
+															   		<div style="border: solid 2px gray; width: 80px; border-radius: 50%; height: 80px; margin: auto; font-size: 17pt; display: flex; justify-content: center; align-items: center;  box-sizing: border-box; padding: 5px; border-radius: 50%; background: white; position: relative;">
+															        	<div style="border: solid 1px gray; width: 100%; height: 100%; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+															            	대기
+															        	</div>	
+														    	</div>
+														   </td>`);
+						}
 					});
 				
 				},200);
 	
 			},
 			error: function() {
-				swal('결재선 불러오기 실패!',"다시 시도해주세요",'error');
+				Swal.fire({
+				    title: '결재선 불러오기 실패!',
+				    html: '다시 시도해주세요',
+				    icon: 'error'
+				});
 			}
 		});
 		
@@ -523,9 +688,10 @@ function func_goAddLine() {
 		// 기존에 결재선 테이블을 다시 감추고, 회색 박스를 보인다.
 		$("table#undesignated_refer_Table").css({"display":"none"});	
 		$("div#undesignated_refer").css({"display":"block"});
-	}
-	
+	}	
 }
+
+
 </script>
 
 
@@ -535,8 +701,8 @@ function func_goAddLine() {
 
 	<span id="btnRight">
 		<button type="button" id="btnApprove">결재승인</button>
-		<button type="button" id="btnSendBack" onclick="goSendBack()">결재반려</button>
-		<button type="button" id="btnGoBackList" onclick="goBackApprovalPendingList()">목록</button>
+		<button type="button" id="btnSendBack">결재반려</button>
+		<button type="button" id="btnGoBackList" onclick="window.location.href='<%= ctxPath%>/approval/approvalPendingList'">목록</button>
 	</span>
 
 	<div id="modalDraftType"></div>
