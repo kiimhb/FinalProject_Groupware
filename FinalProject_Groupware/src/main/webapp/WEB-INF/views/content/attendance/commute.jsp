@@ -38,12 +38,11 @@ String ctxPath = request.getContextPath();
                     <th rowspan="2">이름</th>
                     <th rowspan="2">기초계</th>
                     <th rowspan="2">사고계</th>
-                    <th colspan="4">사고내역</th>
+                    <th colspan="3">사고내역</th>
                     <th colspan="5">기초항목</th>
                 </tr>
                 <tr>
                     <th>휴가</th>
-                    <th>출장</th>
                     <th>기타</th>
                     <th>계</th>
                     
@@ -57,11 +56,10 @@ String ctxPath = request.getContextPath();
             <tbody>
                 <tr>
                     <td>간호부</td>
+                    <td>병동팀</td>
                     <td>평간호사</td>
                     <td>홍길동</td>
                     <td>26</td>
-                    <td>0</td>
-                    <td>0</td>
                     <td>0</td>
                     <td>0</td>
                     <td>0</td>

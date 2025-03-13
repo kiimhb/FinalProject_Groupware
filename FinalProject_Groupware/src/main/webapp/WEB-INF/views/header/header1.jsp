@@ -47,4 +47,6 @@
 		</div>
 		
 		<div id="mycontent">
+		
+		<div id ="sub_mycontent">
     		
