@@ -1,36 +1,42 @@
 @charset "UTF-8";
 
 div.main_container {
-    overflow: hidden;
-    display: flex; 
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;                            
-    padding: 10px;
-    max-width: 1250px;
-    margin: auto;
-    justify-items: start;                 
-    align-items: start;                  
+	background-color: #EFF1F0;
+	overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 10px;
+	max-width: 1280px;
+	margin: auto;
 }
 
-
-h6.main_h6 {
+a.main_h6 , h4.main_h6 {
 	margin-top: 10px;
 	display: flex;
 	justify-content: flex-start;
+	color: black;
+}
+
+a.main_h6:hover {
+	color: black;
+	border: none;
 }
 
 
 
-
-/* 출퇴근 현황  */
+/* 출퇴근 현황 */
 div.box_attendance {
+	background-color: white;
 	box-sizing: border-box;
 	border: solid 1px silver;
-	padding:10px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	padding: 10px;
 	width: 520px;
 	height: 270px;
+	flex: 1 1 520px;
 }
 
 div.main_time {
@@ -38,21 +44,21 @@ div.main_time {
 	font-weight: bold;
 }
 
-div.today, div#clock{
+div.today, div#clock {
 	font-size: 20px;
 	margin-bottom: 5px;
 }
 
-span.recordText_1{
+span.recordText_1 {
 	font-weight: bold;
 }
 
-div.recordbtn{
+div.recordbtn {
 	margin-top: 8px;
 	margin-left: 140px;
 }
 
-button.main_att_btn{
+button.main_att_btn {
 	border: none;
 	margin: 10px;
 	padding: 5px;
@@ -60,24 +66,26 @@ button.main_att_btn{
 }
 
 button.sbtn:not(:disabled), button.ebtn:not(:disabled) {
-  background: linear-gradient(#006769, #509d9c); 
-  color: white;
-}
-button.sbtn:disabled , button.ebtn:disabled {
-  background-color: eee; 
-  color: #A9A9A9;
+	background: linear-gradient(#006769, #509d9c);
+	color: white;
 }
 
+button.sbtn:disabled, button.ebtn:disabled {
+	background-color: #eee;
+	color: #A9A9A9;
+}
 
 
 
 /* 공지사항 */
-div.box_notice{
-	border: solid 1px orange;
-	/* border-radius: 5px; */
+div.box_notice {
+	background-color: white;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	/* border: solid 1px orange; */
 	width: 700px;
 	height: 270px;
-	padding:10px;
+	padding: 10px;
+	flex: 1 1 700px;
 }
 
 div.main_article, div.main_article_info, i.fa-thumbtack {
@@ -86,48 +94,102 @@ div.main_article, div.main_article_info, i.fa-thumbtack {
 }
 
 div.main_article_one_row {
-    display: inline-block; 
-    margin-top:3px;
-    padding: 10px;
-    width: 100%;
-    cursor: pointer;
-    border-bottom: solid 1px silver; 
-
+	display: inline-block;
+	margin-top: 3px;
+	padding: 10px;
+	width: 100%;
+	cursor: pointer;
+	border-bottom: solid 1px silver;
 }
-div.main_article_info{
+
+div.main_article_info {
 	color: #4c4d4f;
 	font-size: 12px;
 }
 
-
-
-/* 오늘 환자 예약 명단 */
-div.box_reservation{
-	border: solid 1px teal;
-	background-color:teal;
-	width: 520px;
+/* 오늘 진료환자 목록 */
+div.box_reservation {
+	background-color: white;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	padding: 10px;
+	/* border: solid 1px teal; */
+	width: 540px;
 	height: 300px;
+	flex: 1 1 540px;
+}
+
+div.box_reservation>table {
+	margin-top: 7px;
+	width: 100%;
+	font-size: 16px;
+}
+
+div.box_reservation>table.index_patient>thead>tr {
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+div.box_reservation>table.index_patient>thead>tr>th {
+	background-color: #fee4c6;
+	padding: 8px;
+	margin-bottom: 15px;
+}
+
+div.box_reservation>table.index_patient>tbody>tr {
+	margin-top: 3px;
+	border-bottom: solid 1px silver;
+	cursor: pointer;
+}
+
+div.box_reservation>table.index_patient>tbody>tr>td {
+	padding: 8px;
 }
 
 
 
 /* 전자결재 */
-div.box_payment{
-	border: solid 1px maroon;
-	background-color:maroon;
-	width: 700px;
+div.box_payment {
+	background-color: white;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	/* border: solid 1px maroon; */
+	width: 690px;
 	height: 300px;
-	
+	padding: 10px;
+	flex: 1 1 690px;
+}
+
+div.box_payment>table {
+	width: 100%;
+	margin-top: 7px;
+}
+
+div.box_payment>table>thead>tr {
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+div.box_payment>table>thead>tr>td {
+	background-color: #509d9c;
+	color: white;
+	font-weight: bold;
+	padding: 8px;
+	margin-bottom: 15px;
+}
+
+div.box_payment>table>tbody>tr>td {
+	font-size: 16px;
+	padding: 8px;
+	border-bottom: solid 1px silver;
 }
 
 
 /* 일정관리 */
 div.box_schedule {
-	border: solid 1px gray;
+	background-color: white;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	/* border: solid 1px gray; */
 	width: 640px;
 	height: 450px;
-	border-radius: 5px;
 	text-align: center;
+	flex: 1 1 640px;
 }
 
 div#calendar {
@@ -158,15 +220,64 @@ button.btn_edit {
 	background-color: #fff;
 }
 
+
+
 /* 오늘의 날씨 */
-div.box_weather{
-	border: solid 1px yellow;
-	background-color: yellow;
-	width: 580px;
-	height: 450px;
-	
+div.box_weather {
+    background: linear-gradient(to bottom, #81d4fa, #b3e5fc);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 580px;
+    height: 450px;
+    flex: 1 1 580px;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+/* 날씨 정보 컨테이너 */
+div.weather-container {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* 날씨 정보 출력 */
+div.weather-info {
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 15px;
+}
+
+/* 5일 예보 아이템 */
+div.forecast-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 5px;
 }
 
 
+/* 날씨 아이콘 */
+div.forecast-item img {
+    width: 60px;
+    height: 60px;
+}
 
-
+/* 5일 예보 */
+div.weather-info .forecast-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}

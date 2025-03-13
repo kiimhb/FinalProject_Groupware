@@ -33,7 +33,7 @@ font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
     min-height: 960px;
     margin-left: 250px;  /* 사이드바가 열렸을 때 */
     transition: margin-left 0.3s ease-in-out; /* 사이드바와 함께 콘텐츠의 이동을 부드럽게 */
-    border: solid 1px red;
+   /*  border: solid 1px red; */
 }
 
 #mycontent.full {
@@ -58,19 +58,19 @@ div.profile {
     text-align: center;
 }
 
-button[name="mypage"] {
+a.mypage {
 	border: none;      
     outline: none;     
     background: none;  
     cursor: pointer;   
     font-size: 14px;
-    margin-bottom: 13px; 
     text-decoration: underline;
 	color:#8ac2bd;
 }
 
 div.logout{
 	margin:0 60px 0 60px;
+	margin-top:13px;
 	padding:2px;
 	background-color:  #006769;
 	border-radius: 5px;
@@ -176,6 +176,8 @@ div.navbar_menu{
 }
 
 button.nav_button_css{
+	position: relative;
+    display: inline-block; 
 	border: none;
 	background-color: transparent;
 }
@@ -185,49 +187,39 @@ i.nav_i_css1, i.nav_i_css2{
 }
 
 i.nav_i_css1 {
+	 position: relative;
 	/* background: linear-gradient(to bottom, #FFEB3B, #FFD600);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent; */
-	 margin-right: 10px;
 }
 
 i.nav_i_css2 {
 	/* background: linear-gradient(to bottom, #42A5F5, #8E24AA);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent; */
+	margin-left: 10px;
 }
 
 div.Alarm_box {
   display: none;
   position: absolute;
-  top: 65px;
-  right: 220px;
+  top: 70px;
+  right: 120px;
   border: 1px solid #ccc;
   background-color:#FAFAFA;
   padding: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  width: 320px;
   height:400px;
   border-radius: 5px;
   z-index: 999;
 }
 
-div.Alarm_box::after {
-  content: '';
-  position: absolute;
-  top: -8px;
-  right: 30%;
-  transform: translateX(-50%);
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #FAFAFA; 
-  z-index: 1000;
-}
 
 
 /* 주요 알림 박스 */
 div.Alarm_main_box {
-	width: 280px;
+	width: 300px;
 	height: 340px;
 	font-size: 16px;
 	border: 1px solid #ccc;

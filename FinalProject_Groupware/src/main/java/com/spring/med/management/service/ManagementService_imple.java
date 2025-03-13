@@ -65,6 +65,7 @@ public class ManagementService_imple implements ManagementService {
 		int member_userid = Integer.parseInt(paraMap.get("member_userid"));
 		paraMap.put("member_userid", String.valueOf(member_userid));
 		
+		//System.out.println(paraMap.get("member_pwd"));
 		
 		ManagementVO_ga loginuser = manaDAO.getLoginMember(paraMap);
 
@@ -147,6 +148,20 @@ public class ManagementService_imple implements ManagementService {
 	public ManagementVO_ga getView_member_one(Map<String, String> paraMap) {
 		ManagementVO_ga member_one = manaDAO.getView_member_one(paraMap);
 		return member_one;
+	}
+
+	// === 인사관리 사원퇴사 처리 === //
+	@Override
+	public int managementone_delete(String member_userid) {
+		int n =  manaDAO.management_one_delete(member_userid);
+		return n;
+	}
+
+	// === 인사관리 사원수정 처리 === //
+	@Override
+	public int Managementone_update(ManagementVO_ga managementVO_ga) {
+		int n =  manaDAO.Management_one_update(managementVO_ga);
+		return n;
 	}
 
 

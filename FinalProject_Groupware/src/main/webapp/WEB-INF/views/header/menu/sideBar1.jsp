@@ -49,6 +49,7 @@ $.ajax({
 });
 
 
+
 </script>
 
 
@@ -58,8 +59,8 @@ $.ajax({
    
 	 <div class="profile">
 	   <div id="sidebarProfile"></div>
-		  <button type="button" name="mypage" onclick="gomypage('${sessionScope.member_userid}')">마이페이지</button>
-		   <div class="logout"><a href="<%=ctxPath%>/management/logout" class="logoutcss">로그아웃</a> </div>
+	   <a class="mypage"  href="<%=ctxPath%>/mypage/mypage?member_userid=${sessionScope.loginuser.member_userid}">마이페이지</a>
+	  <div class="logout"><a href="<%=ctxPath%>/management/logout" class="logoutcss">로그아웃</a> </div>
 	 </div>
  
  
@@ -86,7 +87,6 @@ $.ajax({
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/patient/list">환자조회</a>
              <a class="dropdown-item" href="<%=ctxPath%>/register/list">예약</a>
-             <a class="dropdown-item" href="<%=ctxPath%>">입원실현황</a> 
              <a class="dropdown-item" href="<%=ctxPath%>/pay/wait">수납</a>
          </div></li>
          
@@ -97,7 +97,6 @@ $.ajax({
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/attendance">휴가관리</a> 
             <a class="dropdown-item" href="<%=ctxPath%>/attendance/commute">근태조회</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/attendance">근무교대조회</a>
          </div></li>
 
       <li><a href="#" class="menu-toggle sideBarCSS">
@@ -106,7 +105,7 @@ $.ajax({
             <a class="dropdown-item" href="<%=ctxPath%>/approval/write">기안문작성</a> 
             <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalRequestList">결재상신함</a>
             <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalTemporaryList">임시저장함</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList"">결재문서함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList">결재문서함</a>
             <a class="dropdown-item" href="<%=ctxPath%>/approval/referenceApprovals">참조문서함</a> 
             <a class="dropdown-item" href="<%=ctxPath%>">결재양식관리</a>
          </div></li>
