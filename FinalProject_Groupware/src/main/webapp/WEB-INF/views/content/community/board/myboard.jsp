@@ -245,7 +245,7 @@ $(document).ready(function(){
 				<option value="board_content">글내용</option>
 				<option value="board_subject_board_content">글제목+글내용</option>
 				<option value="board_name">글쓴이</option>
-			</select> <input type="text" name="searchWord" size="28" autocomplete="off" />
+			</select> <input type="text" name="searchWord" size="28" autocomplete="off" placeholder="검색어을 입력하세요" />
 			<input type="text" style="display: none;" />
 			<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
 			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>

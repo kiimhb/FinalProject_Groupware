@@ -398,7 +398,7 @@ public class BoardService_imple implements BoardService {
 	public List<BoardVO> getMyboard(Map<String, String> paraMap) {
 		
 		String myboard = "";
-		System.out.println("조회된 내 게시글: " + myboard);
+//		System.out.println("조회된 내 게시글: " + myboard);
 		return dao.getMyboard(paraMap);
 	}
 

@@ -6,20 +6,111 @@
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="minji_memo">
 	
-	<!-- 메모 전체 목록 조회 -->
-    <select id="selectAllMemo" resultType="MemoVO">
-        SELECT memo_no, fk_member_userid, memo_title, memo_contents, memo_importance, 
-               memo_deletestatus, memo_registerday, memo_trash_deleteday
-        FROM tbl_memo
-        WHERE memo_deletestatus = 0
-        ORDER BY memo_registerday DESC
-    </select>	
-	
-	
+	<!-- 메모작성하기 -->
 	<insert id="insertMemo" parameterType="MemoVO">
-	    insert into tbl_memo (memo_no, fk_member_userid, memo_title, memo_contents, memo_importance, memo_deletestatus, memo_registerday, memo_trash_deleteday) 
-	    values (seq_memo_no.nextval, #{fk_member_userid}, #{memo_title},      #{memo_contents},   #{memo_importance},  #{memo_deletestatus} ,default, #{memo_trash_deleteday})
+	    insert into tbl_memo (memo_no, fk_member_userid, memo_title, memo_contents, memo_importance, memo_deletestatus, memo_registerday) 
+	    values (seq_memo_no.nextval, #{fk_member_userid}, #{memo_title}, #{memo_contents}, default, default, default)
 	</insert>
 
+	<!-- 메모 목록보기 -->
+	<select id="memo_list" resultType="MemoVO">
+	    select * from tbl_memo
+	    where fk_member_userid = #{fk_member_userid}
+	    and memo_deletestatus = 0 
+	    order by memo_registerday DESC
+	</select>
+
+   
+   <!-- 메모 수정하기 -->
+   <update id="updateMemo">
+        update tbl_memo
+        set memo_title = #{memo_title},
+            memo_contents = #{memo_contents},
+            memo_registerday = SYSDATE
+        where memo_no = #{memo_no}
+    </update>
+   
+   <!-- 메모 삭제하기 -->
+    <delete id="deleteMemo">
+        delete from tbl_memo WHERE memo_no = #{memo_no}
+    </delete>
+    
+    
+    
+    
+    <!-- 메모 삭제(휴지통으로 이동) -->
+    <update id="trash" parameterType="int">
+        update tbl_memo
+		set memo_deletestatus = 1, memo_trash_deleteday = sysdate
+		where memo_no = #{memo_no}
+    </update>
+
+    <!-- 휴지통에서 복원 -->
+    <update id="restoreMemo" parameterType="int">
+        update tbl_memo
+		set memo_deletestatus = 0, memo_trash_deleteday = null
+		where memo_no = #{memo_no}
+    </update>
+
+    <!-- 휴지통에서 완전 삭제 -->
+    <delete id="deleteTrash" parameterType="int">
+        delete from tbl_memo
+		where memo_no = #{memo_no}
+    </delete>
+
+	<!-- 휴지통 목록 조회 -->
+	<select id="trash_list" resultType="MemoVO">
+		select * from tbl_memo
+		where memo_deletestatus = 1
+		and fk_member_userid = #{fk_member_userid}
+		order by memo_trash_deleteday desc
+	</select>
+    
+<!--  
+<delete id="deleteOldTrashMemos">
+DELETE FROM tbl_memo 
+WHERE memo_deletestatus = 1 
+AND MEMO_TRASH_DELETEDAY &lt;= SYSDATE - 30
+</delete>
+-->     
+
+<delete id="deleteOldTrashMemos">
+DELETE FROM tbl_memo 
+WHERE memo_deletestatus = 1 
+AND memo_trash_deleteday + INTERVAL '1' DAY = sysdate
+</delete>
+
+    
+    
+  
+    <!-- 현재 메모의 중요 메모 여부 확인 -->
+   
+    <select id="getMemoImportance" parameterType="map" resultType="string">
+        SELECT memo_importance 
+        FROM tbl_memo 
+        WHERE memo_no = #{memo_no} AND fk_member_userid = #{member_userid}
+    </select>
+   
+    <!-- 중요 메모(즐겨찾기) 업데이트 -->
+      
+    <update id="updateMemoImportance" parameterType="map">
+        UPDATE tbl_memo
+        SET memo_importance = #{importance}
+        WHERE memo_no = #{memo_no} AND fk_member_userid = #{member_userid}
+    </update>
+    
+     <!-- 중요 메모(즐겨찾기된 메모) 목록 조회 -->
+    <select id="selectImportantMemoList" parameterType="string" resultType="MemoVO">
+        SELECT memo_no, memo_title, memo_contents, memo_registerday 
+        FROM tbl_memo
+        WHERE fk_member_userid = #{member_userid} 
+        AND memo_importance = '1' 
+        ORDER BY memo_registerday DESC
+    </select>
+       
+
+  
+    
+    
    
 </mapper>
