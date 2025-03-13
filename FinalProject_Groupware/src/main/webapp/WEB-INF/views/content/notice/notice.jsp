@@ -33,7 +33,6 @@ $(document).ready(function(){
 			
 			const checkbox = $("input[name='notice_fix']");
 
-			
 			if(checkbox.prop("checked")) {
 				checkbox.val("1"); // 체크 되었다면 value 값을 1로 설정한다.
 			};

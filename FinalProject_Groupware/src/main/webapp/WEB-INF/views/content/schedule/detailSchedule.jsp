@@ -33,17 +33,26 @@
 		font-weight: bold;
 	}
 	
-	button.btn_normal{
-		background-color: #0071bd;
-		border: none;
-		color: white;
-		width: 70px;
-		height: 30px;
-		font-size: 12pt;
-		padding: 3px 0px;
-		margin-right: 10px;
-		border-radius: 10%;
+	.header .title {
+     border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 28px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
 	}
+	
+	button.btn {
+	background-color: #006769;
+	color:white;
+	
+	.no-outline:focus {
+    outline: none; /* 포커스 시 파란 테두리 제거 */
+    box-shadow: none; /* 추가적인 파란색 그림자 제거 */
+  	}
+
+
 
 </style>
 
@@ -132,23 +141,26 @@
 </script>
 
 <div style="margin-left: 80px; width: 88%;">
-<h3 style="display: inline-block;">일정 상세보기</h3>&nbsp;&nbsp;<a href="<%= ctxPath%>/schedule/scheduleManagement"><span>◀캘린더로 돌아가기</span></a> 
+<div class="header">
+		<div class="title">일정 상세보기</div>
+</div>&nbsp;&nbsp;
+<a href="<%= ctxPath%>/schedule/scheduleManagement"><span>◀캘린더로 돌아가기</span></a> 
 
 		<table id="schedule" class="table table-bordered">
 			<tr>
-				<th style="width: 160px; vertical-align: middle;">일자</th>
+				<th style="width: 160px; vertical-align: middle; text-align: center">일자</th>
 				<td>
 					<span id="schedule_startdate">${requestScope.map.SCHEDULE_STARTDATE}</span>&nbsp;~&nbsp;<span id="schedule_enddate">${requestScope.map.SCHEDULE_ENDDATE}</span>&nbsp;&nbsp;  
 					<input type="checkbox" id="allDay" disabled/>&nbsp;종일
 				</td>
 			</tr>
 			<tr>
-				<th style="vertical-align: middle;">제목</th>
+				<th style="vertical-align: middle; text-align: center">제목</th>
 				<td>${requestScope.map.SCHEDULE_SUBJECT}</td>
 			</tr>
 			
 			<tr>
-				<th style="vertical-align: middle;">캘린더종류</th>
+				<th style="vertical-align: middle; text-align: center">캘린더종류</th>
 				<td>
 				<c:if test="${requestScope.map.FK_LARGE_CATEGORY_NO eq '2'}">
 					사내 캘린더 - ${requestScope.map.SMALL_CATEGORY_NAME}
@@ -158,20 +170,20 @@
 				</c:if></td>
 			</tr>
 			<tr>
-				<th style="vertical-align: middle;">장소</th>
+				<th style="vertical-align: middle; text-align: center">장소</th>
 				<td>${requestScope.map.SCHEDULE_PLACE}</td>
 			</tr>
 			
 			<tr>
-				<th style="vertical-align: middle;">공유자</th>
+				<th style="vertical-align: middle; text-align: center">공유자</th>
 				<td>${requestScope.map.SCHEDULE_JOINUSER}</td>
 			</tr>
 			<tr>
-				<th style="vertical-align: middle;">내용</th>
+				<th style="vertical-align: middle; text-align: center">내용</th>
 				<td><textarea id="schedule_content" rows="10" cols="100" style="height: 200px; border: none;" readonly>${requestScope.map.SCHEDULE_CONTENT}</textarea></td>
 			</tr>
 			<tr>
-				<th style="vertical-align: middle;">작성자</th>
+				<th style="vertical-align: middle; text-align: center">작성자</th>
 				<td>${requestScope.map.MEMBER_NAME}</td>
 			</tr>
 		</table>
@@ -206,14 +218,14 @@
 	        <c:if test="${v_fk_lgcatgono eq '2' && sessionScope.loginuser.fk_pcode =='3' && sessionScope.loginuser.fk_dcode == '4' }">  
 	    --%>
 	        <c:if test="${v_fk_large_category_no eq '2' && sessionScope.loginuser.member_grade == 1 }">
-				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
-				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
+				<button type="button" id="edit" class="btn ml-2" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
+				<button type="button" class="btn ml-2" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
 			<c:if test="${v_fk_large_category_no eq '1' && v_fk_member_userid eq v_loginuser_member_userid}">
-				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
-				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
+				<button type="button" id="edit" class="btn ml-2" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
+				<button type="button" class="btn ml-2" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
-				<button type="button" id="cancel" class="btn_normal" style="margin-right: 0px; background-color: #990000;" onclick="javascript:location.href='<%= ctxPath%>/schedule/detailSchedule'">취소</button> 
+				<button type="button" id="cancel" class="btn ml-2" style="margin-right: 0px; background-color: #509d9c;" onclick="javascript:location.href='<%= ctxPath%>/schedule/detailSchedule'">취소</button> 
 		</c:if>
 	
 	</div>

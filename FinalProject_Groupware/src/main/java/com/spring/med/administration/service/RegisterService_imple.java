@@ -245,9 +245,6 @@ public class RegisterService_imple  implements RegisterService {
 		
 		// 1. 동일한 입원일/퇴원일에 다른 입원건이 있는지 확인
 		int n = dao.todayOtherHospitalize(paraMap);
-		System.out.println("n 값"+n);
-		System.out.println(paraMap.get("hospitalize_start_day"));
-		System.out.println(paraMap.get("hospitalize_end_day"));
 		
 		if(n > 0) { // 1-2. 동일 기간에 다른 예약건이 존재한다.
 			throw new RuntimeException("해당 기간에 다른 입원예약건이 존재합니다. 다른 입원일을 선택하세요.");

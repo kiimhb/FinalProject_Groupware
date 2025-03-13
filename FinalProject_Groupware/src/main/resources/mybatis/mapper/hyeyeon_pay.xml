@@ -62,5 +62,35 @@
 		where order_no = #{order_no}
 	</update>
 	
-
+	<!--처방전 환자정보 불러오기 -->
+	<resultMap id="pay_patientInfo_map" type="HashMap">
+	 	<result property="order_no" 			column="order_no" 			javaType="String" />
+	 	<result property="patient_no" 			column="patient_no" 		javaType="String" />
+	 	<result property="patient_name" 		column="patient_name" 		javaType="String" />
+	 	<result property="patient_jubun" 		column="patient_jubun" 		javaType="String" />
+	 	<result property="order_desease_name" 	column="order_desease_name" javaType="String" />
+	 	<result property="cost_item" 			column="cost_item" 			javaType="String" />
+	 	<result property="cost_item_name" 		column="cost_item_name" 	javaType="String" />
+	 	<result property="cost" 				column="cost" 				javaType="String" />
+	</resultMap>
+	<select id="pay_patientInfo" parameterType="String" resultMap="pay_patientInfo_map">
+		select order_no, patient_no, patient_name, patient_jubun, order_desease_name, 
+               cost_item, cost_item_name, cost
+		from
+		(
+		    select order_no, patient_no, patient_name, patient_jubun, order_desease_name
+		    from tbl_order a join tbl_patient b
+		    on a.fk_patient_no = b.patient_no
+		    where order_no = #{order_no}
+		) a join tbl_cost b
+		on a.order_no = b.fk_order_no
+	</select>
+	
+	<!-- 처방약 정보 불러오기 -->
+	<select id="prescribe_list" parameterType="String" resultType="PrescribeVO">
+		select fk_order_no, prescribe_name, prescribe_beforeafter, prescribe_morning, 
+			   prescribe_afternoon, prescribe_night, prescribe_perday
+		from tbl_prescribe
+		where fk_order_no = #{order_no}
+	</select>
 </mapper>

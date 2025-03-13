@@ -38,6 +38,8 @@
     color: #4c4d4f;
     font-weight: bold;
 }
+
+div.button {text-align: right;}
 </style>
 
 <script type="text/javascript">
@@ -277,6 +279,13 @@ $(document).ready(function(){
                     </c:otherwise>
                 </c:choose>
             </tbody>
+            
+            <div class="button">
+				<button type="button" class="btn btn ml-2"
+					onclick="javascript:location.href='<%=ctxPath%>/board/list'"
+					style="margin-bottom: 10px;">← 자유게시판</button>
+			</div>
+            
         </table>
 		
 		<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
@@ -291,14 +300,12 @@ $(document).ready(function(){
 				<option value="board_subject_board_content">글제목+글내용</option>
 				<option value="board_name">글쓴이</option>
 			</select> 
-			<input type="text" name="searchWord" size="28" autocomplete="off" />
+			<input type="text" name="searchWord" size="28" autocomplete="off" placeholder="검색어을 입력하세요" />
 			<input type="text" style="display: none;" />
 			<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
 			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
 		</form>
 
-
-        <a href="<%= ctxPath %>/board/list" class="btn btn-secondary mt-3">← 게시판으로 돌아가기</a>
     </div>
 </div>
 

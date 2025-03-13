@@ -71,6 +71,7 @@
 	from tbl_patient P JOIN tbl_order O
 	on P.patient_no = O.fk_patient_no
 	where patient_no = #{patient_no}
+	and order_isConfirmed = 1
 	) A JOIN tbl_child_dept B
 	on A.fk_child_dept_no = B.child_dept_no
 	order by order_createTime asc
@@ -127,7 +128,7 @@
 	
 	<!-- 수술 요청하여 수술테이블에 insert 하기 -->
 	<update id="surgeryConfirm" parameterType="HashMap">
-		update tbl_order set order_issurg = 1
+		update tbl_order set order_issurg = 1, order_surgeryType_name = #{surgeryType_name}
 		where order_no = #{orderNo}
 		and fk_patient_no = #{hiddenPatientNo}
 		and fk_member_userid like #{fk_member_userid}
@@ -198,11 +199,49 @@
 	    SELECT 1 FROM DUAL
 	</insert>
 	
-	<select id="showCostList" parameterType="String">
+	
+	
+	
+	
+	<resultMap id="surgeryTypeMap" type="HashMap">
+		<result property="surgeryType_Price"   				column="surgeryType_Price" 			javaType="String" />
+		<result property="surgeryType_name"   				column="surgeryType_name" 			javaType="String" />  	
+	</resultMap>
+	
+	<select id="callSurgeryPrice" parameterType="String" resultMap="surgeryTypeMap">		
+		select surgeryType_Price, surgeryType_name
+		from tbl_surgeryType
+		where surgeryType_no = #{surgeryType_no}	
+	</select>
+	
+	
+	
+	
+	
+	<resultMap id="medicineMap" type="HashMap">
+		<result property="medicine_no"   				column="medicine_no" 			javaType="String" />
+		<result property="medicine_name"   				column="medicine_name" 			javaType="String" />
+		<result property="medicine_price"   			column="medicine_price" 			javaType="String" />  	
+	</resultMap>
 		
+	<select id="callMedicinePrice" parameterType="HashMap" resultMap="medicineMap">
+	
+		select medicine_no, medicine_name, medicine_price
+		from tbl_medicine
+		where medicine_name in
+		<foreach item="medicineNameList" collection="medicineNameList" open="(" separator="," close=")">
+	        #{medicineNameList}
+	    </foreach>
 	
 	</select>
-
+	
+	
+	<update id="sendOrderConfirm" parameterType="HashMap">
+	
+		update tbl_order set order_symptom_detail = #{order_symptom_detail}, order_isConfirmed = 1
+		where order_no = #{orderNo}
+	
+	</update>
 
 		
 		

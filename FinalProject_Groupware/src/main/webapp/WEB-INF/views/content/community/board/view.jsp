@@ -27,7 +27,15 @@ a {text-decoration: none !important;}
     vertical-align: middle;
 }
 
-
+.header .title {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 28px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
+}
 </style>
 
 <script type="text/javascript">
@@ -577,7 +585,10 @@ $("div#pageBar").html(pageBar_HTML);
 <div style="display: flex;">
 <div style="margin: auto; padding-left: 3%;">
 
- <h2 style="margin-bottom: 30px; padding-top: 3%; font-weight: bold;"><span style="margin-right:10px"; >|</span>글내용보기</h2>
+  <div class="header">
+		
+	  		<div class="title">글 내용보기</div>
+	 </div>
  
  <c:if test="${not empty requestScope.boardvo}">
  	<table style="width: 1200px" class="table table-bordered">

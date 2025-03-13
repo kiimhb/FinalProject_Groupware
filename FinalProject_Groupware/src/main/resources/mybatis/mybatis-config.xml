@@ -23,8 +23,9 @@
       <typeAlias type="com.spring.med.order.domain.OrderVO" alias="OrderVO"/>
       <typeAlias type="com.spring.med.administration.domain.Calendar_patient_recordVO" alias="Calendar_patient_recordVO"/>
       <typeAlias type="com.spring.med.administration.domain.Calendar_hospitalize_recordVO" alias="Calendar_hospitalize_recordVO"/>
-       <typeAlias type="com.spring.med.administration.domain.Calendar_surgery_recordVO" alias="Calendar_surgery_recordVO"/>
+      <typeAlias type="com.spring.med.administration.domain.Calendar_surgery_recordVO" alias="Calendar_surgery_recordVO"/>
       <typeAlias type="com.spring.med.mail.domain.MailSentVO" alias="MailSentVO"/>
       <typeAlias type="com.spring.med.mail.domain.MailReceiveVO" alias="MailReceiveVO"/>
+      <typeAlias type="com.spring.med.patient.domain.PrescribeVO" alias="PrescribeVO"/>
    </typeAliases>     
 </configuration>

@@ -253,7 +253,11 @@ public class BoardDAO_imple implements BoardDAO {
         return sqlsession.selectList("minji_board.getBookmarkListPagedWithSearch", paraMap);
     }
 
-    
+    // 처음 페이지 로딩
+ 	@Override
+ 	public List<HashMap<String, String>> selectBookmark(String member_userid) {
+ 		return sqlsession.selectList("minji_board.selectBookmark", member_userid);
+ 	}
     
     
     
@@ -277,11 +281,7 @@ public class BoardDAO_imple implements BoardDAO {
 	}
 
 
-	// 처음 페이지 로딩
-	@Override
-	public List<HashMap<String, String>> selectBookmark(String member_userid) {
-		return sqlsession.selectList("minji_board.selectBookmark", member_userid);
-	}
+	
 
 
 

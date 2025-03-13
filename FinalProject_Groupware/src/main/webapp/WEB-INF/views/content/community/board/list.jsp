@@ -121,22 +121,9 @@ function importantboard(board_no, button) {
 }
 
 $(document).ready(function() {
-	
-	
-	
 
-    /* $(".btnstar").each(function() {
-        let board_no = $(this).attr("data-board-no"); // 게시글 번호 가져오기
-        let icon = $(this).find("i");
 
-        //if (localStorage.getItem("bookmark_" + board_no) === "true") {
-        //    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold");
-        //} else {
-        //    icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
-        //}
-    }); */
-
-    // 모든 열린 페이지에서 자동으로 LocalStorage 변경 감지하여 자동 반영(업데이트되도록) window.addEventListener("storage")를 활용.
+    // window.addEventListener("storage")를 활용.
     window.addEventListener("storage", function(event) {
         if (event.key === "updateBookmark") {
             $(".btnstar").each(function() {
@@ -152,13 +139,6 @@ $(document).ready(function() {
         }
     });
 });
-
-
-
-
-
-
-
 
 
 $(document).ready(function(){
@@ -422,7 +402,7 @@ $(document).ready(function(){
 							</td>
  							<%-- <td align="center">${boardvo.board_no}</td>  --%>
 							<td>
-								<%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 시작 === --%> <%-- 첨부파일이 없는 경우 시작 --%>
+								<%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 시작 === --%> 
 
 								<%-- ========= #157. 첨부파일이 없는 경우 시작 ========= --%> <c:if
 									test="${empty boardvo.board_fileName}">
@@ -456,46 +436,6 @@ $(document).ready(function(){
 									<%-- 댓글이 없는 경우 끝  --%>
 									<%-- >>>>>>>>> #142. 원글인 경우 끝  <<<<<<<<< --%>
 
-									<%-- >>>>>>>>> #143. 답변글인 경우 들여쓰기 시작 <<<<<<<<< --%>
-									<%-- 댓글이 있는 경우 시작 --%>
-									<c:if
-										test="${boardvo.board_depthno > 0 && boardvo.board_commentCount > 0}">
-										<c:if test="${fn:length(boardvo.board_subject) < 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')"><span
-												style="color: red; font-style: italic; padding-left: ${boardvo.board_depthno * 20}px;">└Re&nbsp;</span>${boardvo.board_subject}<span
-												style="vertical-align: super;">[<span
-													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
-											</span></span>
-										</c:if>
-										<c:if test="${fn:length(boardvo.board_subject) >= 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')"><span
-												style="color: red; font-style: italic; padding-left: ${boardvo.board_depthno * 20}px;">└Re&nbsp;</span>${fn:substring(boardvo.board_subject, 0, 28)}..<span
-												style="vertical-align: super;">[<span
-													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
-											</span></span>
-										</c:if>
-									</c:if>
-									<%-- 댓글이 있는 경우 끝  --%>
-
-									<%-- 댓글이 없는 경우 시작 --%>
-									<c:if
-										test="${boardvo.board_depthno > 0 &&boardvo.board_commentCount == 0}">
-										<c:if test="${fn:length(boardvo.board_subject) < 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')"><span
-												style="color: red; font-style: italic; padding-left: ${boardvo.board_depthno * 20}px;">└Re&nbsp;</span>${boardvo.board_subject}</span>
-										</c:if>
-										<c:if test="${fn:length(boardvo.board_subject) >= 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')"><span
-												style="color: red; font-style: italic; padding-left: ${boardvo.board_depthno * 20}px;">└Re&nbsp;</span>${fn:substring(boardvo.board_subject, 0, 28)}..</span>
-										</c:if>
-									</c:if>
-									<%-- 댓글이 없는 경우 끝  --%>
-									<%-- >>>>>>>>> #143. 답변글인 경우 들여쓰기 끝  <<<<<<<<< --%>
-								
 								</c:if> <%-- ========= 첨부파일이 없는 경우 끝 ========= --%> 
 								
 								<%-- ========= #158. 첨부파일이 있는 경우 시작 ========= --%>
@@ -522,64 +462,16 @@ $(document).ready(function(){
 										test="${boardvo.board_depthno == 0 && boardvo.board_commentCount == 0}">
 										<c:if test="${fn:length(boardvo.board_subject) < 30}">
 											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}&nbsp;<img
-												src="<%= ctxPath%>/images/disk.gif" /></span>
+												onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color:#509d9c; margin-left: 5px;"></i><span style="color: #f68b1f; font-weight: bold; margin-left: 5px;"></span>
 										</c:if>
 										<c:if test="${fn:length(boardvo.board_subject) >= 30}">
 											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..&nbsp;<img
-												src="<%= ctxPath%>/images/disk.gif" /></span>
+												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..&nbsp;<i class="fa-solid fa-paperclip" style="color:#509d9c; margin-left: 5px;"></i><span style="color: #f68b1f; font-weight: bold; margin-left: 5px;"></span>
 										</c:if>
 									</c:if>
 									<%-- 댓글이 없는 경우 끝  --%>
 									<%-- >>>>>>>>> #142. 원글인 경우 끝  <<<<<<<<< --%>
 
-
-
-									<%-- >>>>>>>>> #143. 답변글인 경우 들여쓰기 시작 <<<<<<<<< --%>
-									<%-- 댓글이 있는 경우 시작 --%>
-									<c:if
-										test="${boardvo.board_depthno > 0 && boardvo.board_commentCount > 0}">
-										<c:if test="${fn:length(boardvo.board_subject) < 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')"><span
-												style="color: red; font-style: italic; padding-left: ${boardvo.board_depthno * 20}px;">└Re&nbsp;</span>${boardvo.board_subject}&nbsp;<img
-												src="<%= ctxPath%>/images/disk.gif" /><span
-												style="vertical-align: super;">[<span
-													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
-											</span></span>
-										</c:if>
-										<c:if test="${fn:length(boardvo.subject) >= 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')"><span
-												style="color: red; font-style: italic; padding-left: ${boardvo.board_depthno * 20}px;">└Re&nbsp;</span>${fn:substring(boardvo.board_subject, 0, 28)}..&nbsp;<img
-												src="<%= ctxPath%>/images/disk.gif" /><span
-												style="vertical-align: super;">[<span
-													style="color: red; font-style: italic; font-size: 9pt; font-weight: bold;">${boardvo.board_commentCount}</span>]
-											</span></span>
-										</c:if>
-									</c:if>
-									<%-- 댓글이 있는 경우 끝  --%>
-
-									<%-- 댓글이 없는 경우 시작 --%>
-									<c:if
-										test="${boardvo.board_depthno > 0 &&boardvo.board_commentCount == 0}">
-										<c:if test="${fn:length(boardvo.board_subject) < 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')"><span
-												style="color: red; font-style: italic; padding-left: ${boardvo.board_depthno * 20}px;">└Re&nbsp;</span>${boardvo.board_subject}&nbsp;<img
-												src="<%= ctxPath%>/images/disk.gif" /></span>
-										</c:if>
-										<c:if test="${fn:length(boardvo.board_subject) >= 30}">
-											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')"><span
-												style="color: red; font-style: italic; padding-left: ${boardvo.board_depthno * 20}px;">└Re&nbsp;</span>${fn:substring(boardvo.board_subject, 0, 28)}..&nbsp;<img
-												src="<%= ctxPath%>/images/disk.gif" /></span>
-										</c:if>
-									</c:if>
-									<%-- 댓글이 없는 경우 끝  --%>
-									<%-- >>>>>>>>> #143. 답변글인 경우 들여쓰기 끝  <<<<<<<<< --%>
-									
 								</c:if> <%-- ========= 첨부파일이 있는 경우 끝 ========= --%> 
 								
 								<%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 끝 === --%>
@@ -594,7 +486,6 @@ $(document).ready(function(){
 							        style="font-size: 1.5rem; color: gray; margin-left: 8px; background-color: transparent; border: none; outline: none;">
 							        <i class="fa fa-star-o" aria-hidden="true"></i>
 							    </button>
-							    <%-- data-board-no="${boardvo.board_no}" 추가하여 JavaScript에서 게시글 번호를 가져와서 LocalStorage 값 확인 가능 --%>
 							</td>
 
 
@@ -632,7 +523,7 @@ $(document).ready(function(){
 				<option value="board_subject_board_content">글제목+글내용</option>
 				<option value="board_name">글쓴이</option>
 			</select> 
-			<input type="text" name="searchWord" size="28" autocomplete="off" />
+			<input type="text" name="searchWord" size="28" autocomplete="off" placeholder="검색어을 입력하세요" />
 			<input type="text" style="display: none;" />
 			<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
 			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>

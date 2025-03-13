@@ -21,11 +21,21 @@ a,
 a:hover, 
 .fc-daygrid {
     color: #000;
-    text-decoration: none ;
-    background-color: transparent ;
-    cursor: pointer;
+    text-decoration: none;
+    background-color: transparent;
 } 
-
+div.fc-daygrid-day-bottom > a {
+	color: white;
+	background-color: #509d9c;
+	height:20px;
+	line-height: 22px;
+	border-radius:3px;
+	display: flex;
+	padding-left: 5%;
+} 
+div.fc-title {
+	color: black;
+}
 /* 주말 날짜 색 */
 .fc-day-sun a {
   color: red;
@@ -35,7 +45,14 @@ a:hover,
   color: blue;
   text-decoration: none;
 }
-
+/* 평일 날짜 색 */
+.fc-day-mon a, /* 월요일 */
+.fc-day-tue a, /* 화요일 */
+.fc-day-wed a, /* 수요일 */
+.fc-day-thu a, /* 목요일 */
+.fc-day-fri a { /* 금요일 */
+  color: black;  /* 원하는 색상 */
+}
 #fc-dom-1 {
 	font-size: 16pt;
 	padding-left: 4%;
@@ -89,10 +106,10 @@ $(document).ready(function(){
 	    	center: '',
 	    	end: 'today prev,next'
 	    },
-	    dayMaxEventRows: true, // for all non-TimeGrid views
+	    dayMaxEventRows: 0, // 
 	    views: {
 	      timeGrid: {
-	        dayMaxEventRows: 3 // adjust to 6 only for timeGridWeek/timeGridDay
+	        dayMaxEventRows: 1 // adjust to 6 only for timeGridWeek/timeGridDay
 	      }
 	    },
 	    // ===================== DB 와 연동하는 법 시작 ===================== //
@@ -103,22 +120,38 @@ $(document).ready(function(){
                  dataType: "json",
                  success:function(json) {
 					 
-                	 console.log(JSON.stringify(json));
+                	 // console.log(JSON.stringify(json));
                 	 
                 	 var events = [];
-
+                	 
                 	 // 가져온 데이터를 FullCalendar의 events 배열 형식으로 변환
                      json.forEach(function(item) {
 
+ 						 let surgery_surgeryroom_name = "";
+                    	 
+                    	 if(item.surgery_surgeryroom_name == 1) {
+                    		 surgery_surgeryroom_name = "RoomA";
+                    	 }
+                    	 else if(item.surgery_surgeryroom_name == 2) {
+                    		 surgery_surgeryroom_name = "RoomB";
+                    	 }
+                    	 else if(item.surgery_surgeryroom_name == 3) {
+                    		 surgery_surgeryroom_name = "RoomC";
+                    	 }
+                    	 else {
+                    		 surgery_surgeryroom_name = "RoomD";
+                    	 }
+                     	
+						 
                          if (item.surgery_day && item.surgery_start_time) {
                         	 
                         	 var startDateTime = item.surgery_day + "T" + item.surgery_start_time;  // "2025-03-18T11:30:00"
                              var endDateTime = item.surgery_day + "T" + item.surgery_end_time;  // "2025-03-18T15:00:00"	 
-
+								
                              events.push({
-                                 title: "수술실" + item.surgery_surgeryroom_name,
+                                 title: surgery_surgeryroom_name + ' (' + item.surgery_start_time.substring(0,5) + ' - ' + item.surgery_end_time.substring(0,5) + ')',
                                  start: startDateTime,
-                                 end: startDateTime,
+                                 end: endDateTime,
                                  color: "lightcoral"
                              });
                          }
@@ -129,6 +162,17 @@ $(document).ready(function(){
 				            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				    }	
 	    	 }); // end of  $.ajax
+	    },
+	    eventContent: function(info) {
+	        // title 부분을 수술실 이름만 표시
+	        var customTitle = info.event.title;  // title은 이미 수술실 이름만 들어가 있음
+	        var customTime = "";  // 시간을 제거하고 싶다면 여기에 아무것도 넣지 않거나 빈 문자열로 설정
+
+	        // customTime을 포함해서 필요한 경우 추가적으로 정보를 표시할 수 있음
+	        return {
+	            html: '<div class="fc-title" style=" white-space: normal; overflow: visible; word-wrap: break-word;">' 
+                     + customTitle + '</div>'
+	        };
 	    },
 	    // ===================== DB 와 연동하는 법 끝 ===================== //
 	 	// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정에 대한 간단한 설명문 보여줌)

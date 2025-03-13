@@ -18,7 +18,7 @@ import jakarta.servlet.DispatcherType;
                       // 만약에 @EnableWebSecurity을 어노테이션을 붙이지 않으면 인덱스 홈페이지가 "/login"으로 리다이렉션된다. 
 @EnableMethodSecurity
 public class SecurityConfig { 
-   
+
    @Bean
    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
    

@@ -603,3 +603,41 @@ from a join b
 on a.fk_patient_no = b.patient_no
 join c
 on a.order_no = c.fk_order_no
+
+select *
+from tbl_member;
+
+delete tbl_work;
+commit;
+
+
+select *
+from
+(
+select rownum as rno, patient_no, child_dept_name, patient_name,
+       patient_jubun, patient_gender, patient_visitdate
+from 
+    (
+        SELECT patient_no, child_dept_name, patient_name,
+               patient_jubun, patient_gender, patient_visitdate
+        FROM tbl_patient a 
+        JOIN tbl_child_dept b 
+        ON a.fk_child_dept_no = b.child_dept_no 
+        order by patient_visitdate desc
+    ) a join tbl_order b
+    on a.patient_no = b.fk_patient_no 
+    where order_no is not null and rownum >= 10
+) 
+where rno BETWEEN to_number(1) AND to_number(10)
+
+select *
+from
+(
+    SELECT rownum as rno, patient_no, child_dept_name, patient_name,
+           patient_jubun, patient_gender, patient_visitdate
+    FROM tbl_patient a 
+    JOIN tbl_child_dept b 
+    ON a.fk_child_dept_no = b.child_dept_no
+    order by patient_visitdate desc
+)
+where rno BETWEEN to_number(1) AND to_number(10)

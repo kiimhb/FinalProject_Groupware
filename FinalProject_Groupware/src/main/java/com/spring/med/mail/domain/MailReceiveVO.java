@@ -3,7 +3,7 @@ package com.spring.med.mail.domain;
 public class MailReceiveVO {
 	
 	private String fk_mail_sent_no;					//메일번호
-	private String fk_member_userid;				//수신자 사번
+	private String rk_member_userid;				//수신자 사번
 	private String mail_received_status;			//수신여부 (SHA-256 암호화 대상)
 	private String mail_received_saved;				//보관여부(수신)
 	private String mail_received_trashdate;			//휴지통 날짜(수신)
@@ -18,8 +18,8 @@ public class MailReceiveVO {
 	public String getFk_mail_sent_no() {
 		return fk_mail_sent_no;
 	}
-	public String getFk_member_userid() {
-		return fk_member_userid;
+	public String getRk_member_userid() {
+		return rk_member_userid;
 	}
 	public String getMail_received_status() {
 		return mail_received_status;
@@ -39,8 +39,8 @@ public class MailReceiveVO {
 	public void setFk_mail_sent_no(String fk_mail_sent_no) {
 		this.fk_mail_sent_no = fk_mail_sent_no;
 	}
-	public void setFk_member_userid(String fk_member_userid) {
-		this.fk_member_userid = fk_member_userid;
+	public void setRk_member_userid(String rk_member_userid) {
+		this.rk_member_userid = rk_member_userid;
 	}
 	public void setMail_received_status(String mail_received_status) {
 		this.mail_received_status = mail_received_status;

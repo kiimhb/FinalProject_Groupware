@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MailSentVO {
 
 	private String mail_sent_no;				//메일번호
-	private String fk_member_userid;			//발신자사번
+	private String sk_member_userid;			//발신자사번
 	private String mail_title;					//제목
 	private String mail_sent_content;			//내용
 	private String mail_sent_trashdate;			//휴지통 날짜 (발신)
@@ -15,6 +15,8 @@ public class MailSentVO {
 	private String mail_sent_file;				//첨부파일명
 	private String mail_sent_file_origin;		//원본파일명
 	private String mail_sent_filesize;			//파일사이즈
+		
+	
 	
 	
 	
@@ -61,8 +63,8 @@ public class MailSentVO {
 	public String getMail_sent_no() {
 		return mail_sent_no;
 	}
-	public String getFk_member_userid() {
-		return fk_member_userid;
+	public String getSk_member_userid() {
+		return sk_member_userid;
 	}
 	public String getMail_title() {
 		return mail_title;
@@ -94,8 +96,8 @@ public class MailSentVO {
 	public void setMail_sent_no(String mail_sent_no) {
 		this.mail_sent_no = mail_sent_no;
 	}
-	public void setFk_member_userid(String fk_member_userid) {
-		this.fk_member_userid = fk_member_userid;
+	public void setSk_member_userid(String sk_member_userid) {
+		this.sk_member_userid = sk_member_userid;
 	}
 	public void setMail_title(String mail_title) {
 		this.mail_title = mail_title;

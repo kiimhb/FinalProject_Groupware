@@ -41,16 +41,16 @@ ul{
 	list-style: none;
 }
 
-button.btn_normal{
-	background-color: #990000;
-	border: none;
-	color: white;
-	width: 50px;
-	height: 30px;
-	font-size: 12pt;
-	padding: 3px 0px;
-	border-radius: 10%;
+.header .title {
+     border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 33px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 4%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
 }
+
 
 button.btn_edit{
 	border: none;
@@ -60,6 +60,22 @@ button.btn_edit{
 button.btn {
 	background-color: #006769;
 	color:white;
+}	
+.fc .fc-button-primary {
+    color: var(--fc-button-text-color, #fff);
+    background-color: #509d9c;
+
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active {
+    color: var(--fc-button-text-color, #fff);
+    background-color: #006769;
+}	
+
+.fc .fc-button-primary:disabled {  /* 오늘 버튼 */
+	background-color: var(--fc-button-bg-color,#509d9c);
+}
+	
 </style>
 
 
@@ -734,7 +750,9 @@ function goSearch() {
 
 <div style="margin-left: 80px; width: 88%;">
 	
-	<h3>일정 관리</h3>
+	<div class="header">
+			<div class="title">일정 관리</div>
+	</div>
 	
 	<div id="wrapper1">
 		<input type="hidden" value="${sessionScope.loginuser.member_userid}" id="fk_member_userid"/>
@@ -766,8 +784,8 @@ function goSearch() {
 		<div id="searchPart" style="float: right;">
 			<form name="searchScheduleFrm">
 				<div>
-					<input type="text" id="fromDate" name="schedule_startdate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp; 
-	            -&nbsp;&nbsp; <input type="text" id="toDate" name="schedule_enddate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp;
+					<input type="text" id="fromDate" name="schedule_startdate" style="width: 110px;" readonly="readonly">&nbsp;&nbsp; 
+	            -&nbsp;&nbsp; <input type="text" id="toDate" name="schedule_enddate" style="width: 110px;" readonly="readonly">&nbsp;&nbsp;
 					<select id="searchType" name="searchType" style="height: 30px;">
 						<option value="">검색대상선택</option>
 						<option value="schedule_subject">제목</option>

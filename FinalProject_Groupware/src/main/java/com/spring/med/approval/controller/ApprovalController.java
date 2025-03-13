@@ -1,6 +1,8 @@
 package com.spring.med.approval.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import com.spring.med.common.FileManager;
 import com.spring.med.management.domain.ManagementVO_ga;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 // **** 기안서 및 결재 컨트롤러 **** //
@@ -307,6 +310,104 @@ public class ApprovalController {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 결재상신함 ***
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// ==== 내가 작성한(결재요청한) 기안문 리스트 불러오기 ==== //
+	@GetMapping("approvalRequestList")
+	public ModelAndView approvalRequestList(ModelAndView mav
+							              , HttpServletRequest request
+							              , @RequestParam(defaultValue = "") String searchType
+							              , @RequestParam(defaultValue = "") String searchWord
+							              , @RequestParam(defaultValue = "10") int sizePerPage
+							              , @RequestParam(defaultValue = "1") int currentShowPageNo) {
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("member_userid", loginuser.getMember_userid());
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		// >>> 총 게시물 건수 구하기 <<< ///
+		int totalCount = 0;
+		int totalPage = 0;
+		
+		totalCount = approvalService.getTotalCount_approvalRequest(paraMap);
+		
+		// 페이지 당 보여줄 기안문 개수에 따라 총 페이지 수 구하기
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+			
+		try {
+			// url 에 잘못된 페이지번호가 입력 될 경우 첫 페이지로 처리
+			if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+				currentShowPageNo = 1;
+			}
+		} catch (NumberFormatException e) {
+			currentShowPageNo = 1;
+		}
+		
+		
+		// >>> 페이지당 보여줄 목록 가져오기 <<< //
+		int startRno = ((currentShowPageNo - 1) * sizePerPage) + 1; // 범위시작
+		int endRno = startRno + sizePerPage -1;	// 범위끝
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+
+		// >>> 결재상신함 기안문 불러오기 <<< //
+		List<ApprovalVO> requestList = approvalService.approvalRequestList(paraMap);
+		mav.addObject("requestList", requestList);
+		
+		// 검색어 유지시키기 위해 데이터 전달
+		if("draft_form_type".equals(searchType) || "draft_subject".equals(searchType)) {	
+			mav.addObject("paraMap", paraMap);
+		}
+		
+		mav.addObject("sizePerPage", sizePerPage);
+		
+		// >>> 페이지바 생성 <<< //
+		int blockSize = 10;	// 한 줄에 보이는 페이지 번호 개수
+		int loop = 1;		// 페이지바의 다음 줄을 보여주는데 사용
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<ul style='list-style:none;'>";
+	    String url = "approvalRequestList";
+	    
+	    // === [맨처음][이전] 만들기 === //
+	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' class='page-link'>&lt;&lt;</a></li>";
+
+	    if (pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때
+	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' class='page-link'>&lt;</a></li>";
+	    }
+
+	    while (!(loop > blockSize || pageNo > totalPage)) {  // 10 보다 크거나 totalPage 보다 크면 안 된다
+	        if (pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지
+	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageNo + "</span></li>";
+	        } else {
+	            pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>" + pageNo + "</a></li>";
+	        }
+	        
+	        loop++;
+	        pageNo++;
+	    }
+
+	    // === [다음][마지막] 만들기 === //
+	    if (pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
+	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>&gt;</a></li>";
+	    }
+
+	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' class='page-link'>&gt;&gt;</a></li>";
+
+	    pageBar += "</ul>";
+			    
+	    
+	    mav.addObject("pageBar", pageBar); // modelandview(뷰단페이지에 페이지바를 나타냄)
+	    
+		mav.setViewName("content/approval/approvalRequestList");
+
+		return mav;
+	}
 	
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,6 +466,8 @@ public class ApprovalController {
 			mav.addObject("paraMap", paraMap);
 		}
 		
+		mav.addObject("sizePerPage", sizePerPage);
+		
 		// >>> 페이지바 생성 <<< //
 		int blockSize = 10;	// 한 줄에 보이는 페이지 번호 개수
 		int loop = 1;		// 페이지바의 다음 줄을 보여주는데 사용
@@ -375,35 +478,32 @@ public class ApprovalController {
 	    String url = "approvalTemporaryList";
 	    
 	    // === [맨처음][이전] 만들기 === //
-	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'><<</a></li>";
-       
-	    if(pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때(맨처음 페이지라면 [이전]이 없음)
-	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><</a></li>";
+	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' class='page-link'>&lt;&lt;</a></li>";
+
+	    if (pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때
+	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' class='page-link'>&lt;</a></li>";
 	    }
-      
-	    while( !(loop > blockSize || pageNo > totalPage) ) {   // 10 보다 크거나 totalPage 보다 크면 안 된다
-          
-          
-	    	if(pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지(현재페이지는 a태그 뺌)
-            	pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border: solid 1px gray; color:red; padding:2px 4px'>"+pageNo+"</li>";
-	    	}
-	    	else { 
-	    		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
-	    	}
-             
-	    	loop++;
-	    	pageNo++;
-	    }  // end of while ------------------------------ (10번을 반복하면 빠져나옴)
-       
-       
+
+	    while (!(loop > blockSize || pageNo > totalPage)) {  // 10 보다 크거나 totalPage 보다 크면 안 된다
+	        if (pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지
+	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageNo + "</span></li>";
+	        } else {
+	            pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>" + pageNo + "</a></li>";
+	        }
+	        
+	        loop++;
+	        pageNo++;
+	    }
+
 	    // === [다음][마지막] 만들기 === //
-	    if(pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
-	    	pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>></a></li>";
+	    if (pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
+	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>&gt;</a></li>";
 	    }
- 
-	    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>>></a></li>";
-         
-	    pageBar += "</ul>"; 
+
+	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' class='page-link'>&gt;&gt;</a></li>";
+
+	    pageBar += "</ul>";
+
        
 	    mav.addObject("pageBar", pageBar); // modelandview(뷰단페이지에 페이지바를 나타냄)
 
@@ -486,25 +586,108 @@ public class ApprovalController {
 	@GetMapping("getTempApprovalRefer")
 	@ResponseBody
 	public List<Map<String, String>> getTempApprovalRefer(@RequestParam String draft_no) {
-		System.out.println("draft_no :" + draft_no);
+
 		List<Map<String, String>> mapList = approvalService.getTempApprovalRefer(draft_no);
 		return mapList;
 	}
 
+	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 결재문서함 ***
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 === //
 	@GetMapping("approvalPendingList")
-	public ModelAndView approvalPendingList(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView approvalPendingList(ModelAndView mav
+							              , HttpServletRequest request
+							              , @RequestParam(defaultValue = "") String searchType
+							              , @RequestParam(defaultValue = "") String searchWord
+							              , @RequestParam(defaultValue = "10") int sizePerPage
+							              , @RequestParam(defaultValue = "1") int currentShowPageNo) {
 		
 		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
 		HttpSession session = request.getSession();
 		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
 		
-		List<Map<String, String>> pendingList = approvalService.approvalPendingList(loginuser.getMember_userid());
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("member_userid", loginuser.getMember_userid());
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+
+		// >>> 총 게시물 건수 구하기 <<< ///
+		int totalCount = 0;
+		int totalPage = 0;
 		
+		totalCount = approvalService.getTotalCount_approvalPending(paraMap);
+		
+		// 페이지 당 보여줄 기안문 개수에 따라 총 페이지 수 구하기
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+			
+		try {
+			// url 에 잘못된 페이지번호가 입력 될 경우 첫 페이지로 처리
+			if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+				currentShowPageNo = 1;
+			}
+		} catch (NumberFormatException e) {
+			currentShowPageNo = 1;
+		}
+		
+		// >>> 페이지당 보여줄 목록 가져오기 <<< //
+		int startRno = ((currentShowPageNo - 1) * sizePerPage) + 1; // 범위시작
+		int endRno = startRno + sizePerPage -1;	// 범위끝
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		// >>> 결재문서함 기안문 불러오기 <<< //
+		List<Map<String, String>> pendingList = approvalService.approvalPendingList(paraMap);
 		mav.addObject("pendingList", pendingList);
+		
+		// 검색어 유지시키기 위해 데이터 전달
+		if("draft_form_type".equals(searchType) || "draft_subject".equals(searchType) || "member_name".equals(searchType) || "parent_dept_name".equals(searchType)) {	
+			mav.addObject("paraMap", paraMap);
+		}
+		
+		mav.addObject("sizePerPage", sizePerPage);
+		
+		// >>> 페이지바 생성 <<< //
+		int blockSize = 10;	// 한 줄에 보이는 페이지 번호 개수
+		int loop = 1;		// 페이지바의 다음 줄을 보여주는데 사용
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<ul style='list-style:none;'>";
+	    String url = "approvalPendingList";
+		
+	 // === [맨처음][이전] 만들기 === //
+	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' class='page-link'>&lt;&lt;</a></li>";
+
+	    if (pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때
+	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' class='page-link'>&lt;</a></li>";
+	    }
+
+	    while (!(loop > blockSize || pageNo > totalPage)) {  // 10 보다 크거나 totalPage 보다 크면 안 된다
+	        if (pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지
+	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageNo + "</span></li>";
+	        } else {
+	            pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>" + pageNo + "</a></li>";
+	        }
+	        
+	        loop++;
+	        pageNo++;
+	    }
+
+	    // === [다음][마지막] 만들기 === //
+	    if (pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
+	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>&gt;</a></li>";
+	    }
+
+	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' class='page-link'>&gt;&gt;</a></li>";
+
+	    pageBar += "</ul>";
+
+       
+	    mav.addObject("pageBar", pageBar); // modelandview(뷰단페이지에 페이지바를 나타냄)
+		
 		mav.setViewName("content/approval/approvalPendingList");
 		
 		return mav;
@@ -513,18 +696,245 @@ public class ApprovalController {
 	
 	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
 	@PostMapping("approvalPendingListDetail")
-	public ModelAndView approvalPendingListDetail(ModelAndView mav, @RequestParam String draft_no) {
+	public ModelAndView approvalPendingListDetail(ModelAndView mav, HttpServletRequest request, @RequestParam String draft_no) {
 
-		HashMap<String, String> approvalvo = approvalService.approvalPendingListDetail(draft_no);
-		System.out.println("확인 : " + approvalvo);
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		String member_userid = loginuser.getMember_userid();
+		
+		Map<String,String> map = new HashMap<>();
+		map.put("member_userid", member_userid);
+		map.put("draft_no", draft_no);
+		
+		HashMap<String, String> approvalvo = approvalService.approvalPendingListDetail(map);
 		mav.addObject("approvalvo", approvalvo);
 		mav.setViewName("/content/approval/approvalDraft");
 		
 		return mav;
 	}
 	
+	
+	// ==== 결재 의견 불러오기 ==== //
+	@GetMapping("getApprovalFeedback")
+	@ResponseBody
+	public List<Map<String, String>> getApprovalFeedback(ModelAndView mav, @RequestParam String draft_no) {
+
+		List<Map<String, String>> approvalvo = approvalService.getApprovalFeedback(draft_no);
+
+		return approvalvo;
+	}
+	
+	
+	// ==== 결재문서에서 첨부된 파일 클릭시 다운로드 ==== //
+	@GetMapping("download")
+	public void download(HttpServletRequest request
+			           , HttpServletResponse response
+			           , @RequestParam String draft_file_name
+			           , @RequestParam String draft_file_origin_name) {
+		
+		response.setContentType("text/html; charset=UTF-8");
+		
+		PrintWriter out = null;
+		
+		try {
+			
+			if(draft_file_name == null || draft_file_origin_name == null) {
+				out = response.getWriter();
+				
+				out.println("<script type='text/javascript'>alert('첨부파일이 없으므로 파일다운로드가 불가합니다.'); history.back();</script>");
+				return;
+			}
+			else {
+				// 파일이 존재하는 경우
+								
+				HttpSession session = request.getSession();
+				
+				String root = session.getServletContext().getRealPath("/");  // 파일 위치를 알기위해 webapp 의 절대경로 알아오기
+				String path = root + "resources" + File.separator + "draft"; // 파일이 업로드 된 위치
+				
+				// >>>> 파일 다운로드 <<<< //
+				boolean flag = false;	// 파일다운로드 성공/실패 여부
+				flag = fileManager.doFileDownload(draft_file_name, draft_file_origin_name, path, response);
+				
+				if(!flag) {
+					// 다운로드 실패의 경우
+					out = response.getWriter();
+					
+					out.println("<script type='text/javascript'>alert('파일다운로드가 실패되었습니다.'); history.back();</script>");
+				}
+			}
+		} catch (IOException e) {
+			
+			try {
+				out = response.getWriter();
+
+				out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	
+	// ==== 결재의견 작성 모달에서 승인버튼 클릭 이벤트 ==== //
+	@PostMapping("goApprove")
+	@ResponseBody
+	public int goApprove(@RequestParam String approval_feedback
+						,@RequestParam String fk_draft_no
+						,HttpServletRequest request) {
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		String member_userid = loginuser.getMember_userid();
+				
+		Map<String, String> map = new HashMap<>();
+		map.put("approval_feedback", approval_feedback);
+		map.put("fk_draft_no", fk_draft_no);
+		map.put("member_userid", member_userid);
+		
+		int n = approvalService.goApprove(map);
+		
+		return n;
+	}
+	
+	
+	// ==== 반려의견 작성 모달에서 반려버튼 클릭 이벤트 ==== //
+	@PostMapping("goSendBack")
+	@ResponseBody
+	public int goSendBack(@RequestParam String approval_feedback
+						,@RequestParam String fk_draft_no
+						,HttpServletRequest request) {
+		
+		System.out.println("확인용~~ fk_draft_no : " + fk_draft_no);
+		System.out.println("확인용~~ approval_feedback : " + approval_feedback);
+		
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		String member_userid = loginuser.getMember_userid();
+				
+		Map<String, String> map = new HashMap<>();
+		map.put("approval_feedback", approval_feedback);
+		map.put("fk_draft_no", fk_draft_no);
+		map.put("member_userid", member_userid);
+		
+		int n = approvalService.goSendBack(map);
+		
+		return n;
+	}
+	
+	
+	// ==== 결재선 결재순위 지정(결재 한 경우 사인 이미지) ==== // 
+	@PostMapping("orderByApprovalStep_withSign")
+	@ResponseBody
+	public List<HashMap<String, String>> orderByApprovalStep_withSign(@RequestParam String draft_no) {
+		
+		List<HashMap<String, String>> memberList = approvalService.orderByApprovalStep_withSign(draft_no);
+
+		return memberList;
+	}
+	
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 참조문서함 ***
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+	// ==== 참조문서함 목록 불러오기 ==== //
+	@GetMapping("referenceApprovalList")
+	public ModelAndView referenceApprovalList(ModelAndView mav
+			                                , HttpServletRequest request
+			                                , @RequestParam(defaultValue = "") String searchType
+			                                , @RequestParam(defaultValue = "") String searchWord
+			                                , @RequestParam(defaultValue = "10") int sizePerPage
+			                                , @RequestParam(defaultValue = "1") int currentShowPageNo) {
+
+		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga)session.getAttribute("loginuser");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("member_userid", loginuser.getMember_userid());
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+
+		// >>> 참조문서함 총 게시물 건수 구하기 <<< ///
+		int totalCount = 0;
+		int totalPage = 0;
+		
+		totalCount = approvalService.getTotalCount_referenceApproval(paraMap);
+		
+		// 페이지 당 보여줄 기안문 개수에 따라 총 페이지 수 구하기
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+			
+		try {
+			// url 에 잘못된 페이지번호가 입력 될 경우 첫 페이지로 처리
+			if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+				currentShowPageNo = 1;
+			}
+		} catch (NumberFormatException e) {
+			currentShowPageNo = 1;
+		}
+		
+		
+		// >>> 페이지당 보여줄 목록 가져오기 <<< //
+		int startRno = ((currentShowPageNo - 1) * sizePerPage) + 1; // 범위시작
+		int endRno = startRno + sizePerPage -1;	// 범위끝
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		// >>> 참조문서함 기안문 불러오기 <<< //
+		List<ApprovalVO> referenceApprovalList = approvalService.selectreferenceApprovalList(paraMap);
+		mav.addObject("referenceApprovalList", referenceApprovalList);
+		
+		// 검색어 유지시키기 위해 데이터 전달
+		if("draft_form_type".equals(searchType) || "draft_subject".equals(searchType) || "member_name".equals(searchType) || "parent_dept_name".equals(searchType)) {	
+			mav.addObject("paraMap", paraMap);
+		}
+		
+		mav.addObject("sizePerPage", sizePerPage);
+		
+		// >>> 페이지바 생성 <<< //
+		int blockSize = 10;	// 한 줄에 보이는 페이지 번호 개수
+		int loop = 1;		// 페이지바의 다음 줄을 보여주는데 사용
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<ul style='list-style:none;'>";
+	    String url = "referenceApprovalList";
+	    
+	    // === [맨처음][이전] 만들기 === //
+	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' class='page-link'>&lt;&lt;</a></li>";
+
+	    if (pageNo != 1) {  // 내가 보고자 하는 넘버가 1페이지가 아닐 때
+	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' class='page-link'>&lt;</a></li>";
+	    }
+
+	    while (!(loop > blockSize || pageNo > totalPage)) {  // 10 보다 크거나 totalPage 보다 크면 안 된다
+	        if (pageNo == currentShowPageNo) {  // 내가 현재 보고자 하는 페이지
+	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageNo + "</span></li>";
+	        } else {
+	            pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>" + pageNo + "</a></li>";
+	        }
+	        
+	        loop++;
+	        pageNo++;
+	    }
+
+	    // === [다음][마지막] 만들기 === //
+	    if (pageNo <= totalPage) {  // 맨 마지막 페이지라면 [다음]이 없음
+	        pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' class='page-link'>&gt;</a></li>";
+	    }
+
+	    pageBar += "<li class='page-item'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' class='page-link'>&gt;&gt;</a></li>";
+
+	    pageBar += "</ul>";
+       
+	    mav.addObject("pageBar", pageBar); 
+
+		mav.setViewName("content/approval/referenceApprovalList");
+
+		return mav;
+	}
 }

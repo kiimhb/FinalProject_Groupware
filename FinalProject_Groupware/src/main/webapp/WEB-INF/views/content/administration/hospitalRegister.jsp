@@ -25,7 +25,13 @@ a:hover,
     background-color: transparent ;
     cursor: pointer;
 } 
-
+div.fc-daygrid-day-bottom > a {
+	color: #4c4d4f;
+	font-weight: bold;
+}
+div.fc-title {
+	color:#4c4d4f;
+}
 /* 주말 날짜 색 */
 .fc-day-sun a {
   color: red;
@@ -35,7 +41,14 @@ a:hover,
   color: blue;
   text-decoration: none;
 }
-
+/* 평일 날짜 색 */
+.fc-day-mon a, /* 월요일 */
+.fc-day-tue a, /* 화요일 */
+.fc-day-wed a, /* 수요일 */
+.fc-day-thu a, /* 목요일 */
+.fc-day-fri a { /* 금요일 */
+  color: black;  /* 원하는 색상 */
+}
 #fc-dom-1 {
 	font-size: 16pt;
 	padding-left: 4%;
@@ -92,10 +105,10 @@ $(document).ready(function(){
 	    	center: '',
 	    	end: 'today prev,next'
 	    },
-	    dayMaxEventRows: 2, // for all non-TimeGrid views
+	    dayMaxEventRows: 5, // for all non-TimeGrid views
 	    views: {
 	      timeGrid: {
-	        dayMaxEventRows: 4 // adjust to 6 only for timeGridWeek/timeGridDay
+	        dayMaxEventRows: 5 // adjust to 6 only for timeGridWeek/timeGridDay
 	      }
 	    },
 	 	// ===================== DB 와 연동하는 법 시작 ===================== //
@@ -111,18 +124,18 @@ $(document).ready(function(){
                 	 var events = [];
                 	 
 					 var roomColors = {
-						1001:"8ac2bd",
-						1002:"8ac2bd",
-						1003:"8ac2bd",
-						1004:"8ac2bd",
-						2001:"fee4c6",
-						2002:"fee4c6",
-						2003:"fee4c6",
-						2004:"fee4c6",
-						3001:"857c7a",
-						3002:"857c7a",
-						3003:"857c7a",
-						3004:"857c7a"
+						1001:"3D8D7A",
+						1002:"3D8D7A",
+						1003:"3D8D7A",
+						1004:"3D8D7A",
+						2001:"B3D8A8",
+						2002:"B3D8A8",
+						2003:"B3D8A8",
+						2004:"B3D8A8",
+						3001:"A3D1C6",
+						3002:"A3D1C6",
+						3003:"A3D1C6",
+						3004:"A3D1C6"
 					 };
 					 
                 	 // 가져온 데이터를 FullCalendar의 events 배열 형식으로 변환
@@ -132,7 +145,7 @@ $(document).ready(function(){
 							 var roomColor = roomColors[item.fk_hospitalizeroom_no] || "#509d9c"; // 기본 색상 지정
 							
                              events.push({
-                                 title: item.fk_hospitalizeroom_no + "호    " + item.patient_name +  " 님",
+                                 title: item.fk_hospitalizeroom_no + "호 " + item.patient_name +  " 님",
                                  start: item.hospitalize_start_day,
                                  end: item.hospitalize_end_day,
                                  color: roomColor // 랜덤 색상 지정해주기getRandomColor()

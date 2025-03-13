@@ -49,10 +49,46 @@ public interface ApprovalService {
 	List<Map<String, String>> getTempApprovalRefer(String draft_no);
 
 	// ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 === //
-	List<Map<String, String>> approvalPendingList(String member_userid);
-
+	List<Map<String, String>> approvalPendingList(Map<String, String> paraMap);
+	
+	// ==== 결재문서함 총 게시물 건수 구하기 ==== //
+	int getTotalCount_approvalPending(Map<String, String> paraMap);
+	
+	// ==== 결재 의견 불러오기 ==== //
+	List<Map<String, String>> getApprovalFeedback(String draft_no);
+	
 	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
-	HashMap<String, String> approvalPendingListDetail(String draft_no);
+	HashMap<String, String> approvalPendingListDetail(Map<String, String> map);
+
+	// ==== 결재의견 작성 모달에서 승인버튼 클릭 이벤트 ==== //
+	int goApprove(Map<String, String> map);
+
+	// ==== 반려의견 작성 모달에서 반려버튼 클릭 이벤트 ==== //
+	int goSendBack(Map<String, String> map);
+
+	// ==== 결재선 결재순위 지정(결재 한 경우 사인 이미지) ==== // 
+	List<HashMap<String, String>> orderByApprovalStep_withSign(String draft_no);
+	
+	// ==== 내가 작성한(결재요청한) 기안문 리스트 불러오기 ==== //
+	List<ApprovalVO> approvalRequestList(Map<String, String> paraMap);
+	
+	// ==== 결재상신함 총 게시물 건수 구하기 ==== //
+	int getTotalCount_approvalRequest(Map<String, String> paraMap);
+
+	// ==== 참조문서함 목록 불러오기 ==== //
+	List<ApprovalVO> selectreferenceApprovalList(Map<String, String> paraMap);
+	
+	// ==== 참조문서함 총 게시물 건수 구하기 ==== //
+	int getTotalCount_referenceApproval(Map<String, String> paraMap);
+
+
+
+
+
+
+
+
+
 
 
 

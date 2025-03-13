@@ -1,5 +1,6 @@
 package com.spring.med.order.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -136,11 +137,41 @@ public class OrderDAO_imple implements OrderDAO {
 	}
 
 	// 진료입력 마무리 수술여부, 입원여부, 약처방 등 종합하여 가격 보여주기
+	/*
 	@Override
 	public List<CostVO> showCostList(String fk_order_no) {
 		
 		List<CostVO> showCostList = sqlsession.selectList("seonggon_order.showCostList", fk_order_no);
 		return showCostList;
+	}*/
+
+	// 확정한 수술 비용 가져오기
+	@Override
+	public Map<String, String> callSurgeryPrice(String surgeryType_no) {
+		Map<String, String> resultMap = sqlsession.selectOne("seonggon_order.callSurgeryPrice", surgeryType_no);
+		return resultMap;
+	}
+
+	// 확정한 약 정보랑 가격 가져오기
+	@Override
+	public List<Map<String, String>> callMedicinePrice(List<String> medicineNameList) {
+		
+		Map<String, Object> resultMap = new HashMap<>();
+		
+		resultMap.put("medicineNameList", medicineNameList);
+		
+		List<Map<String, String>> medicineMap = sqlsession.selectList("seonggon_order.callMedicinePrice", resultMap);
+		
+		return medicineMap;
+	}
+
+	// 오더확정하면 오더확정유무 0->1로바꾸기
+	@Override
+	public int sendOrderConfirm(Map<String, String> map) {
+		
+		int n = sqlsession.update("seonggon_order.sendOrderConfirm", map);
+		
+		return n;
 	}
 
 

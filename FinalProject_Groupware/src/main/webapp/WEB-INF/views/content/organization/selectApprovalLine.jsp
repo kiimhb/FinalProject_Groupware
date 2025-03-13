@@ -11,27 +11,15 @@
 <!DOCTYPE html>
 <html>
 
-<%-- Optional JavaScript --%>
-<script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
-<script type="text/javascript" src="<%=ctxPath%>/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js" ></script>
-<script type="text/javascript" src="<%=ctxPath%>/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
-
-<%-- 직접 만든 CSS 1 --%>
-<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
-
-<%-- alert 창 --%>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
-<%-- Bootstrap CSS --%>
-<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/bootstrap-4.6.2-dist/css/bootstrap.min.css" >
-  
-<%-- jsTree --%>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/themes/proton/style.min.css" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 
 <style>
+@font-face {
+    font-family: 'NEXON Lv1 Gothic OTF';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 	div.orgContainer {
 		border: solid 0px red;
 		
@@ -55,6 +43,7 @@
 	#tree {
 	    margin-top: 3%;
 	    margin-left: 3%;
+	    
 	}
 	
 	<%-- 검색창 --%>
@@ -70,6 +59,25 @@
 	}
 </style>
 
+
+<%-- Optional JavaScript --%>
+<script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="<%=ctxPath%>/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js" ></script>
+<script type="text/javascript" src="<%=ctxPath%>/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
+
+<%-- 직접 만든 CSS 1 --%>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
+
+<%-- alert 창 --%>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<%-- Bootstrap CSS --%>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/bootstrap-4.6.2-dist/css/bootstrap.min.css" >
+  
+<%-- jsTree --%>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/themes/proton/style.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 
 <script type="text/javascript">
@@ -204,8 +212,8 @@ function jsTreeView(jsonData) {
 	
 		<div style="border-radius: 3px; flex: 4.5; overflow: auto;">
 			<div id="orgTop">
-				<button type="button" id="btnShow">Show</button>
-				<button type="button" id="btnHide">Hide</button>
+				<button type="button" id="btnShow" style="background-color: #509d9c; padding: 2px; border-color: #509d9c; border-radius: 5px; color: white;">Show</button>
+				<button type="button" id="btnHide" style="background-color: #509d9c; padding: 2px; border-color: #509d9c; border-radius: 5px; color: white;">Hide</button>
 				<span >
 					<input id="member_name" name="member_name" type="text" style="width: 90px; margin-left: 3%; font-size: 10pt;" placeholder="사원명 입력" />
 					<!-- <button type="button" id="btnSearch">검색</button> -->

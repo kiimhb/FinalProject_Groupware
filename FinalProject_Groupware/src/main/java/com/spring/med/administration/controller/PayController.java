@@ -7,12 +7,15 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.administration.service.PayService;
+import com.spring.med.patient.domain.PrescribeVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -129,6 +132,24 @@ public class PayController {
 		return "redirect:/pay/wait";
 	}	 
 	
+	
+	// 프린트화면 띄우기 
+	@GetMapping("print/{order_no}")
+	public ModelAndView print_pay(@PathVariable String order_no,
+								  ModelAndView mav) {	
+		
+		// 환자정보 불러오기
+		Map<String, String> pay_patientInfo = service.pay_patientInfo(order_no);
+		
+		// 처방약 정보 불러오기
+		List<PrescribeVO> prescribe_list = service.prescribe_list(order_no);
+		
+		mav.addObject("pay_patientInfo", pay_patientInfo);
+		mav.addObject("prescribe_list", prescribe_list);
+		
+		mav.setViewName("content/administration/payPrint");
+		return mav;
+	}	 
 
 	
 }

@@ -9,22 +9,21 @@
 	<!-- **************************** 환자관련 mapper **************************** -->
 	<!-- 총 진료 기록이 있는 환자 건수 (검색이 있음 / 검색이 없음) -->
 	<select id="totalCount" parameterType="HashMap" resultType="int">
-			select count(*)
-			from 
-			(
-			    SELECT patient_no, child_dept_name, patient_name,
-		               patient_jubun, patient_gender, patient_visitdate
-		        FROM tbl_patient a 
-		        JOIN tbl_child_dept b 
-		        ON a.fk_child_dept_no = b.child_dept_no 
-			    <choose>
-				    <when test='patientname != ""  '>
-				    	where patient_name like '%'|| #{patientname} ||'%' 
-			    	</when>
-		    	</choose>
-			) a join tbl_order b
-		    on a.patient_no = b.fk_patient_no
-		    where order_no is not null
+		select count(*)
+		from
+		(
+		    SELECT patient_no, child_dept_name, patient_name,
+		           patient_jubun, patient_gender, patient_visitdate
+		    FROM tbl_patient a 
+		    JOIN tbl_child_dept b 
+		    ON a.fk_child_dept_no = b.child_dept_no
+		    <choose>
+		        <when test='patientname != ""  '>
+		            where patient_name like '%'|| #{patientname} ||'%' 
+		        </when>
+		    </choose>
+		    order by patient_visitdate desc
+		)
 	</select>
 	
 
@@ -41,26 +40,18 @@
 		select *
 		from
 		(
-		select rownum as rno, patient_no, child_dept_name, patient_name,
-		       patient_jubun, patient_gender, patient_visitdate
-		from 
-		    (
-		        SELECT patient_no, child_dept_name, patient_name,
-		               patient_jubun, patient_gender, patient_visitdate
-		        FROM tbl_patient a 
-		        JOIN tbl_child_dept b 
-		        ON a.fk_child_dept_no = b.child_dept_no 
-		        <choose>
-				    <when test='patientname != ""  '>
-				    	where patient_name like '%'|| #{patientname} ||'%' 
-			    	</when>
-			    </choose>
-			    order by patient_visitdate desc
-		    )a join tbl_order b
-		    on a.patient_no = b.fk_patient_no 
-		    where order_no is not null and rownum &lt;= #{endRno}
-		) 
-		where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+		    SELECT rownum as rno, patient_no, child_dept_name, patient_name,
+		           patient_jubun, patient_gender, patient_visitdate
+		    FROM tbl_patient a 
+		    JOIN tbl_child_dept b 
+		    ON a.fk_child_dept_no = b.child_dept_no
+		    <choose>
+		        <when test='patientname != ""  '>
+		            where patient_name like '%'|| #{patientname} ||'%' 
+		        </when>
+		    </choose>
+		    order by patient_visitdate desc
+		) where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
 
 	<!-- 주민번호로 환자를 식별해야 하기 때문에 주민번호를 찾는다. -->
@@ -112,7 +103,7 @@
 		on a.fk_child_dept_no = b.child_dept_no
 	</select>
 	
-	<!-- 수술 목록 가져오기  -->
+	<!-- 수술 목록 가져오기 -->
 	<resultMap id="surgeryMap" type="HashMap">
 		<result property="order_no" 					column="order_no" 					javaType="String" />
 		<result property="order_surgeryType_name" 		column="order_surgeryType_name" 	javaType="String" />
@@ -176,7 +167,7 @@
 			    from tbl_hospitalize a join tbl_order b
 			    on a.fk_order_no = b.order_no
 			    where hospitalize_status = 1 and order_ishosp = 1
-			    order by hospitalize_start_day
+			    order by hospitalize_start_day desc
 			) a join tbl_patient b
 			on a.fk_patient_no = b.patient_no
 			where patient_jubun = #{patient_jubun}

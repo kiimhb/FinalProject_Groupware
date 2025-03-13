@@ -1,0 +1,172 @@
+@charset "UTF-8";
+
+div#container {
+	border: 1px solid #eee;
+	display:flex;
+	width:100%;
+	height:800px;
+}
+
+/* 공통 */
+div.chatTitle,
+div.roomname,
+div.chatMember {
+	height:60px;
+	border-bottom: solid 1px #ccc;
+	text-align: center;
+	line-height: 60px;
+}
+
+/* 채팅방 목록 */
+div.left {
+	width: 20%;
+}
+i.plus {
+	position: relative;
+	right: -110px;
+	cursor: pointer;
+}
+div.oneRoom {
+	border-bottom:1px solid #eee;
+	height:80px;
+	padding:1%;
+}
+div.oneRoom {
+	display: flex;
+}
+div.chatroomImg {
+	border: 1px solid black;
+	border-radius: 50%;
+	width:50px;
+	height:50px;
+	margin: 0 4%;
+	position: relative;
+	top: 12px;
+}
+div.chatroomName {
+	position: relative;
+	top: 15px;
+	margin-left: 2%;
+	color:#4c4d4f;
+	cursor: pointer;
+}
+div.chatroomName:hover {
+	font-weight: bold;
+}
+div.lastChatContent {
+	font-size: 10pt;
+	margin-top: 2%;
+}
+
+
+/* 채팅방 메인 */
+div.middle {
+	border:1px solid #ccc;
+	width: 67%;
+	position: relative;
+	top: -1px;
+}
+div.roomname {
+	display: flex;
+	justify-content: space-between;
+	padding: 0 2%;
+	line-height: 60px;
+}
+
+div.chatingScreen {
+	height:670px;
+	padding:5%;
+	max-height: 670px;
+	overFlow: auto;
+}
+div.chatText {
+	height:70px;
+	text-align: center;
+}
+input.chatText {
+	border: 1px solid gray;
+	width:80%;
+	height:45px;
+	border-radius: 10px;
+	padding-left: 1%;
+}
+button.submit {
+	background-color: #006769;
+	color: white;
+	font-size: 10pt;
+	width:70px;
+	height:40px;
+}
+div.chattingbox {
+	background-color: #509d9c;
+	color:white;
+	word-break: break-all;
+	border-radius: 5px;
+	padding: 7px;
+	display: inline-block;
+	float: right;
+}
+div.leftchattingbox {
+	background-color: #eee;
+	display: inline-block;
+	max-width: 60%; 
+	padding: 7px;
+	border-radius: 5px;
+	word-break: break-all;
+}
+div.currentTime {
+	font-size: 7pt;
+	padding: 20px 5px 0 0;
+	float: right;
+	display: inline-block; 
+}
+div.both {
+	clear: both;
+}
+div.outroom {
+	cursor: pointer;
+	color: #4c4d4f;
+}
+div.outroom:hover {
+	font-weight: bold;
+}
+/* 채팅대상목록 */
+div.right {
+	width:13%;
+}
+div.oneMemberList {
+	border-bottom: 1px solid #ccc;
+	display: flex;
+	height:50px;
+	padding: 6%;
+}
+div.memberProfile {
+	height:30px;
+	width:30px;
+	border: 1px solid black;
+	border-radius: 50%;
+	position: relative;
+	top: -3px;
+}
+div.memberName {
+	height:30px;
+	margin-left: 5%;
+}
+
+
+/* 모달 */
+div.inputRoomName {
+	width: 100%;
+	height:30px;
+	display: flex;
+	margin: 3%;
+}
+div.inputRoomName > div {
+	width:25%;
+}
+div.inputRoomName > input {
+	width:70%;
+	border: 1px solid gray;
+	border-radius: 5px;
+}
+

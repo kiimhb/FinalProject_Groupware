@@ -15,6 +15,16 @@
   button.btn {
 	background-color: #006769;
 	color:white;
+	}
+	.header .title {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 28px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
+}
 
 </style>    
 
@@ -117,12 +127,15 @@
 <div style="display: flex;">
   <div style="margin: auto; padding-left: 3%;"> 
    
-   <h2 style="margin-bottom: 30px; padding-top: 2%; font-weight: bold;">글수정</h2>
+   <div class="header">
+		
+	  		<div class="title">글수정</div>
+	 </div>
    
    <form name="editFrm" >
    		<table style="width: 1200px" class="table table-bordered">
 			 <tr>
-				<th style="width: 15%; background-color: #DDDDDD;">성명</th>
+				<th style="width: 15%; background-color: #DDDDDD; text-align: center;">성명</th>
 			    <td>
 			       <input type="hidden" name="board_no" value="${requestScope.boardvo.board_no}" />
 			       <input type="text" name="board_name" value="${sessionScope.loginuser.member_name}" readonly>
@@ -130,21 +143,21 @@
    		     </tr>
    		     
    		     <tr>
-   		        <th style="width: 15%; background-color: #DDDDDD;">제목</th>
+   		        <th style="width: 15%; background-color: #DDDDDD; text-align: center;">제목</th>
    		        <td>
    		            <input type="text" name="board_subject" size="100" maxlength="200" value="${requestScope.boardvo.board_subject}" />
    		        </td>
    		     </tr>
    		     
    		     <tr>
-				<th style="width: 15%; background-color: #DDDDDD;">내용</th> 
+				<th style="width: 15%; background-color: #DDDDDD; text-align: center;">내용</th> 
 				<td>
 				    <textarea style="width: 100%; height: 612px;" name="board_content" id="board_content">${requestScope.boardvo.board_content}</textarea>
 				</td>
 			 </tr>
    		    
    		     <tr>
-				<th style="width: 15%; background-color: #DDDDDD;">글암호</th> 
+				<th style="width: 15%; background-color: #DDDDDD; text-align: center;">글암호</th> 
 				<td>
 				    <input type="password" name="board_pw" maxlength="20" />
 				</td>
