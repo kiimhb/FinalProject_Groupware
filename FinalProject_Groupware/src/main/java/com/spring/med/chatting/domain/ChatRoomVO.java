@@ -51,8 +51,5 @@ public class ChatRoomVO { // 채팅룸VO
 	public void setParticipants(List<String> participants) {
 		this.participants = participants;
 	}
-	
-	
-	
-	
+
 }

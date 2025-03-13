@@ -37,7 +37,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	// 방별로 관리하기 위함 (대화참여자 목록도 존재)
 	private final Map<String, Set<WebSocketSession>> chatRooms = new ConcurrentHashMap<>();
 	
-    // ======= 몽고DB 시작 ======= // 
+    // ======= 몽고DB 시작 ======= //
     // === (#웹채팅관련8) === //
 	@Autowired
 	private MessageVO chatmessage = new MessageVO();
@@ -56,8 +56,10 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionEstablished(WebSocketSession wsession) throws Exception {
 		
+		// 웹소켓에 연결된 사용자 리스트 추가
 		connectedUsers.add(wsession);
 		
+		// URL 에서 채팅방 아이디 가져오기 
 		String path = wsession.getUri().getPath();
 		// path/med-groupware/chatting/multichatstart/67ca7e75d20865c18164ef6e
 		String[] pathparts = path.split("/");
@@ -67,41 +69,33 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 			wsession.close();
 			return;
 		}	
-	
-		// 이미 참가 중인 방이 있는지 확인
+		
+		// 현재의 세션이 이미 참가 중인 방이 있는지 확인
 	    String currentRoomId = (String) wsession.getAttributes().get("roomId");
 	    // System.out.println("currentRoomId"+currentRoomId);
-	    if (currentRoomId != null) {
-	        // 이미 방에 참가 중이라면 다른 방에 참가할 수 없도록 처리
-	        wsession.sendMessage(new TextMessage("이미 다른 채팅방에 참가 중입니다."));
-	        wsession.close();
-	        return;
-	    }
-		
-
-		// 기존 방에서 제거 후 참가자 목록 갱신
-	    String previousRoomId = (String) wsession.getAttributes().get("roomId");
-	    if (previousRoomId != null && !previousRoomId.equals(roomId)) {
-	        removeSessionChatRoom(previousRoomId, wsession);
-	        updateParticipantList(previousRoomId);
+	    if (currentRoomId != null && !currentRoomId.equals(roomId)) {
+	    	removeSessionChatRoom(currentRoomId, wsession);
+	        updateParticipantList(currentRoomId);
 	    }
 
+		// roomId 세션에 저장
+		wsession.getAttributes().put("roomId", roomId);
 		// 방이 없으면 생성 (동기화된 Set 사용)
 		chatRooms.putIfAbsent(roomId, Collections.synchronizedSet(new HashSet<>()));
 		// 방에 사용자 추가
 		chatRooms.get(roomId).add(wsession);
-		wsession.getAttributes().put("roomId", roomId);
-		// System.out.println("입장한 후 chatRooms: " + chatRooms); // 여기서 방 상태 확인
 		
+		// 참가자 목록 갱신하기
+		updateParticipantList(roomId);
 		
+		// 로그인 사용자 정보 가져오기
 		ManagementVO_ga loginuser = (ManagementVO_ga) wsession.getAttributes().get("loginuser");
+		
 		// 입장 메시지를 해당 채팅방 사용자에게 전송한다.
 		String joinMessage = loginuser.getMember_name() + "님이 채팅방에 입장했습니다.";
 		for(WebSocketSession session : chatRooms.get(roomId)) {
 			session.sendMessage(new TextMessage("<div style='text-align: center; color:#4c4d4f;'>" + joinMessage + "</div><br>"));
 		}
-
-		updateParticipantList(roomId); // 방별로 사용자목록
 		
         // =========================== 몽고DB 시작 =========================== //
 		List<MessageVO> list = chattingMongo.listChatting(roomId);
@@ -175,7 +169,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	    
 	}
 	
-	
+	// 메시지 전송하기 
 	@Override
 	public void handleTextMessage(WebSocketSession wsession, TextMessage message) throws Exception {
 

@@ -181,6 +181,16 @@ function getChatRoomList() {
 // 채팅방 참가하기
 function enterRoom(roomId, roomName) {
 	
+	// 채팅방 중복 참가 제한 
+	if(currentRoomId && currentRoomId==roomId) {
+		alert("이미 채팅방에 참가 중입니다.");
+		return;
+	}
+	if(currentRoomId && currentRoomId !== roomId) {
+		alert("채팅방을 나간 후 새로운 채팅에 참가하세요!");
+		return;
+	}
+		
 	$("div.titleRoomName").text(roomName);
 	$("div.chat_box").html("");
 	$("div.memberList").html("");
