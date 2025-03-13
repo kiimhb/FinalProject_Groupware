@@ -20,7 +20,9 @@ public class ApprovalService_imple implements ApprovalService {
 	@Autowired
 	private ApprovalDAO mapper_approvalDAO;
 	
-	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// *** 기안문작성 ***
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ==== 결재선 목록에 선택한 사원 추가하기 ==== //
 	@Override
 	public ApprovalVO insertToApprovalLine(String member_userid) {
@@ -75,7 +77,27 @@ public class ApprovalService_imple implements ApprovalService {
 		return member_yeoncha;
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// *** 결재상신함 ***
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// ==== 내가 작성한(결재요청한) 기안문 리스트 불러오기 ==== //
+	@Override
+	public List<ApprovalVO> approvalRequestList(Map<String, String> paraMap) {
+		
+		List<ApprovalVO> requestList = mapper_approvalDAO.approvalRequestList(paraMap);
+		return requestList;
+	}
+	
+	// ==== 결재상신함 총 게시물 건수 구하기 ==== //
+	@Override
+	public int getTotalCount_approvalRequest(Map<String, String> paraMap) {
+		
+		int totalCount = mapper_approvalDAO.getTotalCount_approvalRequest(paraMap);
+		return totalCount;
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// *** 임시저장함 ***
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== // 
 	@Override
 	@Transactional(value="transactionManager_final_orauser4" , propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class}) // 오류가 발생하면 무조건 rollback
@@ -350,7 +372,7 @@ public class ApprovalService_imple implements ApprovalService {
 		return temporaryList;
 	}
 
-	// ==== 총 게시물 건수 구하기 ==== ///
+	// ==== 임시저장함 총 게시물 건수 구하기 ==== ///
 	@Override
 	public int getTotalCount(Map<String, String> paraMap) {
 		
@@ -374,22 +396,146 @@ public class ApprovalService_imple implements ApprovalService {
 		return mapList;
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// *** 결재문서함 ***
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 === //
 	@Override
-	public List<Map<String, String>> approvalPendingList(String member_userid) {
+	public List<Map<String, String>> approvalPendingList(Map<String, String> paraMap) {
 
-		List<Map<String, String>> pendingList =  mapper_approvalDAO.approvalPendingList(member_userid);
+		List<Map<String, String>> pendingList =  mapper_approvalDAO.approvalPendingList(paraMap);
 		return pendingList;
 	}
-
+	
+	// ==== 결재문서함 총 게시물 건수 구하기 ==== //
+	@Override
+	public int getTotalCount_approvalPending(Map<String, String> paraMap) {
+		
+		int totalCount = mapper_approvalDAO.getTotalCount_approvalPending(paraMap);
+		return totalCount;
+	}
+	
 	// ==== 결재문서함에서 문서 클릭 후 해당 문서 내용을 불러오기 ==== //
 	@Override
-	public HashMap<String, String> approvalPendingListDetail(String draft_no) {
-		HashMap<String, String> approvalvo = mapper_approvalDAO.approvalPendingListDetail(draft_no);
-
+	public HashMap<String, String> approvalPendingListDetail(Map<String, String> map) {
+		
+		HashMap<String, String> approvalvo = mapper_approvalDAO.approvalPendingListDetail(map);
 		return approvalvo;
 	}
+	
+	// ==== 결재 의견 불러오기 ==== /
+	@Override
+	public List<Map<String, String>> getApprovalFeedback(String draft_no) {
+
+		List<Map<String, String>> approvalvo = mapper_approvalDAO.getApprovalFeedback(draft_no);
+		return approvalvo;
+	}
+
+	// ==== 결재의견 작성 모달에서 승인버튼 클릭 이벤트 ==== //
+	@Override
+	@Transactional(value="transactionManager_final_orauser4" , propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class}) // 오류가 발생하면 무조건 rollback
+	public int goApprove(Map<String, String> map) {
+		
+		int n1=0, n2=0, n3=0, result=0;
+		
+		// >>> 1-1. (TBL_APPROVAL) 결재의견 있을 경우 update 및 현재 결재자 상태 update <<<
+		if(map.get("approval_feedback") != null) {
+			n1 = mapper_approvalDAO.updateToApprovalFirst_TBL_APPROVAL_withFeedback(map);
+		}
+		else {
+			// >>> 1-2. (TBL_APPROVAL) 결재의견 없을 경우 update 및 현재 결재자 상태 update <<<
+			n1 = mapper_approvalDAO.updateToApprovalFirst_TBL_APPROVAL(map);
+		}
+		
+		String next_member_userid = null;
+		
+		if(n1 == 1) {
+			// >>> 2-1. (TBL_APPROVAL)다음 결재자가 있는지 확인 <<<
+			next_member_userid = mapper_approvalDAO.selectNextApproverMember(map);
+			
+			// >>> 2-2. (TBL_APPROVAL)다음 결재자가 있을 경우 다음 결재자 상태 update <<<
+			if(next_member_userid != null) {
+				map.put("next_member_userid", next_member_userid);
+				n2 = mapper_approvalDAO.updateToApprovalSecond_TBL_APPROVAL(map);
+			}
+		}
+		
+		// >>> 3-1. (TBL_DRAFT) 다음 결재자 있으면 결재상태[draft_status]를 "진행중"으로 update <<<
+		if(next_member_userid != null) {
+			n3 = mapper_approvalDAO.updateToApprovalThird_TBL_DRAFT_ongoing(map);
+		}
+		else { // >>> 3-2. (TBL_DRAFT) 다음 결재자 없으면 결재상태[draft_status]를 "승인완료"으로 update <<<
+			n3 = mapper_approvalDAO.updateToApprovalThird_TBL_DRAFT_end(map);
+		}
+	
+		if(next_member_userid != null) {
+			result = n1*n2*n3;
+		}
+		else {
+			result = n1*n3;
+		}
+
+		return result;
+	}
+
+	
+	// ==== 반려의견 작성 모달에서 반려버튼 클릭 이벤트 ==== //
+	@Override
+	@Transactional(value="transactionManager_final_orauser4" , propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class}) // 오류가 발생하면 무조건 rollback
+	public int goSendBack(Map<String, String> map) {
+		
+		int n1=0, n2=0, result=0;
+		
+		// >>> 1. (TBL_APPROVAL) 현재 결재자 상태 "반려'로 update <<<
+		n1 = mapper_approvalDAO.updateToSendBackFirst_TBL_APPROVAL_withFeedback(map);
+		
+		// >>> 2. (TBL_DRAFT) 결재상태[draft_status]를 "반려완료"으로 update <<<
+		if(n1 == 1) {
+			n2 = mapper_approvalDAO.updateToSendBackSecond_TBL_DRAFT_end(map);
+		}
+		
+		result = n1*n2;
+
+		return result;
+	}
+
+	// ==== 결재선 결재순위 지정(결재 한 경우 사인 이미지) ==== // 
+	@Override
+	public List<HashMap<String, String>> orderByApprovalStep_withSign(String draft_no) {
+		
+		List<HashMap<String, String>> memberList = mapper_approvalDAO.orderByApprovalStep_withSign(draft_no);
+		return memberList;
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// *** 참조문서함 ***
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// ==== 참조문서함 목록 불러오기 ==== //
+	@Override
+	public List<ApprovalVO> selectreferenceApprovalList(Map<String, String> paraMap) {
+
+		List<ApprovalVO> referenceApprovalList = mapper_approvalDAO.selectreferenceApprovalList(paraMap);
+		return referenceApprovalList;
+	}
+
+	// ==== 참조문서함 총 게시물 건수 구하기 ==== //
+	@Override
+	public int getTotalCount_referenceApproval(Map<String, String> paraMap) {
+		
+		int totalCount = mapper_approvalDAO.getTotalCount_referenceApproval(paraMap);
+		return totalCount;
+	}
+
+
+
+
+
+
+
+
+
+
 
 
 

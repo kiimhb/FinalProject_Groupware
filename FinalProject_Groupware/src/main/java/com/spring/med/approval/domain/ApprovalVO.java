@@ -11,7 +11,7 @@ public class ApprovalVO {
 	private String approval_step;       // 결재순서(단계 1/2/3)
 	private String approval_status;     // 결재상태(대기/승인/반려)
 	private String approval_feedback;   // 결재 or 반려 의견
-	private String approval_date;		// 결재일자
+	private String approval_date;		// 결재일자 or 최종결재일자
 
 	private String draft_no;				// 기안문서번호
 	private String draft_form_type;			// 기안양식종류
