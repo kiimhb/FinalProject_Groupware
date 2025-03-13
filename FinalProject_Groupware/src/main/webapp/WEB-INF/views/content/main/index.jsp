@@ -371,7 +371,7 @@ window.onload = getWeatherForecast;
 </script>
 
 
-
+<div class="main_container_width">
 <div class="main_container">
 
 
@@ -658,7 +658,7 @@ window.onload = getWeatherForecast;
 	
 	
 	
+	</div>
 </div>
-
 <jsp:include page="../../footer/footer1.jsp" />    
     

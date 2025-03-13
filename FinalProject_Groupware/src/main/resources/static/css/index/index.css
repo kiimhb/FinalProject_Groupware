@@ -45,6 +45,10 @@ font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
    /*  border: solid 1px blue; */
 }
 
+#myheader > nav{
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
 #myheader > nav > div > a {
     border: solid 1px red;
     padding: auto 30px;

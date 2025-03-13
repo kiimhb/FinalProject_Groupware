@@ -213,21 +213,15 @@ $(document).ready(function () {
 
 
    function alarm_link(alarm_category, alarm_cateno) {
-      console.log(alarm_cateno);
 
        if (alarm_category == "결재") {
-          
-          $.ajax({
-             url: "<%= ctxPath%>/approval/approvalPendingListDetail_TBL_ALARM",
-             type: "POST",
-             data: {"draft_no": alarm_cateno},
-             success: function(response) {  
-                
-                
-             },  error: function(request, status, error){
-                  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-            }
-          });
+    	   const frm = document.detailTempFrm;
+    	   $("input[name='draft_no']").val(alarm_cateno);
+			frm.method = "post";
+			frm.action = "<%= ctxPath%>/approval/approvalPendingListDetail";
+			frm.submit();
+			
+
           
        } else if (alarm_category == "공지사항") {
            window.location.href = `<%= ctxPath%>/notice/detail/\${alarm_cateno}`;
@@ -238,9 +232,11 @@ $(document).ready(function () {
 
 
 </script>
+	<form name="detailTempFrm">
+		<input type="hidden" name="draft_no" />
+	</form>
 
-
-    <%-- 상단 네비게이션 시작 --%>
+<%-- 상단 네비게이션 시작 --%>
    <nav class="navbar">
     
       <a class="navbar-brand" href="<%=ctxPath%>/index">
@@ -268,4 +264,7 @@ $(document).ready(function () {
 
       <button type="button" class="nav_button_css" ><i class="fa-solid fa-comments nav_i_css2" onclick="location.href='<%=ctxPath%>/chatting/chat'"></i></button>
       </div>
+      
    </nav>
+   
+   

@@ -88,8 +88,6 @@ $.ajax({
              <a class="dropdown-item" href="<%=ctxPath%>/register/list">예약</a>
              <a class="dropdown-item" href="<%=ctxPath%>/pay/wait">수납</a>
          </div></li>
-         
-         <li><a class="sideBarCSS" href="<%=ctxPath%>"><i class="fa-solid fa-users-gear sideBarICSS"></i> <span>근무교대 관리</span> </a></li>
 
       <li><a href="#" class="menu-toggle sideBarCSS"> 
       <i class="fa-solid fa-user-clock sideBarICSS"></i> <span>근태관리</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
@@ -99,15 +97,15 @@ $.ajax({
          </div></li>
 
       <li><a href="#" class="menu-toggle sideBarCSS">
-      <i class="fa-solid fa-square-poll-horizontal sideBarICSS"></i>  <span>전자결재</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
+      <i class="fa-solid fa-square-poll-horizontal sideBarICSS"></i>  <span>전자결재</span> <i class="fa-solid fa-chevron-down"></i></a>
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/approval/write">기안문작성</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList">결재문서함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/approval/referenceApprovals">참조문서함</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalRequestList">결재상신함</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalTemporaryList">임시저장함</a> 
             <a class="dropdown-item" href="<%=ctxPath%>/approval/approvalPendingList"">결재문서함</a>
-            <a class="dropdown-item" href="<%=ctxPath%>/approval/referenceApprovalList">참조문서함</a> 
-            
+            <a class="dropdown-item" href="<%=ctxPath%>/approval/referenceApprovals">참조문서함</a> 
          </div></li>
+
 
       <li><a href="#" class="menu-toggle sideBarCSS">
       <i class="fa-solid fa-envelope sideBarICSS"></i> <span>메일</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
