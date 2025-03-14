@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 div#container {
-	border: 1px solid #eee;
+	border-bottom: 1px solid #ccc;
 	display:flex;
 	width:100%;
 	height:800px;
@@ -16,14 +16,26 @@ div.chatMember {
 	text-align: center;
 	line-height: 60px;
 }
-
+div.chatTitle {
+	font-size:11pt;
+	background-color: #509d9c;
+	color:white;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px 8px 0 0 ;
+}
 /* 채팅방 목록 */
 div.left {
 	width: 20%;
 }
+div.chatRoomList {
+	max-height: 740px;
+	overflow-y: scroll;
+	border-right: 1px solid #eee;
+	height: 740px;
+}
 i.plus {
 	position: relative;
-	right: -110px;
+	right: -105px;
 	cursor: pointer;
 }
 div.oneRoom {
@@ -33,6 +45,9 @@ div.oneRoom {
 }
 div.oneRoom {
 	display: flex;
+}
+div.oneRoom:hover {
+	background-color: #eee;
 }
 div.chatroomImg {
 	border: 1px solid black;
@@ -61,10 +76,50 @@ div.lastChatContent {
 
 /* 채팅방 메인 */
 div.middle {
-	border:1px solid #ccc;
 	width: 67%;
 	position: relative;
 	top: -1px;
+	border-radius: 8px 8px 0 0 ;
+}
+div.chatUser {
+	display:flex;
+}
+div.chatday {
+	font-size: 11pt;
+	display: flex;
+	flex-basis: 100%;
+	align-items: center;
+	color: rgba(0, 0, 0, 0.8);
+	margin: 8px 0px;
+}
+div.chatday::before,
+div.chatday::after {
+	content: "";
+	flex-grow: 1;
+	background: rgba(0, 0, 0, 0.35);
+	height: 1px;
+	font-size: 0;
+	line-height: 0;
+	margin: 0px 16px;
+}
+div.onlineProfile > img {
+	border:1px solid #eee;
+	height:40px;
+	width:40px;
+	border-radius:50%;
+	margin-right:12px;
+	position:relative;
+	top:9px;
+}
+div.onlineCheck {
+	border:1px solid white;
+	background-color: green;
+	height:14px;
+	width:14px;
+	border-radius:50%;
+	position:relative;
+	right:-31px;
+	top:-5px;
 }
 div.roomname {
 	display: flex;
@@ -101,17 +156,19 @@ div.chattingbox {
 	background-color: #509d9c;
 	color:white;
 	word-break: break-all;
-	border-radius: 5px;
-	padding: 7px;
+	border-radius: 20px;
+	padding: 11px;
+	font-size:11pt;
 	display: inline-block;
 	float: right;
 }
 div.leftchattingbox {
-	background-color: #eee;
+	background-color: #F7F7F7;
 	display: inline-block;
 	max-width: 60%; 
-	padding: 7px;
-	border-radius: 5px;
+	font-size:11pt;
+	border-radius: 20px;
+	padding: 10px;
 	word-break: break-all;
 }
 div.currentTime {
@@ -130,20 +187,32 @@ div.outroom {
 div.outroom:hover {
 	font-weight: bold;
 }
+
 /* 채팅대상목록 */
 div.right {
 	width:13%;
 }
+div.chatMember {
+	border-radius: 8px 8px 0 0;
+	font-size:11pt;
+	background-color: #509d9c;
+	color:white;
+}
+div.memberList {
+	border-left: 1px solid #eee;
+	height: 740px;
+	max-height: 9999px;
+	overflow-y: scroll;
+}
 div.oneMemberList {
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #eee;
 	display: flex;
 	height:50px;
 	padding: 6%;
 }
-div.memberProfile {
+div.oneMemberList > img {
 	height:30px;
 	width:30px;
-	border: 1px solid black;
 	border-radius: 50%;
 	position: relative;
 	top: -3px;
@@ -157,16 +226,20 @@ div.memberName {
 /* 모달 */
 div.inputRoomName {
 	width: 100%;
-	height:30px;
 	display: flex;
 	margin: 3%;
+	align-items: center;  /* 수직 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
 }
 div.inputRoomName > div {
 	width:25%;
 }
 div.inputRoomName > input {
-	width:70%;
-	border: 1px solid gray;
+	width:65%;
+	border: 1px solid #ccc;
 	border-radius: 5px;
+	height:40px;
+	padding-left:2%;
+	font-size:11pt;
 }
 

@@ -76,6 +76,7 @@ public class ChattingController {
 		
 		response.put("message", "채팅방이 생성되었습니다~");
 		response.put("id", newRoom.getId()); // 생성된 방의 id 값을 받는다.
+		response.put("roomName", newRoom.getRoomName());
 		
 		return ResponseEntity.ok(response);
 	}	

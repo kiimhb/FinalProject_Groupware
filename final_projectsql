@@ -641,3 +641,103 @@ from
     order by patient_visitdate desc
 )
 where rno BETWEEN to_number(1) AND to_number(10)
+
+select *
+from tbl_cost;
+
+delete tbl_cost;
+
+delete tbl_hospitalize;
+
+delete tbl_surgery;
+
+delete tbl_prescribe;
+
+rollback;
+commit;
+
+select *
+from tbl_prescribe;
+
+delete tbl_order;
+
+select *
+from tbl_surgery;
+
+
+
+select *
+from tbl_medicine;
+
+select *
+from tbl_member;
+
+
+select distinct to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_starttime, 'hh24:mi:ss') as work_starttime, work_startstatus
+from tbl_work a join tbl_member b
+on a.fk_member_userid = b.member_userid
+
+
+
+select *
+from tbl_memo;
+
+update tbl_memo set memo_trash_deleteday = to_date(memo_trash_deleteday, 'yyyy-mm-dd') - 1
+where memo_no = 161
+
+commit;
+
+
+DELETE FROM tbl_memo 
+WHERE memo_deletestatus = 1 
+AND to_date(memo_trash_deleteday, 'yyyy-mm-dd') = to_date(sysdate, 'yyyy-mm-dd')
+
+DELETE FROM tbl_memo 
+WHERE memo_deletestatus = 1 
+
+
+AND memo_trash_deleteday + INTERVAL '1' DAY = sysdate
+
+commit;
+
+
+
+select * from tbl_memo
+where memo_deletestatus = 1
+and fk_member_userid = #{fk_member_userid}
+order by memo_trash_deleteday desc;
+
+select *
+from tbl_surgery;
+
+with
+a as
+(
+    select patient_name, order_no, patient_no, fk_child_dept_no, order_createTime, order_symptom_detail
+    from tbl_patient a left join tbl_order b
+    on a.patient_no = b.fk_patient_no
+    where order_no is not null and order_isConfirmed = 1
+    order by order_createTime desc
+)
+select order_no, fk_child_dept_no, child_dept_name, order_createTime,order_symptom_detail
+from a join tbl_child_dept b
+on a.fk_child_dept_no = b.child_dept_no
+
+delete tbl_order
+where fk_patient_no = 16
+
+delete tbl_surgery
+commit;
+
+delete tbl_prescribe;
+commit;
+
+delete tbl_hospitalize;
+
+delete tbl_order;
+
+delete tbl_cost;
+
+commit;
+
+delete tbl_patient;

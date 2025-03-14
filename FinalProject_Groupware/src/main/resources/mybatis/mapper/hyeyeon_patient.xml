@@ -26,8 +26,7 @@
 		)
 	</select>
 	
-
-	<!--  진료기록이 있는 환자 목록 (최적화했음(인덱싱페이징): 나중에 대용량 데이터 넣고 성능 확인하기) -->
+	<!-- 환자목록 -->
 	<resultMap id="PatientListMap" type="HashMap">
 	    <result property="patient_no" 			column="patient_no" 		javaType="String" />
 	    <result property="child_dept_name"  	column="child_dept_name" 	javaType="String" />
@@ -41,7 +40,8 @@
 		from
 		(
 		    SELECT rownum as rno, patient_no, child_dept_name, patient_name,
-		           patient_jubun, patient_gender, patient_visitdate
+		           patient_jubun, patient_gender, 
+		           to_char(patient_visitdate, 'yyyy-mm-dd') as patient_visitdate
 		    FROM tbl_patient a 
 		    JOIN tbl_child_dept b 
 		    ON a.fk_child_dept_no = b.child_dept_no
@@ -179,7 +179,7 @@
 		with
 		a as 
 		(
-		    select fk_patient_no, order_no, order_createTime
+		    select fk_patient_no, order_no, order_createTime, patient_symptom
 		    from tbl_order a join tbl_patient b
 		    on a.fk_patient_no = b.patient_no
 		    where fk_patient_no = #{patient_no}
@@ -195,7 +195,7 @@
 		    select fk_order_no, surgery_day, surgery_start_time
 		    from tbl_surgery
 		)
-		select order_no, order_createTime,
+		select order_no, order_createTime, patient_symptom, 
 		       to_char(hospitalize_start_day, 'yyyy-mm-dd') as hospitalize_start_day, 
 		       to_char(hospitalize_end_day, 'yyyy-mm-dd') as hospitalize_end_day,
 		       surgery_day, surgery_start_time

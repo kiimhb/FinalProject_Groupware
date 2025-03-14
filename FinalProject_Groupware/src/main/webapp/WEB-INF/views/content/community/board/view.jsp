@@ -36,6 +36,21 @@ a {text-decoration: none !important;}
     color: #4c4d4f;
     font-weight: bold;
 }
+div.title {
+	display:flex;
+	justify-content: space-between;
+}
+div.dropdown-menu {
+	font-size: 10pt;
+	text-align: center;
+}
+div.noticeupdate {
+	padding: 2%;
+	cursor: pointer;
+}
+div.noticeupdate:hover {
+	color: #006769;
+}
 </style>
 
 <script type="text/javascript">
@@ -587,7 +602,25 @@ $("div#pageBar").html(pageBar_HTML);
 
   <div class="header">
 		
-	  		<div class="title">글 내용보기</div>
+	  		<div class="title">
+	  		
+	  			<div>글 내용보기</div>
+	  			
+	  			<div class="dropDown">
+	  				 <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.member_userid == requestScope.boardvo.fk_member_userid}">
+					 	<div class="btn-group" id="dropdown">
+					  		<button class="btn btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    		<i class="fa-solid fa-ellipsis-vertical"></i>
+					  		</button>
+					  		<div class="dropdown-menu">
+					    		<div id="boardEdit" class="noticeupdate" onclick="javascript:location.href='<%= ctxPath%>/board/edit/${requestScope.boardvo.board_no}'">수정하기</div>
+					    		<div id="boardDel" class="noticeupdate" onclick="javascript:location.href='<%= ctxPath%>/board/del/${requestScope.boardvo.board_no}'">삭제하기</div>
+				 			</div>
+						</div>
+					 </c:if>
+	  			</div>
+	  			
+	  		</div>
 	 </div>
  
  <c:if test="${not empty requestScope.boardvo}">
@@ -716,11 +749,7 @@ $("div#pageBar").html(pageBar_HTML);
 	 	<button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
 	 </c:if>
 	 --%> 
-	 <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.member_userid == requestScope.boardvo.fk_member_userid}">
-	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/edit/${requestScope.boardvo.board_no}'">글수정</button>
-	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/del/${requestScope.boardvo.board_no}'">글삭제</button>
-	 </c:if>
-	 
+	
 	 
 	 <%-- === 어떤 글에 대한 답변글쓰기는 로그인 되어진 회원의 member_grade 컬럼의 값인 1인 직원들만 답변글쓰기가 가능하다. === --%>
 	 <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.member_grade == 1}">

@@ -170,7 +170,7 @@ public class MemoController {
 
   
   
-  	//메모 삭제 (휴지통으로 이동)
+  	// 메모 삭제 (휴지통으로 이동)
 	@DeleteMapping("trash")
 	public ResponseEntity<Map<String, Object>> memoDelete(@RequestBody Map<String, Object> paraMap) {
 		Map<String, Object> response = new HashMap<>();
@@ -246,8 +246,6 @@ public class MemoController {
 	
 	
 	
-	
-	
   // 휴지통으로 이동한 메모 조회
   @GetMapping("trashlist")
   public ModelAndView trash_list(ModelAndView mav, HttpServletRequest request) {
@@ -257,12 +255,12 @@ public class MemoController {
 
       String fk_member_userid = loginuser.getMember_userid();
       
-//      System.out.println("확인용~~~~~~~" + fk_member_userid);
+//    System.out.println("확인용~~~~~~~" + fk_member_userid);
 
       // Map을 사용하여 파라미터를 전달
       Map<String, Object> paraMap = new HashMap<>();
       paraMap.put("fk_member_userid", fk_member_userid);
-
+      
       // 휴지통에서 삭제된 메모 목록 조회
       List<MemoVO> trash_list = service.trash_list(paraMap); 
 //    System.out.println("확인용~~~~~~~ Trash List: " + trash_list);
@@ -382,23 +380,4 @@ public class MemoController {
   
  */ 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

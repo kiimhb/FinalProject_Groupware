@@ -43,9 +43,16 @@ div.card {
 	outline: none; /* 포커스 시 파란 테두리 제거 */
 	box-shadow: none; /* 추가적인 파란색 그림자 제거 */
 }
-
-.header .title {
-     border-left: 5px solid #006769;  /* 바 두께 증가 */
+div.header {
+/* border:1px solid red; */
+	width:93.5%;
+	margin:0 auto;
+	border-bottom: 1px solid #ccc;
+	display: flex;
+	justify-content: space-between;
+}
+div.header .title {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
     padding-left: 1.5%;  /* 왼쪽 여백 조정 */
     font-size: 28px;  /* h2 크기와 유사하게 증가 */
     margin-top: 2%;
@@ -53,7 +60,11 @@ div.card {
     color: #4c4d4f;
     font-weight: bold;
 }
-
+button#writeBtn {
+	position: relative;
+	top:38px;
+	left:-20px;
+}
 .memo-container {
     display: flex;
     flex-wrap: wrap;
@@ -68,7 +79,6 @@ div.card {
     padding: 15px;
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-
     
     /* 카드 높이 고정 */
     min-height: 220px; /* 최소 높이 */
@@ -102,11 +112,6 @@ div.card {
     flex-basis: 100%; /* 줄바꿈 역할 */
     height: 0;
 }
-
-
-
-
-
 </style>
 
 
@@ -337,83 +342,81 @@ function importantMemo(memo_no, button) {
 </script>
 
 
-<div class="header">
-
-	<span class="title">메모장</span>
-</div>
-
-	<form name="memoFrm" >
-		<input type="hidden" id="memoDetailNo" name="fk_member_userid" value="${sessionScope.member_userid}" />
-		
+	<div class="header">
+		<div class="title">메모장</div>
 		<!-- 메모 쓰기 버튼 -->
 		<div class="memowrite" style="margin-bottom: 20px;">
-			<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#memoModal">메모 쓰기</button>
+			<button type="button" id="writeBtn" class="btn btn-outline-primary" data-toggle="modal" data-target="#memoModal">메모 쓰기</button>
 		</div>
-
-
-	<!-- 모달 -->
-	<div class="modal fade" id="memoModal" tabindex="-1" role="dialog" aria-labelledby="memoModalLabel" aria-hidden="true">
-	    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-	        <div class="modal-content">
-	            <!-- 모달 헤더 -->
-	            <div class="modal-header text-white" style="background-color: #509d9c;">
-	                <h5 class="modal-title" id="memoModalLabel">메모 작성</h5>
-	                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-	            </div>
-	            <!-- 모달 바디 -->
-	            <div class="modal-body">
-	                <form id="memoForm">
-	                    <div class="form-group">
-	                        <label for="memo_title" class="font-weight-bold">제목</label>
-	                        <input type="text" class="form-control" id="memo_title" name="memo_title" placeholder="제목을 입력하세요">
-	                    </div>
-	                    <div class="form-group">
-	                        <label for="memo_contents" class="font-weight-bold">내용</label>
-	                        <textarea class="form-control" id="memo_contents" name="memo_contents" rows="4" placeholder="내용을 입력하세요"></textarea>
-	                    </div>
-	                    
-	                </form>
-	            </div>
-	            <!-- 모달 푸터 -->
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">닫기</button>
-	                <button type="submit" class="btn btn-primary" id="memoWrite">저장</button>
-	            </div>
-	        </div>
-	    </div>
 	</div>
-
+	
+	<form name="memoFrm" >
+		<input type="hidden" id="memoDetailNo" name="fk_member_userid" value="${sessionScope.member_userid}" />
+		<!-- 모달 -->
+		<div class="modal fade" id="memoModal" tabindex="-1" role="dialog" aria-labelledby="memoModalLabel" aria-hidden="true">
+		    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		        <div class="modal-content">
+		            <!-- 모달 헤더 -->
+		            <div class="modal-header text-white" style="background-color: #509d9c;">
+		                <h5 class="modal-title" id="memoModalLabel">메모 작성</h5>
+		                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+		            </div>
+		            <!-- 모달 바디 -->
+		            <div class="modal-body">
+		                <form id="memoForm">
+		                    <div class="form-group">
+		                        <label for="memo_title" class="font-weight-bold">제목</label>
+		                        <input type="text" class="form-control" id="memo_title" name="memo_title" placeholder="제목을 입력하세요">
+		                    </div>
+		                    <div class="form-group">
+		                        <label for="memo_contents" class="font-weight-bold">내용</label>
+		                        <textarea class="form-control" id="memo_contents" name="memo_contents" rows="4" placeholder="내용을 입력하세요"></textarea>
+		                    </div>
+		                    
+		                </form>
+		            </div>
+		            <!-- 모달 푸터 -->
+		            <div class="modal-footer">
+		                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">닫기</button>
+		                <button type="submit" class="btn btn-primary" id="memoWrite">저장</button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+	
 	</form>
 
-
-	<!-- 메모 목록 보기 -->
-	<div id="memoList" class="memo-container">
-	    <c:forEach var="memo" items="${memo_list}" varStatus="status">
-	        <div class="card border-info mb-3 memo-card" data-id="${memo.memo_no}">
-	            <div class="card-header">
-	                <span>${memo.memo_title}</span>
-	                
-	                <!-- 중요 메모(즐겨찾기) 버튼 -->
-                <button type="button" class="btnstar btn-link p-0 no-outline" 
-                    data-memo-no="${memo.memo_no}"
-                    onclick="importantMemo('${memo.memo_no}', this)"
-                    style="font-size: 1.5rem; color: gray; background-color: transparent; border: none; outline: none;">
-                    <i class="fa ${memo.memo_importance == '1' ? 'fa-star' : 'fa-star-o'}" aria-hidden="true"></i>
-                </button>
-	            </div>
-	            
-	            <div class="card-body text-dark">
-	                <p class="card-text">${memo.memo_contents}</p>
-	                <p class="card-text text-right">${memo.memo_registerday}</p>
-	            </div>
-	        </div>
-	
-	        <!-- 5번째 요소마다 줄바꿈을 위한 새로운 행 추가 -->
-	        <c:if test="${(status.index + 1) % 5 == 0}">
-	            <div class="row-break"></div>
-	        </c:if>
-	    </c:forEach>
+	<div class="allMemo">	
+		<!-- 메모 목록 보기 -->
+		<div id="memoList" class="memo-container">
+		    <c:forEach var="memo" items="${memo_list}" varStatus="status">
+		        <div class="card border-info mb-3 memo-card" data-id="${memo.memo_no}">
+		            <div class="card-header">
+		                <span>${memo.memo_title}</span>
+		                
+		                <!-- 중요 메모(즐겨찾기) 버튼 -->
+	                <button type="button" class="btnstar btn-link p-0 no-outline" 
+	                    data-memo-no="${memo.memo_no}"
+	                    onclick="importantMemo('${memo.memo_no}', this)"
+	                    style="font-size: 1.5rem; color: gray; background-color: transparent; border: none; outline: none;">
+	                    <i class="fa ${memo.memo_importance == '1' ? 'fa-star' : 'fa-star-o'}" aria-hidden="true"></i>
+	                </button>
+		            </div>
+		            
+		            <div class="card-body text-dark">
+		                <p class="card-text">${memo.memo_contents}</p>
+		                <p class="card-text text-right">${memo.memo_registerday}</p>
+		            </div>
+		        </div>
+		
+		        <!-- 5번째 요소마다 줄바꿈을 위한 새로운 행 추가 -->
+		        <c:if test="${(status.index + 1) % 5 == 0}">
+		            <div class="row-break"></div>
+		        </c:if>
+		    </c:forEach>
+		</div>
 	</div>
+	
 
 
 <!-- 메모 상세보기 모달 -->

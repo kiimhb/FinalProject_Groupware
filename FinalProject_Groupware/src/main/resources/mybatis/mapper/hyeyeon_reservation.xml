@@ -17,7 +17,7 @@
 		        select order_no, fk_patient_no, order_issurg
 		        from tbl_order a join tbl_surgery b
 		        on a.order_no = b.fk_order_no
-		        where order_issurg = 1 and surgery_status = 0
+		        where order_issurg = 1 and surgery_status = 0 and order_isConfirmed = 1
 		    ),
 		    b as
 		    (
@@ -34,7 +34,7 @@
 	</select>
 	
 	
-	
+	<!-- 수술 대기환자 목록보기 -->
 	<resultMap id="registerList_map" type="HashMap">
 	    <result property="order_no" 		 		column="order_no" 		  	  javaType="String" />
     	<result property="patient_visitdate"  		column="patient_visitdate" 	  javaType="String" />
@@ -54,7 +54,7 @@
 		        select order_no, fk_patient_no, order_issurg
 		        from tbl_order a join tbl_surgery b
 		        on a.order_no = b.fk_order_no
-		        where order_issurg = 1 and surgery_status = 0
+		        where order_issurg = 1 and surgery_status = 0 and order_isConfirmed = 1
 		    ),
 		    b as
 		    (
@@ -64,7 +64,7 @@
 		        on a.fk_child_dept_no = b.child_dept_no
 		        order by patient_visitdate asc
 		    )
-    		select rownum as rno, order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
+    		select rownum as rno, order_no, to_char(patient_visitdate, 'yyyy-mm-dd') as patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
 		    from a join b
 		    on a.fk_patient_no = b.patient_no
 		)
@@ -192,7 +192,7 @@
 		        select order_no, fk_patient_no, order_howlonghosp
 		        from tbl_order a join tbl_hospitalize b
 		        on a.order_no = b.fk_order_no
-		        where order_ishosp = 1 and hospitalize_status = 0
+		        where order_ishosp = 1 and hospitalize_status = 0 and order_isConfirmed = 1
 		    ),
 		    b as
 		    (
@@ -227,7 +227,7 @@
 		        select order_no, fk_patient_no, order_howlonghosp
 		        from tbl_order a join tbl_hospitalize b
 		        on a.order_no = b.fk_order_no
-		        where order_ishosp = 1 and hospitalize_status = 0
+		        where order_ishosp = 1 and hospitalize_status = 0 and order_isConfirmed = 1
 		    ),
 		    b as
 		    (
@@ -237,7 +237,7 @@
 		         on a.fk_child_dept_no = b.child_dept_no
 		         order by patient_visitdate asc
 		    )
-		    select rownum as rno, order_no, patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
+		    select rownum as rno, order_no, to_char(patient_visitdate, 'yyyy-mm-dd') as patient_visitdate, child_dept_name, patient_name, patient_gender, patient_jubun
 		    from a join b
 		    on a.fk_patient_no = b.patient_no
 		)
@@ -251,7 +251,7 @@
 		where order_no = #{order_no}
 	</select>
 	
-	<!--  입원실 잔여석 -->
+	<!-- 입원실 잔여석 -->
 	<resultMap type="HashMap" id="okSeat_map">
 		<result property="hospitalizeroom_no" 			column="hospitalizeroom_no" 			javaType="String" />
 		<result property="ok_seat" 								column="ok_seat" 								javaType="String" />

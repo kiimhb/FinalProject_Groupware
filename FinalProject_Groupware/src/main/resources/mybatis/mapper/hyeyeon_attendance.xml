@@ -20,7 +20,7 @@
 	    <result property="work_startstatus" 	column="work_startstatus"    	javaType="String" />
 	</resultMap>
 	<select id="StartRecordList" parameterType="String" resultMap="StartRecordList_map">
-		select to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_starttime, 'hh24:mi:ss') as work_starttime, work_startstatus
+		select distinct to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_starttime, 'hh24:mi:ss') as work_starttime, work_startstatus
 		from tbl_work a join tbl_member b
 		on a.fk_member_userid = b.member_userid
 		where to_char(work_recorddate, 'mm') = to_char(sysdate, 'mm')
@@ -35,7 +35,7 @@
 	    <result property="work_endstatus"    	column="work_endstatus" 		javaType="String" />
 	</resultMap>
 	<select id="EndRecordList" parameterType="String" resultMap="EndRecordList_map">
-		select to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_endtime, 'hh24:mi:ss') as work_endtime, work_endstatus
+		select distinct to_char(work_recorddate, 'yyyy-mm-dd') as work_recorddate, to_char(work_endtime, 'hh24:mi:ss') as work_endtime, work_endstatus
 		from tbl_work a join tbl_member b
 		on a.fk_member_userid = b.member_userid
 		where to_char(work_recorddate, 'mm') = to_char(sysdate, 'mm')
@@ -51,11 +51,13 @@
 		and work_recorddate = trunc(sysdate - 1)
 		and b.work_recorddate &gt; trunc(sysdate)
 		where work_recorddate is null
+		and member_last is null
 	</select>
 	
 	<!-- 결근 처리하기 --> 
 	<insert id="insert_status_no" parameterType="String">
 		insert into tbl_work values(seq_workno.nextval, #{fk_member_userid}, trunc(sysdate - 1), null, null, 2, 2)
+		where member_last is null
 	</insert>
 	
 	<!-- 출근 기록이 이미 존재하는지 확인하기  -->

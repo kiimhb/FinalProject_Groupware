@@ -59,7 +59,7 @@ function detailNotice(notice_no) {
 }
 
 </script>
-	
+<div id="sub_mycontent">	
       <div class="header">
       		
 	  		<div class="title">
@@ -200,5 +200,6 @@ function detailNotice(notice_no) {
 	   	   <c:if test="${empty requestScope.notice_list}" > 
 	   	   		
 	   	   </c:if>
+</div>
   	
 <jsp:include page="../../footer/footer1.jsp" />   

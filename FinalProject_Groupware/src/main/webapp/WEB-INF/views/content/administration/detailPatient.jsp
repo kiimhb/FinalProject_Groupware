@@ -19,7 +19,25 @@
 .fc-header-toolbar { 
 	height: 30px;
 }
-/* 캘린더 글자색 */
+div.fc-daygrid-day-bottom > a {
+	color: white;
+	height:20px;
+	background-color: #509d9c;
+	line-height: 22px;
+	border-radius:3px;
+	display: flex;
+	padding-left: 5%;
+}
+.fc-daygrid-day[data-event-class="event-hospitalize"] .fc-daygrid-more-link {
+	background-color: #509d9c !important;
+}
+.fc-daygrid-day[data-event-class="event-surgery"] .fc-daygrid-more-link {
+	background-color: #b3d6d2 !important;
+}
+.fc-daygrid-day[data-event-class="event-order"] .fc-daygrid-more-link {
+	background-color: #f68b1f !important;
+}
+/* 캘린더 평일 */
 a, 
 a:hover, 
 .fc-daygrid {
@@ -27,7 +45,7 @@ a:hover,
     text-decoration: none;
     background-color: transparent;
     cursor: pointer;
-} 
+}
 
 /* 주말 날짜 색 */
 .fc-day-sun a {
@@ -63,6 +81,11 @@ a:hover,
 <script type="text/javascript">
 $(document).ready(function(){
 
+	// 오늘 이전은 선택 불가능하도록 설정하기
+ 	let todayDate = new Date().toISOString().split("T")[0]; // 현재 날짜를 YYYY-MM-DD 형식으로 변환
+    $("input[type='date']").attr("min", todayDate); // input 요소의 min 속성 설정
+	
+	
 	var calendar;
 
 	if (calendar) {
@@ -83,10 +106,10 @@ $(document).ready(function(){
 	    	center: '',
 	    	end: 'today prev,next'
 	    },
-	    dayMaxEventRows: true, // for all non-TimeGrid views
+	    dayMaxEventRows: 0, // 
 	    views: {
 	      timeGrid: {
-	        dayMaxEventRows: 3 // adjust to 6 only for timeGridWeek/timeGridDay
+	        dayMaxEventRows: 1 // adjust to 6 only for timeGridWeek/timeGridDay
 	      }
 	    },
 	    // ===================== DB 와 연동하는 법 시작 ===================== //
@@ -106,24 +129,30 @@ $(document).ready(function(){
                      json.forEach(function(item) {
                          if (item.hospitalize_start_day && item.hospitalize_end_day) {
                              events.push({
-                                 title: "입원: " + item.order_no,
+                                 title: "입원일자: ",
                                  start: item.hospitalize_start_day,
                                  end: item.hospitalize_end_day,
-                                 color: "lightblue"
+                                 color: "lightblue",
+                               	 className: "event-hospitalize" // 입원 이벤트 클래스 추가
                              });
                          }
                          if (item.surgery_day && item.surgery_start_time) {
+                        	 var startDateTime = item.surgery_day + "T" + item.surgery_start_time;  // "2025-03-18T11:30:00"
+                             var endDateTime = item.surgery_day + "T" + item.surgery_end_time;  // "2025-03-18T15:00:00"	 
+								
                              events.push({
-                                 title: "수술: " + item.order_no,
-                                 start: item.surgery_day + "T" + item.surgery_start_time,
-                                 color: "lightgreen"
+                                 title: surgery_surgeryroom_name + ' (' + item.surgery_start_time.substring(0,5) + ' - ' + item.surgery_end_time.substring(0,5) + ')',
+                                 start: startDateTime,
+                                 end: endDateTime,
+                                 color: "lightcoral"
                              });
                          }
                          if (item.order_createTime) {
                              events.push({
-                                 title: item.order_no,
+                                 title: "진료" + item.patient_symptom,
                                  start: item.order_createTime,
-                                 color: "lightcoral"
+                                 color: "lightcoral",
+                                 className: "event-order" // 입원 이벤트 클래스 추가
                              });
                          }
                      });
@@ -183,6 +212,7 @@ $(document).ready(function(){
 		}
 		
 	}); // end of $("select#surgery_surgeryroom_name, input#surgery_day").on("
+	
 	
 	// 시작 시간이 선택 되어지면 종료시간 선택이 가능하도록 해야됨 (가능한 시간 고려하기) 
 	$("select#surgery_start_time").on("change", function(){
@@ -487,7 +517,8 @@ function hospitalizeUpdate() {
 
 }
 </script>
-	
+
+<div id="sub_mycontent">
       <div class="header">
 		
 	  		<div class="title">
@@ -495,7 +526,7 @@ function hospitalizeUpdate() {
 	  		</div>	
 	  		<div class="info">
 				<table class="table table-bordered chart">
-					<thead class="charthead">
+					<thead class="charthead bg-light">
 						<tr>
 							<th>환자번호</th>
 							<th>이름</th>
@@ -536,7 +567,7 @@ function hospitalizeUpdate() {
 
 	  		<div class="recordList">
 	  			<table class="table recordtable table-hover">
-	  				<thead>
+	  				<thead class="bg-light">
 	  					<tr>
 	  						<th>내원일</th>
 	  						<th>진료명</th>
@@ -594,7 +625,7 @@ function hospitalizeUpdate() {
 			
 		  		<div class="reservation2">
 		  			<table class="table">
-		  				<thead>
+		  				<thead class="bg-light">
 		  					<tr>
 			  					<th>선택</th>
 			  					<th>수술일</th>
@@ -751,7 +782,7 @@ function hospitalizeUpdate() {
 	  		
 		  		<div class="reservation2">
 		  			<table class="table">
-		  				<thead>
+		  				<thead class="bg-light">
 		  					<tr>
 			  					<th>선택</th>
 			  					<th>입원일자</th>
@@ -849,7 +880,8 @@ function hospitalizeUpdate() {
   	<div class="backbtn">
   		<button type="button" class="btn back" onclick="history.back();">목록으로</button>
   	</div>
-
+  	
+</div>
 		
 
 <jsp:include page="../../footer/footer1.jsp" />   

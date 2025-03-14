@@ -108,8 +108,6 @@ $(document).ready(function(){
 		if(confirm("채팅방을 나가시겠습니까?")) {
 			
 			websocket.close();
-			
-			alert("채팅방을 나갔습니다.");
 			window.location.href = `<%= ctxPath%>/chatting/chat`;
 		} else {
 			alert("나가기 취소");
@@ -128,6 +126,11 @@ function createChatRoom(creator) {
 	
 	const roomName = $("input[name='roomName']").val();
 	
+	if(roomName == "") {
+		alert("채팅방 이름을 입력하세요!");
+		return;
+	}
+	
 	$.ajax({
 		url: "chat/addRoom",
 		method:"POST",
@@ -136,7 +139,7 @@ function createChatRoom(creator) {
 			   "roomName":roomName},
 		success:function(json){
 			getChatRoomList(); // 채팅방 목록 새로고침하기
-			enterRoom(json.id); // 채팅방 입장	
+			enterRoom(json.id, json.roomName); // 채팅방 입장	
 		},
 	    error: function(request, status, error){
 	   		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -152,12 +155,12 @@ function getChatRoomList() {
 	.then(data => { // 변환된 데이터이다.
 		let chatRoomList = document.querySelector(".chatRoomList"); // 채팅방 목록을 표시할 요소
 		
-		chatRoomList.innerHTML = ""; // 기존 목록 초기화 
+		chatRoomList.innerHTML = ""; // 기존 목록 초기화
 		
 		data.forEach(room => { // 가져온 채팅방 데이터를 하나씩 처리한다.
 			
 			let roomDiv = document.createElement("div"); // 채팅방을 나타내는 div 요소를 생성한다.
-			
+				
 			roomDiv.classList.add("oneRoom"); // div의 클래스명은 oneRoom 이다.
 			roomDiv.setAttribute("data-id", room.id)
 			// 채팅방 이름 및 프로필 표시
@@ -194,7 +197,9 @@ function enterRoom(roomId, roomName) {
 	$("div.titleRoomName").text(roomName);
 	$("div.chat_box").html("");
 	$("div.memberList").html("");
-	
+	$("div.outroom").html("나가기");
+	$("div.chatText").html("<input type='text' class='chatText' placeholder='Enter Message'/> <button type='button' class='btn submit' value='전송'>전송</button>");
+
 	currentRoomId = roomId;
 	
 	const url = window.location.host; // 웹브라우저에 주소창의 포트까지 가져옴.
@@ -206,16 +211,14 @@ function enterRoom(roomId, roomName) {
 
     // 새로운 WebSocket 연결
 	websocket = new WebSocket(wsUrl + roomId);
-	alert(wsUrl + roomId);
+	// alert(wsUrl + roomId);
 	
 	let messageObj = {}; // 자바스크립트 객체 생성함.
 	
-	var ctxPath = `<%= ctxPath %>`;  // JSP 변수를 JavaScript 변수로 변환
-	// alert(ctxPath);
-	
+
 	// === 웹소켓에 최초로 연결이 되었을 경우에 실행되어지는 콜백함수 정의하기 === //
 	websocket.onopen = function(){
-		alert("웹소켓 연결됨");
+		alert(roomName + " 채팅방에 참가하였습니다.");
 	}
 	
 	// === 메시지 수신시 콜백함수 정의 === //
@@ -235,7 +238,7 @@ function enterRoom(roomId, roomName) {
 	
 	// === 웹소켓 연결 해제 시 콜백함수 정의하기 === //
     websocket.onclose = function(){
-    	alert("웹소켓연결종료됨");
+    	alert(roomName + " 채팅방을 퇴장하였습니다.");
 		removeboldTitle();
     }
 	
@@ -259,6 +262,7 @@ function removeboldTitle() {
 }
 </script>
 	
+<div id="sub_mycontent">	
 	<div id="container">
 		<input type="hidden" id="member_userid" value="${requestScope.loginuser.member_userid}">
 		<input type="hidden" id="member_name" value="${requestScope.loginuser.member_name}">
@@ -276,9 +280,16 @@ function removeboldTitle() {
 		<!-- 실시간 채팅이 이루어지는 곳이다. -->
 		<div class="middle">
 		
-			<div class="roomname">
+			<div class="roomname bg-light">
+				<div class="chatUser">
+					<div class="onlineProfile">
+						<img src="<%= ctxPath%>/resources/profile/${requestScope.loginuser.member_pro_filename}" />
+						<div class="onlineCheck"></div>
+					</div>
+					${requestScope.loginuser.member_name}
+				</div>	
 				<div class="titleRoomName"></div>	
-				<div class="outroom">나가기</div>
+				<div class="outroom"></div>
 			</div>
 			
 			
@@ -291,8 +302,7 @@ function removeboldTitle() {
 				</div>
 			</div>
 			<div class="chatText">
-				<input type="text" class="chatText" placeholder="Enter Message"/>
-				<button type="button" class="btn submit" value="전송">전송</button>
+				
 			</div>
 		</div>	
 		
@@ -311,8 +321,8 @@ function removeboldTitle() {
 		<div class="modal-dialog modal-dialog-centered modal-ml">
 		  <div class="modal-content">
 			<!-- Modal header -->
-			<div class="modal-header">
-			  <h5 class="modal-title">채팅방 생성하기</h5>
+			<div class="modal-header" style="background-color:#006769; color:white;">
+			  <h6 class="modal-title">오픈채팅방 생성하기</h6>
 			  <button type="button" class="close" data-dismiss="modal">&times;</button>
 			</div>
 			<!-- Modal body -->
@@ -334,6 +344,7 @@ function removeboldTitle() {
 		  </div>
 		</div>
 	</div>
-	<!-- modal 만들기 끝 -->	
+	<!-- modal 만들기 끝 -->
+</div>	
 
 <jsp:include page="../../footer/footer1.jsp" />   
