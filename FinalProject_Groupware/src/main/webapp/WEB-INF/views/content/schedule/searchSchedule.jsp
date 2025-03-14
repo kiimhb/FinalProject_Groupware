@@ -178,6 +178,8 @@ div#pageBar_bottom a {
 
 </script>
 
+<div id="sub_mycontent">
+
 <div style="margin-left: 80px; width: 88%;">
 	<div>
 		<div class="header">
@@ -261,5 +263,7 @@ div#pageBar_bottom a {
    <input type="hidden" name="schedule_no"/>
    <input type="hidden" name="listgobackURL_schedule" value="${requestScope.listgobackURL_schedule}"/>
 </form> 
+
+</div>
 
 <jsp:include page="../../footer/footer1.jsp" />

@@ -776,6 +776,8 @@ function goSearch() {
 
 </script>
 
+<div id="sub_mycontent">
+
 <div style="margin-left: 80px; width: 88%;">
 	
 	<div class="header">
@@ -1001,5 +1003,7 @@ function goSearch() {
 <form name="dateFrm">
 	<input type="hidden" name="chooseDate" />	
 </form>	
+
+</div>
 
 <jsp:include page="../../footer/footer1.jsp" />
