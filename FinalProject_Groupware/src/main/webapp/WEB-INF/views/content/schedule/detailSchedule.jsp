@@ -149,6 +149,9 @@
 
 </script>
 
+
+<div id="sub_mycontent">
+
 <div style="margin-left: 80px; width: 88%;">
 <div class="header">
 		<div class="title">일정 상세보기</div>
@@ -244,5 +247,8 @@
 	<input type="hidden" name="schedule_no"/>
 	<input type="hidden" name="gobackURL_detailSchedule" value="${requestScope.gobackURL_detailSchedule}"/>
 </form>
+
+
+</div>
 
 <jsp:include page="../../footer/footer1.jsp" />

@@ -302,8 +302,10 @@ $(document).ready(function(){
 			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
 
 		</form>
+		
+		 
   </div>
- </div>  
+
  
  <form name="goMyBoardViewFrm">
     <input type="hidden" name="board_no" /> 
@@ -313,6 +315,6 @@ $(document).ready(function(){
 	<input type="hidden" name="myboard_val" />
 </form>
  
- 
+ </div>  
 
   <jsp:include page="../../../footer/footer1.jsp" />
