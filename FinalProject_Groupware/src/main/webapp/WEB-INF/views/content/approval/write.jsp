@@ -145,6 +145,7 @@ let arr_referenceMembers = [];		// 참조자에 추가된 멤버
 	
 $(document).ready(function(){
 	
+
 	if(${empty requestScope.approvalvo}) {
 		<%-- 첫 페이지에서 휴가신청서 보이기 --%>
 		  $.ajax({
@@ -294,25 +295,38 @@ $(document).ready(function(){
 				        $("input:radio[name='dayLeave']").prop("checked", false);
 
 				        // 조건에 맞는 라디오 버튼을 체크
-				        if (${requestScope.approvalvo.day_leave_cnt eq "0.5"}) {
-				            $("input:radio[id='amDay']").prop("checked", true);	// 반차
+				        if (${requestScope.approvalvo.day_leave_type eq "AM"}) {
+				            $("input:radio[id='amDay']").prop("checked", true);	// 오전반차
 							
 							$("div#halfDay").css({"display":"block"});
 							$("div#allDay").css({"display":"none"});
 										
 							$("input[name='halfDay_leave_end']").val("${requestScope.approvalvo.day_leave_start}");	// 반차사용일
-				        } else {
+				        } 
+				        else if (${requestScope.approvalvo.day_leave_type eq "PM"}){
+							$("input:radio[id='pmDay']").prop("checked", true);	// 오후반차
+							
+							$("div#halfDay").css({"display":"block"});
+							$("div#allDay").css({"display":"none"});
+										
+							$("input[name='halfDay_leave_end']").val("${requestScope.approvalvo.day_leave_start}");	// 반차사용일
+				        }
+				        else {
 				            $("input:radio[id='allDay']").prop("checked", true); // 연차
 							
 							$("div#halfDay").css({"display":"none"});
 							$("div#allDay").css({"display":"block"});	
-										
+							
 							$("input[name='allDay_leave_start']").val("${requestScope.approvalvo.day_leave_start}");  // 연차시작일
 							$("input[name='allDay_leave_end']").val("${requestScope.approvalvo.day_leave_end}");	  // 연차종료일
+							//$("input[name='allDay_leave_end']").trigger("change");
+							
 				        }
 				    }, 0);
 					
-					$("span#day_leave_cnt").text("${requestScope.approvalvo.day_leave_cnt}");
+					//$("span#day_leave_cnt").text("${requestScope.approvalvo.day_leave_cnt}");
+					//$("input[name='allDay_leave_end']").off("change", calc_day_leave_cnt); 
+					//console.log("${requestScope.approvalvo.day_leave_cnt}");
 					
 					const temp_day_leave_reason = "${requestScope.approvalvo.day_leave_reason}";
 					$("textarea[name='day_leave_reason']").text(temp_day_leave_reason.replace(/<br\s*\/?>/gi, '\n'));	// 휴가사유
@@ -380,13 +394,13 @@ $(document).ready(function(){
 
 <%-- ==== 임시저장한 내용 중 결재선/참조자 목록 불러오기 ==== --%>
 function getTempApprovalRefer(draft_no) {
-	
+
 	$.ajax({
 		url: "<%= ctxPath%>/approval/getTempApprovalRefer",
 		data: {"draft_no":draft_no},
 		type: "get",
 		success: function(json) {
-
+			
 			$.each(json, function(index, item){	
 				if(item.approval_step != "0") {
 					arr_approvalLineMembers.push(item.fk_member_userid);
@@ -447,17 +461,13 @@ function goWrite() {
 ////////////////////////////////////////////////////////////////////////////////////////
 <%-- ==== 결재선지정 버튼 클릭 함수 ==== --%>
 function setApprovalLine() {
-
-	console.log(arr_approvalLineMembers);
-	console.log(arr_referenceMembers);
-	
 	
 	// 모달을 띄울 위치
 	const container = $("div#approvalLine");
 	
 	// 모달 구조
 	const modal_popup = `
-	                  <div class="modal fade" id="selectApprovalLine">
+	                  <div class="modal fade" id="selectApprovalLine" data-backdrop="static" data-keyboard="false">>
 	                     <div class="modal-dialog custom-modal-size">
 	                         <div class="modal-content" style="display: flex; flex-direction: column; height: 100%;">
 	                      
@@ -545,7 +555,7 @@ function setApprovalLine() {
 		if($("table#designated_line_Table tr#approvalLine_1 > td").length > 0 ) {
 			// 결재선 목록에 추가한 이력이 있으면
 
-			let span_member_userid = document.querySelectorAll("tr#approvalLine_3 > td > span.span_member_userid");
+			let span_member_userid = document.querySelectorAll("tr#approvalLine_2 > td > span.span_member_userid");
 			
 			if($("input[name='draftMode']").val() == 'insert') {
 				span_member_userid.forEach(function(item, index, array){
@@ -569,7 +579,7 @@ function setApprovalLine() {
                							 	<td>\${item.parent_dept_name}</td>
                							 	<td>\${item.child_dept_name}</td>
                							 	<td>\${item.member_position}</td>
-               							 	<td>\${item.member_name}</td>
+               							 	<td>\${item.member_name}<span class="approvalMemberSpan_member_userid" style="display:none">\${item.member_userid}</span></td>
                							 </tr>`;
 	 
        						$("table#approvalLineMember_T").append(html);		
@@ -612,7 +622,7 @@ function setApprovalLine() {
 	               							 	<td>\${item.parent_dept_name}</td>
 	               							 	<td>\${item.child_dept_name}</td>
 	               							 	<td>\${item.member_position}</td>
-	               							 	<td>\${item.member_name}</td>
+	               							 	<td>\${item.member_name}<span class="referenceMemberSpan_member_userid" style="display:none">\${item.member_userid}</span></td>
 	               							 </tr>`;
 		 
 	       						$("table#referenceMember_T").append(html);		
@@ -680,7 +690,7 @@ function setApprovalLine() {
 				               							 	<td>\${json.parent_dept_name}</td>
 				               							 	<td>\${json.child_dept_name}</td>
 				               							 	<td>\${json.member_position}</td>
-				               							 	<td>\${json.member_name}</td>
+				               							 	<td>\${json.member_name}<span class="approvalMemberSpan_member_userid" style="display:none">\${json.member_userid}</span></td>
 				               							 </tr>`;
 					 
 			           						$("table#approvalLineMember_T").append(html);
@@ -722,6 +732,8 @@ function setApprovalLine() {
                 				if(arr_referenceMembers.length < 3) {
                 					// 참조자 목록에 있는 사원이 3명 미만인경우
                 					
+                					console.log("선택사원 : " + login_userid);
+                					console.log("참조배열 : " + arr_referenceMembers);
 	                				if(!arr_referenceMembers.includes(member_userid) && !arr_approvalLineMembers.includes(member_userid)){
 	                					// 결재선 및 참조자 목록에 없는 사원일 경우만 목록에 추가
 	                					
@@ -732,7 +744,7 @@ function setApprovalLine() {
 				               							 	<td>\${json.parent_dept_name}</td>
 				               							 	<td>\${json.child_dept_name}</td>
 				               							 	<td>\${json.member_position}</td>
-				               							 	<td>\${json.member_name}</td>
+				               							 	<td>\${json.member_name}<span class="referenceMemberSpan_member_userid" style="display:none">\${json.member_userid}</span></td>
 				               							 </tr>`;
 					 
 			           						$("table#referenceMember_T").append(html);
@@ -804,10 +816,22 @@ function setApprovalLine() {
         	
         	<%-- ==== 결재선 목록에서 빼기 ==== --%> 	
         	$("span#lineLeftBtn").on("click", function(e){
+        		
+        		let find_MemberUserid = $("table#approvalLineMember_T tr").eq(memberIndex).find("span").text();
+        		
+        		let idx_spanMemberUserid = arr_approvalLineMembers.indexOf(find_MemberUserid);
+        		
+        		// 배열에서 제거
+        		if (idx_spanMemberUserid != -1) {
+        			// 해당 유저 idx 가 존재하면
+        		    // 첫 번째로 발견된 member_userid 를 제거
+        		    arr_approvalLineMembers.splice(idx_spanMemberUserid, 1);
+        		}
+        		
         		$("table#approvalLineMember_T tr").eq(memberIndex).remove();
         		
         		// 배열에서도 제거
-        		arr_approvalLineMembers.splice(memberIndex-1,1);
+        		//arr_approvalLineMembers.splice(memberIndex-1,1);
         	});
 	
         });// end of $("table#approvalLineMember_T").on("click", function(e){})---------------------- 
@@ -816,7 +840,6 @@ function setApprovalLine() {
         
         <%-- ==================== 사원 선택 후 참조자 목록에서 제거하는 이벤트 시작 ==================== --%>
 		$("table#referenceMember_T").on("click", "tr", function(e){
-        	console.log(arr_referenceMembers);
         	// 조직도 선택 노드 초기화 (기존 노드 상태 비움)
             $("div#selectDiv span").off("click");  // 기존에 바인딩된 클릭 이벤트 제거
             
@@ -839,16 +862,30 @@ function setApprovalLine() {
 
         	// 선택한 사원의 인덱스 번호
         	const memberIndex = $(this).index();
+        	console.log("선택한 사원의 인덱스 번호 : "  + memberIndex);
+        	console.log("참조자배열 전  : "  + arr_referenceMembers);
         	
         	<%-- ==== 참조선 목록에서 빼기 ==== --%> 	
         	$("span#referLeftBtn").on("click", function(e){
+        		
+				let find_MemberUserid = $("table#referenceMember_T tr").eq(memberIndex).find("span").text();
+        		
+        		let idx_spanMemberUserid = arr_referenceMembers.indexOf(find_MemberUserid);
+        		
+        		// 배열에서 제거
+        		if (idx_spanMemberUserid != -1) {
+        			// 해당 유저 idx 가 존재하면
+        		    // 첫 번째로 발견된 member_userid 를 제거
+        		    arr_referenceMembers.splice(idx_spanMemberUserid, 1);
+        		}
+        		
         		$("table#referenceMember_T tr").eq(memberIndex).remove();
         		
         		// 배열에서도 제거
-        		arr_referenceMembers.splice(memberIndex-1,1);
+        		//arr_referenceMembers.splice(memberIndex-1,1);
         	});
-			
-			console.log(arr_referenceMembers);
+        	
+        	console.log("참조자배열 후  : "  + arr_referenceMembers);
         	
         });// end of $("table#referenceMember_T").on("click", "tr", function(e){})---------------------- 
         <%-- ==================== 사원 선택 후 참조자 목록에서 제거하는 이벤트 끝  ==================== --%>
@@ -874,7 +911,7 @@ function func_goAddLine() {
 			data:{"arr_approvalLineMembers":arr_approvalLineMembers},
 			type:"post",			
 			success:function(json){
-				
+
 				// AJAX 요청 성공 후, 취소 버튼 클릭을 강제로 트리거
 	            $("button[id='btn_madal_cancel']").click();
 	
@@ -894,16 +931,17 @@ function func_goAddLine() {
 					if($("table#designated_line_Table tr#approvalLine_1 > td").length == 0) {
 						// 현재 결재선에 추가된 사람이 없을 경우
 						$("tr#approvalLine_1").append(`<td class="table_title" style="width: 110px;">순서</td>`);
-						$("tr#approvalLine_2").append(`<td class="table_title" style="width: 110px;">직책</td>	`);
-						$("tr#approvalLine_3").append(`<td class="table_title" style="width: 110px;">부서</td>`);
+						$("tr#approvalLine_2").append(`<td class="table_title" style="width: 110px;">부서</td>	`);
+						$("tr#approvalLine_3").append(`<td class="table_title" style="width: 110px;">직책</td>`);
 						$("tr#approvalLine_4").append(`<td class="table_title" style="width: 110px;">성명</td>`);
 						$("tr#approvalLine_5").append(`<td class="table_title" style="width: 110px;">결재상태</td>`);
 					}
 	
 					$.each(json, function(index, item){
+						
 						$("tr#approvalLine_1").append(`<td style="width: 120px;">\${item.member_step}</td>`);
-						$("tr#approvalLine_2").append(`<td style="width: 120px;">\${item.member_position}</td>`);
-						$("tr#approvalLine_3").append(`<td style="width: 120px;"><span class="span_member_userid" style="display: none;">\${item.member_userid}</span>\${item.child_dept_name}</td>`);
+						$("tr#approvalLine_2").append(`<td style="width: 120px;"><span class="span_member_userid" style="display: none;">\${item.member_userid}</span>\${item.child_dept_name}</td>`);
+						$("tr#approvalLine_3").append(`<td style="width: 120px;">\${item.member_position}</td>`);
 						$("tr#approvalLine_4").append(`<td style="width: 120px;">\${item.member_name}</td>`);
 						$("tr#approvalLine_5").append(`<td style="width: 120px; padding: 2%;">
 			                                                      <div style="border: solid 2px gray; width: 80px; border-radius: 50%; height: 80px; margin: auto; font-size: 17pt; display: flex; justify-content: center; align-items: center;  box-sizing: border-box; padding: 5px; border-radius: 50%; background: white; position: relative;">
@@ -941,7 +979,7 @@ function func_goAddLine() {
 			data:{"arr_referenceMembers":arr_referenceMembers},
 			type:"post",			
 			success:function(json){
-				
+
 				// AJAX 요청 성공 후, 취소 버튼 클릭을 강제로 트리거
 	            // $("button[id='btn_cancel']").click();
 	
@@ -1068,6 +1106,7 @@ function func_goTempAndSubmitDraft(btnType) {
 	let day_leave_start;	// 연차시작일
 	let day_leave_cnt;		// 연차사용일
 	let day_leave_reason;	// 휴가사유
+	let day_leave_type;		// 반차 구분
 	const dayLeaveType = ($("input:radio[name='dayLeaveType']:checked").val()); // 연차, 반차 중 어느 것인지 구분을 위한 변수
 	
 	if(draft_form_type == "휴가신청서") {
@@ -1082,6 +1121,13 @@ function func_goTempAndSubmitDraft(btnType) {
 			day_leave_end = $("input[name='halfDay_leave_end']").val();			// 반차시작일
 			day_leave_start = day_leave_end;									// 반차종료일
 			day_leave_cnt = 0.5;												// 반차사용일
+			
+			if (dayLeaveType == "오전반차") {
+				day_leave_type ='AM';
+			}
+			else if (dayLeaveType == "오후반차") {
+				day_leave_type ='PM';
+			}
 		}
 
 		day_leave_reason = $("textarea[name='day_leave_reason']").val();			// 휴가사유
@@ -1229,6 +1275,7 @@ function func_goTempAndSubmitDraft(btnType) {
 	formData.append("day_leave_end", day_leave_end);
 	formData.append("day_leave_cnt", day_leave_cnt);
 	formData.append("day_leave_reason", day_leave_reason);
+	formData.append("day_leave_type", day_leave_type);
 	
 	// 파일데이터가 있다면 파일데이터도 추가
 	var fileInput = $("input[type='file']")[0];
@@ -1253,8 +1300,16 @@ function func_goTempAndSubmitDraft(btnType) {
 				    icon: 'success',
 				    title: titleText,
 				    text: messageText
-				});
-			}	
+				}).then((result) => {
+					
+					if (draftMode == "update") {
+						window.location.href = "<%= ctxPath%>/approval/approvalTemporaryList";
+					}
+					else if (draftMode == "insert") {
+						window.location.href = "<%= ctxPath%>/approval/approvalRequestList";
+					}
+				});;
+			}
 		},
 		error: function() {
 			Swal.fire({
@@ -1275,7 +1330,7 @@ function func_approvalLineMember() {
 	
 	let approvalLineMember = {};
 	
-	let span_member_userid = document.querySelectorAll("tr#approvalLine_3 > td > span.span_member_userid");
+	let span_member_userid = document.querySelectorAll("tr#approvalLine_2 > td > span.span_member_userid");
 	
 	span_member_userid.forEach(function(item, index, array){
 
@@ -1303,24 +1358,25 @@ function func_referMember() {
 
 
 <%-- ===================================================================== --%>
-<div class="writeContainer">
-	<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">기안문작성</h2>
+<div id="sub_mycontent"> 
+	<div class="writeContainer">
+		<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">기안문작성</h2>
+		
+		<button type="button" id="btnType" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">결재양식선택</button>
 	
-	<button type="button" id="btnType" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">결재양식선택</button>
-
-	<span id="btnRight">
-    	<button type="button" id="btnSaved" onclick="goTemporaryStored('임시저장')" style="background-color: #006769; padding: 5px; border-color: #006769; border-radius: 5px; color: white;">임시저장</button>
-      	<button type="button" id="btnLine" onclick="setApprovalLine()" style="background-color: #006769; padding: 5px; border-color: #006769; border-radius: 5px; color: white;">결재선지정</button>
-      	<button type="button" id="btnRequest" onclick="goTemporaryStored('결재요청')" style="background-color: #f68b1f; padding: 5px; border-color: #f68b1f; border-radius: 5px; color: white;">결재요청</button>
-   	</span>
-
-	<div id="modalDraftType"></div>
-	<div id="approvalLine"></div>
+		<span id="btnRight">
+	    	<button type="button" id="btnSaved" onclick="goTemporaryStored('임시저장')" style="background-color: #006769; padding: 5px; border-color: #006769; border-radius: 5px; color: white;">임시저장</button>
+	      	<button type="button" id="btnLine" onclick="setApprovalLine()" style="background-color: #006769; padding: 5px; border-color: #006769; border-radius: 5px; color: white;">결재선지정</button>
+	      	<button type="button" id="btnRequest" onclick="goTemporaryStored('결재요청')" style="background-color: #f68b1f; padding: 5px; border-color: #f68b1f; border-radius: 5px; color: white;">결재요청</button>
+	   	</span>
 	
-	<div id="draft" style="margin: auto;"></div>
-	
+		<div id="modalDraftType"></div>
+		<div id="approvalLine"></div>
+		
+		<div id="draft" style="margin: auto;"></div>
+		
+	</div>
 </div>
-
 
 
 

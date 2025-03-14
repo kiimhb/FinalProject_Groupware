@@ -171,7 +171,6 @@ $(document).ready(function(){
 			        }
 			    }, 0);
 				
-				$("span#day_leave_cnt").text("${requestScope.approvalvo.day_leave_cnt}");
 				
 				const temp_day_leave_reason = "${requestScope.approvalvo.day_leave_reason}";
 				$("textarea[name='day_leave_reason']").text(temp_day_leave_reason.replace(/<br\s*\/?>/gi, '\n')).prop("disabled", true);	// 휴가사유
@@ -336,12 +335,15 @@ function goApprovalConfirm() {
 			
 			const fk_draft_no = "${requestScope.approvalvo.draft_no}";
 			const approval_feedback = $("input[name='approval_feedback']").val();
-				
+			const fk_member_userid = $("span#member_userid").text();
+			const day_leave_cnt = $("span#day_leave_cnt").text();
+			
 			<%-- 결재의견 및 승인 처리 요청 --%>
 			$.ajax({
 				url:"<%= ctxPath%>/approval/goApprove",
-				data: {fk_draft_no:fk_draft_no
-					  ,approval_feedback:approval_feedback},
+				data: {"fk_draft_no":fk_draft_no
+					  ,"approval_feedback":approval_feedback
+					  ,"write_member_userid":fk_member_userid},
 				type:"post",			
 				success:function(json){
 
@@ -487,29 +489,32 @@ function getApprovalFeedback(draft_no) {
 		data: {"draft_no":draft_no},
 		type: "get",
 		success: function(json) {
-
-			const addFeedback = $("div#feedbackContainer");
 			
-			let html = `<table id="Feedback_T" class="table" style="width: 100%; border: 1px #a39485 solid; box-shadow: 0 2px 5px rgba(0,0,0,.25); width: 100%; border-collapse: collapse; border-radius: 5px;">`;
-			
-			$.each(json, function(index, item){
+			if(json.length > 0) {
+				const addFeedback = $("div#feedbackContainer");
 				
-				html += `<tr style="height: 40px; ">
-							<td style="vertical-align:middle;">\${item.approval_step}</td>
-							<td style="vertical-align:middle;"><img width="50" height="50" style="border-radius: 50%;" src="<%= ctxPath%>/resources/profile/\${item.member_pro_filename}" / >&nbsp;&nbsp;\${item.child_dept_name}</td>
-							<td style="vertical-align:middle;">\${item.member_position}</td>
-							<td style="vertical-align:middle;">\${item.member_name}</td>
-							<td style="vertical-align:middle;">\${item.approval_status}</td>
-							<td style="vertical-align:middle; text-align: left; padding-left: 1%; width: 60%; white-space: normal; word-wrap: break-word;">\${item.approval_feedback}</td>
-						</tr>`;
-			});
-			
-			html += `</table>`;
-			
-			$("div#defaultFeedback").hide();
+				let html = `<table id="Feedback_T" class="table" style="width: 100%; border: 1px #a39485 solid; box-shadow: 0 2px 5px rgba(0,0,0,.25); width: 100%; border-collapse: collapse; border-radius: 5px;">`;
+				
+				$.each(json, function(index, item){
+					
+					html += `<tr style="height: 40px; ">
+								<td style="vertical-align:middle;">\${item.approval_step}</td>
+								<td style="vertical-align:middle;"><img width="50" height="50" style="border-radius: 50%;" src="<%= ctxPath%>/resources/profile/\${item.member_pro_filename}" / >&nbsp;&nbsp;\${item.child_dept_name}</td>
+								<td style="vertical-align:middle;">\${item.member_position}</td>
+								<td style="vertical-align:middle;">\${item.member_name}</td>
+								<td style="vertical-align:middle;">\${item.approval_status}</td>
+								<td style="vertical-align:middle; text-align: left; padding-left: 1%; width: 60%; white-space: normal; word-wrap: break-word;">\${item.approval_feedback}</td>
+							</tr>`;
+				});
+				
+				html += `</table>`;
+				
+				$("div#defaultFeedback").hide();
 
-			addFeedback.css({"border":"0px"});
-			addFeedback.html(html);
+				addFeedback.css({"border":"0px"});
+				addFeedback.html(html);
+			}
+			
 			
 		},
 		error: function() {
@@ -700,25 +705,26 @@ function func_goAddLine() {
 
 
 <%-- ===================================================================== --%>
-<div class="writeContainer">
-	<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">결재안</h2>
+<div id="sub_mycontent"> 
 
-	<span id="btnRight">
-		<button type="button" id="btnApprove">결재승인</button>
-		<button type="button" id="btnSendBack">결재반려</button>
-		<button type="button" id="btnGoBackList" onclick="window.location.href='<%= ctxPath%>/approval/approvalPendingList'" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">목록</button>
-	</span>
+	<div class="writeContainer">
+		<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">결재안</h2>
+	
+		<span id="btnRight">
+			<button type="button" id="btnApprove">결재승인</button>
+			<button type="button" id="btnSendBack">결재반려</button>
+			<button type="button" id="btnGoBackList" onclick="window.location.href='<%= ctxPath%>/approval/approvalPendingList'" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">목록</button>
+		</span>
+	
+		<div id="modalDraftType"></div>
+		<div id="approvalLine"></div>
+		<div id="modalClickBtn"></div>
+		
+		<div id="draft" style="margin: auto;"></div>
+		
+	</div>
 
-	<div id="modalDraftType"></div>
-	<div id="approvalLine"></div>
-	<div id="modalClickBtn"></div>
-	
-	<div id="draft" style="margin: auto;"></div>
-	
-
-	
 </div>
 
-	
 <jsp:include page="../../footer/footer1.jsp" />  
 

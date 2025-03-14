@@ -198,91 +198,93 @@ function goSearch() {
 </script>
 
 <%-- ===================================================================== --%>
-<div class="tempListContainer">
-	<h2><a href="<%= ctxPath%>/approval/referenceApprovalList" style="text-decoration: none; color: inherit; ">참조문서함</a></h2>
-	
-	<div id="topSearch">
-		<form name="searchReferListFrm">
-			<select name="sizePerPage" class="topClass top_select">
-				<option value="10">10개</option>
-				<option value="15">15개</option>
-				<option value="20">20개</option>
-			</select>
-			
-			<select name="searchType" class="topClass top_select">
-				<option value="">검색조건</option>
-				<option value="draft_form_type">결재양식</option>
-				<option value="draft_subject">제목</option>
-				<option value="member_name">기안자</option>
-				<option value="parent_dept_name">기안부서</option>
-			</select>
-			
-			<input type="text" name="searchWord" class="topClass" placeholder="검색어 입력"/>
-			<button type="button" id="btnSearch" class="topClass btn" onclick="goSearch()">검색</button>
-		</form>
-	</div>
-	
-	<div id="middleTable">
-		<table>
-			<thead>
-				<tr>
-					<td>문서번호</td>
-					<td>기안부서</td>
-					<td>기안자</td>
-					<td>결재양식</td>
-					<td>제목</td>
-					<td>상태</td>
-					<td>작성일</td>
-				</tr>
-			</thead>
-			<tbody>
-				<c:if test="${not empty requestScope.referenceApprovalList}">					
-					<c:forEach var="approvalvo" items="${requestScope.referenceApprovalList}" varStatus="temp_status"> 
-						<%-- 첨부파일 없는 경우 --%>
-						<c:if test="${empty approvalvo.draft_file_name}">
-							<tr>
-								<td>${approvalvo.draft_no}</td>
-								<td>${approvalvo.parent_dept_name}</td>
-								<td>${approvalvo.member_name}</td>
-								<td>${approvalvo.draft_form_type}</td>
-								<td style="text-align:left;">${approvalvo.draft_subject}</td>
-								<td><span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span></td>
-								<td>${approvalvo.draft_write_date}</td>
-							</tr>
-						</c:if>	
-						<%-- 첨부파일 있는 경우 --%>
-						<c:if test="${not empty approvalvo.draft_file_name}">
-							<tr>
-								<td>${approvalvo.draft_no}</td>
-								<td>${approvalvo.parent_dept_name}</td>
-								<td>${approvalvo.member_name}</td>
-								<td>${approvalvo.draft_form_type}</td>
-								<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
-								<td><span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span></td>
-								<td>${approvalvo.draft_write_date}</td>
-							</tr>
-						</c:if>	
-					</c:forEach>
-				</c:if>
-				<c:if test="${empty requestScope.referenceApprovalList}">	
-					<tr>
-						<td colspan="7">참조된 문서가 없습니다.</td>
-					</tr>
-				</c:if>
-			</tbody>
-		</table>
+<div id="sub_mycontent"> 
+	<div class="tempListContainer">
+		<h2><a href="<%= ctxPath%>/approval/referenceApprovalList" style="text-decoration: none; color: inherit; ">참조문서함</a></h2>
 		
-		<c:if test="${not empty requestScope.referenceApprovalList}">
-			<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-				${requestScope.pageBar}
-			</div>
-		</c:if>
+		<div id="topSearch">
+			<form name="searchReferListFrm">
+				<select name="sizePerPage" class="topClass top_select">
+					<option value="10">10개</option>
+					<option value="15">15개</option>
+					<option value="20">20개</option>
+				</select>
+				
+				<select name="searchType" class="topClass top_select">
+					<option value="">검색조건</option>
+					<option value="draft_form_type">결재양식</option>
+					<option value="draft_subject">제목</option>
+					<option value="member_name">기안자</option>
+					<option value="parent_dept_name">기안부서</option>
+				</select>
+				
+				<input type="text" name="searchWord" class="topClass" placeholder="검색어 입력"/>
+				<button type="button" id="btnSearch" class="topClass btn" onclick="goSearch()">검색</button>
+			</form>
+		</div>
+		
+		<div id="middleTable">
+			<table>
+				<thead>
+					<tr>
+						<td>문서번호</td>
+						<td>기안부서</td>
+						<td>기안자</td>
+						<td>결재양식</td>
+						<td>제목</td>
+						<td>상태</td>
+						<td>작성일</td>
+					</tr>
+				</thead>
+				<tbody>
+					<c:if test="${not empty requestScope.referenceApprovalList}">					
+						<c:forEach var="approvalvo" items="${requestScope.referenceApprovalList}" varStatus="temp_status"> 
+							<%-- 첨부파일 없는 경우 --%>
+							<c:if test="${empty approvalvo.draft_file_name}">
+								<tr>
+									<td>${approvalvo.draft_no}</td>
+									<td>${approvalvo.parent_dept_name}</td>
+									<td>${approvalvo.member_name}</td>
+									<td>${approvalvo.draft_form_type}</td>
+									<td style="text-align:left;">${approvalvo.draft_subject}</td>
+									<td><span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span></td>
+									<td>${approvalvo.draft_write_date}</td>
+								</tr>
+							</c:if>	
+							<%-- 첨부파일 있는 경우 --%>
+							<c:if test="${not empty approvalvo.draft_file_name}">
+								<tr>
+									<td>${approvalvo.draft_no}</td>
+									<td>${approvalvo.parent_dept_name}</td>
+									<td>${approvalvo.member_name}</td>
+									<td>${approvalvo.draft_form_type}</td>
+									<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
+									<td><span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span></td>
+									<td>${approvalvo.draft_write_date}</td>
+								</tr>
+							</c:if>	
+						</c:forEach>
+					</c:if>
+					<c:if test="${empty requestScope.referenceApprovalList}">	
+						<tr>
+							<td colspan="7">참조된 문서가 없습니다.</td>
+						</tr>
+					</c:if>
+				</tbody>
+			</table>
+			
+			<c:if test="${not empty requestScope.referenceApprovalList}">
+				<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+					${requestScope.pageBar}
+				</div>
+			</c:if>
+		</div>
+		
+		<form name="detailTempFrm">
+			<input type="hidden" name="draft_no" />
+		</form>
+		
 	</div>
-	
-	<form name="detailTempFrm">
-		<input type="hidden" name="draft_no" />
-	</form>
-	
 </div>
 
 <jsp:include page="../../footer/footer1.jsp" />    

@@ -224,10 +224,16 @@ public class ApprovalController {
 		paraMap.put("day_leave_end", mtp_request.getParameter("day_leave_end"));
 		paraMap.put("day_leave_cnt", mtp_request.getParameter("day_leave_cnt"));
 		paraMap.put("day_leave_reason", mtp_request.getParameter("day_leave_reason"));
+		paraMap.put("day_leave_type", mtp_request.getParameter("day_leave_type"));
+		
+		System.out.println("확인용 day_leave_cnt : " + mtp_request.getParameter("day_leave_cnt"));
 		
 		try {
 			String mtp_approvalLineMember = mtp_request.getParameter("approvalLineMember");
 			String mtp_referMember = mtp_request.getParameter("referMember");
+			
+			System.out.println(mtp_approvalLineMember);
+			System.out.println(mtp_referMember);
 			
 			// >>> JSON 문자열을 Map 으로 변환 <<<
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -782,6 +788,8 @@ public class ApprovalController {
 	@ResponseBody
 	public int goApprove(@RequestParam String approval_feedback
 						,@RequestParam String fk_draft_no
+						,@RequestParam String write_member_userid
+						,@RequestParam String day_leave_cnt
 						,HttpServletRequest request) {
 		
 		// >>> 작성자(로그인된 유저) 정보 전달 <<< //
@@ -793,6 +801,8 @@ public class ApprovalController {
 		map.put("approval_feedback", approval_feedback);
 		map.put("fk_draft_no", fk_draft_no);
 		map.put("member_userid", member_userid);
+		map.put("write_member_userid", write_member_userid);
+		map.put("day_leave_cnt", day_leave_cnt);
 		
 		int n = approvalService.goApprove(map);
 		

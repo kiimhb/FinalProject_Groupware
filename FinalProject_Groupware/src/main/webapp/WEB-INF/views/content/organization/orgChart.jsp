@@ -306,21 +306,12 @@ $(document).ready(function(){
 		
 		const member_userid = $("span#info_member_userid").text();
 		
-		$.ajax({
-			url:"<%= ctxPath%>/organization/mailWrite_Organ",
-			data: {"member_userid":member_userid},
-			type:"get",			
-			success:function(json){
-
-			},
-			error: function() {
-				Swal.fire({
-				    icon: 'error',
-				    title: '작업 수행 실패!',
-				    text: '다시 시도해주세요.'
-				});
-			}
-		});
+		const frm = document.goWriteMailFrm;
+		
+		frm.action = "<%= ctxPath%>/organization/mailWrite_Organ";
+		frm.member_userid.value = member_userid;
+		frm.method = "get";
+		frm.submit();
 
 	});
 	
@@ -385,8 +376,11 @@ function jsTreeView(jsonData) {
 			</div>
 		</div>
 
-		
 	</div>
+	
+	<form name="goWriteMailFrm">
+		<input type="hidden" name="member_userid" />
+	</form>
 	
 </div>
 

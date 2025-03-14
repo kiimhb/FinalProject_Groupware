@@ -82,7 +82,13 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+	 console.log("이벤트전" +$("span#day_leave_cnt").text());
 
+	 $("span#day_leave_cnt").on('click', function(e){
+		 alert( $("span#day_leave_cnt").text());
+	 });
+	
+	 
 	$("input:radio[id='amDay']").prop("checked", true);
 	
 	// ==== 오늘날짜 이후부터 선택하도록 한다 ==== //
@@ -210,56 +216,9 @@ $(document).ready(function(){
 	
 	<%-- 연차일수 계산 이벤트 --%>
 	$("input[name='allDay_leave_end']").on("change", function(){
-
-		const yeoncha = ${requestScope.paraMap.member_yeoncha}; // 잔여연차
-
-		const day_leave_start = $("input[name='allDay_leave_start']").val();	// 연차시작일
-		const day_leave_end = $("input[name='allDay_leave_end']").val();		// 연차종료일
-		
-		/// 문자열을 Date 객체로 변환
-		const start_date = new Date(day_leave_start + "T00:00:00");  // 연차 시작일
-		const end_date = new Date(day_leave_end + "T00:00:00");      // 연차 종료일
-		
-		// 오늘 날짜
-		const today = new Date();
-		
-		// 두 날짜 간의 차이를 밀리초로 계산 및 일로 변환
-		let day_leave_cnt = ((end_date.getTime() - start_date.getTime()) / (1000 * 60 * 60 * 24)) + 1 ;
-
-		if(day_leave_cnt < 1) {
-			// 시작날짜가 종료날짜 이후인 경우
-			$("input[name='allDay_leave_start']").val("");
-			$("input[name='allDay_leave_end']").val("");
-			
-			Swal.fire({
-                title: '잘못된 날짜를 입력했습니다',
-                text: "다시 시도해주세요",
-                icon: 'error'
-            });
-			
-		}
-		else if (yeoncha < day_leave_cnt) {
-			// 잔여연차보다 많은 일수를 지정한 경우
-			$("input[name='allDay_leave_start']").val("");
-			$("input[name='allDay_leave_end']").val("");
-			
-			Swal.fire({
-			    title: '연차 일수를 초과하였습니다',
-			    text: '신청 기간: ' + day_leave_cnt + ' / 잔여 연차: ' + yeoncha,
-			    icon: 'error'
-			});
-
-		}
-		else {
-			
-			$("span#day_leave_cnt").html(day_leave_cnt);
-		}
-		
+		calc_day_leave_cnt();
 	});// end of $("input[name='allDay_leave_start']").on("click", function(){})-------------------
-	
-	
-	
-	
+
 });
 
 
@@ -285,6 +244,55 @@ function charCount(text, limit) {
         document.getElementById("char_count").innerHTML = char_count + " / " + limit;
     }
 }// end of function charCount(text, length){}---------------------------
+
+
+//===== 연차일수 계산 이벤트 ===== //
+function calc_day_leave_cnt() {
+
+	const yeoncha = ${requestScope.paraMap.member_yeoncha}; // 잔여연차
+	
+	const day_leave_start = $("input[name='allDay_leave_start']").val();	// 연차시작일
+	const day_leave_end = $("input[name='allDay_leave_end']").val();		// 연차종료일
+	
+	/// 문자열을 Date 객체로 변환
+	const start_date = new Date(day_leave_start + "T00:00:00");  // 연차 시작일
+	const end_date = new Date(day_leave_end + "T00:00:00");      // 연차 종료일
+	
+	// 오늘 날짜
+	const today = new Date();
+	
+	// 두 날짜 간의 차이를 밀리초로 계산 및 일로 변환
+	let day_leave_cnt = ((end_date.getTime() - start_date.getTime()) / (1000 * 60 * 60 * 24)) + 1 ;
+	console.log("이벤트후" +day_leave_cnt);
+	if(day_leave_cnt < 1) {
+		// 시작날짜가 종료날짜 이후인 경우
+		$("input[name='allDay_leave_start']").val("");
+		$("input[name='allDay_leave_end']").val("");
+		
+		Swal.fire({
+            title: '잘못된 날짜를 입력했습니다',
+            text: "다시 시도해주세요",
+            icon: 'error'
+        });
+		
+	}
+	else if (yeoncha < day_leave_cnt) {
+		// 잔여연차보다 많은 일수를 지정한 경우
+		$("input[name='allDay_leave_start']").val("");
+		$("input[name='allDay_leave_end']").val("");
+		
+		Swal.fire({
+		    title: '연차 일수를 초과하였습니다',
+		    text: '신청 기간: ' + day_leave_cnt + ' / 잔여 연차: ' + yeoncha,
+		    icon: 'error'
+		});
+
+	}
+	else {
+		
+		$("span#day_leave_cnt").html(day_leave_cnt);
+	}
+}
 
 </script>
 
@@ -387,7 +395,7 @@ function charCount(text, limit) {
 			<div id="halfDay" class="input_margin" style="padding: 10px 0;">
 				<div class="draftInfo">신청기간</div>
 				<input type="date" name="halfDay_leave_end" class="form-control" style="width: 150px; display: inline-block;"/> 
-				<div style="display: inline-block;">총 0.5일 (잔여연차: ${requestScope.paraMap.member_yeoncha}일)</div>
+				<div style="display: inline-block;">총 <span id="day_leave_cnt">0.5</span>일 (잔여연차: ${requestScope.paraMap.member_yeoncha}일)</div>
 			</div>
 			
 			<div id="allDay" class="input_margin" style="padding: 10px 0; display: none;">

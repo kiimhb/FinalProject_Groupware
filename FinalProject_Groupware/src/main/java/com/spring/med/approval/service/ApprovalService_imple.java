@@ -467,6 +467,12 @@ public class ApprovalService_imple implements ApprovalService {
 		else { // >>> 3-2. (TBL_DRAFT) 다음 결재자 없으면 결재상태[draft_status]를 "승인완료"으로 update <<<
 			n3 = mapper_approvalDAO.updateToApprovalThird_TBL_DRAFT_end(map);
 		}
+		
+		// >>> 4. (TBL_MEMBER) 기안문이 "휴가신청서" 일 경우 연차[member_yeoncha] 를 차감 <<<
+		if("휴가신청서".equals(map.get("draft_form_type"))) {
+			mapper_approvalDAO.updateToApprovalYeoncha_TBL_MEMBER(map);
+		}
+		
 	
 		if(next_member_userid != null) {
 			result = n1*n2*n3;
