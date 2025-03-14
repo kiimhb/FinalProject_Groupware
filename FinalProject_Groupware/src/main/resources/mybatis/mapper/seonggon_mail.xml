@@ -32,19 +32,19 @@
 	<!-- 작성된 메일 insert 하기 (트랜잭션)-->
 	<insert id="insertMailWrite" parameterType="MailSentVO">
 		insert into tbl_mail_sent (mail_sent_no, sk_member_userid, mail_title, mail_sent_content, mail_sent_senddate, mail_sent_important)
-		values (SEQ_MAIL_SENT_NO.nextval , #{fk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, #{mail_sent_important})
+		values (SEQ_MAIL_SENT_NO.nextval , #{sk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, #{mail_sent_important})
 	</insert>
 
 	<!-- 작성된 메일 insert 하기 with 파일첨부 (트랜잭션)-->
 	<insert id="insertMailWriteWithFile" parameterType="MailSentVO">
 		insert into tbl_mail_sent (mail_sent_no, sk_member_userid, mail_title, mail_sent_content, mail_sent_senddate, mail_sent_important, mail_sent_file, mail_sent_file_origin, mail_sent_filesize)
-		values (seq_mail_sent_no.nextval , #{fk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, #{mail_sent_important}, #{mail_sent_file},#{mail_sent_file_origin},#{mail_sent_filesize})
+		values (seq_mail_sent_no.nextval , #{sk_member_userid}, #{mail_title}, #{mail_sent_content}, sysdate, #{mail_sent_important}, #{mail_sent_file},#{mail_sent_file_origin},#{mail_sent_filesize})
 	</insert>
 	
 	<!-- 작성된 메일 수신메일에 insert 하기 (트랜잭션)-->
 	<insert id="insertMailReceive" parameterType="HashMap">
 		insert into tbl_mail_received (fk_mail_sent_no, rk_member_userid, mail_received_status, mail_received_saved, mail_received_trashstatus, mail_received_important)
-		values (seq_mail_sent_no.currval, #{fk_member_userid}, default, default, default, #{mail_received_important} )
+		values (seq_mail_sent_no.currval, #{rk_member_userid}, default, default, default, #{mail_received_important} )
 	</insert> 
 	
 	
@@ -121,7 +121,7 @@
 		ON fk_mail_sent_no = S.mail_sent_no       
 		where sk_member_userid = #{user_id}
 		and S.mail_sent_trashstatus = 0
-		order by mail_sent_senddate desc
+		order by mail_sent_senddate asc
 		) A JOIN tbl_member B
 		on rk_member_userid = B.member_userid
 		) C
@@ -507,5 +507,94 @@
 	    </foreach>
 	    and rk_member_userid = #{user_id}
 	</update>
+	
+	
+	<!-- // 보낸 메일 클릭하면 메일내용 보여주기 -->
+	
+	
+	<resultMap id="sentMailMap" type="HashMap">
+		<result property="mail_sent_no"   					column="mail_sent_no" 				javaType="String" />    
+	    <result property="sk_member_userid"   				column="sk_member_userid" 				javaType="String" />
+	    <result property="mail_title" 						column="mail_title"    		javaType="String" />
+	    <result property="mail_sent_content"    			column="mail_sent_content" 			javaType="String" />
+	    <result property="mail_sent_file" 					column="mail_sent_file" 		javaType="String" />
+	    <result property="mail_sent_file_origin" 			column="mail_sent_file_origin" 					javaType="String" />	
+	    <result property="rk_member_userid" 				column="rk_member_userid" 						javaType="String" />
+	    <result property="mail_sent_senddate" 				column="mail_sent_senddate"					javaType="String" />
+	</resultMap>
+	
+	<select id="mailView" parameterType="String" resultMap="sentMailMap">
+	
+	select C.*, D.member_name as received_member_name
+	from           
+	(
+	select A.*, B.member_name as sent_member_name
+	from            
+	(        
+	select mail_sent_no, sk_member_userid, mail_title, mail_sent_content, mail_sent_file, mail_sent_file_origin, rk_member_userid, mail_sent_senddate
+	from tbl_mail_sent S join tbl_mail_received R
+	on mail_sent_no = fk_mail_sent_no
+	where mail_sent_no = #{mail_sent_no}
+	) A left join tbl_member B
+	on sk_member_userid = member_userid
+	) C join tbl_member D
+	on rk_member_userid = member_userid
+		
+	</select>
+	
+	
+	
+	<resultMap id="receivedMap" type="HashMap">
+		<result property="mail_sent_no"   					column="mail_sent_no" 				javaType="String" />    
+	    <result property="sk_member_userid"   				column="sk_member_userid" 				javaType="String" />
+	    <result property="mail_title" 						column="mail_title"    		javaType="String" />
+	    <result property="mail_sent_content"    			column="mail_sent_content" 			javaType="String" />
+	    <result property="mail_sent_file" 					column="mail_sent_file" 		javaType="String" />
+	    <result property="mail_sent_file_origin" 			column="mail_sent_file_origin" 					javaType="String" />	
+	    <result property="rk_member_userid" 				column="rk_member_userid" 						javaType="String" />
+	    <result property="mail_sent_senddate" 				column="mail_sent_senddate"					javaType="String" />
+	</resultMap>
+	
+	<!-- // 받은 메일 클릭하면 메일내용 보여주기 -->
+	<select id="receivedMailView" parameterType="String" resultMap="receivedMap">
+	
+	select C.*, D.member_name as received_member_name
+	from           
+	(
+	select A.*, B.member_name as sent_member_name
+	from            
+	(        
+	select mail_sent_no, sk_member_userid, mail_title, mail_sent_content, mail_sent_file, mail_sent_file_origin, rk_member_userid, mail_sent_senddate
+	from tbl_mail_sent S join tbl_mail_received R
+	on mail_sent_no = fk_mail_sent_no
+	where mail_sent_no = #{fk_mail_sent_no}
+	) A left join tbl_member B
+	on sk_member_userid = member_userid
+	) C join tbl_member D
+	on rk_member_userid = member_userid	
+
+	
+	</select>
+	
+	
+	
+	
+	<select id="mailViewFile" parameterType="String" resultType="MailSentVO">
+		select C.*, D.member_name as received_member_name
+		from           
+		(
+		select A.*, B.member_name as sent_member_name
+		from            
+		(        
+		select mail_sent_no, sk_member_userid, mail_title, mail_sent_content, mail_sent_file, mail_sent_file_origin, rk_member_userid, mail_sent_senddate
+		from tbl_mail_sent S join tbl_mail_received R
+		on mail_sent_no = fk_mail_sent_no
+		where mail_sent_no = #{mail_sent_no}
+		) A left join tbl_member B
+		on sk_member_userid = member_userid
+		) C join tbl_member D
+		on rk_member_userid = member_userid
+	
+	</select>
 
 </mapper>

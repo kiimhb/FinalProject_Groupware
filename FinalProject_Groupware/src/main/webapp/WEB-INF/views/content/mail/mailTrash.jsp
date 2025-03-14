@@ -250,6 +250,8 @@ function receivedMailDelete() {
 
 <jsp:include page="../../header/header1.jsp" /> 
 
+
+<div id="sub_mycontent">
 <div style=" border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;">
 
 	<span>휴지통</span>
@@ -359,7 +361,7 @@ function receivedMailDelete() {
 
 
 </div>
-
+ </div>
 
 
 

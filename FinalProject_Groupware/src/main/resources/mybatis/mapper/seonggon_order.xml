@@ -235,15 +235,47 @@
 	
 	</select>
 	
-	
+	<!-- 오더 최종확정 -->
 	<update id="sendOrderConfirm" parameterType="HashMap">
 	
 		update tbl_order set order_symptom_detail = #{order_symptom_detail}, order_isConfirmed = 1
 		where order_no = #{orderNo}
 	
 	</update>
+	
+	<update id="changePatientWaitingStatus" parameterType="HashMap">	
+		update tbl_patient set patient_waiting = 0
+		where patient_no = #{hiddenPatientNo}
+	</update>
+	
+	
+	
 
+	<!-- 수술확정후 수술비용 넣기 -->
+	<insert id="insertCostTbl">
+	
+		insert into tbl_cost (fk_order_no, cost_item, cost_item_name, cost)
+		values (#{fk_order_no}, '수술비용', #{surgeryType_name}, #{surgeryType_Price})
+			
+	</insert>	
+		
+	<!-- 입원확정후 입원비용 넣기 -->
+	<insert id="insertHospCostTbl">
+	
+		insert into tbl_cost (fk_order_no, cost_item, cost_item_name, cost)
+		values (#{orderNo}, '입원비용', #{order_howlonghosp}||'일', #{hospPrice})
+			
+	</insert>
 		
 		
-		
+
+	<insert id="medicinePriceSubmit">		
+		insert all
+		<foreach collection="list" item="item">
+		into tbl_cost (fk_order_no, cost_item, cost_item_name, cost)
+		values (#{item.orderNo}, '약', #{item.medicine_name}||#{item.prescribe_perday}||'일', #{item.totalPrice})
+		</foreach>
+		select 1 From dual
+	</insert>	
+
 </mapper>

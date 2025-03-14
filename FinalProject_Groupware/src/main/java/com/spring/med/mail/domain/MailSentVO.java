@@ -18,6 +18,13 @@ public class MailSentVO {
 		
 	
 	
+	private String rk_member_userid;			//수신자 사번
+	
+
+	// 메일 발신자 수신자
+	private String received_member_name;			// 수신자
+	private String sent_member_name;				// 발신자
+	
 	
 	
 	private MultipartFile attach;
@@ -126,6 +133,29 @@ public class MailSentVO {
 	public void setMail_sent_filesize(String mail_sent_filesize) {
 		this.mail_sent_filesize = mail_sent_filesize;
 	}
+	public String getReceived_member_name() {
+		return received_member_name;
+	}
+	public String getSent_member_name() {
+		return sent_member_name;
+	}
+	public void setReceived_member_name(String received_member_name) {
+		this.received_member_name = received_member_name;
+	}
+	public void setSent_member_name(String sent_member_name) {
+		this.sent_member_name = sent_member_name;
+	}
+	
+	public String getRk_member_userid() {
+		return rk_member_userid;
+	}
+	public void setRk_member_userid(String rk_member_userid) {
+		this.rk_member_userid = rk_member_userid;
+	}
+
+	
+	
+	
 	
 	
 	

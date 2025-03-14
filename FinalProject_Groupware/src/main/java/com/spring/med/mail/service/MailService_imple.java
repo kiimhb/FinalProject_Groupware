@@ -32,7 +32,7 @@ public class MailService_imple implements MailService {
 	// 작성된 메일 발신메일 테이블에 insert 하기 (트랜잭션)
 	@Transactional(value="transactionManager_final_orauser4", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	@Override
-	public int insertMailWrite(MailSentVO mvo, String fk_member_userid) {
+	public int insertMailWrite(MailSentVO mvo, String rk_member_userid) {
 		
 		int n = 0 , result = 0;
 		n  = mdao.insertMailWrite(mvo);
@@ -46,7 +46,7 @@ public class MailService_imple implements MailService {
 			
 			//paraMap.put("fk_mail_sent_no", fk_mail_sent_no);
 			
-			paraMap.put("fk_member_userid", fk_member_userid);
+			paraMap.put("rk_member_userid", rk_member_userid);
 			paraMap.put("mail_received_important", mail_received_important);
 			
 			//System.out.println("트랜잭션 맵보여주기 : "+paraMap);
@@ -59,21 +59,20 @@ public class MailService_imple implements MailService {
 	// 작성된 메일 발신메일 테이블에 insert 하기 with 파일첨부 (트랜잭션)
 	@Transactional(value="transactionManager_final_orauser4", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	@Override
-	public int insertMailWriteWithFile(MailSentVO mvo, String fk_member_userid) {
+	public int insertMailWriteWithFile(MailSentVO mvo, String rk_member_userid) {
 		
 		int n = 0 , result = 0;
 		
 		n  = mdao.insertMailWriteWithFile(mvo);
 		
 		if(n==1) {
-			
+			String mail_received_important = mvo.getMail_sent_important();
 			//String fk_mail_sent_no = mvo.getMail_sent_no();
 			Map<String, String> paraMap = new HashMap<>();
 			
 			//paraMap.put("fk_mail_sent_no", fk_mail_sent_no);
-			paraMap.put("fk_member_userid", fk_member_userid);
-			
-
+			paraMap.put("rk_member_userid", rk_member_userid);
+			paraMap.put("mail_received_important", mail_received_important);
 			
 			result = mdao.insertMailReceive(paraMap);
 		}
@@ -346,6 +345,32 @@ public class MailService_imple implements MailService {
 	public int receivedMailDelete(List<Integer> mailNos, Map<String, String> paraMap) {
 		int n = mdao.receivedMailDelete(mailNos, paraMap);
 		return n;
+	}
+
+	// 받은 메일 클릭하면 메일내용 보여주기
+	@Override
+	public Map<String, String> mailView(String mail_sent_no) {
+		
+		Map<String, String> sentMap = mdao.mailView(mail_sent_no);
+		
+		return sentMap;
+	}
+
+	// 받은 메일 클릭하면 메일내용 보여주기
+	@Override
+	public Map<String, String> receivedMailView(String fk_mail_sent_no) {
+		Map<String, String> receivedMap = mdao.receivedMailView(fk_mail_sent_no);
+		
+		return receivedMap;
+	}
+
+	// 첨부파일 다운로드위한 1개메일 가져오기
+	@Override
+	public MailSentVO mailViewFile(String mail_sent_no) {
+		
+		MailSentVO mvo = mdao.mailViewFile(mail_sent_no);
+		
+		return mvo;
 	}
 
 	

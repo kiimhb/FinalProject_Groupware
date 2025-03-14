@@ -80,6 +80,23 @@ function trclick(patient_no){
 </script>
 
 
+<style type="text/css">
+
+/* 페이지바 */
+div#pageBar a {
+   color: #509d9c;
+   cursor: pointer;
+}
+#pageBar > ul > li {
+   color: #006769;
+   font-weight: bold;
+   cursor: pointer;
+}
+
+
+</style>
+
+<div id="sub_mycontent">
 <div style="border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;"><span>진료대기환자</span></div>
 <div>${requestScope.firstPatient_no}</div>
 <div style="border:solid 0px blue;">	
@@ -124,7 +141,7 @@ function trclick(patient_no){
 		
 	</div>
 </div>
-
+</div>
 
 
 

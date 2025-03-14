@@ -22,10 +22,10 @@ public interface MailService {
 	int getTotalCountSent(Map<String, String> paraMap);
 	
 	// 작성된 메일 발신메일 테이블에 insert 하기
-	int insertMailWrite(MailSentVO mvo, String fk_member_userid);
+	int insertMailWrite(MailSentVO mvo, String rk_member_userid);
 
 	// 작성된 메일 발신메일 테이블에 insert 하기 with 파일첨부
-	int insertMailWriteWithFile(MailSentVO mvo, String fk_member_userid);
+	int insertMailWriteWithFile(MailSentVO mvo, String rk_member_userid);
 
 	// 보낸 메일 리스트 보여주기
 	List<MailReceiveVO> selectMailSentList(Map<String, String> paraMap);
@@ -89,6 +89,15 @@ public interface MailService {
 
 	// 휴지통 받은 메일 영구삭제하기
 	int receivedMailDelete(List<Integer> mailNos, Map<String, String> paraMap);
+
+	// 보낸 메일 클릭하면 메일내용 보여주기
+	Map<String, String> mailView(String mail_sent_no);
+
+	// 받은 메일 클릭하면 메일내용 보여주기
+	Map<String, String> receivedMailView(String fk_mail_sent_no);
+
+	// 첨부파일 다운로드위한 1개메일 가져오기
+	MailSentVO mailViewFile(String mail_sent_no);
 
 	// 발신메일인지 수신메일인지 구별
 	//List<Map<String, String>> isSR(List<Integer> mailNos, Map<String, String> paraMap);

@@ -173,6 +173,39 @@ public class OrderDAO_imple implements OrderDAO {
 		
 		return n;
 	}
+	// 환자 대기상태로 바꾸기 (트랜잭션)
+	@Override
+	public int changePatientWaitingStatus(Map<String, String> map) {
+		int n = sqlsession.update("seonggon_order.changePatientWaitingStatus", map);
+		
+		return n;
+	}
+	
+	
+	
+	
+	// 수술 관련 Cost테이블에 insert하기
+	@Override
+	public int insertCostTbl(Map<String, String> resultMap) {
+		int m = sqlsession.insert("seonggon_order.insertCostTbl", resultMap);
+		return m;
+	}
+
+	// 입원비용 cost 테이블에 insert
+	@Override
+	public int insertHospCostTbl(Map<String, String> paraMap) {
+		int m = sqlsession.insert("seonggon_order.insertHospCostTbl", paraMap);
+		return m;
+	}
+
+	// 약들 Cost 테이블에 insert
+	@Override
+	public int medicinePriceSubmit(List<Map<String, Object>> result) {
+		int m = sqlsession.insert("seonggon_order.medicinePriceSubmit", result);
+		return m;
+	}
+
+
 
 
 
