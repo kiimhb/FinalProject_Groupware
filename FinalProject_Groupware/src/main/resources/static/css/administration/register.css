@@ -2,14 +2,14 @@
 
 .header, .content, .reservation {
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 }
 
 /* 상단 */
 .content {
 	/*border: 1px solid red;*/
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 	padding-top: 2%;
 }
 div.title {

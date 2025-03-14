@@ -4,7 +4,7 @@
 .header {
 	/*border: 1px solid red;*/
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 	padding-top: 2%;
 }
 .header > div.title {
@@ -22,7 +22,7 @@ div.search {
 i#icon {
 	position: relative;
 	left:-30px;
-	top:18px;
+	top:13px;
 	cursor: pointer;
 	color:#4c4d4f;
 	font-size: 14pt;
@@ -80,7 +80,6 @@ input {
   	border: none;
   	border-bottom: 1px solid #999999; 
   	padding: 9px;
-  	margin: 7px;
 }
 
 input:placeholder {
@@ -102,7 +101,7 @@ input:focus::placeholder {
 /* 상단 */
 div.patientList {
 	/*border: 1px solid black;*/
-	width: 80%;
+	width: 90%;
 	margin: 0 auto;
 }
 input.print {

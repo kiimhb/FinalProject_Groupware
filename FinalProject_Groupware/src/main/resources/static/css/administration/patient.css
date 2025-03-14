@@ -4,7 +4,7 @@
 .header {
 	/*border: 1px solid red;*/
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 	padding-top: 2%;
 }
 /* 상단 타이틀 */
@@ -63,7 +63,7 @@ input:focus::placeholder {
 /* 상단 */
 div.patientList {
 	/*border: 1px solid black;*/
-	width: 80%;
+	width: 90%;
 	margin: 0 auto;
 }
 table {

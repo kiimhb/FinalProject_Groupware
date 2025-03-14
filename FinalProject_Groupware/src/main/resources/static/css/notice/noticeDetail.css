@@ -4,17 +4,17 @@
 .header {
 	border-bottom: 1px solid black;
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 	padding-top: 2%;
 	padding-bottom: 1%;
 	display: flex;
 	justify-content: space-between;
 }
 div.title {
-	width:80%;
+	width:90%;
 }
 div.viewcnt {
-	width:16%;
+	width:20%;
 }
 .header > div.title > span.title {
 	border-left: 5px solid #006769;	
@@ -55,7 +55,7 @@ div.noticeupdate:hover {
 div.content {
 	/* border: 1px solid black; */
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 	padding: 0 1% 1% 1%;
 }
 div.content > div.top {

@@ -262,7 +262,7 @@ function removeboldTitle() {
 }
 </script>
 	
-<div id="sub_mycontent">	
+	
 	<div id="container">
 		<input type="hidden" id="member_userid" value="${requestScope.loginuser.member_userid}">
 		<input type="hidden" id="member_name" value="${requestScope.loginuser.member_name}">
@@ -345,6 +345,5 @@ function removeboldTitle() {
 		</div>
 	</div>
 	<!-- modal 만들기 끝 -->
-</div>	
 
 <jsp:include page="../../footer/footer1.jsp" />   

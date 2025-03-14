@@ -4,7 +4,7 @@
 .header {
 	border-bottom: 1px solid black;
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 	padding-top: 2%;
 	padding-bottom: 1%;
 	display:flex;
@@ -33,7 +33,7 @@ span.cnt {
 div.notice {
 	/* border: 1px solid black; */
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 	
 }
 div.one_row {
