@@ -14,6 +14,16 @@
 
 
 $(document).ready(function(){  
+	
+	
+	<%-- 조직도에서 넘어온 경우 받는 사람 member_userid 자동기입 --%>
+	const from_orgUserId = "${requestScope.member_userid}";
+
+	if(from_orgUserId != "" && from_orgUserId != undefined) {
+		$("input[name='mail_received_userid']").val(from_orgUserId);
+	}
+	
+	/////////////////////////////////////////////////////////////////
 
 	   	// ==== 스마트 에디터 구현 시작 ====
 		//전역변수

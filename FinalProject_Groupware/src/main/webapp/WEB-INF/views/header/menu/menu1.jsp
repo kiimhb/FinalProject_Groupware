@@ -215,10 +215,10 @@ $(document).ready(function () {
    function alarm_link(alarm_category, alarm_cateno) {
 
        if (alarm_category == "결재") {
-    	   const frm = document.detailTempFrm;
+    	   const frm = document.detailTempFrm_2;
     	   $("input[name='draft_no']").val(alarm_cateno);
 			frm.method = "post";
-			frm.action = "<%= ctxPath%>/approval/approvalPendingListDetail";
+			frm.action = "<%= ctxPath%>/alarm/approvalPendingListDetail_tbl_alarm";
 			frm.submit();
 			
 
@@ -232,7 +232,7 @@ $(document).ready(function () {
 
 
 </script>
-	<form name="detailTempFrm">
+	<form name="detailTempFrm_2">
 		<input type="hidden" name="draft_no" />
 	</form>
 

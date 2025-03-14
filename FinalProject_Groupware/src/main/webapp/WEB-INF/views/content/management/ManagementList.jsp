@@ -701,75 +701,77 @@ function delete_member_userid(e, member_userid) {
 
 </script>
 
-<div class="subContent">
+<div id="sub_mycontent">
 
-	<div class="manag_h3">
-		<h3>인사관리 <사원목록조회> </h3>
-	</div>
+	<div class="subContent">
 	
-	
-<div class="manageList">
-	<table class="manageListTable">
-		<thead>
-		    <tr>
-		    	<th>순서</th>
-		    	<th>사번</th>
-		    	<th>프로필</th>
-		    	<th>하위부서명</th>
-		    	<th>성명</th>
-				<th>성별</th>
-				<th>근무시간</th>
-				<th>직급</th>
-				<th>정보수정</th>
-				<th>퇴사처리</th>
-		   </tr>
-		</thead>
+		<div class="manag_h3">
+			<h3>인사관리 <사원목록조회> </h3>
+		</div>
 		
-		<tbody>
-	<c:if test="${not empty requestScope.Manag_List}">
-	<c:forEach var="managementVO_ga" items="${requestScope.Manag_List}" varStatus="status">
-	<tr>
-	<td>${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (status.index) }
-	</td>
-	<td>${managementVO_ga.member_userid}</td>
-	<td><img width="50" height="50" src="<%=ctxPath%>/resources/profile/${managementVO_ga.member_pro_filename}" alt="프로필"></td>
-	<td>${managementVO_ga.child_dept_name}</td>
-	<td>${managementVO_ga.member_name}</td>
-	<td>${managementVO_ga.member_gender}</td>
-	<td>${managementVO_ga.member_workingTime}</td>
-	<td>${managementVO_ga.member_position}</td>
-	<td><button type="button" id="EditView1" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
-	<td><button type="button" id="EditView2" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
-	</c:forEach>
-	</c:if>
-	  
-	  <c:if test="${empty requestScope.Manag_List}">
-	  <tr><td colspan="6">조회할 사원데이터가 없습니다.</td></tr>
-	  </c:if>
-		</tbody>
-    </table>
-</div>    
-	<div id="EditModal"></div>
-    <div id="QuitModal"></div>
-    
-<div>
-   <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">${requestScope.pageBar}</div>
-   
-    
+		
+	<div class="manageList">
+		<table class="manageListTable">
+			<thead>
+			    <tr>
+			    	<th>순서</th>
+			    	<th>사번</th>
+			    	<th>프로필</th>
+			    	<th>하위부서명</th>
+			    	<th>성명</th>
+					<th>성별</th>
+					<th>근무시간</th>
+					<th>직급</th>
+					<th>정보수정</th>
+					<th>퇴사처리</th>
+			   </tr>
+			</thead>
+			
+			<tbody>
+		<c:if test="${not empty requestScope.Manag_List}">
+		<c:forEach var="managementVO_ga" items="${requestScope.Manag_List}" varStatus="status">
+		<tr>
+		<td>${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (status.index) }
+		</td>
+		<td>${managementVO_ga.member_userid}</td>
+		<td><img width="50" height="50" src="<%=ctxPath%>/resources/profile/${managementVO_ga.member_pro_filename}" alt="프로필"></td>
+		<td>${managementVO_ga.child_dept_name}</td>
+		<td>${managementVO_ga.member_name}</td>
+		<td>${managementVO_ga.member_gender}</td>
+		<td>${managementVO_ga.member_workingTime}</td>
+		<td>${managementVO_ga.member_position}</td>
+		<td><button type="button" id="EditView1" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
+		<td><button type="button" id="EditView2" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
+		</c:forEach>
+		</c:if>
+		  
+		  <c:if test="${empty requestScope.Manag_List}">
+		  <tr><td colspan="6">조회할 사원데이터가 없습니다.</td></tr>
+		  </c:if>
+			</tbody>
+	    </table>
+	</div>    
+		<div id="EditModal"></div>
+	    <div id="QuitModal"></div>
+	    
+	<div>
+	   <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">${requestScope.pageBar}</div>
+	   
+	    
+	</div>
+		<form name="searchFrm">
+			<select name="searchType" style="height: 26px;">
+				<option value="userid">사번명</option>
+				<option value="position">직급명</option>
+				<option value="name">사원명</option>
+			</select> <input type="text" name="searchWord" size="10" autocomplete="off" />
+			<input type="text" style="display: none;" />
+			<button type="button" onclick="goSearch()" style="border:none; padding: 3px; width: 55px; ">검색</button>
+	
+			<div id="displayList"></div>
+		</form>
+	</div>
 </div>
-	<form name="searchFrm">
-		<select name="searchType" style="height: 26px;">
-			<option value="userid">사번명</option>
-			<option value="position">직급명</option>
-			<option value="name">사원명</option>
-		</select> <input type="text" name="searchWord" size="10" autocomplete="off" />
-		<input type="text" style="display: none;" />
-		<button type="button" onclick="goSearch()" style="border:none; padding: 3px; width: 55px; ">검색</button>
-
-		<div id="displayList"></div>
-	</form>
-</div>
-
 
 	
 

@@ -28,11 +28,15 @@
 
 <style>
 	h2 {
-		margin-left: 4%;
-		margin-top: 4%;
+		margin-left: 3%;
+      	margin-top: 4%;
+      	margin-bottom: 3%;
+      	letter-spacing: 4px !important;
+		border-left: 5px solid #006769;   
+		padding-left: 1%;
 		margin-bottom: 1%;
+		color: #4c4d4f;
 		font-weight: bold;
-		letter-spacing: 4px !important;
 	}
 	
 	div.tempListContainer {
@@ -72,26 +76,9 @@
 	}
 	
 	<%-- 검색 버튼 --%>
-	button {
-  		padding: 12px;
-  		text-transform: uppercase;
-  		letter-spacing: 3px;
-  		font-size: 11px;
-  		border-radius: 10px;
-  		margin: auto;
-  		outline: none;
-	}
-
-	#btnSearch:hover {
-  		background: #509d9c; /* $pale를 실제 색상으로 대체 */
-  		color: white; /* $white를 실제 색상으로 대체 */
-  		transition: background-color 1s ease-out;
-	}
-
-	#btnSearch {
-  		background: white; /* $white를 실제 색상으로 대체 */
-  		color: #006769; /* $pink를 실제 색상으로 대체 */
- 		border: solid 1px #8ac2bd; /* $pale를 실제 색상으로 대체 */
+	button.btn {
+		background-color: #006769;
+		color:white; 
 	}
 	
 	<%-- select 태그 --%>
@@ -146,79 +133,17 @@
 	
 	
 	<%-- 페이지 이동 버튼 스타일 --%>
-	/* 페이지바 컨테이너 */
-	.pagination-container {
-	    text-align: center;
-	    margin-top: 5%;
-	    margin-bottom: 6%;
+	div#pageBar a {
+		color: #509d9c;
+		cursor: pointer;
 	}
-	
-	/* 기본 리스트 스타일 */
-	.pagination-container ul {
-	    list-style: none;
-	    padding: 0;
-	    margin: 0;
-	    display: inline-flex;
-	    align-items: center;
+	#pageBar > ul > li {
+		color: #006769;
+		font-weight: bold;
+		cursor: pointer;
 	}
-	
-	/* 페이지 버튼 스타일 */
-	.pagination-container li {
-	    margin: 0 4px;
-	}
-	
-	.pagination-container a, .pagination-container span {
-	    display: block;
-	    padding: 10px 16px;
-	    font-size: 14px;
-	    color: #4c4d4f;
-	    text-decoration: none;
-	    background-color: #fff;  /* 배경색 설정 */
-	    border-radius: 10px; /* 둥근 버튼 */
-	    transition: all 0.3s ease;
-	    cursor: pointer;
-	    box-shadow:  0 2px 5px rgba(0,0,0,.25); /* 부드러운 그림자 */
-	}
-	
-	/* 호버 효과 */
-	.pagination-container a:hover {
-	    background-color: #f68b1f;
-	    color: #fff;
-	    transform: translateY(-3px); /* 살짝 떠오르는 느낌 */
-	}
-	
-	/* 활성화된 페이지 스타일 */
-	.pagination-container li.active span {
-	    background-color: #f68b1f !important;
-	    color: white;
-	    border-color: #f68b1f !important;
-	}
-	
-	/* 비활성화된 페이지 스타일 (이전, 다음 버튼) */
-	.pagination-container li.disabled a {
-	    color: #fff;
-	    background-color: #f5f5f5;
-	    border-color: #ddd;
-	    cursor: not-allowed;
-	}
-	
-	/* 페이지바 양끝 스타일 */
-	.pagination-container li:first-child a {
-	    border: none;
-	    font-weight: bold;
-	}
-	
-	.pagination-container li:last-child a {
-	    border: none;
-	    font-weight: bold;
-	}
-	
-	/* 반응형 디자인 */
-	@media (max-width: 768px) {
-	    .pagination-container a {
-	        padding: 8px 12px;
-	        font-size: 12px;
-	    }
+	.page-link {
+		border: none;
 	}
 </style>
 
@@ -273,89 +198,91 @@ function goSearch() {
 </script>
 
 <%-- ===================================================================== --%>
-<div class="tempListContainer">
-	<h2><a href="<%= ctxPath%>/approval/approvalTemporaryList" style="text-decoration: none; color: inherit; ">임시저장함</a></h2>
-	
-	<div id="topSearch">
-		<form name="searchTempListFrm">
-			<select name="sizePerPage" class="topClass top_select">
-				<option value="10">10개</option>
-				<option value="15">15개</option>
-				<option value="20">20개</option>
-			</select>
-			
-			<select name="searchType" class="topClass top_select">
-				<option value="">검색조건</option>
-				<option value="draft_form_type">결재양식</option>
-				<option value="draft_subject">제목</option>
-			</select>
-			
-			<input type="text" name="searchWord" class="topClass" placeholder="검색어 입력"/>
-			<button type="button" id="btnSearch" class="topClass" onclick="goSearch()">검색</button>
-		</form>
-	</div>
-	
-	<div id="middleTable">
-		<table>
-			<thead>
-				<tr>
-					<td>문서번호</td>
-					<td>기안부서</td>
-					<td>기안자</td>
-					<td>결재양식</td>
-					<td>제목</td>
-					<td>상태</td>
-					<td>작성일</td>
-				</tr>
-			</thead>
-			<tbody>
-				<c:if test="${not empty requestScope.temporaryList}">					
-					<c:forEach var="approvalvo" items="${requestScope.temporaryList}" varStatus="temp_status"> 
-						<%-- 첨부파일 없는 경우 --%>
-						<c:if test="${empty approvalvo.draft_file_name}">
-							<tr>
-								<td>${approvalvo.draft_no}</td>
-								<td>${approvalvo.parent_dept_name}</td>
-								<td>${approvalvo.member_name}</td>
-								<td>${approvalvo.draft_form_type}</td>
-								<td style="text-align:left;">${approvalvo.draft_subject}</td>
-								<td><span style="border: solid 1px gray; border-radius: 5px; padding: 6.5px; background-color: gray; color: white;">${approvalvo.draft_status}</span></td>
-								<td>${approvalvo.draft_write_date}</td>
-							</tr>
-						</c:if>	
-						<%-- 첨부파일 있는 경우 --%>
-						<c:if test="${not empty approvalvo.draft_file_name}">
-							<tr>
-								<td>${approvalvo.draft_no}</td>
-								<td>${approvalvo.parent_dept_name}</td>
-								<td>${approvalvo.member_name}</td>
-								<td>${approvalvo.draft_form_type}</td>
-								<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
-								<td><span style="border: solid 1px gray; border-radius: 5px; padding: 6.5px; background-color: gray; color: white;">${approvalvo.draft_status}</span></td>
-								<td>${approvalvo.draft_write_date}</td>
-							</tr>
-						</c:if>	
-					</c:forEach>
-				</c:if>
-				<c:if test="${empty requestScope.temporaryList}">	
-					<tr>
-						<td colspan="7">임시저장된 문서가 없습니다.</td>
-					</tr>
-				</c:if>
-			</tbody>
-		</table>
+<div id="sub_mycontent"> 
+	<div class="tempListContainer">
+		<h2><a href="<%= ctxPath%>/approval/approvalTemporaryList" style="text-decoration: none; color: inherit; ">임시저장함</a></h2>
 		
-		<c:if test="${not empty requestScope.temporaryList}">
-			<div id="pageBar" style="text-align: center; margin-top: 5%;" class="pagination-container">
-				${requestScope.pageBar}
-			</div>
-		</c:if>
+		<div id="topSearch">
+			<form name="searchTempListFrm">
+				<select name="sizePerPage" class="topClass top_select">
+					<option value="10">10개</option>
+					<option value="15">15개</option>
+					<option value="20">20개</option>
+				</select>
+				
+				<select name="searchType" class="topClass top_select">
+					<option value="">검색조건</option>
+					<option value="draft_form_type">결재양식</option>
+					<option value="draft_subject">제목</option>
+				</select>
+				
+				<input type="text" name="searchWord" class="topClass" placeholder="검색어 입력"/>
+				<button type="button" id="btnSearch" class="topClass btn" onclick="goSearch()">검색</button>
+			</form>
+		</div>
+		
+		<div id="middleTable">
+			<table>
+				<thead>
+					<tr>
+						<td>문서번호</td>
+						<td>기안부서</td>
+						<td>기안자</td>
+						<td>결재양식</td>
+						<td>제목</td>
+						<td>상태</td>
+						<td>최종수정일</td>
+					</tr>
+				</thead>
+				<tbody>
+					<c:if test="${not empty requestScope.temporaryList}">					
+						<c:forEach var="approvalvo" items="${requestScope.temporaryList}" varStatus="temp_status"> 
+							<%-- 첨부파일 없는 경우 --%>
+							<c:if test="${empty approvalvo.draft_file_name}">
+								<tr>
+									<td>${approvalvo.draft_no}</td>
+									<td>${approvalvo.parent_dept_name}</td>
+									<td>${approvalvo.member_name}</td>
+									<td>${approvalvo.draft_form_type}</td>
+									<td style="text-align:left;">${approvalvo.draft_subject}</td>
+									<td><span style="border: solid 1px gray; border-radius: 5px; padding: 6.5px; background-color: gray; color: white;">${approvalvo.draft_status}</span></td>
+									<td>${approvalvo.draft_write_date}</td>
+								</tr>
+							</c:if>	
+							<%-- 첨부파일 있는 경우 --%>
+							<c:if test="${not empty approvalvo.draft_file_name}">
+								<tr>
+									<td>${approvalvo.draft_no}</td>
+									<td>${approvalvo.parent_dept_name}</td>
+									<td>${approvalvo.member_name}</td>
+									<td>${approvalvo.draft_form_type}</td>
+									<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
+									<td><span style="border: solid 1px gray; border-radius: 5px; padding: 6.5px; background-color: gray; color: white;">${approvalvo.draft_status}</span></td>
+									<td>${approvalvo.draft_write_date}</td>
+								</tr>
+							</c:if>	
+						</c:forEach>
+					</c:if>
+					<c:if test="${empty requestScope.temporaryList}">	
+						<tr>
+							<td colspan="7">임시저장된 문서가 없습니다.</td>
+						</tr>
+					</c:if>
+				</tbody>
+			</table>
+			
+			<c:if test="${not empty requestScope.temporaryList}">
+				<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+					${requestScope.pageBar}
+				</div>
+			</c:if>
+		</div>
+		
+		<form name="detailTempFrm">
+			<input type="hidden" name="draft_no" />
+		</form>
+		
 	</div>
-	
-	<form name="detailTempFrm">
-		<input type="hidden" name="draft_no" />
-	</form>
-	
 </div>
 
 <jsp:include page="../../footer/footer1.jsp" />    
