@@ -214,6 +214,9 @@ $(document).ready(function(){
 
 </script>
 
+
+ <div id="sub_mycontent">
+
 <div style="display: flex;">
 <div style="margin: auto; padding-left: 3%;">
 
@@ -222,7 +225,7 @@ $(document).ready(function(){
 	  		<div class="title">내가 작성한 글</div>
 	 </div>
  
- <div id="sub_mycontent">
+
    
     <table style="width: 1200px" class="table table-hover">
         <thead>

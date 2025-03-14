@@ -204,6 +204,8 @@ $(document).on("click", "#memoDelete", function () {
 </script>
 
 
+<div id="sub_mycontent">
+
 <div class="header">
 	<div class="title">
 		<div>휴지통</div>
@@ -213,7 +215,7 @@ $(document).on("click", "#memoDelete", function () {
 </div>
 
 
-<div id="sub_mycontent">
+
 
 	<!-- 메모 목록 (휴지통) -->
 	<div id="trashList" class="memo-container">
@@ -240,7 +242,6 @@ $(document).on("click", "#memoDelete", function () {
 		</c:if>
 	</div>
 
-</div>
 
 
 
@@ -279,5 +280,7 @@ $(document).on("click", "#memoDelete", function () {
 		</div>
 	</div>
 
+
+</div>
 
 	<jsp:include page="../../footer/footer1.jsp" />

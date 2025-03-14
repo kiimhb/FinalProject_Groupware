@@ -124,6 +124,7 @@ input[type="password"] {
   }); // end of $(document).ready(function(){})
 </script>
 
+<div id="sub_mycontent">	
 
 <div class="container">
   <div class="delete-form-container">
@@ -158,6 +159,7 @@ input[type="password"] {
     </form>
 
   </div>
+</div>
 </div>
 
 <jsp:include page="../../../footer/footer1.jsp" />
