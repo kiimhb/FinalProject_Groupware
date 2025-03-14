@@ -20,6 +20,15 @@
 	 	vertical-align: middle;
 	}
 	
+	table {
+	  border: 1px #a39485 solid;
+	  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+	  width: 100%;
+	  border-collapse: collapse;
+	  border-radius: 5px;
+	  overflow: hidden;
+	}
+	
 	a{
 	    color: #395673;
 	    text-decoration: none;
@@ -202,14 +211,14 @@
 	        <c:if test="${v_fk_lgcatgono eq '2' && sessionScope.loginuser.fk_pcode =='3' && sessionScope.loginuser.fk_dcode == '4' }">  
 	    --%>
 			<c:if test="${v_fk_large_category_no eq '2' && sessionScope.loginuser.member_grade == 1 }">
-				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
-				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
+				<button type="button" id="edit" class="btn ml-2" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
+				<button type="button" class="btn ml-2" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
 			<c:if test="${v_fk_large_category_no eq '1' && v_fk_member_userid eq v_loginuser_member_userid}">
-				<button type="button" id="edit" class="btn_normal" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
-				<button type="button" class="btn_normal" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
+				<button type="button" id="edit" class="btn ml-2" onclick="editSchedule('${requestScope.map.SCHEDULE_NO}')">수정</button>
+				<button type="button" class="btn ml-2" onclick="delSchedule('${requestScope.map.SCHEDULE_NO}')">삭제</button>
 			</c:if>
-				<button type="button" id="cancel" class="btn_normal" style="margin-right: 0px;" onclick="javascript:location.href='<%= ctxPath%>${requestScope.listgobackURL_schedule}'">취소</button> 
+				<button type="button" id="cancel" class="btn ml-2" style="margin-right: 0px; background-color: #509d9c;" onclick="javascript:location.href='<%= ctxPath%>${requestScope.listgobackURL_schedule}'">취소</button> 
 		</c:if>
 		
 		<c:if test="${empty requestScope.listgobackURL_schedule}">

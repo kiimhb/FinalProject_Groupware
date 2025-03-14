@@ -62,7 +62,7 @@ public class MemoService_imple implements MemoService  {
     
     // 30일 이상 지난 메모 자동 삭제
     @Override
-    @Scheduled(cron = "0 28 12 * * *")
+    @Scheduled(cron = "0 24 15 * * *")
 	public void deleteOldTrashMemos() {
 		dao.deleteOldTrashMemos();
 	}

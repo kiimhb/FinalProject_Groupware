@@ -76,6 +76,8 @@ $(document).ready(function(){
 
 <jsp:include page="../../header/header1.jsp" /> 
 
+
+<div id="sub_mycontent">
 <div style=" border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;">
 
 	<span>메일 쓰기</span>
@@ -94,7 +96,7 @@ $(document).ready(function(){
 				</th>
 			    <td>
 			       <input type="text" name="mail_received_userid">
-			       <input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid }"/>
+			       <input type="hidden" name="sk_member_userid" value="${sessionScope.loginuser.member_userid }"/>
 			       <button style ="background-color : #b3d6d2">주소록</button>
 			    </td>
    		     </tr>
@@ -133,7 +135,7 @@ $(document).ready(function(){
 
 </div>
 
-
+</div>
 
 
 

@@ -353,7 +353,7 @@ public class BoardController {
 	    	
 	    	
 	    	if(pageNo == Integer.parseInt(currentShowPageNo)) {  // 내가 현재 보고자 하는 페이지(현재페이지는 a태그 뺌)
-	    		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border: solid 1px gray; color:red; padding:2px 4px'>"+pageNo+"</li>";
+	    		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; padding:2px 4px'>"+pageNo+"</li>";
 	    	}
 	    	else { 
 	    		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
@@ -1109,7 +1109,7 @@ public class BoardController {
 					HttpSession session = request.getSession();
 					String root = session.getServletContext().getRealPath("/");
 					
-					System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
+//					System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
 					// 확인용 webapp 의 절대경로 ==> C:\git\FinalProject_Groupware\FinalProject_Groupware\src\main\webapp\
 					
 					String path = root+"resources"+File.separator+"files";  
@@ -1120,7 +1120,7 @@ public class BoardController {
 					
 					// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
 					System.out.println("~~~ 확인용 path ==> " + path);
-					// ~~~ 확인용 path ==> C:\git\FinalProject_Groupware\FinalProject_Groupware\src\main\webapp\resources\files
+					// ~~~  path ==> C:\git\FinalProject_Groupware\FinalProject_Groupware\src\main\webapp\resources\files
 			    	
 					
 					// ***** file 다운로드 하기 ***** //
@@ -1490,6 +1490,9 @@ public class BoardController {
 		    HttpSession session = request.getSession();
 		    ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
 
+		    // 글 조회수 증가를 위함 
+		 	session.setAttribute("readCountPermission", "yes");
+		    
 		    if (loginuser == null) {
 		        mav.setViewName("redirect:/member/login"); // 로그인 페이지로 이동
 		        return mav;
@@ -1727,7 +1730,7 @@ public class BoardController {
 		    String member_userid = loginuser.getMember_userid();
 
 		    List<HashMap<String, String>> boardnoList = service.selectBookmark(member_userid);
-			System.out.println("확인용 " +boardnoList);
+//			System.out.println("확인용 " +boardnoList);
 		    //mav.addObject("boardnoList",boardnoList);
 			
 			return boardnoList;

@@ -35,6 +35,8 @@
 $(document).ready(function(){
 	
 	
+	
+	
 
 	var calendarEl = document.getElementById('calendar'); //
 	
@@ -112,7 +114,8 @@ $(document).ready(function(){
 				   type:"post",
 				   data:{"orderNo":$("input#hiddenOrderNo").val()
 					   	,"hiddenPatientNo":$("input#hiddenPatientNo").val()
-					   	,"order_howlonghosp":order_howlonghosp},
+					   	,"order_howlonghosp":order_howlonghosp
+					   	,"hospPrice":hospPrice},
 				   dataType:"json",
 				   success:function(json){
 					   alert("요청 완료되었습니다.");
@@ -168,13 +171,12 @@ $(document).ready(function(){
 				  dataType:"json",
 				  success:function(json){
 					  console.log(JSON.stringify(json));
-					  alert("요청 완료되었습니다.");
-					  $("#confirmButton").text("요청완료");
 					  
 	
 					  $.ajax({
 						  url:"<%= ctxPath%>/order/callSurgeryPrice",
-						  data:{"surgeryType_no":surgeryType_no},
+						  data:{"surgeryType_no":surgeryType_no
+							   ,"orderNo":orderNo},
 						  type:"post",
 						  dataType:"json",
 						  success:function(response){
@@ -187,7 +189,9 @@ $(document).ready(function(){
 							  			<td class="price">\${response.surgeryType_Price}원</td>`;
 							  
 							$("tr#surgeryName").html(v_html);
-							  			
+							 
+							alert("요청 완료되었습니다.");
+							$("#confirmButton").text("요청완료");
 							  			
 						  },
 						  error: function(request, status, error){
@@ -585,7 +589,7 @@ $(document).ready(function(){
 		$(document).on("click", "button#medicineSubmit", function(){
 			
 			console.log(JSON.stringify(medicineList));
-			
+			const orderNo = $("input#hiddenOrderNo").val();
 			
 			const medicineSubmitYN = confirm("오더에 약을 추가하시겠습니까?")
 			
@@ -599,10 +603,7 @@ $(document).ready(function(){
 					type:"post",
 					dataType:"json",
 					success:function(prescribeJson){
-						
-	
-						
-						alert("처방 전송 완료");
+				
 						
 						$.ajax({
 							
@@ -626,6 +627,7 @@ $(document).ready(function(){
 						        return {
 						            medicine_name: priceItem.medicine_name,
 						            medicine_price: priceItem.medicine_price,
+						            prescribe_perday: prescribeItem.prescribe_perday,
 						            totalPrice: parseInt(prescribeItem.prescribe_perday) * parseInt(priceItem.medicine_price)
 						        };
 						    }
@@ -634,6 +636,21 @@ $(document).ready(function(){
 								
 								console.log("result잘나와라젭알", result);
 								
+								$.ajax({
+									
+									url:"<%= ctxPath%>/order/medicinePriceSubmit",
+									contentType: "application/json",
+									data:JSON.stringify({ "result": result, "orderNo": orderNo }),									
+									type:"post",
+									success:function(response){
+										
+										alert("처방 전송 완료");
+										
+									},error: function(request, status, error){
+										   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+									}
+								});
+
 								v_html = ``;
 								
 								$.each(result, function(index, item){
@@ -783,19 +800,23 @@ function orderFinalConfirm(){
 	
 	const detailSymptom = $("textarea#readyToSymptomDetail").val()
 	const orderNo = $("input#hiddenOrderNo").val();
+	const hiddenPatientNo = $("input#hiddenPatientNo").val();
 	console.log("디테이이일 : ", detailSymptom)
 	
 	$.ajax({
 			
 		url:"<%= ctxPath%>/order/sendOrderConfirm",
 		data:{"order_symptom_detail":detailSymptom
-			  ,"orderNo":orderNo},
+			  ,"orderNo":orderNo
+			  ,"hiddenPatientNo":hiddenPatientNo},
 		type:"post",	  
 		dataType:"json",
 		success:function(json){
 		 console.log(JSON.stringify(json));
 		 
 		 	alert("오더가 확정되었습니다 !!")
+		 	
+		 	window.location.href = "<%= ctxPath%>/patient/patientWaiting";
 			
 		},
 		error: function(request, status, error){
@@ -935,7 +956,7 @@ button.btn_edit{
 </style>
 
 
-
+<div id="sub_mycontent">
 <div style="border:solid 1px red; margin: 0.3% 10%; text-align:center;">
 	<span style="font-size:15pt;">진료정보 입력</span>
 </div>
@@ -1134,7 +1155,7 @@ button.btn_edit{
 	
 </div>
 </form>
-
+ </div>
 
 
 

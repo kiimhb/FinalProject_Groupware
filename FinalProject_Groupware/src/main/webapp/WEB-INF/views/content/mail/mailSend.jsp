@@ -61,6 +61,11 @@ $(document).ready(function(){
 	});
 	
 	
+	
+	
+	
+	
+	
 
 	  
 });// end of $(document).ready(function(){})-----------
@@ -164,13 +169,26 @@ function sendMailTrash() {
 }
 
 
-
+function trclick(mail_sent_no){
+	
+	const frm = document.goSendMailView;
+	
+	frm.mail_sent_no.value = mail_sent_no;
+	
+	console.log(mail_sent_no);
+	
+	frm.action = "<%= ctxPath%>/mail/sentMailView";
+	frm.method = "get";
+	frm.submit();
+		
+		
+}
 
 </script>
 
 <jsp:include page="../../header/header1.jsp" /> 
 
-
+<div id="sub_mycontent">
 <div style=" border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;">
 
 	<span>보낸 메일함</span>
@@ -197,7 +215,7 @@ function sendMailTrash() {
 			</thead>
 			
 			<tbody>
-
+				
 				<c:if test="${not empty requestScope.mailSentList}">
 					<c:forEach items="${requestScope.mailSentList}" var="msl" varStatus="status">
 						<tr>
@@ -208,7 +226,12 @@ function sendMailTrash() {
 							        <i class="fa fa-star-o" aria-hidden="true"></i>
 							    </button>			
 							</td>
-							<td style="border-bottom:solid 1px black">${msl.mail_title}</td>
+							<td onclick="trclick(${msl.mail_sent_no})" style="border-bottom:solid 1px black">${msl.mail_title}
+							<c:if test="${not empty msl.mail_sent_file }">
+								<i class="fa-solid fa-file"></i>
+							</c:if>
+							
+							</td>
 							<td style="border-bottom:solid 1px black">${msl.member_name}</td>
 							<td style="border-bottom:solid 1px black">${msl.mail_sent_senddate}&nbsp;&nbsp;${msl.timediff}</td>
 							<td style="border-bottom:solid 1px black"><input style="width:100px;"type="checkbox" class="mailCheckbox" data-mail-no="${msl.mail_sent_no}"/></td>
@@ -216,7 +239,9 @@ function sendMailTrash() {
 						<input type="hidden" value="${msl.mail_sent_important}" />
 					</c:forEach>
 				</c:if>
-				 
+				<form name="goSendMailView">
+					<input type="hidden" name="mail_sent_no"/>
+				</form>
 				<c:if test="${empty requestScope.mailSentList}">
 						<tr style="text-align:center; height:550px;">
 							<td colspan='4' style="border-bottom:solid 1px black; height:50px;">아직 보낸 메일이 없습니다.</td>
@@ -231,7 +256,7 @@ function sendMailTrash() {
 	    </div>
 	</div>
 </div>
-
+ </div>
 
 
 

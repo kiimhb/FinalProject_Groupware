@@ -236,7 +236,7 @@ public class TreatPatientController {
 		int n = service.submitNcheck2(paraMap);
 		
 		if(n==1) {
-			System.out.println("데이터 전송 성공");
+			//System.out.println("데이터 전송 성공");
 		}
 
 	}

@@ -28,17 +28,25 @@ th {
 }
 
 
-.header > div.title {
+div.header {
+/* border:1px solid red; */
+	width:93.5%;
+	margin:0 auto;
+	border-bottom: 1px solid #ccc;
+	display: flex;
+	justify-content: space-between;
+    margin-bottom: 20px;  
+}
+
+.header .title {
     border-left: 5px solid #006769;  /* 바 두께 증가 */
     padding-left: 1.5%;  /* 왼쪽 여백 조정 */
-    font-size: 30px;  /* h2 크기와 유사하게 증가 */
+    font-size: 28px;  /* h2 크기와 유사하게 증가 */
     margin-top: 2%;
     margin-bottom: 2%;
-    margin-left:5%;
     color: #4c4d4f;
     font-weight: bold;
 }
-
 
 .memo-container {
     display: flex;
@@ -85,6 +93,16 @@ th {
     flex-basis: 100%;
     height: 0;
 }
+
+button.btn {
+	background-color: #006769;
+	color:white;
+	
+	.no-outline:focus {
+    outline: none; /* 포커스 시 파란 테두리 제거 */
+    box-shadow: none; /* 추가적인 파란색 그림자 제거 */
+    }
+	
 </style>
 
 <script type="text/javascript">
@@ -186,12 +204,18 @@ $(document).on("click", "#memoDelete", function () {
 </script>
 
 
+<div id="sub_mycontent">
+
 <div class="header">
 	<div class="title">
-		<span class="title">휴지통</span>
+		<div>휴지통</div>
 		<p style="display: block; margin-top: 5px; font-size: 14px; color: gray;">
 			삭제된 메모는 30일간 보관되며 이후 영구적으로 삭제됩니다.</p>
 	</div>
+</div>
+
+
+
 
 	<!-- 메모 목록 (휴지통) -->
 	<div id="trashList" class="memo-container">
@@ -217,6 +241,9 @@ $(document).on("click", "#memoDelete", function () {
 			<p class="text-center text-muted">휴지통이 비어 있습니다.</p>
 		</c:if>
 	</div>
+
+
+
 
 	<!-- 메모 상세보기 모달 -->
 	<div class="modal fade" id="memoDetailModal" tabindex="-1"
@@ -245,13 +272,15 @@ $(document).on("click", "#memoDelete", function () {
 					<!-- 복원 버튼 클릭 시 hidden input에서 memo_no 가져와서 AJAX 요청함 -->
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-success" id="restoreMemo">복원</button>
-					<button type="button" class="btn btn-outline-danger"
+					<button type="button" class="btn ml-2" id="restoreMemo" style="background-color: #006769">복원</button>
+					<button type="button" class="btn ml-2" style="background-color: #509d9c;"
 						id="memoDelete">완전 삭제</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
+
+</div>
 
 	<jsp:include page="../../footer/footer1.jsp" />

@@ -110,6 +110,15 @@ public interface MailDAO {
 
 	// 휴지통 받은 메일 영구삭제하기
 	int receivedMailDelete(List<Integer> mailNos, Map<String, String> paraMap);
+
+	// 보낸 메일 클릭하면 메일내용 보여주기
+	Map<String, String> mailView(String mail_sent_no);
+
+	// 받은 메일 클릭하면 메일내용 보여주기
+	Map<String, String> receivedMailView(String fk_mail_sent_no);
+
+	// 첨부파일 다운로드위한 1개메일 가져오기
+	MailSentVO mailViewFile(String mail_sent_no);
 	
 	
 

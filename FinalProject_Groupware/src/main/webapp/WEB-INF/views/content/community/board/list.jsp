@@ -1,12 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -14,21 +7,25 @@
    String ctxPath = request.getContextPath();
     //     /myspring
 %>
-
-<jsp:include page="../../../header/header1.jsp" /> 
-
+<jsp:include page="../../../header/header1.jsp" />
+     
 <style type="text/css">
     
-  th {background-color: #ddd}
-  
-  .subjectStyle {font-weight: bold;
-                 color: navy;
-                 cursor: pointer; }
+  th {background-color: #e0eae6}
+ 
                  
   a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없애기 */
   
   div.button {text-align: right;}
-  
+
+table {
+	  border: 1px #a39485 solid;
+	  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+	  width: 100%;
+	  border-collapse: collapse;
+	  border-radius: 5px;
+	  overflow: hidden;
+	}
 
 .header .title {
      border-left: 5px solid #006769;  /* 바 두께 증가 */
@@ -41,47 +38,54 @@
 }
 
   
-  button.btn {
-	background-color: #006769;
-	color:white;
-	
-	.no-outline:focus {
-    outline: none; /* 포커스 시 파란 테두리 제거 */
-    box-shadow: none; /* 추가적인 파란색 그림자 제거 */
-  }
+button.btn {
+background-color: #006769;
+color:white;
+}
+
+.no-outline:focus {
+   outline: none; /* 포커스 시 파란 테두리 제거 */
+   box-shadow: none; /* 추가적인 파란색 그림자 제거 */
+  
+ }
+  
+  /* 검색어 입력창 */
+input[name='searchWord'] {
+	width: 20% ;
+  	color: #006769 ;
+  	border: none ;
+  	border-bottom: 1px solid #999999 ;  
+  	padding: 9px ;
+  	margin: 7px ;
+}
+
+.searchWord_input:placeholder {
+  	color: rgba(255, 255, 255, 1) 
+  	font-weight: 100 !important;
+}
+
+.searchWord_input:focus {
+  	color: #006769 !important;
+  	outline: none !important;
+  	border-bottom: 1.3px solid #006769; 
+  	transition: .8s all ease;
+}
+
+.searchWord_input:focus::placeholder {
+  	opacity: 0;
+}
+
+  
 
 /* 페이지바 */
-div#pageBar a {
+div#pageBar_bottom a {
 	color: #509d9c;
 	cursor: pointer;
 }
-#pageBar > ul > li {
+#pageBar_bottom > ul > li {
 	color: #006769;
 	font-weight: bold;
 	cursor: pointer;
-}
-
-div#pageBar a {
-    color: #509d9c;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-#pageBar > ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-}
-
-#pageBar > ul > li {
-    color: #006769;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin: 0 5px;
-    transition: background-color 0.2s ease-in-out;
 }
 
 </style>
@@ -90,6 +94,8 @@ div#pageBar a {
 <script type="text/javascript">
 //즐겨찾기 추가/삭제 함수
 function importantboard(board_no, button) {
+	event.stopPropagation(); // 부모 요소(tr)로 이벤트 전파 방지
+	
     let icon = $(button).find("i"); // 클릭한 버튼 내 아이콘 요소 찾기
     let isBookmarked = icon.hasClass("fa-star"); // 현재 즐겨찾기 여부 확인
 
@@ -100,7 +106,7 @@ function importantboard(board_no, button) {
         success: function (response) {
             if (response.success) {
                 if (!isBookmarked) {
-                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold"); // 즐겨찾기 추가
+                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", " #f68b1f"); // 즐겨찾기 추가
                     //localStorage.setItem("bookmark_" + board_no, "true"); // LocalStorage 저장
                 } else {
                     icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray"); // 즐겨찾기 삭제
@@ -111,7 +117,7 @@ function importantboard(board_no, button) {
                 $(".btnstar[data-board-no='" + board_no + "'] i")
                     .removeClass(isBookmarked ? "fa-star" : "fa-star-o")
                     .addClass(isBookmarked ? "fa-star-o" : "fa-star")
-                    .css("color", isBookmarked ? "gray" : "gold");
+                    .css("color", isBookmarked ? "gray" : " #f68b1f");
             }
         },
         error: function () {
@@ -143,6 +149,8 @@ $(document).ready(function() {
 
 $(document).ready(function(){
 	
+	//$("input.searchWord_input").css({"all":"unset"});
+	
 	// 즐겨찾기 여부 확인
 	$.ajax({
         url: "<%= ctxPath%>/board/selectbookmark",
@@ -169,7 +177,7 @@ $(document).ready(function(){
 	    			
 	        		if(star_btn == bookmark.fk_board_no) {
 	        			console.log($(btnitem).find("i"));
-	        			$(btnitem).find("i").removeClass("fa-star-o").addClass("fa-star").css("color", "gold");
+	        			$(btnitem).find("i").removeClass("fa-star-o").addClass("fa-star").css("color", " #f68b1f");
 	        			return;
 	        		}
             	
@@ -189,7 +197,7 @@ $(document).ready(function(){
     
     $("span.board_subject").hover(function(e){
        $(e.target).addClass("subjectStyle");
-    }, function(e){	
+    }, function(e){
        $(e.target).removeClass("subjectStyle");
     });
     
@@ -345,8 +353,8 @@ $(document).ready(function(){
 
 </script>
 
-
-
+		
+<div id="sub_mycontent">	
 
 <div style="display: flex;">
 	<div style="margin: auto; padding-left: 3%;">
@@ -354,12 +362,12 @@ $(document).ready(function(){
 		<div class="header">
 			<div class="title">자유게시판</div>
 		</div>
+	
 
 		<table style="width: 1200px" class="table table-hover">
 			<thead>
 			    <tr>
 			    	<th style="width: 70px; text-align: center;">글번호</th>
-<!-- 			        <th style="width: 70px; text-align: center;">글번호</th> -->
 			        <th style="width: 300px; text-align: center;">제목</th>
 			        <th style="width: 70px; text-align: center;">작성자</th>
 			        <th style="width: 150px; text-align: center;">작성일자</th>
@@ -371,36 +379,8 @@ $(document).ready(function(){
 			<tbody>
 				<c:if test="${not empty requestScope.boardList}">
 					<c:forEach var="boardvo" items="${requestScope.boardList}" varStatus="board_status">
-						<tr onclick="goView('${boardvo.board_no}')">
-							<td align="center" id="pageBar">${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (board_status.index) }
-								<%-- >>> 페이징 처리시 보여주는 순번 공식 <<<
-		                           데이터개수 - (페이지번호 - 1) * 1페이지당보여줄개수 - 인덱스번호 => 순번 
-		                        
-		                           <예제>
-		                           데이터개수 : 12
-		                           1페이지당보여줄개수 : 5
-		                        
-		                           ==> 1 페이지       
-		                           12 - (1-1) * 5 - 0  => 12
-		                           12 - (1-1) * 5 - 1  => 11
-		                           12 - (1-1) * 5 - 2  => 10
-		                           12 - (1-1) * 5 - 3  =>  9
-		                           12 - (1-1) * 5 - 4  =>  8
-		                        
-		                           ==> 2 페이지
-		                           12 - (2-1) * 5 - 0  =>  7
-		                           12 - (2-1) * 5 - 1  =>  6
-		                           12 - (2-1) * 5 - 2  =>  5
-		                           12 - (2-1) * 5 - 3  =>  4
-		                           12 - (2-1) * 5 - 4  =>  3
-		                        
-		                           ==> 3 페이지
-		                           12 - (3-1) * 5 - 0  =>  2
-		                           12 - (3-1) * 5 - 1  =>  1 
-		                    --%>
-
-							</td>
- 							<%-- <td align="center">${boardvo.board_no}</td>  --%>
+						<tr onclick="goView('${boardvo.board_no}')" style="cursor: pointer;">
+							<td align="center" id="pageBar">${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (board_status.index) }</td>
 							<td>
 								<%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 시작 === --%> 
 
@@ -416,7 +396,7 @@ $(document).ready(function(){
 										<c:if test="${fn:length(boardvo.board_subject) >= 30}">
 											<span class="board_subject"
 												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..<span style="color: #f68b1f; font-weight: bold; margin-left: 5px;">[${boardvo.board_commentCount}]</span>
-											</span></span>
+											</span>
 										</c:if>
 									</c:if>
 									<%-- 댓글이 있는 경우 끝  --%>
@@ -462,11 +442,11 @@ $(document).ready(function(){
 										test="${boardvo.board_depthno == 0 && boardvo.board_commentCount == 0}">
 										<c:if test="${fn:length(boardvo.board_subject) < 30}">
 											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color:#509d9c; margin-left: 5px;"></i><span style="color: #f68b1f; font-weight: bold; margin-left: 5px;"></span>
+												onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color:#509d9c; margin-left: 5px;"></i><span style="color: #f68b1f; font-weight: bold; margin-left: 5px;"></span></span>
 										</c:if>
 										<c:if test="${fn:length(boardvo.board_subject) >= 30}">
 											<span class="board_subject"
-												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..&nbsp;<i class="fa-solid fa-paperclip" style="color:#509d9c; margin-left: 5px;"></i><span style="color: #f68b1f; font-weight: bold; margin-left: 5px;"></span>
+												onclick="goView('${boardvo.board_no}')">${fn:substring(boardvo.board_subject, 0, 28)}..&nbsp;<i class="fa-solid fa-paperclip" style="color:#509d9c; margin-left: 5px;"></i><span style="color: #f68b1f; font-weight: bold; margin-left: 5px;"></span></span>
 										</c:if>
 									</c:if>
 									<%-- 댓글이 없는 경우 끝  --%>
@@ -511,8 +491,7 @@ $(document).ready(function(){
 		</table>
 
 		<%-- === 페이지바 === --%>
-		<div align="center" id="pageBar"
-			style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		<div align="center" id="pageBar_bottom" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 			${requestScope.pageBar}</div>
 
 		<%-- === #82. 글검색 폼 추가하기 : 글제목, 글내용, 글제목+글내용, 글쓴이로 검색을 하도록 한다. --%>
@@ -523,7 +502,7 @@ $(document).ready(function(){
 				<option value="board_subject_board_content">글제목+글내용</option>
 				<option value="board_name">글쓴이</option>
 			</select> 
-			<input type="text" name="searchWord" size="28" autocomplete="off" placeholder="검색어을 입력하세요" />
+			<input type="text" class="searchWord_input" name="searchWord" placeholder="검색어 입력를 입력하세요"/>
 			<input type="text" style="display: none;" />
 			<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
 			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
@@ -539,7 +518,7 @@ $(document).ready(function(){
 --%>
 	</div>
 </div>
-
+</div>
 <%-- === #105. 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
                사용자가 "검색된결과목록보기" 버튼을 클릭했을때 돌아갈 페이지를 알려주기 위해
                현재 페이지 주소를 뷰단으로 넘겨준다. --%>

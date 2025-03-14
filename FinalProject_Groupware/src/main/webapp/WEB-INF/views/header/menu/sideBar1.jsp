@@ -76,7 +76,7 @@ $.ajax({
          <div class="submenu">
             <a class="dropdown-item" href="<%=ctxPath%>/patient/patientReg">환자등록</a>
             <a class="dropdown-item" href="<%=ctxPath%>/patient/patientWaiting">대기환자</a> 
-            <a class="dropdown-item" href="<%=ctxPath%>/order/orderEnter">진료정보입력</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/patient/patientWaiting">진료정보입력</a> 
          </div></li>
 
       <li>

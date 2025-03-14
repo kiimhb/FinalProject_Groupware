@@ -17,7 +17,7 @@
 <jsp:include page="../../../header/header1.jsp" /> 
 
 <style type="text/css">
-    th {background-color: #ddd}
+    th {background-color: #e0eae6}
     .subjectStyle {
         font-weight: bold;
         color: navy;
@@ -38,6 +38,55 @@
     color: #4c4d4f;
     font-weight: bold;
 }
+
+table {
+	  border: 1px #a39485 solid;
+	  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+	  width: 100%;
+	  border-collapse: collapse;
+	  border-radius: 5px;
+	  overflow: hidden;
+	}
+	
+  /* 검색어 입력창 */
+input[name='searchWord'] {
+	width: 20% ;
+  	color: #006769 ;
+  	border: none ;
+  	border-bottom: 1px solid #999999 ;  
+  	padding: 9px ;
+  	margin: 7px ;
+}
+
+.searchWord_input:placeholder {
+  	color: rgba(255, 255, 255, 1) !important;
+  	font-weight: 100 !important;
+}
+
+.searchWord_input:focus {
+  	color: #006769 !important;
+  	outline: none !important;
+  	border-bottom: 1.3px solid #006769 !important; 
+  	transition: .8s all ease !important;
+}
+
+.searchWord_input:focus::placeholder {
+  	opacity: 0 !important;
+}
+
+  
+
+/* 페이지바 */
+div#pageBar_bottom a {
+	color: #509d9c !important;
+	cursor: pointer;
+}
+#pageBar_bottom > ul > li {
+	color: #006769 !important;
+	font-weight: bold;
+	cursor: pointer;
+}
+
 
 div.button {text-align: right;}
 </style>
@@ -64,7 +113,7 @@ function importantboard(button, board_no) {
         success: function (response) {
             if (response.success) {
                 if (!isBookmarked) {
-                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold"); // 즐겨찾기 추가
+                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#f68b1f"); // 즐겨찾기 추가
                     //localStorage.setItem("bookmark_" + board_no, "true"); // LocalStorage 저장
                 } else {
                     icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray"); // 즐겨찾기 삭제
@@ -75,7 +124,7 @@ function importantboard(button, board_no) {
                 $(".btnstar[data-board-no='" + board_no + "'] i")
                     .removeClass(isBookmarked ? "fa-star" : "fa-star-o")
                     .addClass(isBookmarked ? "fa-star-o" : "fa-star")
-                    .css("color", isBookmarked ? "gray" : "gold");
+                    .css("color", isBookmarked ? "gray" : " #f68b1f");
 
                 // LocalStorage 변경 이벤트 발생 (다른 페이지에서도 반영)
                 // LocalStorage를 변경하면 storage 이벤트가 발생하여 list.jsp에서도 즉시 반영됨.
@@ -217,6 +266,9 @@ $(document).ready(function(){
 
 </script>
 
+
+<div id="sub_mycontent">
+
 <div style="display: flex;">
     <div style="margin: auto; padding-left: 3%;">
 
@@ -224,6 +276,7 @@ $(document).ready(function(){
 		
 	  		<div class="title">즐겨찾기</div>
 	  	</div>	
+
 
         <table style="width: 1200px" class="table table-hover">
             <thead>
@@ -265,7 +318,7 @@ $(document).ready(function(){
                                     <button type="button" class="btnstar btn-link p-0 no-outline"
                                         onclick="importantboard(this, '${boardvo.board_no}')"
                                         data-board-no="${boardvo.board_no}"
-                                        style="font-size: 1.5rem; color: gold; margin-left: 8px; background-color: transparent; border: none; outline: none;">
+                                        style="font-size: 1.5rem; color: #f68b1f; margin-left: 8px; background-color: transparent; border: none; outline: none;">
                                         <i class="fa fa-star" aria-hidden="true"></i> 
                                     </button>
                                 </td>
@@ -288,7 +341,8 @@ $(document).ready(function(){
             
         </table>
 		
-		<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		<%-- === 페이지바 === --%>
+		<div align="center" id="pageBar_bottom" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
             ${requestScope.pageBar}
         </div>
         
@@ -307,6 +361,8 @@ $(document).ready(function(){
 		</form>
 
     </div>
+</div>
+
 </div>
 
 <form name="goBookMarkViewFrm" action="<%= ctxPath%>/board/view" method="POST">

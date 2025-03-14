@@ -179,13 +179,47 @@ public class OrderService_imple implements OrderService {
 	}
 
 
-	// 오더확정하면 오더확정유무 0->1로바꾸기
+	// 오더확정하면 오더확정유무 0->1로바꾸고 환자 접수끝났으니 대기상태로 바꾸기 (트랜잭션)
 	@Override
+	@Transactional(value="transactionManager_final_orauser4", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int sendOrderConfirm(Map<String, String> map) {
 		
-		int n = odao.sendOrderConfirm(map);
+		int n = 0; int result = 0;
 		
-		return n;
+		n = odao.sendOrderConfirm(map);
+		
+		if(n==1) {
+			
+			// 환자 대기상태로 바꾸기
+			result = odao.changePatientWaitingStatus(map);			
+		}
+		
+		return result;
+	}
+
+
+	// 수술 관련 Cost테이블에 insert하기
+	@Override
+	public int insertCostTbl(Map<String, String> resultMap) {
+		
+		int m = odao.insertCostTbl(resultMap);
+		return m;
+	}
+
+
+	// 입원비용 cost 테이블에 insert
+	@Override
+	public int insertHospCostTbl(Map<String, String> paraMap) {
+		int m = odao.insertHospCostTbl(paraMap);
+		return m;
+	}
+
+
+	// 약들 Cost 테이블에 insert
+	@Override
+	public int medicinePriceSubmit(List<Map<String, Object>> result) {
+		int m = odao.medicinePriceSubmit(result);
+		return m;
 	}
 
 

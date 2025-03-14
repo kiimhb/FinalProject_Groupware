@@ -20,6 +20,8 @@ th {
     vertical-align: middle; /* 텍스트 수직 정렬 */
 }
 
+th {background-color: #ecf2f1}
+
 .header > div.title {
     border-left: 5px solid #006769;  /* 바 두께 증가 */
     padding-left: 1.5%;  /* 왼쪽 여백 조정 */
@@ -133,14 +135,19 @@ th {
 	  
   });// end of $(document).ready(function(){})-----------
 
-</script>	  
+</script>
+
 	  
+<div id="sub_mycontent">	
+  
 <div style="display: flex;">
   <div style="margin: auto; padding-left: 3%;">
 
 		<div class="header">
 			<div class="title">글쓰기</div>
 		</div>
+
+
 
 		<form name="addFrm" enctype="multipart/form-data">
 	   		<table style="width: 1200px" class="table table-bordered">
@@ -205,6 +212,7 @@ th {
 	   		
 	 </form>
 	   
+	   </div>
   </div>
 </div>	  
 	  

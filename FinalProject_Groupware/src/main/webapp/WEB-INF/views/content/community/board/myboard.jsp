@@ -1,17 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%
-   String ctxPath = request.getContextPath();
+	String ctxPath = request.getContextPath();
     //     /myspring
 %>
 
@@ -19,7 +14,7 @@
 
 <style type="text/css">
     
-    th {background-color: #ddd}
+    th {background-color: #e0eae6}
     
     .subjectStyle {font-weight: bold;
                    color: navy;
@@ -31,6 +26,16 @@
 	background-color: #006769;
 	color:white;}
 	
+	table {
+	  border: 1px #a39485 solid;
+	  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+	  width: 100%;
+	  border-collapse: collapse;
+	  border-radius: 5px;
+	  overflow: hidden;
+	}
+	
+	
 .header .title {
     border-left: 5px solid #006769;  /* 바 두께 증가 */
     padding-left: 1.5%;  /* 왼쪽 여백 조정 */
@@ -39,6 +44,45 @@
     margin-bottom: 2%;
     color: #4c4d4f;
     font-weight: bold;
+}
+
+  /* 검색어 입력창 */
+input[name='searchWord'] {
+	width: 20% ;
+  	color: #006769 ;
+  	border: none ;
+  	border-bottom: 1px solid #999999 ;  
+  	padding: 9px ;
+  	margin: 7px ;
+}
+
+.searchWord_input:placeholder {
+  	color: rgba(255, 255, 255, 1) !important;
+  	font-weight: 100 !important;
+}
+
+.searchWord_input:focus {
+  	color: #006769 !important;
+  	outline: none !important;
+  	border-bottom: 1.3px solid #006769 !important; 
+  	transition: .8s all ease !important;
+}
+
+.searchWord_input:focus::placeholder {
+  	opacity: 0 !important;
+}
+
+  
+
+/* 페이지바 */
+div#pageBar_bottom a {
+	color: #509d9c !important;
+	cursor: pointer;
+}
+#pageBar_bottom > ul > li {
+	color: #006769 !important;
+	font-weight: bold;
+	cursor: pointer;
 }
 
 </style>
@@ -170,6 +214,9 @@ $(document).ready(function(){
 
 </script>
 
+
+ <div id="sub_mycontent">
+
 <div style="display: flex;">
 <div style="margin: auto; padding-left: 3%;">
 
@@ -177,6 +224,8 @@ $(document).ready(function(){
 		
 	  		<div class="title">내가 작성한 글</div>
 	 </div>
+ 
+
    
     <table style="width: 1200px" class="table table-hover">
         <thead>
@@ -232,8 +281,10 @@ $(document).ready(function(){
 
     </table>
 
+</div>
+
     <%-- === 페이지바 === --%>
-		<div align="center" id="pageBar"
+		<div align="center" id="pageBar_bottom"
 			style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 			${requestScope.pageBar}</div>
 
