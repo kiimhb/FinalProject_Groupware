@@ -27,13 +27,24 @@ body{
 font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
 }
 
-#mycontent {
+div#mycontent {
 	display: flex;
     flex-direction: column;
     min-height: 960px;
     margin-left: 250px;  /* 사이드바가 열렸을 때 */
     transition: margin-left 0.3s ease-in-out; /* 사이드바와 함께 콘텐츠의 이동을 부드럽게 */
    /*  border: solid 1px red; */
+}
+
+div#sub_mycontent {
+	width: 88%;
+	min-height: 960px;
+	margin: auto;
+	border: solid 1px #CFCFCF;
+	border-radius: 8px;
+	margin-top: 16px;
+	margin-bottom: 8px;
+	padding: 8px;
 }
 
 #mycontent.full {
@@ -46,6 +57,7 @@ font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
 }
 
 #myheader > nav{
+	height: 70px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 

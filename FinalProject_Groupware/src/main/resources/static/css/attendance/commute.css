@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 div.subContent {
-	border: solid 1px blue;
+	/* border: solid 1px blue; */
 	width: 95%;
 	margin: auto;
 }

@@ -10,38 +10,41 @@
 <jsp:include page="../../header/header1.jsp" />
 
 <style type="text/css">
-div.mypage_container {
-	/* border: solid 1px gray; */
-    margin: auto;
-}
-
-div.mypage_container > form {
+div.mypage_container > form > table{
 	/* border: solid 1px gray; */
 	margin: auto;
 	border-collapse: collapse;
 }
 
-img#previewimg1, img#previewimg2{
-     border: solid 1px gray;
+img#previewimg1{
+     border: solid 1px #eee;
      width:137px;
      height:176px;
      float: left;
 }
 
+img#previewimg2{
+     border: solid 1px #eee;
+     width:150px;
+     height:150px;
+     float: left;
+}
+
+
 div.mypage_container > form > table > tbody > tr > th {
 	width: 15%;
-	background-color: #DDDDDD;
+	background-color: #D3D3D3;
 	padding: 10px;
 }
 
 div.mypage_container > form > table th, table td {
     padding: 10px;
     text-align: left;
-    border: solid 1px gray;
+    border: solid 1px #eee;
 }
 
 div.mypage_container > form > table > tbody > tr > td{
-	border-bottom: solid 1px gray;
+	border-bottom: solid 1px #D3D3D3;
 }
 
 button#mypage_edit {
@@ -246,98 +249,98 @@ $("button#mypage_edit").click(function() {
 });
 });
 </script>
-
-<div class="mypage_container">
-	<form name="mypageEdit" enctype="multipart/form-data">
-    <table>
-        <tr>
-            <th>프로필</th>
-            <td colspan="2" class="text-center">
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <img id="previewimg1" width="137" height="176" src="<%=ctxPath%>/resources/profile/${sessionScope.loginuser.member_pro_filename}" alt="프로필">
-                <input type="file" name="attach" class="img_file1" accept="image/*">
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <th>사번</th>
-            <td><input type="text" name="member_userid" id="member_userid" value="${sessionScope.loginuser.member_userid}" readonly /></td>
-        </tr>
-        <tr>
-            <th>암호</th>
-            <td><input type="password" id="member_pwd" name="member_pwd" size="25" /></td>
-        </tr>
-        <tr>
-            <th>새암호확인</th>
-            <td><input type="password" id="member_pwd2" name="member_pwd2" size="25" /></td>
-        </tr>
-        <tr>
-            <th>하위부서</th>
-            <td><input type="text" name="child_dept_name" id="child_dept_name" value="${sessionScope.loginuser.child_dept_name}" readonly /></td>
-        </tr>
-        <tr>
-            <th>직급</th>
-            <td><input type="text" name="member_position" id="member_position" value="${sessionScope.loginuser.member_position}" readonly /></td>
-        </tr>
-        <tr>
-            <th>이름</th>
-            <td><input type="text" name="member_name" id="member_name" value="${sessionScope.loginuser.member_name}" /></td>
-        </tr>
-        <tr>
-            <th>휴대전화</th>
-            <td>
-                <input type="text" name="hp1" id="hp1" maxlength="3" size="6" value="010" readonly /> -
-                <input type="text" name="hp2" id="hp2" maxlength="4" size="6" value="${sessionScope.loginuser.member_mobile.substring(4,8)}" /> -
-                <input type="text" name="hp3" id="hp3" maxlength="4" size="6" value="${sessionScope.loginuser.member_mobile.substring(9)}" />
-           		<span class="error" id="hp_error">전화번호를 정확하게 입력해 주세요.</span>
-            </td>
-        </tr>
-        <tr>
-            <th>이메일</th>
-            <td><input type="text" name="member_email" id="member_email" value="${sessionScope.loginuser.member_email}" /></td>
-        </tr>
-        <tr>
-            <th>생년월일</th>
-            <td><input type="date" name="member_birthday" id="member_birthday" value="${sessionScope.loginuser.member_birthday}" readonly /></td>
-        </tr>
-        <tr>
-            <th>성별</th>
-            <td><input type="text" name="member_gender" value="${sessionScope.loginuser.member_grade == '남' ? '남자' : '여자'}" readonly /></td>
-        </tr>
-        <tr>
-            <th>근무시간</th>
-            <td><input type="text" name="member_workingTime" id="member_workingTime" value="${sessionScope.loginuser.member_workingTime}" readonly /></td>
-        </tr>
-        <tr>
-            <th>사인이미지</th>
-            <td colspan="2" class="text-center">
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <img id="previewimg2" width="137" height="176" src="<%=ctxPath%>/resources/sign/${sessionScope.loginuser.member_sign_filename}" alt="사인">
-                    <input type="file" name="sign_attach" class="img_file2" accept="image/*">
-                </div>
-             </td>
-        </tr>
-			<tr class="form-group">
-				<td colspan="2" class="text-center">
-					<button type="button" id="mypage_edit">수정하기</button>
-				</td>
-			</tr>
-		</table>
-		
-		<input type="hidden" id="member_mobile" name="member_mobile" />
-		
-		<input type="hidden" id="member_pro_orgfilename" name="member_pro_orgfilename" value="${sessionScope.loginuser.member_pro_orgfilename}" />
-      	<input type="hidden" id="member_pro_filename" name="member_pro_filename" value="${sessionScope.loginuser.member_pro_filename}" />
-      	<input type="hidden" id="member_pro_filesize" name="member_pro_filesize" value="${sessionScope.loginuser.member_pro_filesize}" />
-      	
-      	<input type="hidden" id="member_sign_orgfilename" name="member_sign_orgfilename" value="${sessionScope.loginuser.member_sign_orgfilename}" />
-      	<input type="hidden" id="member_sign_filename" name="member_sign_filename" value="${sessionScope.loginuser.member_sign_filename}" />
-      	<input type="hidden" id="member_sign_filesize" name="member_sign_filesize" value="${sessionScope.loginuser.member_sign_filesize}" />
-      	
-      	
-</form>
-
-
+<div id="sub_mycontent">
+	<div class="mypage_container">
+		<form name="mypageEdit" enctype="multipart/form-data">
+	    <table>
+	        <tr>
+	            <th>프로필</th>
+	            <td colspan="2" class="text-center">
+	            <div style="display: flex; align-items: center; gap: 20px;">
+	                <img id="previewimg1" width="137" height="176" src="<%=ctxPath%>/resources/profile/${sessionScope.loginuser.member_pro_filename}" alt="프로필">
+	                <input type="file" name="attach" class="img_file1" accept="image/*">
+	                </div>
+	            </td>
+	        </tr>
+	        <tr>
+	            <th>사번</th>
+	            <td><input type="text" name="member_userid" id="member_userid" value="${sessionScope.loginuser.member_userid}" readonly /></td>
+	        </tr>
+	        <tr>
+	            <th>암호</th>
+	            <td><input type="password" id="member_pwd" name="member_pwd" size="25" /></td>
+	        </tr>
+	        <tr>
+	            <th>새암호확인</th>
+	            <td><input type="password" id="member_pwd2" name="member_pwd2" size="25" /></td>
+	        </tr>
+	        <tr>
+	            <th>하위부서</th>
+	            <td><input type="text" name="child_dept_name" id="child_dept_name" value="${sessionScope.loginuser.child_dept_name}" readonly /></td>
+	        </tr>
+	        <tr>
+	            <th>직급</th>
+	            <td><input type="text" name="member_position" id="member_position" value="${sessionScope.loginuser.member_position}" readonly /></td>
+	        </tr>
+	        <tr>
+	            <th>이름</th>
+	            <td><input type="text" name="member_name" id="member_name" value="${sessionScope.loginuser.member_name}" /></td>
+	        </tr>
+	        <tr>
+	            <th>휴대전화</th>
+	            <td>
+	                <input type="text" name="hp1" id="hp1" maxlength="3" size="6" value="010" readonly /> -
+	                <input type="text" name="hp2" id="hp2" maxlength="4" size="6" value="${sessionScope.loginuser.member_mobile.substring(4,8)}" /> -
+	                <input type="text" name="hp3" id="hp3" maxlength="4" size="6" value="${sessionScope.loginuser.member_mobile.substring(9)}" />
+	           		<span class="error" id="hp_error">전화번호를 정확하게 입력해 주세요.</span>
+	            </td>
+	        </tr>
+	        <tr>
+	            <th>이메일</th>
+	            <td><input type="text" name="member_email" id="member_email" value="${sessionScope.loginuser.member_email}" /></td>
+	        </tr>
+	        <tr>
+	            <th>생년월일</th>
+	            <td><input type="date" name="member_birthday" id="member_birthday" value="${sessionScope.loginuser.member_birthday}" readonly /></td>
+	        </tr>
+	        <tr>
+	            <th>성별</th>
+	            <td><input type="text" name="member_gender" value="${sessionScope.loginuser.member_grade == '남' ? '남자' : '여자'}" readonly /></td>
+	        </tr>
+	        <tr>
+	            <th>근무시간</th>
+	            <td><input type="text" name="member_workingTime" id="member_workingTime" value="${sessionScope.loginuser.member_workingTime}" readonly /></td>
+	        </tr>
+	        <tr>
+	            <th>사인이미지</th>
+	            <td colspan="2" class="text-center">
+	                <div style="display: flex; align-items: center; gap: 20px;">
+	                    <img id="previewimg2" width="137" height="176" src="<%=ctxPath%>/resources/sign/${sessionScope.loginuser.member_sign_filename}" alt="사인">
+	                    <input type="file" name="sign_attach" class="img_file2" accept="image/*">
+	                </div>
+	             </td>
+	        </tr>
+				<tr class="form-group">
+					<td colspan="2" class="text-center">
+						<button type="button" id="mypage_edit">수정하기</button>
+					</td>
+				</tr>
+			</table>
+			
+			<input type="hidden" id="member_mobile" name="member_mobile" />
+			
+			<input type="hidden" id="member_pro_orgfilename" name="member_pro_orgfilename" value="${sessionScope.loginuser.member_pro_orgfilename}" />
+	      	<input type="hidden" id="member_pro_filename" name="member_pro_filename" value="${sessionScope.loginuser.member_pro_filename}" />
+	      	<input type="hidden" id="member_pro_filesize" name="member_pro_filesize" value="${sessionScope.loginuser.member_pro_filesize}" />
+	      	
+	      	<input type="hidden" id="member_sign_orgfilename" name="member_sign_orgfilename" value="${sessionScope.loginuser.member_sign_orgfilename}" />
+	      	<input type="hidden" id="member_sign_filename" name="member_sign_filename" value="${sessionScope.loginuser.member_sign_filename}" />
+	      	<input type="hidden" id="member_sign_filesize" name="member_sign_filesize" value="${sessionScope.loginuser.member_sign_filesize}" />
+	      	
+	      	
+	</form>
 	
+	
+	</div>
 </div>
 <jsp:include page="../../footer/footer1.jsp" />    

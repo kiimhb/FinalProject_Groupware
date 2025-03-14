@@ -304,7 +304,7 @@ String ctxPath = request.getContextPath();
 
 </script>
 
-<div class="subContent">
+<div id="sub_mycontent">
 
 	<div class="manag_h3">
 		<h3>인사관리 <사원등록> </h3>

@@ -52,7 +52,6 @@ $.ajax({
 
 </script>
 
-
    <div data-simplebar id="sidebar" class="sidebar">
    
    <button type="button" id="toggleBtn">☰</button>
