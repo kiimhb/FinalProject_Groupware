@@ -1,39 +1,48 @@
 /* 전체 창 (mycontent) */
-
 @font-face {
-    font-family: 'NEXON Lv1 Gothic OTF';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+	font-family: 'NEXON Lv1 Gothic OTF';
+	src:
+		url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF.woff')
+		format('woff');
+	font-weight: normal;
+	font-style: normal;
 }
 
 @font-face {
- font-family: 'NanumBarunGothic';
- font-style: normal;
- font-weight: 400;
- src: url('//fastly.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.eot');
- src: url('//fastly.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.eot?#iefix') format('embedded-opentype'), url('//fastly.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.woff') format('woff'), url('//fastly.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.ttf') format('truetype');
+	font-family: 'NanumBarunGothic';
+	font-style: normal;
+	font-weight: 400;
+	src:
+		url('//fastly.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.eot');
+	src:
+		url('//fastly.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.eot?#iefix')
+		format('embedded-opentype'),
+		url('//fastly.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.woff')
+		format('woff'),
+		url('//fastly.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.ttf')
+		format('truetype');
 }
 
 @font-face {
-    font-family: 'Pretendard-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
-    font-weight: 400;
-    font-style: normal;
+	font-family: 'Pretendard-Regular';
+	src:
+		url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff')
+		format('woff');
+	font-weight: 400;
+	font-style: normal;
 }
 
-
-body{
-font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
+body {
+	font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
 }
 
 div#mycontent {
 	display: flex;
-    flex-direction: column;
-    min-height: 960px;
-    margin-left: 250px;  /* 사이드바가 열렸을 때 */
-    transition: margin-left 0.3s ease-in-out; /* 사이드바와 함께 콘텐츠의 이동을 부드럽게 */
-   /*  border: solid 1px red; */
+	flex-direction: column;
+	min-height: 960px;
+	margin-left: 250px; /* 사이드바가 열렸을 때 */
+	transition: margin-left 0.3s ease-in-out; /* 사이드바와 함께 콘텐츠의 이동을 부드럽게 */
+	/*  border: solid 1px red; */
 }
 
 div#sub_mycontent {
@@ -48,22 +57,34 @@ div#sub_mycontent {
 }
 
 #mycontent.full {
-    margin-left: 50px; /* 사이드바가 접히면 margin-left를 적절히 조정 */
+	margin-left: 50px; /* 사이드바가 접히면 margin-left를 적절히 조정 */
 }
 
+/* div#sub_mycontent {
+	border: solid 1px #D3D3D3;
+	border-radius: 5px;
+	width: 95%;
+	min-height: 960px;
+	margin: auto;
+	margin-top: 25px;
+	margin-bottom: 25px;
+} */
+
 /* 네비 메뉴바 */
-#myheader > nav > div.navbar_menu {
-   /*  border: solid 1px blue; */
+#myheader>nav>div.navbar_menu {
+	/*  border: solid 1px blue; */
+	
 }
+
 
 #myheader > nav{
 	height: 70px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-#myheader > nav > div > a {
-    border: solid 1px red;
-    padding: auto 30px;
+#myheader>nav>div>a {
+	border: solid 1px red;
+	padding: auto 30px;
 }
 
 /* 프로필 창 */
@@ -71,28 +92,29 @@ div.profile {
 	margin-top: 38px;
 	margin-bottom: 19px;
 	padding: 0 12px;
-    text-align: center;
+	text-align: center;
 }
 
 a.mypage {
-	border: none;      
-    outline: none;     
-    background: none;  
-    cursor: pointer;   
-    font-size: 14px;
-    text-decoration: underline;
-	color:#8ac2bd;
+	border: none;
+	outline: none;
+	background: none;
+	cursor: pointer;
+	font-size: 14px;
+	text-decoration: underline;
+	color: #8ac2bd;
 }
 
-div.logout{
-	margin:0 60px 0 60px;
-	margin-top:13px;
-	padding:2px;
-	background-color:  #006769;
+div.logout {
+	margin: 0 60px 0 60px;
+	margin-top: 13px;
+	padding: 2px;
+	background-color: #006769;
 	border-radius: 5px;
-	cursor: pointer;  
+	cursor: pointer;
 }
-a.logoutcss{
+
+a.logoutcss {
 	color: white;
 }
 
@@ -101,28 +123,28 @@ a.logoutcss{
 	/* border: solid 1px navy; */
 	height: 960px;
 	width: 250px;
-	position: absolute; 
-	transition: width 0.3s ease-in-out; 
+	position: absolute;
+	transition: width 0.3s ease-in-out;
 }
 
 /* 사이드바가 접힐 때 */
 .sidebar.hidden {
-    width: 50px; /* 사이드바가 접혔을 때 */
+	width: 50px; /* 사이드바가 접혔을 때 */
 }
 
 /* 메뉴 리스트 */
 .sidebar ul {
-    list-style: none;
-    padding: 0;
+	list-style: none;
+	padding: 0;
 }
 
 .sidebar li {
-    padding: 10px;
+	padding: 10px;
 }
 
 .dropdown-item {
-    padding-left: 20px;
-    display: block;
+	padding-left: 20px;
+	display: block;
 }
 
 .dropdown-item:active {
@@ -130,80 +152,79 @@ a.logoutcss{
 }
 
 .submenu {
-    display: none; /* 처음에 하위 메뉴는 숨김 */
+	display: none; /* 처음에 하위 메뉴는 숨김 */
 }
 
 /* 사이드바 토글 버튼 (사이드바 숨기기) */
 button#toggleBtn {
-    position: absolute;
-    left: 10px;  /* 사이드바 있을 때 버튼 위치 */
-    top: 10px;
-    border: none;
-    cursor: pointer;
-    background-color: transparent;
+	position: absolute;
+	left: 10px; /* 사이드바 있을 때 버튼 위치 */
+	top: 10px;
+	border: none;
+	cursor: pointer;
+	background-color: transparent;
 }
 
 /* 사이드바가 접힐 때 토글 버튼 위치 */
-.sidebar.hidden + #toggleBtn {
-    left: 10px; /* 사이드바가 사라져도 버튼은 유지 */
+.sidebar.hidden+#toggleBtn {
+	left: 10px; /* 사이드바가 사라져도 버튼은 유지 */
 }
 
-a.sideBarCSS{
+a.sideBarCSS {
 	color: #222;
 }
 
-i.sideBarICSS{
+i.sideBarICSS {
 	color: #006769;
 }
 
 /*  로고  */
 div.logo-container {
-    display: flex;
-    align-items: center; 
-    gap: 8px; 
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 img.logo-img {
-    width: 50px;
-    height: 50px;
+	width: 50px;
+	height: 50px;
 }
 
 div.logo-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2; 
+	display: flex;
+	flex-direction: column;
+	line-height: 1.2;
 }
-
 
 span.main_logo, span.main_logo2 {
 	font-size: 15px;
 	color: #006769;
 	font-weight: bold;
 }
-	
-span.main_logo2{
+
+span.main_logo2 {
 	font-size: 11px;
 }
 
 /* meun 알림창*/
-div.navbar_menu{
+div.navbar_menu {
 	padding: 7px;
 	margin-right: 150px;
 }
 
-button.nav_button_css{
+button.nav_button_css {
 	position: relative;
-    display: inline-block; 
+	display: inline-block;
 	border: none;
 	background-color: transparent;
 }
 
-i.nav_i_css1, i.nav_i_css2{
+i.nav_i_css1, i.nav_i_css2 {
 	font-size: 30px;
 }
 
 i.nav_i_css1 {
-	 position: relative;
+	position: relative;
 	/* background: linear-gradient(to bottom, #FFEB3B, #FFD600);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent; */
@@ -217,21 +238,19 @@ i.nav_i_css2 {
 }
 
 div.Alarm_box {
-  display: none;
-  position: absolute;
-  top: 70px;
-  right: 120px;
-  border: 1px solid #ccc;
-  background-color:#FAFAFA;
-  padding: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 320px;
-  height:400px;
-  border-radius: 5px;
-  z-index: 999;
+	display: none;
+	position: absolute;
+	top: 70px;
+	right: 120px;
+	border: 1px solid #ccc;
+	background-color: #FAFAFA;
+	padding: 10px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 320px;
+	height: 400px;
+	border-radius: 5px;
+	z-index: 999;
 }
-
-
 
 /* 주요 알림 박스 */
 div.Alarm_main_box {
@@ -245,9 +264,9 @@ div.Alarm_main_box {
 
 /* 서브 알림 박스 */
 div.Alarm_sub_box {
-  font-size: 12px;
-  color: #888;
-  padding: 5px 0;
-  text-align: center;
-  height: 20px;
+	font-size: 12px;
+	color: #888;
+	padding: 5px 0;
+	text-align: center;
+	height: 20px;
 }
