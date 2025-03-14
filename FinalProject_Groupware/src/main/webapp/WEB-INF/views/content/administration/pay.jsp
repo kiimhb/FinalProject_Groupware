@@ -89,7 +89,7 @@ function openAndPrint(url) {
 }
 
 </script>
-	
+<div id="sub_mycontent">	
       <div class="header">
 		
 	  		<div class="title">
@@ -124,6 +124,7 @@ function openAndPrint(url) {
 		
 		<table class="table table-hover">
 			<thead>
+			<c:if test="${not empty requestScope.pay_list}">
 				<tr>
 					<th><input type="checkbox" name="allcheckbox" onclick="allCheck(this)" /></th>
 					<th>차트번호</th>
@@ -135,6 +136,19 @@ function openAndPrint(url) {
 					<th>처방전</th>
 					<th>수납</th>
 				</tr>
+			</c:if>
+			<c:if test="${empty requestScope.pay_list}">
+				<tr>
+					<th>차트번호</th>
+					<th>진료일자</th>
+					<th>환자명</th>
+					<th>성별</th>
+					<th>주민등록번호</th>
+					<th>수납비용</th>
+					<th>처방전</th>
+					<th>수납</th>
+				</tr>
+			</c:if>
 			</thead>
 			<tbody>
 			<c:if test="${not empty requestScope.pay_list}">
@@ -170,6 +184,6 @@ function openAndPrint(url) {
 	 <form name="paySuccessFrm">
 		
 	 </form>
-
+</div>
 
 <jsp:include page="../../footer/footer1.jsp" />   

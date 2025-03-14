@@ -145,7 +145,7 @@ $(document).ready(function(){
 	
 });
 </script>
-	
+<div id="sub_mycontent">	
       <div class="header">
 	  		<div class="title">
 	  			<span class="title">공지사항</span>
@@ -285,7 +285,7 @@ $(document).ready(function(){
       <div class="button">
       	<button type="button" class="btn backbtn" onclick="location.href='<%= ctxPath%>/notice/list'">목록으로</button>
       </div>
-	  
+</div>	  
 
 	  		
   

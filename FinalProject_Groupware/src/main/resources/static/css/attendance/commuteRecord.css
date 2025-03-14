@@ -94,6 +94,7 @@ div.end {
 	border: 1px solid gray;
 	width: 50%;
 	overflow-y: scroll;
+	border-radius: 8px 0 0 8px;
 }
 table tr {
 	border-bottom: 1px solid rgba(0, 0, 0, .1);
@@ -101,10 +102,10 @@ table tr {
 span.day,
 span.times,
 span.status  {
-	width: 240px;
+	width: 245px;
 	height: 50px;
 	display: inline-block;
-	line-height: 50px;s
+	line-height: 50px;
 }
 span.status {
 	width: 50px;

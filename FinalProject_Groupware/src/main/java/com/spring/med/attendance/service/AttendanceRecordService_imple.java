@@ -44,7 +44,7 @@ public class AttendanceRecordService_imple implements AttendanceRecordService {
 	// 어제 출근 기록이 있는지 확인하는 것이다. 없다면 결근처리
 	// 주말은 결근처리 되지 않도록 한다.
 	@Override
-	@Scheduled(cron="0 51 13 * * MON-FRI")
+	@Scheduled(cron="0 0 0 * * MON-FRI")
 	public void not_work_insert() {
 		
 		// 1. 어제 출근하지 않은 사원들의 아이디 알아오기

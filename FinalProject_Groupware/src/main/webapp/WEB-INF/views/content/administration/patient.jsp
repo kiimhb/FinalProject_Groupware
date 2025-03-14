@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%
 	String ctxPath = request.getContextPath();
@@ -24,7 +25,7 @@ function nameSearch() {
 }
 
 </script>
-	
+<div id="sub_mycontent">	
       <div class="header">
 		
 	  		<div class="title">
@@ -44,7 +45,7 @@ function nameSearch() {
 	  <div class="patientList mt-3">
 		
 		<table class="table table-hover">
-			<thead>
+			<thead class="bg-light"> 
 				<tr>
 					<th>no</th>
 					<th>진료과</th>
@@ -63,7 +64,7 @@ function nameSearch() {
 							<td>${pvo.patient_name}</td>
 							<td>${pvo.patient_visitdate}</td>
 							<td>${pvo.patient_gender}</td>
-							<td>${pvo.patient_jubun}</td>
+							<td>${fn:substring(pvo.patient_jubun, 0, 8)}******</td>
 						</tr>
 					</c:forEach>
 				</c:if>
@@ -73,12 +74,17 @@ function nameSearch() {
 			</tbody>
 		</table>
 		
-		<%-- 페이지바 === --%>
-	    <div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-	    	${requestScope.pageBar}
-	    </div>
+		<c:if test="${not empty requestScope.patientList}">
+			<%-- 페이지바 === --%>
+		    <div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		    	${requestScope.pageBar}
+		    </div>
+	    </c:if>
 	    
+	    <c:if test="${empty requestScope.patientList}">
+	    	
+	    </c:if>
 	  </div>
-
+</div>
 
 <jsp:include page="../../footer/footer1.jsp" />   

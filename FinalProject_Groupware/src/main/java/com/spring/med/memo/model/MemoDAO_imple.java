@@ -71,8 +71,8 @@ public class MemoDAO_imple implements MemoDAO{
     
     // 30일 이상 지난 메모 삭제
     @Override
-	public int deleteOldTrashMemos() {
-    	return sqlsession.delete("minji_memo.deleteOldTrashMemos");
+	public void deleteOldTrashMemos() {
+    	sqlsession.delete("minji_memo.deleteOldTrashMemos");
 	}
 
     // 휴지통으로 이동한 메모 조회

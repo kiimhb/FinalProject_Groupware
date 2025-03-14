@@ -184,6 +184,7 @@ public class PatientController {
 				jsObj.put("hospitalize_end_day", cvo.getHospitalize_end_day());
 				jsObj.put("surgery_day", cvo.getSurgery_day());
 				jsObj.put("surgery_start_time", cvo.getSurgery_start_time());
+				jsObj.put("patient_symptom", cvo.getPatient_symptom());
 				jsArr.put(jsObj);
 			}// end of for-------------------------------------
 		}

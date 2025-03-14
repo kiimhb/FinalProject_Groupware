@@ -189,7 +189,7 @@ $(document).ready(function(){
     
     $("span.board_subject").hover(function(e){
        $(e.target).addClass("subjectStyle");
-    }, function(e){
+    }, function(e){	
        $(e.target).removeClass("subjectStyle");
     });
     
@@ -371,7 +371,7 @@ $(document).ready(function(){
 			<tbody>
 				<c:if test="${not empty requestScope.boardList}">
 					<c:forEach var="boardvo" items="${requestScope.boardList}" varStatus="board_status">
-						<tr>
+						<tr onclick="goView('${boardvo.board_no}')">
 							<td align="center" id="pageBar">${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (board_status.index) }
 								<%-- >>> 페이징 처리시 보여주는 순번 공식 <<<
 		                           데이터개수 - (페이지번호 - 1) * 1페이지당보여줄개수 - 인덱스번호 => 순번 
@@ -410,7 +410,7 @@ $(document).ready(function(){
 									<%-- 댓글이 있는 경우 시작 --%>
 									<c:if test="${boardvo.board_depthno == 0 && boardvo.board_commentCount > 0}">
 										<c:if test="${fn:length(boardvo.board_subject) < 30}">
-											<span class="board_subject" onclick="goView('${boardvo.board_no}')">${boardvo.board_subject}<span style="color: #f68b1f; font-weight: bold; margin-left: 5px;">[${boardvo.board_commentCount}]</span>
+											<span class="board_subject">${boardvo.board_subject}<span style="color: #f68b1f; font-weight: bold; margin-left: 5px;">[${boardvo.board_commentCount}]</span>
 											</span>
 										</c:if>
 										<c:if test="${fn:length(boardvo.board_subject) >= 30}">

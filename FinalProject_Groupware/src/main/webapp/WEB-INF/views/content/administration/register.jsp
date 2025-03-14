@@ -2,6 +2,9 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 
 <%
 	String ctxPath = request.getContextPath();
@@ -21,7 +24,7 @@ $(document).ready(function(){
 	
 });
 </script>
-	
+<div id="sub_mycontent">	
 	<div class="content">
 	
 		<div class="surgery">
@@ -30,7 +33,7 @@ $(document).ready(function(){
 	  			수술대기 ( ${requestScope.totalCount} )
 	  		</div>
 	  		<div class="list">
-	  			<table class="table table-hover" style="box-shadow: 0 2px 5px rgba(0,0,0,.25); border-radius: 5px;">
+	  			<table class="table table-hover">
 	  				<thead class="bg-light">
 	  					<tr>
 	  						<th>차트번호</th>
@@ -51,7 +54,7 @@ $(document).ready(function(){
 			  					<td>${rvo.child_dept_name}</td>
 			  					<td>${rvo.patient_name}</td>
 			  					<td>${rvo.patient_gender}</td>
-			  					<td>${rvo.patient_jubun}</td>
+			  					<td>${fn:substring(rvo.patient_jubun, 0, 8)}******</td>
 			  					<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/surgery/${rvo.order_no}'"><span>예약</span></button></td>
 		  					</tr>
 		  				</c:forEach>
@@ -66,10 +69,13 @@ $(document).ready(function(){
 	  		</div>
 	  		
 			<%-- 페이지바 === --%>
-			<c:if test="${not empty requestScope.hospitalize_list}">
+			<c:if test="${not empty requestScope.register_list}">
 			    <div id="pageBar" align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 			    	${requestScope.pageBar}
 			    </div>
+		    </c:if>
+		    <c:if test="${empty requestScope.register_list}">
+			   
 		    </c:if>
 		    
 	    </div>
@@ -106,7 +112,7 @@ $(document).ready(function(){
 		  				</c:forEach>
 					</c:if>
 					
-					<c:if test="${empty requestScope.register_list}">
+					<c:if test="${empty requestScope.hospitalize_list}">
 						<tr><td>입원 대기 환자가 없습니다.</td></tr>
 					</c:if>	
 	  				</tbody>
@@ -117,10 +123,13 @@ $(document).ready(function(){
 			    	${requestScope.pageBar2}
 			    </div>
 		    </c:if>
+		    <c:if test="${not empty requestScope.hospitalize_list}">
+				
+		    </c:if>
 		    
 	    </div>
 	</div>
-
+</div>
 
 
 <jsp:include page="../../footer/footer1.jsp" />   

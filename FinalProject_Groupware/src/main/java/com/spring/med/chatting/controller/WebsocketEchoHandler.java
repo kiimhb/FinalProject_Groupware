@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
@@ -68,7 +69,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 		if(roomId == null) {
 			wsession.close();
 			return;
-		}	
+		}
 		
 		// 현재의 세션이 이미 참가 중인 방이 있는지 확인
 	    String currentRoomId = (String) wsession.getAttributes().get("roomId");
@@ -90,16 +91,12 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 		
 		// 로그인 사용자 정보 가져오기
 		ManagementVO_ga loginuser = (ManagementVO_ga) wsession.getAttributes().get("loginuser");
-		
-		// 입장 메시지를 해당 채팅방 사용자에게 전송한다.
-		String joinMessage = loginuser.getMember_name() + "님이 채팅방에 입장했습니다.";
-		for(WebSocketSession session : chatRooms.get(roomId)) {
-			session.sendMessage(new TextMessage("<div style='text-align: center; color:#4c4d4f;'>" + joinMessage + "</div><br>"));
-		}
-		
+
         // =========================== 몽고DB 시작 =========================== //
 		List<MessageVO> list = chattingMongo.listChatting(roomId);
 		SimpleDateFormat sdfrmt = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREA);
+		
+		boolean isFirstMessage = true; // 첫 입장 시에 날짜가 뜨기 위함
 		
 		if(list != null && list.size() > 0) {	// 이전에 나누었던 대화내용이 있다라면 
 			for(int i=0; i<list.size(); i++) {
@@ -115,7 +112,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 				
 				if(is_newDay) {
 					wsession.sendMessage(
-						new TextMessage("<div style='text-align: center;'>" + str_created + "</div>")
+						new TextMessage("<div class='chatday'>" + str_created + "</div>")
 	                ); // 대화를 나누었던 날짜를 배경색을 회색으로 하여 보여주도록 한다.
 				}
 
@@ -131,9 +128,26 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	                );     
 	            }
 				
+				isFirstMessage = false; // 대화기록이 있으면 false 로 변경한다. 
 			} // end of for
 		}
+		
+		// 대화 기록이 없는 첫 입장일 경우에도 날짜를 띄운다.
+		if(isFirstMessage) {
+			String todayDate = sdfrmt.format(new Date()); // 오늘날짜 (입장한 날짜)
+			wsession.sendMessage(
+				new TextMessage("<div class='chatday'>" + todayDate + "</div>")
+            ); // 대화를 나누었던 날짜를 배경색을 회색으로 하여 보여주도록 한다.
+		}
+
         // =========================== 몽고DB 끝  =========================== //
+		
+		// 입장 메시지를 해당 채팅방 사용자에게 전송한다.
+		String joinMessage = loginuser.getMember_name() + "님이 채팅방에 입장했습니다.";
+		for(WebSocketSession session : chatRooms.get(roomId)) {
+			session.sendMessage(new TextMessage("<div style='text-align: center; color:#4c4d4f;'>" + joinMessage + "</div><br>"));
+		}
+		
 	} // end of public void afterConnectionEstablished(WebSocketSession wsession) throws Exception
 	
 	
@@ -149,15 +163,14 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
         for (WebSocketSession session : new HashSet<>(sessionsInRoom)) {
 
             ManagementVO_ga user = (ManagementVO_ga) session.getAttributes().get("loginuser");
-            String ctxPath = (String) session.getAttributes().get("ctxPath");
-            // System.out.println("ctxPath"+ctxPath);
             
             if (user != null) {
                 v_html.append("<div class='oneMemberList'>")
-                      .append("<div class='memberProfile'><img src='")
-                      .append(ctxPath).append("/resources/profile/")
-                      .append(user.getMember_pro_filename()).append("' /></div>")
-                      .append("<div class='memberName'>").append(user.getMember_name()).append("</div>")
+                      .append("<img src='")
+                      .append("/med-groupware/resources/profile/")
+                      .append(user.getMember_pro_filename()).append("' />")
+                      .append("<div class='memberName'>")
+                      .append(user.getMember_name()).append("</div>")
                       .append("</div>");
             }
         }
@@ -178,7 +191,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 			Map<String, Object> map = wsession.getAttributes();	
 			ManagementVO_ga loginuser = (ManagementVO_ga) map.get("loginuser");
 			MessageVO messageVO = MessageVO.convertMessage(message.getPayload());
-			
+
 			String roomId = messageVO.getRoomId(); // 클라이언트에게 보낸 방번호
 			
 			// System.out.println("채팅 전 roomId: " + roomId);

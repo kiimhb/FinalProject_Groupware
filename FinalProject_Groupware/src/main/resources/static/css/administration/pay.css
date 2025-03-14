@@ -22,7 +22,7 @@ div.search {
 i#icon {
 	position: relative;
 	left:-30px;
-	top:10px;
+	top:18px;
 	cursor: pointer;
 	color:#4c4d4f;
 	font-size: 14pt;
@@ -63,19 +63,42 @@ div.paybtn {
 	width:68%;
 	/* border: 1px solid black; */
 }
-input.patientname {
-	width:100%;
-	height:40px;
-}
-
 div.paybtn > button.btn {
 	background-color: #006769;
 	color:white;
 	width:100%;
-	height:40px;
+	height:45px;
 	position:relative;
-	top:12px;
+	top:20px;
 }
+
+/* input 태그 */
+input {
+	/* background: #f0f0f0;  */
+  	width:100%;
+  	color: #006769;
+  	border: none;
+  	border-bottom: 1px solid #999999; 
+  	padding: 9px;
+  	margin: 7px;
+}
+
+input:placeholder {
+  	color: rgba(255, 255, 255, 1);
+  	font-weight: 100;
+}
+
+input:focus {
+  	color: #006769;
+  	outline: none;
+  	border-bottom: 1.3px solid #006769; 
+  	transition: .8s all ease;
+}
+
+input:focus::placeholder {
+  	opacity: 0;
+}
+
 /* 상단 */
 div.patientList {
 	/*border: 1px solid black;*/
@@ -89,6 +112,10 @@ input.print {
 	color:white;
 	font-size: 10pt;
 	line-height: 10px;
+}
+table {
+	box-shadow: 0 2px 5px rgba(0,0,0,.25); 
+	border-radius: 5px;
 }
 
 /* 페이지바 */

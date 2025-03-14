@@ -7,6 +7,7 @@ public class Calendar_patient_recordVO {
 	// 진료관련
 	private String order_no;
 	private String order_createTime;
+	private String patient_symptom;
 	
 	// 입원관련
 	private String hospitalize_start_day;
@@ -52,6 +53,12 @@ public class Calendar_patient_recordVO {
 	}
 	public void setSurgery_start_time(String surgery_start_time) {
 		this.surgery_start_time = surgery_start_time;
+	}
+	public String getPatient_symptom() {
+		return patient_symptom;
+	}
+	public void setPatient_symptom(String patient_symptom) {
+		this.patient_symptom = patient_symptom;
 	}
 	
 	

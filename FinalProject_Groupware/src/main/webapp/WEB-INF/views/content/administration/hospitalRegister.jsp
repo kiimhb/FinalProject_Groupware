@@ -90,6 +90,10 @@ $(document).ready(function(){
 	
 	$("input.today").val(timeString);
  	// ***** 예약일자 (오늘) 입력하기 끝 ***** //
+ 	
+ 	// 오늘 이전은 선택 불가능하도록 설정하기
+ 	let todayDate = new Date().toISOString().split("T")[0]; // 현재 날짜를 YYYY-MM-DD 형식으로 변환
+    $("input[type='date']").attr("min", todayDate); // input 요소의 min 속성 설정
 	
 	var calendarEl = document.getElementById('calendar'); // div#calendar 위치 (보여줄 위치임)
 	
@@ -175,38 +179,6 @@ $(document).ready(function(){
 	
 	calendar.render();  // 풀캘린더 보여주기
 	
-	// ****** 입력폼 유효성 검사하기 시작 ******//
-	/* 입원시작일자 유효성 검사하기 */
-	$("input[name='hospitalize_start_day']").blur((e) => {
-
-	   if($(e.target).val() == "") {
-			$("div.form :input, div.form select").prop("disabled", true);
-	        $(e.target).prop("disabled", false);
-
-	      	$(e.target).closest(".input").find("span.error").eq(0).show(); // 에러메시지 표시 
-	   }
-		else {
-			$("div.form :input, div.form select").prop("disabled", false); 
-			$(e.target).closest(".input").find("span.error").eq(0).hide(); // 에러메시지 표시 
-		}	
-	});
-		
-	/* 입원실 유효성 검사하기 */
-	$("select[name='fk_hospitalizeroom_no']").blur((e) => {
-
-	   if($(e.target).val() == "") {
-			$("div.form :input, div.form select").prop("disabled", true);
-	        $(e.target).prop("disabled", false);
-
-	        $(e.target).closest(".input").find("span.error").show(); // 에러메시지 표시 
-	   }
-		else {
-			$("div.form :input, div.form select").prop("disabled", false); 
-			$(e.target).closest(".input").find("span.error").hide();  // 에러메시지 숨김
-		}	
-	});
-	// ****** 입력폼 유효성 검사하기 끝 ******//
-	
 
 	// 퇴원일 자동 입력하기
 	$("input[name='hospitalize_start_day']").on("change", function(e){
@@ -285,20 +257,31 @@ $(document).ready(function(){
 	
 	
 });
-	
-// 랜덤색상 생성하기 
-function getRandomColor() {
-	
-	let r = Math.floor((Math.random() * 127) + 128);
-    let g = Math.floor((Math.random() * 127) + 128);
-    let b = Math.floor((Math.random() * 127) + 128);
-
-    return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
-	    
-}
 
 // 입원예약하기 클릭 
 function registerHospitalize() {
+	
+	const hospitalize_start_day = $("input[name='hospitalize_start_day']").val();
+	const fk_hospitalizeroom_no = $("select[name='fk_hospitalizeroom_no']").val();
+	
+	// 입원 시작시간
+	if(hospitalize_start_day == "") {
+		$("input[name='hospitalize_start_day']").closest(".input").find("span.error").eq(0).show(); // 에러메시지 표시 
+		return;
+    }
+	else {
+		$("input[name='hospitalize_start_day']").parent().find("span.error").hide();  // 에러메시지 숨김
+	}
+	
+	// 입원실 선택
+	if(fk_hospitalizeroom_no == "0") {
+		$("select[name='fk_hospitalizeroom_no']").closest(".input").find("span.error").eq(1).show(); // 에러메시지 표시 
+		return;
+    }
+	else {
+		$("select[name='fk_hospitalizeroom_no']").parent().find("span.error").hide();  // 에러메시지 숨김
+	}
+	
 	
 	const queryString = $("form[name='hospitalizeRegister']").serialize();
 	
@@ -318,7 +301,7 @@ function registerHospitalize() {
 	});
 }
 </script>
-
+<div id="sub_mycontent">
 	<div class="content">
 	
 		<div class="left">
@@ -379,6 +362,6 @@ function registerHospitalize() {
     	<button type="reset" class="btn" onclick="javascript:location.href='<%= ctxPath%>/register/list'">목록으로</button>
     </div>
 	
-   
+</div> 
 
 <jsp:include page="../../footer/footer1.jsp" />   

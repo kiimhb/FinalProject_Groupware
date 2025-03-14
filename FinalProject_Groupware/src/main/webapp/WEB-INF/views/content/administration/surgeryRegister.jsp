@@ -84,12 +84,16 @@ $(document).ready(function(){
 	const today = new Date();
 	const year = today.getFullYear();
  	const month = (today.getMonth()+1).toString().padStart(2, '0');
- 	const day = today.getDate().toString().padStart(2, '0')
+ 	const day = today.getDate().toString().padStart(2, '0');
  	
  	const timeString = `\${year} \${month} \${day}`
 	
 	$("input.today").val(timeString);
  	// ***** 예약일자 (오늘) 입력하기 끝 ***** //
+ 	
+ 	// 오늘 이전은 선택 불가능하도록 설정하기
+ 	let todayDate = new Date().toISOString().split("T")[0]; // 현재 날짜를 YYYY-MM-DD 형식으로 변환
+    $("input[type='date']").attr("min", todayDate); // input 요소의 min 속성 설정
 	
  	
  	// ****** 캘린더 띄움 시작 ******//
@@ -188,87 +192,6 @@ $(document).ready(function(){
 	
 	calendar.render();  // 풀캘린더 보여주기
 	// ****** 캘린더 띄움 끝 ******//
-	
-	
-	// ****** 입력폼 유효성 검사하기 시작 ******//
-	/* 수술실 유효성 검사하기 */
-	$("select#surgery_surgeryroom_name").blur((e) => {
-
-       if($(e.target).val() == '0') {
-			$("div.form :input, div.form select").prop("disabled", true);
-            $(e.target).prop("disabled", false);
-
-            $(e.target).parent().find("span.error").show(); // 에러메시지 표시 
-	   }
-		else {
-			$("div.form :input, div.form select").prop("disabled", false); 
-			$(e.target).parent().find("span.error").hide();  // 에러메시지 숨김
-		}	
-
-	});
-	
-	/* 수술일자 유효성 검사하기 */
-	$("input#surgery_day").blur((e) => {
-
-       if($(e.target).val() == "") {
-			$("div.form :input, div.form select").prop("disabled", true);
-            $(e.target).prop("disabled", false);
-
-            $(e.target).closest(".input").find("span.error").eq(0).show(); // 에러메시지 표시 
-	   }
-		else {
-			$("div.form :input, div.form select").prop("disabled", false); 
-			$(e.target).closest(".input").find("span.error").eq(0).hide();  // 에러메시지 숨김
-		}	
-	});
-	
-
-	/* 수술시작시간 유효성 검사하기 */
-	$("select#surgery_start_time").blur((e) => {
-
-	   if($(e.target).val() == "0") {
-			$("div.form :input, div.form select").prop("disabled", true);
-	        $(e.target).prop("disabled", false);
-
-	        $(e.target).closest(".input").find("span.error").eq(1).show(); // 에러메시지 표시 
-	   }
-		else {
-			$("div.form :input, div.form select").prop("disabled", false); 
-			$(e.target).closest(".input").find("span.error").eq(1).hide();  // 에러메시지 숨김
-		}	
-	});
-	
-	/* 수술종료시간 유효성 검사하기 */
-	$("select#surgery_end_time").blur((e) => {
-
-	   if($(e.target).val() == "0") {
-			$("div.form :input, div.form select").prop("disabled", true);
-	        $(e.target).prop("disabled", false);
-
-	        $(e.target).closest(".input").find("span.error").show(); // 에러메시지 표시 
-	   }
-		else {
-			$("div.form :input, div.form select").prop("disabled", false); 
-			$(e.target).closest(".input").find("span.error").hide();  // 에러메시지 숨김
-		}	
-	});
-
-	/* 수술 설명 유효성 검사하기 */
-	$("input#surgery_description").blur((e) => {
-
-	   if($(e.target).val().trim() == "") {
-			$("div.form :input, div.form select").prop("disabled", true);
-	        $(e.target).prop("disabled", false);
-
-	        $(e.target).closest(".input").find("span.error").show(); // 에러메시지 표시 
-	   }
-		else {
-			$("div.form :input, div.form select").prop("disabled", false); 
-			$(e.target).closest(".input").find("span.error").hide();  // 에러메시지 숨김
-		}	
-	});
-	// ****** 입력폼 유효성 검사하기 끝 ******//
-	
 	
 	// ****** 예약 가능한 시간선택 옵션 시작 ******//
 	// 수술실과 날짜를 고려한 수술 가능한 시간 구하기
@@ -384,12 +307,65 @@ function getAvaliableEndTime(startTime, reservedTime) {
 // 예약버튼 누름
 function registerSurgery() {
 	
+	const surgery_surgeryroom_name = $("select#surgery_surgeryroom_name").val();
+	const surgery_day = $("input#surgery_day").val();
+	const surgery_start_time = $("select#surgery_start_time").val();
+	const surgery_end_time = $("select#surgery_end_time").val();
+	const surgery_description = $("input#surgery_description").val();
+	
+	// 수술실 선택
+	if(surgery_surgeryroom_name == "0") {
+		$("select#surgery_surgeryroom_name").parent().find("span.error").show(); // 에러메시지 표시
+		return;
+    }
+	else {
+		$("select#surgery_surgeryroom_name").parent().find("span.error").hide();  // 에러메시지 숨김
+	}
+	
+	// 수술날짜 선택
+	if(surgery_day == "") {
+		$("input#surgery_day").closest(".input").find("span.error").eq(0).show(); // 에러메시지 표시 
+		return;
+    }
+	else {
+		$("input#surgery_day").parent().find("span.error").hide();  // 에러메시지 숨김
+	}
+	
+	// 수술실 시작시간
+	if(surgery_start_time == "0") {
+		$("select#surgery_start_time").closest(".input").find("span.error").eq(1).show(); // 에러메시지 표시 
+		return;
+    }
+	else {
+		$("select#surgery_start_time").parent().find("span.error").hide();  // 에러메시지 숨김
+	}
+	
+	// 수술실 종료시간
+	if(surgery_end_time == "0") {
+		$("select#surgery_end_time").parent().find("span.error").show(); // 에러메시지 표시 
+		return;
+    }
+	else {
+		$("select#surgery_end_time").parent().find("span.error").hide();  // 에러메시지 숨김
+	}
+	
+	// 수술실 설명내용 
+	if(surgery_description == "") {
+		$("input#surgery_description").parent().find("span.error").show(); // 에러메시지 표시
+		return;
+    }
+	else {
+		$("input#surgery_description").parent().find("span.error").hide();  // 에러메시지 숨김
+	}
+	
+	
 	// 폼(form)을 전송(submit)
     const frm = document.surgeryRegisterFrm;
 	const formData = new FormData(frm); // 폼데이터 직렬화
 	
 	const orderno = $("input#fk_order_no").val();
 	// console.log(orderno);
+	
 	$.ajax({
 		 url:"<%= ctxPath%>/register/success",
 		 type:"POST", 
@@ -410,14 +386,13 @@ function registerSurgery() {
 }
 
 </script>
-
+<div id="sub_mycontent">
 	<div class="content">
 	
 		<div class="left">
 			
 	  		<div class="title">
 	  			수술예약
-	  			
 	  		</div>
   			
 	  		
@@ -451,7 +426,7 @@ function registerSurgery() {
 		  				<div class="text">수술일자 / 시작시간 * <span class="error">수술일자를 선택하세요</span>
 															<span class="error">시간시간을 선택하세요</span></div>
 		  				<div class="div_surgerydate">
-			  				<input type="date" name="surgery_day" id="surgery_day" class="surgerydate mr-3" />
+			  				<input type="date" name="surgery_day" id="surgery_day" class="surgerydate mr-3"/>
 			  				<select name="surgery_start_time" id="surgery_start_time" class="surgeryStartdate">
 			  					<option value="">시작시간</option>
 			  				</select>
@@ -495,6 +470,6 @@ function registerSurgery() {
     	<button type="reset" class="btn" onclick="javascript:location.href='<%= ctxPath%>/register/list'">목록으로</button>
     </div>
 	
-   
+</div> 
 
 <jsp:include page="../../footer/footer1.jsp" />   
