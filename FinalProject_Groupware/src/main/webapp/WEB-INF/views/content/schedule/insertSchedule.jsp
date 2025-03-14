@@ -20,6 +20,16 @@
 	 	vertical-align: middle;
 	}
 	
+	table {
+	  border: 1px #a39485 solid;
+	  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+	  width: 100%;
+	  border-collapse: collapse;
+	  border-radius: 5px;
+	  overflow: hidden;
+	}
+	
+	
 	select.schedule{
 		height: 30px;
 	}

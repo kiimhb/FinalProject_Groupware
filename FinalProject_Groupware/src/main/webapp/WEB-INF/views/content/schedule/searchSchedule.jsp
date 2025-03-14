@@ -54,14 +54,34 @@
     font-weight: bold;
 }
 
+/* 테이블 본문 스타일 */
+#schedule tbody td {
+    text-align: center; /* 내용 가운데 정렬 */
+    vertical-align: middle;
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    word-break: break-word; /* 길이가 길면 자동 줄바꿈 */
+    white-space: normal;
+}
+
   button.btn {
 	background-color: #006769;
 	color:white;
-	
-	.no-outline:focus {
+	.no-outline:focus 
     outline: none; /* 포커스 시 파란 테두리 제거 */
     box-shadow: none; /* 추가적인 파란색 그림자 제거 */
   }
+  
+  /* 페이지바 */
+div#pageBar_bottom a {
+	color: #509d9c !important;
+	cursor: pointer;
+}
+#pageBar_bottom > ul > li {
+	color: #006769 !important;
+	font-weight: bold;
+	cursor: pointer;
+}
 
 </style>
 
@@ -190,7 +210,7 @@
 						<option value="15">15</option>
 						<option value="20">20</option>
 					</select>&nbsp;&nbsp;
-					<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" /> <%-- ${sessionScope.loginuser.member_userid} --%>
+					<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" /> 
 					<button type="button" class="btn ml-2" style="display: inline-block;" onclick="goSearch()">검색</button>
 				</div>
 			</form>
@@ -218,7 +238,10 @@
 				<c:forEach var="map" items="${requestScope.scheduleList}">
 					<tr class="infoSchedule">
 						<td style="display: none;" class="schedule_no">${map.SCHEDULE_NO}</td>
-						<td>${map.SCHEDULE_STARTDATE} - ${map.SCHEDULE_ENDDATE}</td>
+						<td>
+	                        <div>${map.SCHEDULE_STARTDATE}</div>
+	                        <div>- ${map.SCHEDULE_ENDDATE}</div>
+                   		</td>
 						<td>${map.LARGE_CATEGORY_NAME} - ${map.SMALL_CATEGORY_NAME}</td>
 						<td>${map.MEMBER_NAME}</td>  <%-- 캘린더 작성자명 --%>
 						<td>${map.SCHEDULE_SUBJECT}</td>
@@ -229,7 +252,8 @@
 		</tbody>
 	</table>
 
-	<div align="center" style="width: 70%; border: solid 0px gray; margin: 20px auto;">${requestScope.pageBar}</div> 
+	<%-- === 페이지바 === --%>
+	<div align="center" id="pageBar_bottom" style="width: 70%; border: solid 0px gray; margin: 20px auto;">${requestScope.pageBar}</div> 
     <div style="margin-bottom: 20px;">&nbsp;</div>
 </div>
 

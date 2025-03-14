@@ -20,6 +20,15 @@
 	 	vertical-align: middle;
 	}
 	
+	table {
+	  border: 1px #a39485 solid;
+	  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+	  width: 100%;
+	  border-collapse: collapse;
+	  border-radius: 5px;
+	  overflow: hidden;
+	}
+	
 	a{
 	    color: #395673;
 	    text-decoration: none;
@@ -60,16 +69,26 @@
 		max-height: 100px;
 		overflow-y: auto;
 	}
+	
+	.header .title {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 28px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
+	} 
 	  
-	button.btn_normal{
-		border: none;
-		color: white;
-		width: 70px;
-		height: 30px;
-		font-size: 12pt;
-		padding: 3px 0px;
-		border-radius: 10%;
-	}
+	button.btn {
+	background-color: #006769;
+	color:white;
+	
+	.no-outline:focus {
+    outline: none; /* 포커스 시 파란 테두리 제거 */
+    box-shadow: none; /* 추가적인 파란색 그림자 제거 */
+    }
+	
 </style>
 
 
@@ -449,11 +468,13 @@
 
 
 <div style="margin-left: 80px; width: 88%;">
-<h3 style="display: inline-block;">일정 수정하기</h3>&nbsp;&nbsp;<a href="<%= ctxPath%>/schedule/scheduleManagement"><span>◀캘린더로 돌아가기</span></a>
+<div class="header">
+ 		<div class="title">일정 수정하기</div>
+</div>&nbsp;<a href="<%= ctxPath%>/schedule/scheduleManagement"><span>◀캘린더로 돌아가기</span></a>
 <form name="scheduleFrm">
     <table id="schedule" class="table table-bordered">
         <tr>
-            <th>일자</th>
+            <th style = "text-align: center">일자</th>
             <td>
                 <input type="date" id="schedule_startdate" value="${requestScope.chooseDate}" style="height: 30px;" />&nbsp; 
                 <select id="startHour" class="schedule"></select> 시
@@ -468,14 +489,14 @@
             </td>
         </tr>
         <tr>
-            <th>제목</th>
+            <th style = "text-align: center">제목</th>
             <td>
                 <input type="text" id="subject" name="schedule_subject" class="form-control" value="${requestScope.map.SCHEDULE_SUBJECT}" />
             </td>
         </tr>
         
         <tr>
-            <th>캘린더선택</th>
+            <th style = "text-align: center">캘린더선택</th>
             <td>
                 <select class="calType schedule" name="fk_large_category_no">
                     <c:choose>
@@ -503,20 +524,20 @@
             </td>
         </tr>
         <tr>
-            <th>색상</th>
+            <th style = "text-align: center">색상</th>
             <td>
                 <input type="color" id="color" name="schedule_color" value="${requestScope.map.SCHEDULE_COLOR}" />
             </td>
         </tr>
         <tr>
-            <th>장소</th>
+            <th style = "text-align: center">장소</th>
             <td>
                 <input type="text" name="schedule_place" class="form-control" value="${requestScope.map.SCHEDULE_PLACE}" />
             </td>
         </tr>
         
         <tr>
-            <th>공유자</th>
+            <th style = "text-align: center">공유자</th>
             <td>
                 <input type="text" id="joinUserName" class="form-control" placeholder="일정을 공유할 회원명을 입력하세요" />
                 <div class="displayUserList"></div>
@@ -524,7 +545,7 @@
             </td>
         </tr>
         <tr>
-            <th>내용</th>
+            <th style = "text-align: center">내용</th>
             <td>
                 <textarea rows="10" cols="100" style="height: 200px;" name="schedule_content" id="content" class="form-control">${requestScope.map.SCHEDULE_CONTENT}</textarea>
             </td>
@@ -535,8 +556,8 @@
 </form>
 
 <div style="float: right;">
-    <button type="button" id="edit" class="btn_normal" style="margin-right: 10px; background-color: #0071bd;">완료</button>
-    <button type="button" class="btn_normal" style="background-color: #990000;" onclick="javascript:location.href='<%= ctxPath%>${gobackURL_detailSchedule}'">취소</button> 
+    <button type="button" id="edit" class="btn ml-2 no-outline" style="background-color: #006769">완료</button>
+    <button type="button" class="btn ml-2 no-outline" style="background-color: #509d9c;" onclick="javascript:location.href='<%= ctxPath%>${gobackURL_detailSchedule}'">취소</button> 
 </div>
 </div>
 

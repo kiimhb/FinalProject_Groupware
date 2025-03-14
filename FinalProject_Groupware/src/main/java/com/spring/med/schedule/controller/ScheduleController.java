@@ -564,13 +564,13 @@ public class ScheduleController {
 		
 		// === [맨처음][이전] 만들기 ===
 		if(pageNo!=1) {
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo=1'>[맨처음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo=1'><<</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+(pageNo-1)+"'></a></li>";
 		}
 		while(!(loop>blockSize || pageNo>totalPage)) {
 			
 			if(pageNo==currentShowPageNo) {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>";
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; padding:2px 4px;'>"+pageNo+"</li>";
 			}
 			else {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
@@ -582,8 +582,8 @@ public class ScheduleController {
 		
 		// === [다음][마지막] 만들기 === //
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"'></a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?schedule_startdate="+schedule_startdate+"&schedule_enddate="+schedule_enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_member_userid="+fk_member_userid+"&fk_large_category_no="+fk_large_category_no+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+totalPage+"'>>></a></li>";
 		}
 		pageBar += "</ul>";
 		
