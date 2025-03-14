@@ -126,6 +126,9 @@ public interface ApprovalDAO {
 
 	// >>> 3-2. (TBL_DRAFT) 다음 결재자 없으면 결재상태[draft_status]를 "승인완료"으로 update <<<
 	int updateToApprovalThird_TBL_DRAFT_end(Map<String, String> map);
+	
+	// >>> 4. (TBL_MEMBER) 기안문이 "휴가신청서" 일 경우 연차[member_yeoncha] 를 차감 <<<
+	void updateToApprovalYeoncha_TBL_MEMBER(Map<String, String> map);
 	/////////////////////////////////////////////////	
 
 	// >>> 1. (TBL_APPROVAL) 현재 결재자 상태 "반려'로 update <<<
@@ -148,6 +151,8 @@ public interface ApprovalDAO {
 
 	// ==== 참조문서함 총 게시물 건수 구하기 ==== //
 	int getTotalCount_referenceApproval(Map<String, String> paraMap);
+
+
 
 
 

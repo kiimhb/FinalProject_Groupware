@@ -69,7 +69,7 @@
 	
 	<!-- ==== 기존에 추가했던 결재선 사원을 목록에 불러오기 ==== -->
 	<select id="insertToApprovalLine_Arr" parameterType="String" resultType="ApprovalVO">
-		select parent_dept_name, child_dept_name, member_position, member_name
+		select member_userid, parent_dept_name, child_dept_name, member_position, member_name
 		from tbl_parent_dept p join tbl_child_dept c
 		on p.parent_dept_no = c.fk_parent_dept_no
 		left join tbl_member m
@@ -83,7 +83,7 @@
 	
 	<!-- ==== 기존에 추가했던 참조자 사원을 목록에 불러오기 ==== -->
 	<select id="insertToReferenceMember_Arr" parameterType="String" resultType="ApprovalVO">
-		select parent_dept_name, child_dept_name, member_position, member_name
+		select member_userid, parent_dept_name, child_dept_name, member_position, member_name
 		from tbl_parent_dept p join tbl_child_dept c
 		on p.parent_dept_no = c.fk_parent_dept_no
 		left join tbl_member m
@@ -133,7 +133,7 @@
 					</when>
 					<otherwise></otherwise>
 				</choose>
-				order by draft_no desc
+				order by tbl_draft.draft_write_date desc
 		    ),
 		    B as
 		    (
@@ -179,27 +179,27 @@
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert <<< -->
 	<insert id="insertToTemporaryStored_TBL_DRAFT" parameterType="HashMap">
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
-		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '임시저장', to_number(#{draft_urgent}), 1, default, default, default)
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, sysdate, '임시저장', to_number(#{draft_urgent}), 1, default, default, default)
 	</insert>
 	<insert id="insertToTemporaryStored_TBL_DRAFT_Submit" parameterType="HashMap">
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
-		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '대기', to_number(#{draft_urgent}), 0, default, default, default)
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, sysdate, '대기', to_number(#{draft_urgent}), 0, default, default, default)
 	</insert>
 	<!-- >>> 1. (TBL_DRAFT)기안문서 테이블에 insert_withFile <<< -->
 	<insert id="insertToTemporaryStored_TBL_DRAFT_withFile" parameterType="HashMap">
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
-		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '임시저장', to_number(#{draft_urgent}), 1, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, sysdate, '임시저장', to_number(#{draft_urgent}), 1, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
 	</insert>
 	<insert id="insertToTemporaryStored_TBL_DRAFT_withFile_Submit" parameterType="HashMap">
 		insert into tbl_draft(DRAFT_NO, FK_MEMBER_USERID, DRAFT_FORM_TYPE, DRAFT_SUBJECT, DRAFT_WRITE_DATE, DRAFT_STATUS, DRAFT_URGENT, DRAFT_SAVED, DRAFT_FILE_ORIGIN_NAME, DRAFT_FILE_NAME, DRAFT_FILE_SIZE)
-		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'), '대기', to_number(#{draft_urgent}), 0, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
+		values(#{draft_no}, to_number(#{fk_member_userid}), #{draft_form_type}, #{draft_subject}, sysdate, '대기', to_number(#{draft_urgent}), 0, #{draft_file_origin_name}, #{draft_file_name}, #{draft_file_size})
 	</insert>
 	
 	<!-- >>> 2. 기안문 양식 테이블에 insert <<< -->
 	<!-- [휴가신청서] 테이블에 insert -->
 	<insert id="insertToTemporaryStored_TBL_DAY_LEAVE" parameterType="HashMap">
-		insert into tbl_day_leave(DAY_LEAVE_NO, FK_DRAFT_NO, DAY_LEAVE_START, DAY_LEAVE_END, DAY_LEAVE_CNT, DAY_LEAVE_REASON)
-		values(seq_day_leave_no.nextval, #{draft_no}, TO_DATE(#{day_leave_start}, 'YYYY/MM/DD'), TO_DATE(#{day_leave_end}, 'YYYY/MM/DD'), #{day_leave_cnt}, #{day_leave_reason})
+		insert into tbl_day_leave(DAY_LEAVE_NO, FK_DRAFT_NO, DAY_LEAVE_START, DAY_LEAVE_END, DAY_LEAVE_CNT, DAY_LEAVE_REASON, DAY_LEAVE_TYPE)
+		values(seq_day_leave_no.nextval, #{draft_no}, TO_DATE(#{day_leave_start}, 'YYYY/MM/DD'), TO_DATE(#{day_leave_end}, 'YYYY/MM/DD'), #{day_leave_cnt}, #{day_leave_reason}, #{day_leave_type})
 	</insert>
 	
 	<!-- >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert <<< -->
@@ -255,7 +255,7 @@
 		UPDATE tbl_draft
 			SET 
 			    DRAFT_SUBJECT = #{draft_subject},
-			    DRAFT_WRITE_DATE = TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'),
+			    DRAFT_WRITE_DATE = sysdate,
 			    DRAFT_STATUS = '임시저장',
 			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
 			    DRAFT_SAVED = 1,
@@ -268,7 +268,7 @@
 		UPDATE tbl_draft
 			SET 
 			    DRAFT_SUBJECT = #{draft_subject},
-			    DRAFT_WRITE_DATE = TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'),
+			    DRAFT_WRITE_DATE = sysdate,
 			    DRAFT_STATUS = '대기',
 			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
 			    DRAFT_SAVED = 0,
@@ -283,7 +283,7 @@
 		UPDATE tbl_draft
 			SET 
 			    DRAFT_SUBJECT = #{draft_subject},
-			    DRAFT_WRITE_DATE = TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'),
+			    DRAFT_WRITE_DATE = sysdate,
 			    DRAFT_STATUS = '임시저장',
 			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
 			    DRAFT_SAVED = 1,
@@ -296,7 +296,7 @@
 		UPDATE tbl_draft
 			SET 
 			    DRAFT_SUBJECT = #{draft_subject},
-			    DRAFT_WRITE_DATE = TO_DATE(#{draft_write_date}, 'YYYY/MM/DD'),
+			    DRAFT_WRITE_DATE = sysdate,
 			    DRAFT_STATUS = '대기',
 			    DRAFT_URGENT = TO_NUMBER(#{draft_urgent}),
 			    DRAFT_SAVED = 0,
@@ -314,7 +314,8 @@
 			    DAY_LEAVE_START = TO_DATE(#{day_leave_start}, 'YYYY/MM/DD'),
 			    DAY_LEAVE_END = TO_DATE(#{day_leave_end}, 'YYYY/MM/DD'),
 			    DAY_LEAVE_CNT = #{day_leave_cnt},
-			    DAY_LEAVE_REASON = #{day_leave_reason}
+			    DAY_LEAVE_REASON = #{day_leave_reason},
+			    DAY_LEAVE_TYPE = #{day_leave_type}
 			WHERE FK_DRAFT_NO = #{draft_no}
 	</update>
 	
@@ -351,7 +352,7 @@
 					</when>
 					<otherwise></otherwise>
 				</choose>
-				order by draft_no desc
+				order by tbl_draft.draft_write_date desc
 		    ),
 		    B as
 		    (
@@ -404,6 +405,7 @@
 		<result property="day_leave_end" 			column="day_leave_end" 				javaType="String" />
 		<result property="day_leave_cnt" 			column="day_leave_cnt" 				javaType="String" />
 		<result property="day_leave_reason" 		column="day_leave_reason" 			javaType="String" />
+		<result property="day_leave_type" 			column="day_leave_type" 			javaType="String" />
 		<result property="work_change_start" 		column="work_change_start" 			javaType="String" />
 		<result property="work_change_end" 			column="work_change_end" 			javaType="String" />
 		<result property="work_change_reason" 		column="work_change_reason" 		javaType="String" />
@@ -415,13 +417,13 @@
 	</resultMap>
 	<select id="approvalTemporaryDetail" resultMap="approvalTemporaryDetail_Map" parameterType="String">
 		select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_status, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
-		     , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason
+		     , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason, day_leave_type
 		     , work_change_start, work_change_end, work_change_reason, work_change_member_workingTime
 		     , member_name, parent_dept_name, child_dept_name, member_position
 		from tbl_member M join
 		(
 		    select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_status, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
-		         , to_char(day_leave_start, 'yyyy-mm-dd') as day_leave_start , to_char(day_leave_end, 'yyyy-mm-dd') as day_leave_end, day_leave_cnt, day_leave_reason
+		         , to_char(day_leave_start, 'yyyy-mm-dd') as day_leave_start , to_char(day_leave_end, 'yyyy-mm-dd') as day_leave_end, day_leave_cnt, day_leave_reason, day_leave_type
 		         , to_char(work_change_start, 'yyyy-mm-dd') as work_change_start, to_char(work_change_end, 'yyyy-mm-dd') as work_change_end, work_change_reason, work_change_member_workingTime
 		    from tbl_draft D left join tbl_day_leave L
 		    on D.draft_no = L.fk_draft_no
@@ -454,7 +456,7 @@
 	</select>
 	
 	
-	<!-- ==== 내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기 ==== -->
+	<!-- ==== 결재문서함 (내가 결재할 대기문서 및 결재/반려 등 처리가 된 문서 불러오기) ==== -->
 	<select id="approvalPendingList" resultType="ApprovalVO" parameterType="HashMap">
 		select *
 		from
@@ -500,7 +502,7 @@
 				</when>
 				<otherwise></otherwise>
 			</choose>
-		    order by fk_draft_no desc
+		    order by draft_write_date desc
 		)
 		where rno between to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
@@ -695,6 +697,12 @@
 		where draft_no = #{fk_draft_no}
 	</update>
 	
+	
+	<!-- >>> 4. (TBL_MEMBER) 기안문이 "휴가신청서" 일 경우 연차[member_yeoncha] 를 차감 <<< -->
+	<update id="updateToApprovalYeoncha_TBL_MEMBER" parameterType="HashMap">
+		update tbl_member set member_yeoncha = (to_number(member_yeoncha) - #{day_leave_cnt})
+		where member_userid = #{write_member_userid}
+	</update>
 	
 	<!-- ================ 기안문 반려하기 ================ -->	
 	<!-- >>> 1. (TBL_APPROVAL) 반려의견 update 및 현재 결재자 상태 update <<< -->

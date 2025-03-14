@@ -16,6 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.spring.med.organization.domain.OrganVO;
 import com.spring.med.organization.service.OrganService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 //**** 조직도 컨트롤러 **** //
 
 @Controller
@@ -77,6 +80,22 @@ public class OrganController {
 	@GetMapping("selectApprovalLine")
 	public ModelAndView selectApprovalLine(ModelAndView mav) {
 		mav.setViewName("/content/organization/selectApprovalLine");
+		
+		return mav;
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// *** 메일 보내기 ***
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// 메일 쓰기창 보여주기
+	@GetMapping("mailWrite_Organ")
+	@ResponseBody
+	public ModelAndView mailWrite_Organ(HttpServletRequest request, HttpServletResponse response, ModelAndView mav
+									  , @RequestParam String member_userid) {
+
+		mav.addObject("member_userid", member_userid);
+		mav.setViewName("content/mail/mailWrite");
 		
 		return mav;
 	}
