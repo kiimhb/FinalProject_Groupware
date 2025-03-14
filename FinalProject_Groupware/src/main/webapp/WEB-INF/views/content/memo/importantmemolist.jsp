@@ -309,7 +309,6 @@ $(document).ready(function(){
     <div class="title">중요메모장</div>
 </div>
 
-<div id="sub_mycontent">
 
 <!-- 중요 메모 목록 -->
 <div id="importantMemoList" class="memo-container">
@@ -335,7 +334,7 @@ $(document).ready(function(){
 
 </div>
 
-</div>
+
 
 <!-- 메모 상세보기 모달 -->
 <div class="modal fade" id="memoDetailModal" tabindex="-1" role="dialog" aria-labelledby="memoDetailModalLabel" aria-hidden="true">
@@ -361,6 +360,6 @@ $(document).ready(function(){
     </div>
 </div>
 
-
+</div>
 
 <jsp:include page="../../footer/footer1.jsp" />

@@ -135,8 +135,11 @@ th {background-color: #ecf2f1}
 	  
   });// end of $(document).ready(function(){})-----------
 
-</script>	  
+</script>
+
 	  
+<div id="sub_mycontent">	
+  
 <div style="display: flex;">
   <div style="margin: auto; padding-left: 3%;">
 
@@ -144,7 +147,7 @@ th {background-color: #ecf2f1}
 			<div class="title">글쓰기</div>
 		</div>
 
-<div id="sub_mycontent">
+
 
 		<form name="addFrm" enctype="multipart/form-data">
 	   		<table style="width: 1200px" class="table table-bordered">

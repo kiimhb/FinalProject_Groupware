@@ -126,6 +126,8 @@
 
 </script>	  
 	  
+<div id="sub_mycontent">	  
+	  
 <div style="display: flex;">
   <div style="margin: auto; padding-left: 3%;"> 
    
@@ -134,7 +136,7 @@
 	  		<div class="title">글수정</div>
 	 </div>
   
-  <div id="sub_mycontent">
+
    
    <form name="editFrm" >
    		<table style="width: 1200px" class="table table-bordered">

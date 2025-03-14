@@ -644,6 +644,9 @@ $("div#pageBar").html(pageBar_HTML);
 
 </script>
 
+
+<div id="sub_mycontent">
+
 <div style="display: flex;">
 <div style="margin: auto; padding-left: 3%;">
 
@@ -670,7 +673,6 @@ $("div#pageBar").html(pageBar_HTML);
 	  		</div>
 	 </div>
 	 
-	 <div id="sub_mycontent">
  
  <c:if test="${not empty requestScope.boardvo}">
  	<table style="width: 1200px" class="table table-bordered">

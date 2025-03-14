@@ -360,6 +360,8 @@ function importantMemo(memo_no, button) {
 </script>
 
 
+<div id="sub_mycontent">
+
 	<div class="header">
 		<div class="title">메모장</div>
 		<!-- 메모 쓰기 버튼 -->
@@ -368,7 +370,7 @@ function importantMemo(memo_no, button) {
 		</div>
 	</div>
 
-<div id="sub_mycontent">
+
 
 	<form name="memoFrm" >
 		<input type="hidden" id="memoDetailNo" name="fk_member_userid" value="${sessionScope.member_userid}" />
@@ -407,7 +409,7 @@ function importantMemo(memo_no, button) {
 
 	</form>
 	
-	</div>
+
 
 <div class="allMemo">	
 	<!-- 메모 목록 보기 -->
@@ -468,6 +470,6 @@ function importantMemo(memo_no, button) {
 </div>
 
 
-
+	</div>
 
 <jsp:include page="../../footer/footer1.jsp" />
