@@ -38,6 +38,8 @@
     
     
     
+    
+    
     <!-- 메모 삭제(휴지통으로 이동) -->
     <update id="trash" parameterType="int">
         update tbl_memo
@@ -65,26 +67,25 @@
 		and fk_member_userid = #{fk_member_userid}
 		order by memo_trash_deleteday desc
 	</select>
-    
-<!--  
-<delete id="deleteOldTrashMemos">
-DELETE FROM tbl_memo 
-WHERE memo_deletestatus = 1 
-AND MEMO_TRASH_DELETEDAY &lt;= SYSDATE - 30
-</delete>
--->     
 
-<delete id="deleteOldTrashMemos">
-DELETE FROM tbl_memo 
-WHERE memo_deletestatus = 1 
-AND memo_trash_deleteday + INTERVAL '1' DAY = sysdate
-</delete>
 
-    
-    
+	<!--  30일 이상 지난 메모 자동 삭제 (현재는 바로 다음 날 삭제 되는 걸로 했음 발표이후 30일 이후로 변경)-->
+	<delete id="deleteOldTrashMemos"> 
+		delete from tbl_memo 
+		where memo_deletestatus = 1 
+		and to_date(memo_trash_deleteday, 'yyyy-mm-dd') + 1 = to_date(sysdate, 'yyyy-mm-dd') 
+	</delete>
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
     <!-- 현재 메모의 중요 메모 여부 확인 -->
-   
     <select id="getMemoImportance" parameterType="map" resultType="string">
         SELECT memo_importance 
         FROM tbl_memo 

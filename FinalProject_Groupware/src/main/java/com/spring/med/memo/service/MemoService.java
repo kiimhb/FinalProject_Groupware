@@ -1,6 +1,5 @@
 package com.spring.med.memo.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +18,10 @@ public interface MemoService {
 
 	// 메모 삭제하기
 	int deleteMemo(int memo_no);
+	
+	
+	
+	
 
 	// ================== 휴지통 시작 =================== //
 	int trash(int memo_no); 				// 메모를 휴지통으로 이동
@@ -28,11 +31,14 @@ public interface MemoService {
     int deleteTrash(int memo_no);   			// 완전 삭제
     
     // 30일 이상 지난 메모 자동 삭제
- 	int deleteOldTrashMemos();
+    void deleteOldTrashMemos();  // 스케줄러는 컨트롤러에서 x
     
     List<MemoVO> trash_list(Map<String, Object> paraMap); // 휴지통 목록 조회
     // ================== 휴지통 끝 =================== //
 
+    
+    
+    
    
     // ================== 즐겨찾기 시작 =================== //
     // 현재 메모의 중요 메모 여부 확인

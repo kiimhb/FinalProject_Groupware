@@ -23,7 +23,7 @@
 
 <style type="text/css">
 th {
-	background-color: #ddd
+	background-color: #ecf2f1
 }
 
 .subjectStyle {
@@ -44,14 +44,29 @@ div.card {
 	box-shadow: none; /* 추가적인 파란색 그림자 제거 */
 }
 
-.header .title {
-     border-left: 5px solid #006769;  /* 바 두께 증가 */
+div.header {
+/* border:1px solid red; */
+	width:93.5%;
+	margin:0 auto;
+	border-bottom: 1px solid #ccc;
+	display: flex;
+	justify-content: space-between;
+}
+
+div.header .title {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
     padding-left: 1.5%;  /* 왼쪽 여백 조정 */
     font-size: 28px;  /* h2 크기와 유사하게 증가 */
     margin-top: 2%;
     margin-bottom: 2%;
     color: #4c4d4f;
     font-weight: bold;
+}
+
+button#writeBtn {
+	position: relative;
+	top:38px;
+	left:-20px;
 }
 
 .memo-container {
@@ -104,7 +119,15 @@ div.card {
 }
 
 
-
+button.btn {
+	background-color: #006769;
+	color:white;
+	
+	.no-outline:focus {
+    outline: none; /* 포커스 시 파란 테두리 제거 */
+    box-shadow: none; /* 추가적인 파란색 그림자 제거 */
+    }
+	
 
 
 </style>
@@ -312,7 +335,7 @@ function importantMemo(memo_no, button) {
         success: function (response) {
             if (response.success) {
                 if (!isBookmarked) {
-                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold"); // 즐겨찾기 추가
+                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#f68b1f"); // 즐겨찾기 추가
                 } else {
                     icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray"); // 즐겨찾기 삭제
                 }
@@ -321,7 +344,7 @@ function importantMemo(memo_no, button) {
                 $(".btnstar[data-memo-no='" + memo_no + "'] i")
                     .removeClass(isBookmarked ? "fa-star" : "fa-star-o")
                     .addClass(isBookmarked ? "fa-star-o" : "fa-star")
-                    .css("color", isBookmarked ? "gray" : "gold");
+                    .css("color", isBookmarked ? "gray" : "#f68b1f");
             }
         },
         error: function () {
@@ -337,19 +360,18 @@ function importantMemo(memo_no, button) {
 </script>
 
 
-<div class="header">
+	<div class="header">
+		<div class="title">메모장</div>
+		<!-- 메모 쓰기 버튼 -->
+		<div class="memowrite" style="margin-bottom: 20px;">
+			<button type="button" id="writeBtn" class="btn ml-2" data-toggle="modal" data-target="#memoModal">메모 쓰기</button>
+		</div>
+	</div>
 
-	<span class="title">메모장</span>
-</div>
+<div id="sub_mycontent">
 
 	<form name="memoFrm" >
 		<input type="hidden" id="memoDetailNo" name="fk_member_userid" value="${sessionScope.member_userid}" />
-		
-		<!-- 메모 쓰기 버튼 -->
-		<div class="memowrite" style="margin-bottom: 20px;">
-			<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#memoModal">메모 쓰기</button>
-		</div>
-
 
 	<!-- 모달 -->
 	<div class="modal fade" id="memoModal" tabindex="-1" role="dialog" aria-labelledby="memoModalLabel" aria-hidden="true">
@@ -364,7 +386,7 @@ function importantMemo(memo_no, button) {
 	            <div class="modal-body">
 	                <form id="memoForm">
 	                    <div class="form-group">
-	                        <label for="memo_title" class="font-weight-bold">제목</label>
+	                        <label for="memo_title" class="font-weight-bold" >제목</label>
 	                        <input type="text" class="form-control" id="memo_title" name="memo_title" placeholder="제목을 입력하세요">
 	                    </div>
 	                    <div class="form-group">
@@ -376,21 +398,23 @@ function importantMemo(memo_no, button) {
 	            </div>
 	            <!-- 모달 푸터 -->
 	            <div class="modal-footer">
-	                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">닫기</button>
-	                <button type="submit" class="btn btn-primary" id="memoWrite">저장</button>
+	                <button type="button" class="btn ml-2" style="background-color: #006769" data-dismiss="modal">닫기</button>
+	                <button type="submit" class="btn ml-2" style="background-color: #509d9c;" id="memoWrite">저장</button>
 	            </div>
 	        </div>
 	    </div>
 	</div>
 
 	</form>
+	
+	</div>
 
-
+<div class="allMemo">	
 	<!-- 메모 목록 보기 -->
 	<div id="memoList" class="memo-container">
 	    <c:forEach var="memo" items="${memo_list}" varStatus="status">
 	        <div class="card border-info mb-3 memo-card" data-id="${memo.memo_no}">
-	            <div class="card-header">
+	            <div class="card-header" style="background-color: #ecf2f1">
 	                <span>${memo.memo_title}</span>
 	                
 	                <!-- 중요 메모(즐겨찾기) 버튼 -->
@@ -414,7 +438,7 @@ function importantMemo(memo_no, button) {
 	        </c:if>
 	    </c:forEach>
 	</div>
-
+</div>
 
 <!-- 메모 상세보기 모달 -->
 <div class="modal fade" id="memoDetailModal" tabindex="-1" role="dialog" aria-labelledby="memoDetailModalLabel" aria-hidden="true">
@@ -436,8 +460,8 @@ function importantMemo(memo_no, button) {
             </div>
             <!-- 모달 푸터 -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger" id="memoDelete">삭제</button>
-                <button type="button" class="btn btn-primary" id="memoEdit">수정</button>
+                <button type="button" class="btn ml-2" style="background-color: #006769" id="memoDelete">삭제</button>
+                <button type="button" class="btn ml-2" style="background-color: #509d9c;" id="memoEdit">수정</button>
             </div>
         </div>
     </div>

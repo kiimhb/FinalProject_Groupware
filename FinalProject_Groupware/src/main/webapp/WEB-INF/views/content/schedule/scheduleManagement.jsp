@@ -57,10 +57,36 @@ button.btn_edit{
 	background-color: #fff;
 }
 
+
+
+
+/* 기본 버튼 스타일 */
 button.btn {
-	background-color: #006769;
-	color:white;
-}	
+    background-color: #006769; /* 버튼 배경색 */
+    color: white !important; /* 글자색 */
+    border: none; /* 기본 테두리 제거 */
+    padding: 5px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px; /* 둥근 모서리 */
+    transition: all 0.3s ease-in-out;
+}
+
+/* 버튼 포커스 및 클릭 효과 */
+button.btn:focus,
+button.btn:active {
+    outline: none !important; /* 포커스 시 기본 테두리 제거 */
+    box-shadow: none !important; /* 추가적인 그림자 제거 */
+}
+
+/* 버튼 호버 효과 */
+button.btn:hover {
+    background-color: #509d9c; /* 약간 어두운 색으로 변경 */
+}
+
+
+
+
 .fc .fc-button-primary {
     color: var(--fc-button-text-color, #fff);
     background-color: #509d9c;
@@ -75,6 +101,8 @@ button.btn {
 .fc .fc-button-primary:disabled {  /* 오늘 버튼 */
 	background-color: var(--fc-button-bg-color,#509d9c);
 }
+
+
 	
 </style>
 

@@ -27,6 +27,8 @@ a {text-decoration: none !important;}
     vertical-align: middle;
 }
 
+table.table-bordered th {background-color: #ecf2f1}
+
 .header .title {
     border-left: 5px solid #006769;  /* 바 두께 증가 */
     padding-left: 1.5%;  /* 왼쪽 여백 조정 */
@@ -36,6 +38,66 @@ a {text-decoration: none !important;}
     color: #4c4d4f;
     font-weight: bold;
 }
+
+.header .title_comment {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 20px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
+}
+
+div.title {
+	display:flex;
+	justify-content: space-between;
+}
+div.dropdown-menu {
+	font-size: 10pt;
+	text-align: center;
+}
+div.noticeupdate {
+	padding: 2%;
+	cursor: pointer;
+}
+div.noticeupdate:hover {
+	color: #006769;
+}
+
+table.table-bordered {
+	  border: 1px #a39485 solid;
+	  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+	  width: 100%;
+	  border-collapse: collapse;
+	  border-radius: 5px;
+	  overflow: hidden;
+	}
+	
+button.btn {
+	background-color: #006769;
+	color:white;
+}	
+
+.btn-secondary:hover {
+    background-color: #006769; 
+    color: black; 
+}
+
+/* 페이지바 */
+div#pageBar a{
+	color: #509d9c;
+	cursor: pointer;
+}
+
+#pageBar > ul > li {
+	color: #006769;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+
+
 </style>
 
 <script type="text/javascript">
@@ -78,8 +140,8 @@ $(document).ready(function(){
            origin_comment_content = $comment_content.text();
            
            $comment_content.html(`<input id='comment_update' type='text' value='\${origin_comment_content}' size='40' />`); // 댓글내용을 수정할 수 있도록 input 태그를 만들어 준다.
-           $btn.text("완료").removeClass("btn-secondary").addClass("btn-info"); 
-           $btn.next().text("취소").removeClass("btn-secondary").addClass("btn-danger");
+           $btn.text("완료").removeClass("btn-secondary").addClass("btn-secondary"); 
+           $btn.next().text("취소").removeClass("btn-secondary").addClass("btn-secondary");
            
            $(document).on("keyup", "input#comment_update", function(e){
         	   if(e.keyCode == 13) {
@@ -112,8 +174,8 @@ $(document).ready(function(){
 		    	    	   goViewComment(1);  // 페이징 처리 한 댓글 읽어오기 [중요]
 		    	     }
 		    	     
-		    	     $btn.text("수정").removeClass("btn-info").addClass("btn-secondary");
-		    	     $btn.next().text("삭제").removeClass("btn-danger").addClass("btn-secondary");
+		    	     $btn.text("수정").removeClass("btn-secondary").addClass("btn-secondary");
+		    	     $btn.next().text("삭제").removeClass("btn-secondary").addClass("btn-secondary");
 		    	 },
 		    	 error: function(request, status, error){
 				     alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -138,8 +200,8 @@ $(document).ready(function(){
 		    const $comment_content = $btn.parent().parent().children("td:nth-child(2)"); 
 		    $comment_content.html(`\${origin_comment_content}`);
 		 
-		    $btn.prev().text("수정").removeClass("btn-info").addClass("btn-secondary");
-    	    $btn.text("삭제").removeClass("btn-danger").addClass("btn-secondary");
+		    $btn.prev().text("수정").removeClass("btn-secondary").addClass("btn-secondary");
+    	    $btn.text("삭제").removeClass("btn-secondary").addClass("btn-secondary");
 	  }
 	  
 	  else if($btn.text() == "삭제") {
@@ -542,16 +604,16 @@ let pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1;
 	let pageBar_HTML = "<ul style='list-style:none;'>";
 
 	// === [맨처음][이전] 만들기 === //
-pageBar_HTML += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:goViewComment(1)'>[맨처음]</a></li>";
+pageBar_HTML += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:goViewComment(1)'><<</a></li>";
 	
 	if(pageNo != 1) {  // [이전]이 첫 번째로 나오면 안 된다.
-   pageBar_HTML += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:goViewComment("+(pageNo-1)+")'>[이전]</a></li>"; 
+   pageBar_HTML += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:goViewComment("+(pageNo-1)+")'></a></li>"; 
 }
 
 while( !(loop > blockSize || pageNo > totalPage) ) {
    
    if(pageNo == currentShowPageNo) {
-      pageBar_HTML += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>";
+      pageBar_HTML += "<li style='display:inline-block; width:30px; font-size:12pt; padding:2px 4px;'>"+pageNo+"</li>";
    }
    else {
       pageBar_HTML += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='javascript:goViewComment("+pageNo+")'>"+pageNo+"</a></li>"; 
@@ -563,10 +625,10 @@ while( !(loop > blockSize || pageNo > totalPage) ) {
 
 // === [다음][마지막] 만들기 === //
 if(pageNo <= totalPage) {
-   pageBar_HTML += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:goViewComment("+pageNo+")'>[다음]</a></li>"; 
+   pageBar_HTML += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:goViewComment("+pageNo+")'></a></li>"; 
 } // 맨 마지막에 [다음]이 나오면 안 된다.
 
-pageBar_HTML += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:goViewComment("+totalPage+")'>[마지막]</a></li>";
+pageBar_HTML += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:goViewComment("+totalPage+")'>>></a></li>";
 
 pageBar_HTML += "</ul>";
 
@@ -587,8 +649,28 @@ $("div#pageBar").html(pageBar_HTML);
 
   <div class="header">
 		
-	  		<div class="title">글 내용보기</div>
+	  		<div class="title">
+	  		
+	  			<div>글 내용보기</div>
+	  			
+	  			<div class="dropDown">
+	  				 <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.member_userid == requestScope.boardvo.fk_member_userid}">
+					 	<div class="btn-group" id="dropdown">
+					  		<button class="btn btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    		<i class="fa-solid fa-ellipsis-vertical"></i>
+					  		</button>
+					  		<div class="dropdown-menu">
+					    		<div id="boardEdit" class="noticeupdate" onclick="javascript:location.href='<%= ctxPath%>/board/edit/${requestScope.boardvo.board_no}'">수정하기</div>
+					    		<div id="boardDel" class="noticeupdate" onclick="javascript:location.href='<%= ctxPath%>/board/del/${requestScope.boardvo.board_no}'">삭제하기</div>
+				 			</div>
+						</div>
+					 </c:if>
+	  			</div>
+	  			
+	  		</div>
 	 </div>
+	 
+	 <div id="sub_mycontent">
  
  <c:if test="${not empty requestScope.boardvo}">
  	<table style="width: 1200px" class="table table-bordered">
@@ -645,45 +727,48 @@ $("div#pageBar").html(pageBar_HTML);
     <div style="padding: 20px 0; font-size: 16pt; color: red;" >존재하지 않습니다</div> 
  </c:if>
  
- <div class="mt-5">
- 
-		<%-- ==== 이전글제목, 다음글제목 보기 (없으면 "없음" 표시) ==== --%>	
-		<div style="margin-bottom: 1%;">이전글 제목&nbsp;
-			<c:if test="${not empty requestScope.boardvo.previousseq}">
-				<span class="move" onclick="goView('${requestScope.boardvo.previousseq}')">
-					${requestScope.boardvo.previoussubject}
-				</span>
-			</c:if>
-			<c:if test="${empty requestScope.boardvo.previousseq}">
-				<span style="color: gray;">없음</span>
-			</c:if>
-		</div> 
-		
-		<div style="margin-bottom: 1%;">다음글 제목&nbsp;
-			<c:if test="${not empty requestScope.boardvo.nextseq}">
-				<span class="move" onclick="goView('${requestScope.boardvo.nextseq}')">
-					${requestScope.boardvo.nextsubject}
-				</span>
-			</c:if>
-			<c:if test="${empty requestScope.boardvo.nextseq}">
-				<span style="color: gray;">없음</span>
-			</c:if>
-		</div>
-		<%-- ==== 이전글제목, 다음글제목 보기 끝 ==== --%>
-		
-	 <br>
+ 		<div class="mt-5">
+
+				<c:if test="${empty requestScope.myboard_val and empty requestScope.bookmark_val}">
+					<%-- ==== 이전글제목, 다음글제목 보기 (없으면 "없음" 표시) ==== --%>
+					<div style="margin-bottom: 1%; margin-top: -16px;">∧ 이전글&nbsp;
+						<c:if test="${not empty requestScope.boardvo.previousseq}">
+							<span class="move" onclick="goView('${requestScope.boardvo.previousseq}')">
+								${requestScope.boardvo.previoussubject} </span>
+						</c:if>
+						<c:if test="${empty requestScope.boardvo.previousseq}">
+							<span style="color: gray;">없음</span>
+						</c:if>
+					</div>
+
+					<div style="margin-bottom: 1%;">
+						∨ 다음글&nbsp;
+						<c:if test="${not empty requestScope.boardvo.nextseq}">
+							<span class="move"
+								onclick="goView('${requestScope.boardvo.nextseq}')">
+								${requestScope.boardvo.nextsubject} </span>
+						</c:if>
+						<c:if test="${empty requestScope.boardvo.nextseq}">
+							<span style="color: gray;">없음</span>
+						</c:if>
+					</div>
+					<%-- ==== 이전글제목, 다음글제목 보기 끝 ==== --%>
+				</c:if>
+
+
+				<br>
 
 	 <c:choose>
 	    <c:when test="${empty requestScope.myboard_val and empty requestScope.bookmark_val}">
-	        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+	        <button type="button" class="btn btn-secondary btn-sm mr-3" style="margin-top: -28px;"
 	            onclick="javascript:location.href='<%= ctxPath%>/board/list'">전체목록보기</button>
 	    </c:when>
 	    <c:when test="${not empty requestScope.myboard_val}">
-	        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+	        <button type="button" class="btn btn-secondary btn-sm mr-3" style="margin-top: -28px;"
 	            onclick="javascript:location.href='<%= ctxPath%>/board/myboard'">내가쓴글목록보기</button>
 	    </c:when>
 	    <c:when test="${not empty requestScope.bookmark_val}">
-	        <button type="button" class="btn btn-secondary btn-sm mr-3" 
+	        <button type="button" class="btn btn-secondary btn-sm mr-3" style="margin-top: -28px;"
 	            onclick="javascript:location.href='<%= ctxPath%>/board/bookmarkList'">즐겨찾기목록보기</button>
 	    </c:when>
 	</c:choose>
@@ -692,49 +777,30 @@ $("div#pageBar").html(pageBar_HTML);
 	 
 	 <c:choose>
     <c:when test="${empty requestScope.myboard_val and empty requestScope.bookmark_val}">
-        <button type="button" class="btn btn-secondary btn-sm mr-3" 
-            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기(전체)</button>
+        <button type="button" class="btn btn-secondary btn-sm mr-3" style="margin-top: -28px;"
+            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
     </c:when>
     <c:when test="${not empty requestScope.myboard_val}">
-        <button type="button" class="btn btn-secondary btn-sm mr-3" 
-            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기(내가쓴)</button>
+        <button type="button" class="btn btn-secondary btn-sm mr-3" style="margin-top: -28px;"
+            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
     </c:when>
     <c:when test="${not empty requestScope.bookmark_val}">
-        <button type="button" class="btn btn-secondary btn-sm mr-3" 
-            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기(즐찾)</button>
+        <button type="button" class="btn btn-secondary btn-sm mr-3" style="margin-top: -28px;"
+            onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
     </c:when>
 </c:choose>
-	 
-	 
-	 
-	 
-<%--	 
-	 <c:if test="${empty requestScope.myboard_val}">
-	 	<button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
-	 </c:if>
-	 <c:if test="${not empty requestScope.myboard_val}">
-	 	<button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
-	 </c:if>
-	 --%> 
-	 <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.member_userid == requestScope.boardvo.fk_member_userid}">
-	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/edit/${requestScope.boardvo.board_no}'">글수정</button>
-	    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/del/${requestScope.boardvo.board_no}'">글삭제</button>
-	 </c:if>
-	 
-	 
-	 <%-- === 어떤 글에 대한 답변글쓰기는 로그인 되어진 회원의 member_grade 컬럼의 값인 1인 직원들만 답변글쓰기가 가능하다. === --%>
-	 <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.member_grade == 1}">
-        <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>/board/add?subject=${requestScope.boardvo.board_subject}&fk_board_no=${requestScope.boardvo.board_no}&groupno=${requestScope.boardvo.board_groupno}&depthno=${requestScope.boardvo.board_depthno}'">답변글쓰기</button>
-     </c:if>
 
 	 <%-- === 댓글쓰기 폼 추가 === --%>
 	 <c:if test="${not empty sessionScope.loginuser}">
-	    <h3 style="margin-top: 50px;">댓글쓰기</h3>
+	    <div class="header">
+		
+	  		<div class="title_comment" style="margin-bottem:15px;">댓글쓰기</div>
+	 </div>
 	    
 	    <form name="addWriteFrm" id="addWriteFrm" style="margin-top: 20px;">
-	       <table class="table" style="width: 1024px">
+	       <table class="table" style="width: 1200px">
 			   <tr style="height: 30px;">
-			      <th width="10%">성명</th>
+			      <th style="width: 10%; text-align: center;">작성자</th>
 			      <td>
 			         <input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" readonly /> 
 			         <input type="text" name="comment_name" value="${sessionScope.loginuser.member_name}" readonly />
@@ -742,9 +808,9 @@ $("div#pageBar").html(pageBar_HTML);
 			   </tr>
 			   
 			   <tr style="height: 30px;">
-			      <th>댓글내용</th>
+			      <th style="text-align: center; width: 20%;">댓글내용</th>
 			      <td>
-			         <input type="text" name="comment_content" size="100" maxlength="1000" /> 
+			         <input type="text" name="comment_content" size="75" maxlength="1000" /> <button type="button" class="btn btn ml-2" onclick="goAddWrite()">등록</button>
 			         
 			         <%-- 댓글에 달리는 원게시물 글번호(즉, 댓글의 부모글 글번호) --%>
 			         <input type="hidden" name="comment_parentSeq" value="${requestScope.boardvo.board_no}" readonly />
@@ -753,7 +819,7 @@ $("div#pageBar").html(pageBar_HTML);
 			   
 			   <%-- #170. 댓글쓰기에 파일첨부 하기 === --%>
 			   <tr style="height: 30px;">
-			   		<th>파일첨부</th>
+			   		<th style="text-align: center;">파일첨부</th>
 			   		<td>
 			   			<input type="file" name="attach">
 			   		</td>
@@ -763,8 +829,8 @@ $("div#pageBar").html(pageBar_HTML);
 			   		
 			   <tr>
 			      <th colspan="2">
-			      	<button type="button" class="btn btn-success btn-sm mr-3" onclick="goAddWrite()">댓글쓰기 확인</button>
-			      	<button type="reset" class="btn btn-success btn-sm">댓글쓰기 취소</button>
+			      	
+			      	<%-- <button type="reset" class="btn btn-success btn-sm">취소</button> --%>
 			      </th>
 			   </tr>
 			      
@@ -774,11 +840,14 @@ $("div#pageBar").html(pageBar_HTML);
 	
 	
 	<%-- === 댓글 내용 보여주기 === --%>
-	<h3 style="margin-top: 50px;">댓글내용</h3>
-	<table class="table" style="width: 1024px; margin-top: 2%; margin-bottom: 3%;">
+	<div class="header">
+		
+	  		<div class="title_comment" style="margin-bottem:15px;">댓글내용</div>
+	 </div>
+	<table class="table" style="width: 1200px; margin-top: 2%; margin-bottom: 3%;">
 		<thead>
 		   <tr>
-			  <th style="width: 6%">순번</th>
+			  <th style="text-align: center;">순번</th>
 			  <th style="text-align: center;">내용</th>
 			  
 			  <%-- === 댓글쓰기에 첨부파일이 있는 경우 시작 === --%>
@@ -805,6 +874,7 @@ $("div#pageBar").html(pageBar_HTML);
 </div>
 </div>  	 
 
+</div>
 
 <!-- === 이전글제목 보기, 다음글제목 보기 시 POST 방식으로 넘기기 위한 것 === -->
 <form name="goViewFrm"> 

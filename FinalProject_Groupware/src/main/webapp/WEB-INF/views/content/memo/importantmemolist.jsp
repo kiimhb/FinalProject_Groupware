@@ -31,12 +31,82 @@ a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없�
 }
 
 .memo-card {
+    width: 18%; /* 5개씩 배치 */
+    min-width: 200px; /* 최소 너비 */
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+
+    
+    /* 카드 높이 고정 */
+    min-height: 220px; /* 최소 높이 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.memo-card .card-header span {
+    display: inline-block;
+    max-width: 85%; /* 버튼을 제외한 최대 너비 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.memo-card .card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 줄 개수 제한 (2줄까지 표시) */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+.memo-card .card-body {
+    flex-grow: 1; /* 내용이 부족해도 카드 크기 일정 유지 */
+}
+
+.row-break {
+    flex-basis: 100%; /* 줄바꿈 역할 */
+    height: 0;
+}
+
+div.header {
+/* border:1px solid red; */
+	width:93.5%;
+	margin:0 auto;
+	border-bottom: 1px solid #ccc;
+	display: flex;
+	justify-content: space-between;
+    margin-bottom: 20px;  
+}
+
+div.header .title {
+    border-left: 5px solid #006769;  /* 바 두께 증가 */
+    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+    font-size: 28px;  /* h2 크기와 유사하게 증가 */
+    margin-top: 2%;
+    margin-bottom: 2%;
+    color: #4c4d4f;
+    font-weight: bold;
+}
+
+.memo-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* 카드 간격 */
+    justify-content: center; /* 가운데 정렬 */
+}
+
+.memo-card {
     width: 18%;
     min-width: 200px;
     background: white;
     padding: 15px;
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    
     min-height: 220px;
     display: flex;
     flex-direction: column;
@@ -49,21 +119,23 @@ a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없�
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.memo-card .card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .memo-card .card-body {
     flex-grow: 1;
 }
 
-
-.header .title {
-     border-left: 5px solid #006769;  /* 바 두께 증가 */
-    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
-    font-size: 28px;  /* h2 크기와 유사하게 증가 */
-    margin-top: 2%;
-    margin-bottom: 2%;
-    color: #4c4d4f;
-    font-weight: bold;
+.row-break {
+    flex-basis: 100%;
+    height: 0;
 }
 
 .no-outline:focus {
@@ -79,6 +151,14 @@ a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없�
     box-shadow: none !important; /* 클릭 시 테두리 그림자 제거 */
 }
 
+button.btn {
+	background-color: #006769;
+	color:white;
+	
+	.no-outline:focus {
+    outline: none; /* 포커스 시 파란 테두리 제거 */
+    box-shadow: none; /* 추가적인 파란색 그림자 제거 */
+    }
 
 </style>
 
@@ -209,7 +289,7 @@ $(document).ready(function(){
                         icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
                         $(".memo-card[data-id='" + memo_no + "']").remove();
                     } else {
-                        icon.removeClass("fa-star-o").addClass("fa-star").css("color", "gold");
+                        icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#f68b1f");
                     }
                 }
             },
@@ -223,9 +303,13 @@ $(document).ready(function(){
 
 </script>
 
+<div id="sub_mycontent">
+
 <div class="header">
-    <span class="title">중요메모장</span>
+    <div class="title">중요메모장</div>
 </div>
+
+<div id="sub_mycontent">
 
 <!-- 중요 메모 목록 -->
 <div id="importantMemoList" class="memo-container">
@@ -237,7 +321,7 @@ $(document).ready(function(){
             <!-- 중요 메모(즐겨찾기) 버튼 -->
             <button type="button" class="btnstar btn-link p-0 no-outline"
                 data-memo-no="${memo.memo_no}"
-                style="font-size: 1.5rem; color: gold;">
+                style="font-size: 1.5rem; color: #f68b1f;">
                 <i class="fa fa-star" aria-hidden="true"></i>
             </button>
         </div>
@@ -248,6 +332,8 @@ $(document).ready(function(){
         </div>
     </div>
 </c:forEach>
+
+</div>
 
 </div>
 
@@ -268,11 +354,13 @@ $(document).ready(function(){
                 <p class="text-muted text-right small font-italic" id="memoDetailDate"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger" id="memoDelete">삭제</button>
-                <button type="button" class="btn btn-primary" id="memoEdit">수정</button>
+                <button type="button" class="btn ml-2" style="background-color: #006769" id="memoDelete">삭제</button>
+                <button type="button" class="btn ml-2" style="background-color: #509d9c;" id="memoEdit">수정</button>
             </div>
         </div>
     </div>
 </div>
+
+
 
 <jsp:include page="../../footer/footer1.jsp" />

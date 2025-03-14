@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.med.memo.domain.MemoVO;
 import com.spring.med.memo.model.MemoDAO;
@@ -59,17 +61,15 @@ public class MemoService_imple implements MemoService  {
 
     
     // 30일 이상 지난 메모 자동 삭제
-	@Override
-	public int deleteOldTrashMemos() {
-		return dao.deleteOldTrashMemos();
+    @Override
+    @Scheduled(cron = "0 24 15 * * *")
+	public void deleteOldTrashMemos() {
+		dao.deleteOldTrashMemos();
 	}
 
     // 휴지통 목록 조회 
 	@Override
 	public List<MemoVO> trash_list(Map<String, Object> paraMap) {
-		
-		// 30일 이상 지난 메모 자동 삭제
-		dao.deleteOldTrashMemos();
 		
 		//System.out.println("확인용~~~~~ : " + paraMap);
 		return dao.trash_list(paraMap);

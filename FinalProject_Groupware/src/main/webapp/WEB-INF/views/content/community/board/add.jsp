@@ -20,6 +20,8 @@ th {
     vertical-align: middle; /* 텍스트 수직 정렬 */
 }
 
+th {background-color: #ecf2f1}
+
 .header > div.title {
     border-left: 5px solid #006769;  /* 바 두께 증가 */
     padding-left: 1.5%;  /* 왼쪽 여백 조정 */
@@ -142,6 +144,8 @@ th {
 			<div class="title">글쓰기</div>
 		</div>
 
+<div id="sub_mycontent">
+
 		<form name="addFrm" enctype="multipart/form-data">
 	   		<table style="width: 1200px" class="table table-bordered">
 				 <tr>
@@ -205,6 +209,7 @@ th {
 	   		
 	 </form>
 	   
+	   </div>
   </div>
 </div>	  
 	  

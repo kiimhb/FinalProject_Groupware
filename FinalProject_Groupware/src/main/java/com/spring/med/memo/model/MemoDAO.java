@@ -28,7 +28,7 @@ public interface MemoDAO {
     int deleteTrash(int memo_no);
     
     // 30일 이상 지난 메모 삭제
- 	int deleteOldTrashMemos();
+ 	void deleteOldTrashMemos();
     
     // 휴지통으로 이동한 메모 조회
 	List<MemoVO> trash_list(Map<String, Object> paraMap);
