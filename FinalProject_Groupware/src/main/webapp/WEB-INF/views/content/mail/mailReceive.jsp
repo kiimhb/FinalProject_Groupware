@@ -199,7 +199,22 @@ function sendMailTrash() {
 
 }
 
+	
+
+function trclick(fk_mail_sent_no){
+	
+	const frm = document.goReceivedMailView;
+	
+	frm.fk_mail_sent_no.value = fk_mail_sent_no;
+	
+	console.log(fk_mail_sent_no);
+	
+	frm.action = "<%= ctxPath%>/mail/receivedMailView";
+	frm.method = "get";
+	frm.submit();
 		
+		
+}
 
 
 
@@ -208,7 +223,7 @@ function sendMailTrash() {
 
 <jsp:include page="../../header/header1.jsp" /> 
 
-
+<div id="sub_mycontent">
 <div style=" border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;">
 
 	<span>받은 메일함</span>
@@ -243,18 +258,24 @@ function sendMailTrash() {
 							<td style="border-bottom:solid 1px black; height:50px;"> <!-- <div id="starToggle"></div> -->
 								<button type="button" class="btnstar btn-link p-0 no-outline" data-important="${mrl.mail_sent_no}" data-important-status ="${mrl.mail_received_important}"							        
 							        style="font-size: 1rem; color: black; background-color: transparent; border: none; outline: none;"
-							        onclick="importantMail('${mrl.mail_sent_no}', this)">
+							        onclick="importantMail('${mrl.fk_mail_sent_no}', this)">
 							        <i class="fa fa-star-o" aria-hidden="true"></i>
 							    </button>			
 							</td>
-							<td style="border-bottom:solid 1px black">${mrl.mail_title}</td>
+							<td onclick="trclick(${mrl.mail_sent_no})" style="border-bottom:solid 1px black">${mrl.mail_title}
+							<c:if test="${not empty mrl.MAIL_SENT_FILE }">
+								<i class="fa-solid fa-file"></i>
+							</c:if>
+							</td>
 							<td style="border-bottom:solid 1px black">${mrl.member_name}</td>
 							<td style="border-bottom:solid 1px black">${mrl.mail_sent_senddate}&nbsp;&nbsp;${mrl.timediff }</td>
 							<td style="border-bottom:solid 1px black"><input style="width:100px;"type="checkbox" class="mailCheckbox" data-mail-no="${mrl.mail_sent_no}"/></td>							
 						</tr>
-						<input type="hidden" value="${mrl.mail_received_important}" />
-						
+						<input type="hidden" value="${mrl.mail_received_important}" />						
 					</c:forEach>
+					<form name="goReceivedMailView">
+						<input type="hidden" name="fk_mail_sent_no"/>
+					</form>
 				</c:if>
 				<c:if test="${empty requestScope.mailReceiveList}">
 						<tr style="text-align:center; height:550px;" >
@@ -271,7 +292,7 @@ function sendMailTrash() {
 	    </div>
 	</div>
 </div>
-
+</div>
 
 
 

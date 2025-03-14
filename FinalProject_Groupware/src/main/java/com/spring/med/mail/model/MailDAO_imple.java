@@ -361,4 +361,32 @@ public class MailDAO_imple implements MailDAO {
 		int n = sqlsession.update("seonggon_mail.receivedMailDelete", paramMap);
 		return n;
 	}
+
+
+	// 보낸 메일 클릭하면 메일내용 보여주기
+	@Override
+	public Map<String, String> mailView(String mail_sent_no) {
+		
+		Map<String, String> sentMap = sqlsession.selectOne("seonggon_mail.mailView", mail_sent_no);
+		
+		return sentMap;
+	}
+
+
+	// 받은 메일 클릭하면 메일내용 보여주기
+	@Override
+	public Map<String, String> receivedMailView(String fk_mail_sent_no) {
+		Map<String, String> receivedMap = sqlsession.selectOne("seonggon_mail.receivedMailView", fk_mail_sent_no);
+		
+		return receivedMap;
+	}
+
+
+	// 첨부파일 다운로드위한 1개메일 가져오기
+	@Override
+	public MailSentVO mailViewFile(String mail_sent_no) {
+		MailSentVO mvo = sqlsession.selectOne("seonggon_mail.mailViewFile", mail_sent_no);
+		
+		return mvo;
+	}
 }

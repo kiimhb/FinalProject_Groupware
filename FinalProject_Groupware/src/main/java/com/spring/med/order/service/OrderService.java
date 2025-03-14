@@ -60,8 +60,17 @@ public interface OrderService {
 	// 확정한 약 정보랑 가격 가져오기
 	List<Map<String, String>> callMedicinePrice(List<String> medicineNameList);
 
-	// 오더확정하면 오더확정유무 0->1로바꾸기
+	// 오더확정하면 오더확정유무 0->1로바꾸고 환자 접수끝났으니 대기상태로 바꾸기
 	int sendOrderConfirm(Map<String, String> map);
+
+	// 수술 관련 Cost테이블에 insert하기
+	int insertCostTbl(Map<String, String> resultMap);
+
+	// 입원비용 cost 테이블에 insert
+	int insertHospCostTbl(Map<String, String> paraMap);
+
+	// 약들 Cost 테이블에 insert
+	int medicinePriceSubmit(List<Map<String, Object>> result);
 
 
 

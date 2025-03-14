@@ -126,9 +126,6 @@ public class OrderController {
 			
 			mav.addObject("orderList", orderList);  
 			
-			
-			
-			
 
 			
 		}
@@ -340,12 +337,8 @@ public class OrderController {
 		
 		int n = service.requestHosp(paraMap); // 입원 요청하여 입원테이블에 insert 하기
 		
-		if(n==1) {
-			System.out.println("되쓰");
-		}
-		else {
-			System.out.println("?");
-		}
+		// 입원비용 cost 테이블에 insert
+		int m = service.insertHospCostTbl(paraMap);
 		
 		return n;
 		
@@ -404,7 +397,10 @@ public class OrderController {
 		
 		resultMap.put("fk_order_no", fk_order_no);
 		
+		// System.out.println("맵에 잘담겨오니 "+resultMap);
 		
+		// 수술 관련 Cost테이블에도 insert하기
+		int m = service.insertCostTbl(resultMap);
 		
 		
 		return resultMap;
@@ -454,11 +450,45 @@ public class OrderController {
 	public int sendOrderConfirm(@RequestParam Map<String, String> map) {
 		
 		
-		System.out.println("맵나오나 :" +map);
+		// System.out.println("맵나오나 :" +map);
+		
+		// 오더확정하면 오더확정유무 0->1로바꾸고 환자 접수끝났으니 대기상태로 바꾸기
+		int n = service.sendOrderConfirm(map);
+		
+		return n;
+	}
+	
+	// 약 전송하면 Cost 테이블에 insert
+	@PostMapping("medicinePriceSubmit")
+	@ResponseBody
+	public int medicinePriceSubmit(@RequestBody Map<String, Object> requestData) {
 		
 		int n = 0;
+
+		System.out.println("이건리퀘데이터 : " + requestData);
 		
-		n = service.sendOrderConfirm(map);
+		String orderNo = String.valueOf(requestData.get("orderNo"));
+		Object resultObj = requestData.get("result");
+		
+		List<Map<String, Object>> result = null; 
+				
+		result = (List<Map<String, Object>>) resultObj;
+		
+		for (Map<String, Object> item : result) {
+            item.put("orderNo", orderNo);
+        }
+		
+		//System.out.println("수정된리저트 : "+result);
+		// 수정된리저트 : [{medicine_name=Albumin, medicine_price=10300, prescribe_perday=5, totalPrice=51500, orderNo=250}, {medicine_name=Amiodarone, medicine_price=10400, prescribe_perday=5, totalPrice=52000, orderNo=250}]
+		
+		//System.out.println("애젝에서 오더넘버 : " + orderNo);
+		//System.out.println("애젝에서 잘넘어오는지확인 : "+resultObj);
+				
+		//System.out.println();
+		
+		// 약들 Cost 테이블에 insert
+		int m = service.medicinePriceSubmit(result);
+		
 		
 		return n;
 	}

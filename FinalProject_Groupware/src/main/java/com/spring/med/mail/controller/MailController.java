@@ -1,6 +1,8 @@
 package com.spring.med.mail.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.board.domain.BoardVO;
 import com.spring.med.common.FileManager;
 import com.spring.med.mail.domain.MailReceiveVO;
 import com.spring.med.mail.domain.MailSentVO;
@@ -67,7 +70,7 @@ public class MailController {
 		String fk_member_userid = loginuser.getMember_userid();
 		*/
 		
-		String fk_member_userid = mail_received_userid;
+		String rk_member_userid = mail_received_userid;
 		
 		//  === #148. !!! 첨부파일이 있는 경우 작업 시작 !!! ===
 		MultipartFile attach = mvo.getAttach(); 
@@ -148,10 +151,12 @@ public class MailController {
 		
 		int n = 0;
 		
+		
 		if(attach.isEmpty()) {
 			// 파일첨부가 없는 경우라면
 			
 			String mail_sent_important = mvo.getMail_sent_important();
+						
 			
 			// System.out.println("값뭐임 : "+ mail_sent_important);
 			
@@ -162,11 +167,11 @@ public class MailController {
 				
 				mvo.setMail_sent_important(mail_sent_important);
 				
-				n = service.insertMailWrite(mvo, fk_member_userid);
+				n = service.insertMailWrite(mvo, rk_member_userid);
 			}
 			else {
 				System.out.println("체크함 : " +mail_sent_important );
-				n = service.insertMailWrite(mvo, fk_member_userid);
+				n = service.insertMailWrite(mvo, rk_member_userid);
 			}
 			
 			
@@ -181,17 +186,14 @@ public class MailController {
 				
 				mvo.setMail_sent_important(mail_sent_important);
 				
-				n = service.insertMailWriteWithFile(mvo, fk_member_userid);  // <== 파일첨부가 있는 글쓰기
+				n = service.insertMailWriteWithFile(mvo, rk_member_userid);  // <== 파일첨부가 있는 글쓰기
 			}
 			else {
-				n = service.insertMailWriteWithFile(mvo, fk_member_userid);  // <== 파일첨부가 있는 글쓰기
+				n = service.insertMailWriteWithFile(mvo, rk_member_userid);  // <== 파일첨부가 있는 글쓰기
 			}
+
 			
-			
-			
-			
-			
-			 n = service.insertMailWriteWithFile(mvo, fk_member_userid);  // <== 파일첨부가 있는 글쓰기
+			 n = service.insertMailWriteWithFile(mvo, rk_member_userid);  // <== 파일첨부가 있는 글쓰기
 		}
 		
 
@@ -262,6 +264,7 @@ public class MailController {
 								
 			mav.addObject("mailReceiveList", mailReceiveList);
 		
+			System.out.println("받은메일리스트 파일이름나오나 : "+mailReceiveList);
 			
 			// 페이지바 만들기 //
 			int blockSize = 10;
@@ -978,6 +981,148 @@ public class MailController {
 		int n = service.receivedMailDelete(mailNos, paraMap);						
 		
 		return n;
+	}
+
+
+	// 보낸 메일 클릭하면 메일내용 보여주기
+	@GetMapping("sentMailView")
+	public ModelAndView mailView(HttpServletRequest request, ModelAndView mav, @RequestParam("mail_sent_no") String mail_sent_no) {
+		
+		//String mail_sent_no = request.getParameter("mail_sent_no");
+		
+		//System.out.println("메일번호 나옴? : "+mail_sent_no);
+		
+		Map<String, String> sentMap = service.mailView(mail_sent_no);
+		
+		mav.addObject("sentMap",sentMap);
+		//System.out.println("mvo체크 : "+mvo);
+		
+		
+		mav.setViewName("content/mail/mailView");
+		
+		return mav;
+	}
+	
+	// 받은 메일 클릭하면 메일내용 보여주기
+	@GetMapping("receivedMailView")
+	public ModelAndView receivedMailView(HttpServletRequest request, ModelAndView mav, @RequestParam("fk_mail_sent_no") String fk_mail_sent_no) {
+
+		
+		System.out.println("메일번호나오니 : " + fk_mail_sent_no);
+		
+		
+		Map<String, String> receivedMap = service.receivedMailView(fk_mail_sent_no);
+		
+		mav.addObject("receivedMap",receivedMap);
+		
+		System.out.println("receivedMap : "+receivedMap);
+		
+		// String asdf = rmvo.getSk_member_userid();
+
+		mav.setViewName("content/mail/mailView");
+		
+		return mav;
+	}
+	
+	
+	// === #161. 첨부파일 다운로드 받기 === //
+	@GetMapping("download")
+	public void mailDownload(HttpServletRequest request, HttpServletResponse response) {
+		
+		String mail_sent_no = request.getParameter("mail_sent_no");
+		// 첨부파일이 있는 글번호 
+		
+		/*
+		    첨부파일이 있는 글번호에서
+		    202502071242164990019082166200.jpg 처럼
+		    이러한 fileName 값을 DB에서 가져와야 한다.
+		    또한 orgFilename 값도 DB에서 가져와야 한다.
+		*/
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("mail_sent_no", mail_sent_no);
+		
+		
+		// **** 웹브라우저에 출력하기 시작 **** //
+		// HttpServletResponse response 객체는 전송되어져온 데이터를 조작해서 결과물을 나타내고자 할때 쓰인다.
+		response.setContentType("text/html; charset=UTF-8");
+		
+		PrintWriter out = null;
+		// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+		
+		try {
+		    Integer.parseInt(mail_sent_no); 
+			
+		    MailSentVO mvo = service.mailViewFile(mail_sent_no);
+		    
+		    if(mvo == null || (mvo != null && mvo.getMail_sent_file() == null) ) { 
+		    	out = response.getWriter();
+				// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+				
+				out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+				return;
+		    }
+		    
+		    else {
+		    	// 정상적으로 다운로드를 할 경우 
+		    	
+		    	String fileName = mvo.getMail_sent_file();
+		    	// 202502071242164990019082166200.jpg  이것이 바로 WAS(톰캣) 디스크에 저장된 파일명이다.
+		    	
+		    	String orgFilename = mvo.getMail_sent_file_origin(); 
+		    	// 쉐보레전면.jpg   다운로드시 보여줄 파일명
+		    	
+		    	/*
+				   첨부파일이 저장되어있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
+				   이 경로는 우리가 파일첨부를 위해서 @PostMapping("add") 에서 설정해두었던 경로와 똑같아야 한다.    
+				*/
+				// WAS 의 webapp 의 절대경로를 알아와야 한다.
+				HttpSession session = request.getSession();
+				String root = session.getServletContext().getRealPath("/");
+				
+			//	System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
+				// ~~~ 확인용 webapp 의 절대경로 ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\
+				
+				String path = root+"resources"+File.separator+"files";  
+				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+			       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+			       운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+			    */
+				
+				// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+			//	System.out.println("~~~ 확인용 path ==> " + path);
+				// ~~~ 확인용 path ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\files
+		    	
+				
+				// ***** file 다운로드 하기 ***** //
+				boolean flag = false; // file 다운로드 성공, 실패인지 여부를 알려주는 용도
+				flag = fileManager.doFileDownload(fileName, orgFilename, path, response);
+				// file 다운로드 성공시 flag 는 true,
+				// file 다운로드 실패시 flag 는 false 를 가진다.
+				
+				if(!flag) {
+					// 다운로드가 실패한 경우 메시지를 띄운다.
+					out = response.getWriter();
+					// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+					
+					out.println("<script type='text/javascript'>alert('파일다운로드가 실패되었습니다.'); history.back();</script>");
+				}
+		    	
+		    }
+			
+		} catch (NumberFormatException | IOException e) {
+			
+			try {
+				out = response.getWriter();
+				// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+				
+				out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+		}
+		
 	}
 	
 	
