@@ -82,7 +82,7 @@ public class OrderController {
 			
 			
 			// 빈 오더 생성 시작 /////////////////////////////////////////////////////////////////////////////
-			
+			/*
 			paraMap.put("fk_member_userid", loginuser.getMember_userid());
 			int n = service.createEmptyOrder(paraMap); // 클릭하여 진료정보입력 진입시 빈 오더 생성하기
 			
@@ -100,7 +100,7 @@ public class OrderController {
 				String failMessage = "오더가 생성에 실패하였습니다.";
 				mav.addObject("failMessage", failMessage);
 			}
-			
+			*/
 			// 오더 생성 끝 /////////////////////////////////////////////////////////////////////////////
 			
 			String status = clickPatient.get("patient_status");

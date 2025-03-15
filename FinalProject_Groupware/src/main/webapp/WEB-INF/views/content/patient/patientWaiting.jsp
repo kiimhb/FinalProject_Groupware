@@ -94,27 +94,57 @@ div#pageBar a {
 }
 
 
+
+/* 상단 타이틀 */
+.header > div.title {
+   border-left: 5px solid #006769;   
+   padding-left: 1%;
+   font-size: 20px;
+   margin-bottom: 1%;
+   color: #4c4d4f;
+   font-weight: bold;
+}
+
+/* 페이지바 */
+div#pageBar a {
+   color: #509d9c;
+   cursor: pointer;
+}
+#pageBar > ul > li {
+   color: #006769;
+   font-weight: bold;
+   cursor: pointer;
+}
+
+
+#patientWaiting {
+	box-shadow: 0 2px 5px rgba(0,0,0,.25); 
+	border-radius: 5px;
+}
+
 </style>
 
 <div id="sub_mycontent">
-<div style="border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;"><span>진료대기환자</span></div>
+<div class="header"; style="font-size:15pt; margin: 1% 10%; "><div class="title">진료대기환자</div></div>
 <div>${requestScope.firstPatient_no}</div>
 <div style="border:solid 0px blue;">	
-	<div style="border:solid 1px green; margin:0 10% 2% 10%;"class="">
+	<div style="border:solid 0px green; margin:0 10% 2% 10%;"class="">
 		
-		<table class="table text-center" id="patientWaiting">
+		<table class="table table-hover text-center" id="patientWaiting">
+			<thead class="bg-light">
 				<tr>
-					<th style="border:solid 1px black">순번</th>
-					<th style="border:solid 1px black">이름</th>
-					<th style="border:solid 1px black">성별</th>
-					<th style="border:solid 1px black">나이</th>
-					<th style="border:solid 1px black">진료구분</th>
-					<th style="border:solid 1px black">증상</th>				
+					<th >순번</th>
+					<th >이름</th>
+					<th >성별</th>
+					<th >나이</th>
+					<th >진료구분</th>
+					<th >증상</th>				
 				</tr>
+			</thead>
 			<form name="patientGoToOrder">
 				<c:if test="${not empty requestScope.patientList}">
 				<c:forEach var="pvo" items="${requestScope.patientList}">
-					<tr onclick="trclick(${pvo.patient_no})">
+					<tr onclick="trclick(${pvo.patient_no})" style="border:solid 0px black;">
 						<td>${pvo.rno}</td>
 						<td>${pvo.patient_name}</td>
 						<td>${pvo.patient_gender}</td>
@@ -134,7 +164,7 @@ div#pageBar a {
 		</table>
 	
 		<%-- 페이지바 === --%>
-	    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+	    <div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 	    	${requestScope.pageBar}
 	    </div>
 			

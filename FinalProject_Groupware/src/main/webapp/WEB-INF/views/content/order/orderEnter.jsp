@@ -63,7 +63,6 @@ $(document).ready(function(){
       	    info.dayEl.style.backgroundColor = '#b1b8cd'; // 클릭한 날짜의 배경색 지정하기
       	    $("form > input[name=chooseDate]").val(info.dateStr);
       	    
-      	    alert("날짜 클릭");
       	  }
 	});
 	/* 캘린더 띄움 끝 */
@@ -126,7 +125,9 @@ $(document).ready(function(){
 									<td class="price">\${hospPrice} 원</td>`;
 									
 						$("tr#hosp").html(v_html);
-			   
+						$("#confirmButton1").text("요청완료");
+						
+						
 					   
 				   },
 				   error: function(request, status, error){
@@ -469,7 +470,7 @@ $(document).ready(function(){
 						
 						v_html = `
 								  <div id="\${medicineNo}" class="medicineCollection">
-									  <span style="width: 350px; display: inline-block;">\${json.medicineName}</span>								
+									  <span style="width: 300px; display: inline-block;">\${json.medicineName}</span>								
 									  <button type="button" name="man" id="btnmorning_\${medicineNo}" class="btn btn-light ml-1 btnmorning">아침</button>
 									  <input type="hidden" name="man" id="morning_\${medicineNo}" value="0"/>
 									  <button type="button" name="man" id="btnafternoon_\${medicineNo}" class="btn btn-light ml-1 btnafternoon">점심</button>
@@ -484,7 +485,7 @@ $(document).ready(function(){
 									  <input type="radio" name="beforeafter_\${medicineNo}" value="0" id="after_\${medicineNo}" style="margin-right:150px;" />
 									  
 									  <input type="number" name="medicinePerday" id="inputPerday_\${medicineNo}"/>
-									  <button type="button" style="background-color:#b3d6d2"class="saveMedicineData" data-id="\${medicineNo}">저장</button>&nbsp;&nbsp;
+									  <button id="save_\${medicineNo}" type="button" style="background-color:#b3d6d2"class="saveMedicineData" data-id="\${medicineNo}">저장</button>&nbsp;&nbsp;
 									  <i style='cursor:pointer;' id='\${medicineNo}' class="fa-solid fa-xmark deleteMedicineData"></i>
 								  </div>
 
@@ -493,7 +494,9 @@ $(document).ready(function(){
 								
 						$("div#pickedMedicine").append(v_html);
 						
-				        
+						let selectedMedicineId = $("#save_" + medicineNo).attr("id");
+					    console.log("selectedMedicineId:", selectedMedicineId);
+						
 						
 					},
 					error: function(request, status, error){
@@ -567,7 +570,12 @@ $(document).ready(function(){
 		        medicineList.push(medicineData);
 		    }
 			
-		    $("button.saveMedicineData").text("저장완료");
+		    
+		    
+		    
+		    $(this).text("저장완료"); 
+		    
+		    
 		    
 		    console.log("현재 저장된 전체 데이터:", medicineList);
 		    		    		    		    		    
@@ -803,28 +811,34 @@ function orderFinalConfirm(){
 	const hiddenPatientNo = $("input#hiddenPatientNo").val();
 	console.log("디테이이일 : ", detailSymptom)
 	
-	$.ajax({
-			
-		url:"<%= ctxPath%>/order/sendOrderConfirm",
-		data:{"order_symptom_detail":detailSymptom
-			  ,"orderNo":orderNo
-			  ,"hiddenPatientNo":hiddenPatientNo},
-		type:"post",	  
-		dataType:"json",
-		success:function(json){
-		 console.log(JSON.stringify(json));
-		 
-		 	alert("오더가 확정되었습니다 !!")
-		 	
-		 	window.location.href = "<%= ctxPath%>/patient/patientWaiting";
-			
-		},
-		error: function(request, status, error){
-		    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		}
+	if(confirm("정말 오더를 확정하시겠습니까?")){
 	
-	
-	});
+		$.ajax({
+				
+			url:"<%= ctxPath%>/order/sendOrderConfirm",
+			data:{"order_symptom_detail":detailSymptom
+				  ,"orderNo":orderNo
+				  ,"hiddenPatientNo":hiddenPatientNo},
+			type:"post",	  
+			dataType:"json",
+			success:function(json){
+			 console.log(JSON.stringify(json));
+			 
+			 	alert("오더가 확정되었습니다 !!")
+			 	
+			 	window.location.href = "<%= ctxPath%>/patient/patientWaiting";
+				
+			},
+			error: function(request, status, error){
+			    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		
+		
+		});
+	}
+	else{
+		return
+	}
 	
 	
 };
@@ -847,6 +861,26 @@ a, a:hover, .fc-daygrid {
 
 .fc-sat { color: #0000FF; }    /* 토요일 */
 .fc-sun { color: #FF0000; }    /* 일요일 */
+
+
+
+/* 주말 날짜 색 */
+.fc-day-sun a {
+  color: red;
+  text-decoration: none;
+}
+.fc-day-sat a {
+  color: blue;
+  text-decoration: none;
+}
+
+
+.fc-button {
+	font-size: 10pt !important;
+	background-color: #4c4d4f !important;
+	border: none !important; 
+}
+
 /* ========== full calendar css 끝 ========== */
 
 ul{
@@ -951,17 +985,52 @@ button.btn_edit{
   display: none;
 }
 
+/* 상단 타이틀 */
+.header > div.title {
+   border-left: 5px solid #006769;   
+   padding-left: 1%;
+   font-size: 20px;
+   margin-bottom: 1%;
+   color: #4c4d4f;
+   font-weight: bold;
+}
+
+
+/* input 태그 */
+input {
+   /* background: #f0f0f0;  */
+     color: #006769;
+     border: none;
+     border-bottom: 1px solid #999999; 
+}
+
+input:placeholder {
+     color: rgba(255, 255, 255, 1);
+     font-weight: 100;
+}
+
+input:focus {
+     color: #006769;
+     outline: none;
+     border-bottom: 1.3px solid #006769; 
+     transition: .8s all ease;
+}
+
+input:focus::placeholder {
+     opacity: 0;
+}
+
 
 
 </style>
 
 
 <div id="sub_mycontent">
-<div style="border:solid 1px red; margin: 0.3% 10%; text-align:center;">
-	<span style="font-size:15pt;">진료정보 입력</span>
+<div class="header" style="margin: 0% 5%;">
+	<div class="title" style="font-size:15pt;">진료정보 입력</div>
 </div>
 
-<div style="margin: 0% 10%;">	
+<div style="margin: 0% 5%;">	
 	<span>${sessionScope.loginuser.member_name}&nbsp;님&nbsp;&nbsp;${sessionScope.loginuser.child_dept_name}&nbsp;&nbsp;${sessionScope.loginuser.member_position}</span>
 	<span>
 		<c:if test="${requestScope.orderCreate == 0 }">
@@ -974,33 +1043,23 @@ button.btn_edit{
 </div>
 
 
-	<div id="patient_info" style="margin: 0% 10%;">
-		<table id="patient_info" class="table text-center" style="background-color:#b3d6d2; margin:0.1%;"> <%-- width: 69.5%; position:fixed --%>
-			<thead>
+	<div id="patient_info" style="margin: 1% 5%;">
+		<table id="patient_info" class="table text-center table-bordered" style="margin:0.1%;"> <%-- width: 69.5%; position:fixed --%>
+			<thead class="bg-light">
 				<tr>
-					<th style="border:solid 1px black">성함</th>
-					<th style="border:solid 1px black">성별</th>
-					<th style="border:solid 1px black">나이(만)</th>
-					<th style="border:solid 1px black">내역</th>				
+					<th >성함</th>
+					<th >성별</th>
+					<th >나이(만)</th>
+					<th >내역</th>				
 				</tr>
 			</thead>
-			<c:if test="${not empty requestScope.firstPatient}">
-				<tbody>
-					<tr>
-						<td style="border:solid 1px black">${firstPatient.patient_name}</td>
-						<td style="border:solid 1px black">${firstPatient.patient_gender}</td>
-						<td style="border:solid 1px black">${firstPatient.age}세</td>
-						<td style="border:solid 1px black">${firstPatient.jin}</td>
-					</tr>
-				</tbody>
-			</c:if>
 			<c:if test="${not empty requestScope.clickPatient}">
-				<tbody>
+				<tbody style="">
 					<tr>
-						<td style="border:solid 1px black">${clickPatient.patient_name}</td>
-						<td style="border:solid 1px black">${clickPatient.patient_gender}</td>
-						<td style="border:solid 1px black">${clickPatient.age}세</td>
-						<td style="border:solid 1px black">${clickPatient.jin}</td>						
+						<td >${clickPatient.patient_name}</td>
+						<td >${clickPatient.patient_gender}</td>
+						<td >${clickPatient.age}세</td>
+						<td >${clickPatient.jin}</td>						
 					</tr>					
 				</tbody>				
 			</c:if>			
@@ -1010,23 +1069,22 @@ button.btn_edit{
 	
 	
 <form id="orderEnterFrm">
-<div id="container" style="width:100%;">	
-	<div id="enterContainer" style="margin:0% 10%; border:solid 1px green; height:570px; overflow-y:scroll;">		
-			<div style="display:flex; justify-content:center; border:solid 1px orange;">
-				<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
+<div id="container" style="width:100%;" >	
+	<div id="enterContainer" style="margin:0% 5%; border-radius:5px; border:solid 1px gray; height:700px; overflow-y:scroll;">		
+			<div style="display:flex; justify-content:center; border:solid 0px gray;">
+				<div style="border:solid 0px purple; margin:auto; width:33%; text-align:center">
 					<span>진료내역</span>
 				</div>
-				<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
+				<div style="border:solid 0px purple; margin:auto; width:33%; text-align:center">
 					<span>증상</span>
 				</div>
-				<div style="border:solid 1px purple; margin:auto; width:33%; text-align:center">
+				<div style="border:solid 0px purple; margin:auto; width:33%; text-align:center">
 					<span>캘린더</span>
 				</div>
 			</div>
 			
 			<div style="display:inline-block; width:100%;">
-				<div style="margin: 0% 0.17%; float:left; border:solid 1px black; width:33%; height:450px; overflow:auto;">
-					
+				<div style="margin: 0% 0.17%; float:left; border-radius:5px; border:solid 1px gray; width:33%; height:450px; overflow:auto;">					
 					<c:if test="${not empty requestScope.orderList}">
 						<c:forEach var="orderList" items="${requestScope.orderList}">
 							<li style="list-style-type: none; margin: 5% 0%;">										
@@ -1050,53 +1108,56 @@ button.btn_edit{
 				</div>
 				
 				<div style="margin: 0% 0.17%; float:left; width:33%; height:385px;">
-					<textarea id="readyToSymptomDetail" style="width: 100%; height:385px; padding:4% 4%; resize:none;">${clickPatient.patient_symptom}</textarea>	
+					<textarea id="readyToSymptomDetail" style="border-radius:5px; width: 100%; height:385px; padding:4% 4%; resize:none;">${clickPatient.patient_symptom}</textarea>	
 				</div>
 				
-				<div style="margin: 0% 0.16%; border:solid 1px black; float:right; width:33%; height:385px;">
+				<div style="margin: 0% 0.16%; border-radius:5px;border:solid 1px gray; float:right; width:33%; height:385px;">
 					<div id="calendar" style=""></div>
 					
-					<div id="orderSurgDetail"style="margin: 2% 0%; border: solid 1px black; width:100%;">	
+					<div id="orderSurgDetail"style="margin: 5% 0%; border: solid 0px black; width:100%;">	
 						<div style="display:flex;">					
-							<select id="selectSurgery" style="height:29px; width: 80%; margin-bottom:0.2%;">
+							<select id="selectSurgery" style="height:30px; width: 80%; margin-bottom:0.5%;">
 									<option value="">수술 종류</option>
 								<c:forEach items="${requestScope.surgeryList}" var="surgeryList">						
 									<option value="${surgeryList.surgeryType_name}" data-no="${surgeryList.surgeryType_no}">${surgeryList.surgeryType_name}&nbsp;&nbsp; <span style="color:red;">[수술번호 : ${surgeryList.surgeryType_no}]</span></option>
 								</c:forEach>								
 							</select>
-							<button id="surgeryConfirm" type="button" style="width:20%;" ><span id="confirmButton">전송</span></button>	
+							<button class="" id="surgeryConfirm" type="button" style="border:solid 0px black; border-radius:5px; width:20%; height: 30px; background-color: #b3d6d2; color:black;" > <!-- 수술전송버튼 -->
+								<span id="confirmButton" style="margin-bottom:0.5%;">전송</span>
+							</button>	
 						</div>
 						<div>											
 							<input id="surgeryExplain"style="width:100%;"type="text" placeholder="수술 설명"/>
 						</div>
 					</div>
-					<div id="orderHowLongHosp"style="margin: 2% 0%; border: solid 1px black; width:100%;">
-						<div style=" margin: 1% 0 0 1%; height:25px;">
+					
+					<div id="orderHowLongHosp"style="margin: 6.2% 0%; border-radius:5px; border: solid 0px black; width:100%;">
+						<div style=" margin: 5% 0 0 1%; height:25px;">
 							입원 일수를 입력해 주세요
 						</div>	
 						<div style="display: flex">				
 							<input type="number" id="howLongHosp"/>
-							<button id="hospConfirm" type="button" style="width:20%;" ><span id="confirmButton">전송</span></button>	
+							<button id="hospConfirm" type="button" style="border:solid 0px black; background-color:#b3d6d2; color:black; border-radius:5px; width:20%;" ><span id="confirmButton1">전송</span></button>	
 						</div>
 					</div>						
 				</div>
 				<div style="float:left; margin:0.4% 0% 0.1% 0.1% ; width:33%;">
 					<div style="margin-bottom:0.2%;">
-						<button type="button" style="width:100%;" id="goSurgeryOrder">수술 지시</button>
+						<button type="button" style="border:solid 0px black; background-color: #b3d6d2; color:black; border-radius:5px; height: 30px; width:100%;" id="goSurgeryOrder">수술 지시</button>
 					</div>
 					<div>
-						<button type="button"style="width:100%;" id="goHospOrder">입원 지시</button>				
+						<button type="button" style="border:solid 0px black; background-color: #b3d6d2; color:black; border-radius:5px; height: 30px; width:100%;" id="goHospOrder">입원 지시</button>				
 					</div>
 				</div>
 			</div>
 			
-			<div id="orderNpay" style=" border:solid 1px red; position:relative;">
+			<div id="orderNpay" style=" border:solid 0px red; position:relative;">
 			
 				<div id="orderSearch" style="margin:1% 1%;">
 					<span>질병 검색</span><input type="hidden" value="searchDeseaseType" name="searchDeseaseType"/>
 					<input type="text" style="width: 585px; border: none; border-bottom: 1px solid black;"  name="searchDesease" id="searchDeseaseId" size="50" autocomplete="off" ></input>
 					<input type="hidden" id="hiddenDeseaseName"/>
-					<button type="button" class="" name="addDesease" style="width:50px; border:solid 1px black; border-radius:10px;"><i class="fa-solid fa-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="submitDesease" style="width:50px; border-radius:10px;">전송</button>
+					<button type="button" class="" name="addDesease" style="background-color:#b3d6d2; color:black; width:50px; border:solid 0px black; border-radius:10px;"><i class="fa-solid fa-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="submitDesease" style="border:solid 0px black; background-color:#b3d6d2; color:black; width:50px; border-radius:10px;">전송</button>
 					<%--// === 질병 검색시 자동 완성하기 1 === // --%>	
 					<div id="deseaseList" style="background-color:white; border:solid 1px gray; margin-left:5.5%; border-top:0px; height:100px;  position:absolute; z-index: 3; overflow:auto;"><!--  -->
 					</div>
@@ -1109,25 +1170,25 @@ button.btn_edit{
 					<span>약 검색</span><input type="hidden" value="searchMedicineType" name="searchMedicineType"/>
 					<input type="text" style="width: 600px; border: none; border-bottom: 1px solid black;" name="searchMedicine" id="searchMedicineId" size="50" autocomplete="off" /> 
 					<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
-					<button type="button" class="" name="addMedicine" style="width:50px; border:solid 1px black; border-radius:10px;"><i class="fa-solid fa-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" style="width:50px; border-radius:10px;" id="medicineSubmit">전송</button>
+					<button type="button" class="" name="addMedicine" style="background-color:#b3d6d2; color:black; width:50px; border:solid 0px black; border-radius:10px;"><i class="fa-solid fa-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" style="background-color:#b3d6d2; color:black; width:50px; border:solid 0px black; border-radius:10px;" id="medicineSubmit">전송</button>
 					
 					<%--// === 약 검색어 입력시 약 자동 완성하기 1 === // --%>					
 				    <div id="medicineList" style="background-color:white; border:solid 1px gray; margin-left:4.35%; border-top:0px; height:100px;  overflow:auto;">
 					</div>										
 				</div>
-					<div id="pickedMedicine" style="border:solid 1px purple; height:170px; margin:0% 0.1%; position:relative; z-index:2; padding: 0.9% 0.9%; overflow:auto;"></div>
+					<div id="pickedMedicine" style=" border-radius:5px; border:solid 1px gray; height:170px; margin:0% 0.1%; position:relative; z-index:2; padding: 0.9% 0.9%; overflow:auto;"></div>
 				
 				
-				<div id="pay" style="margin:1% 0.1%; border:solid 1px blue;">
+				<div id="pay" style="margin:1% 0.1%; border-radius:5px; border:solid 1px gray;">
 				
 					<span style="margin:1% 1%;">수납 내역</span>
-					<button style="float:right"type="button" onclick="sumPrice()">총 수납비용 보기</button>
+					<button style="border:solid 0px black; background-color: #b3d6d2; color:black; border-radius:5px; float:right"type="button" onclick="sumPrice()">총 수납비용 보기</button>
 
 					
-					<table style="text-align:center; width:100%; border:solid 1px green;" >
+					<table style="text-align:center; width:100%; border:solid 0px green;" >
 						<tr>
-							<td style="border:solid 1px green;">기본진료</td>
-							<td style="border:solid 1px green;">5,000원</td>
+							<td style="">기본진료</td>
+							<td style="">5,000원</td>
 						</tr>
 						
 						<tr id="surgeryName">
@@ -1150,7 +1211,7 @@ button.btn_edit{
 				</div>
 			</div>	
 			
-			<button style="float:right" type="button" onclick="orderFinalConfirm()">오더 확정</button>
+			<button style="border:solid 0px black; background-color: #b3d6d2; color:black; border-radius:5px; float:right" type="button" onclick="orderFinalConfirm()">오더 확정</button>
 	</div> <%-- end of orderEnter --%>
 	
 </div>

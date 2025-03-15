@@ -10,6 +10,7 @@
 %>
 
 
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
 
 <script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
@@ -217,37 +218,90 @@ function trclick(fk_mail_sent_no){
 }
 
 
-
-
 </script>
+
+<style type="text/css">
+
+
+/* 상단 타이틀 */
+.header > div.title {
+   border-left: 5px solid #006769;   
+   padding-left: 1%;
+   font-size: 20px;
+   margin-bottom: 1%;
+   color: #4c4d4f;
+   font-weight: bold;
+}
+
+/* 페이지바 */
+
+div#pageBar a {
+   color: #509d9c;
+   cursor: pointer;
+}
+#pageBar > ul > li {
+   color: #006769;
+   font-weight: bold;
+   cursor: pointer;
+}
+
+.btnWrite{
+
+background-color:#006769;
+border-radius: 10px;
+border: none;
+width: 80px;
+height:35px;
+color:white;
+}
+
+.btnDel{
+
+background-color:#f68b1f;
+border-radius: 10px;
+border: none;
+width: 70px;
+height:35px;
+color:white;
+
+}
+
+
+#tblReceived{
+	box-shadow: 0 2px 5px rgba(0,0,0,.25); 
+	border-radius: 5px;
+
+}
+
+
+</style>
 
 <jsp:include page="../../header/header1.jsp" /> 
 
 <div id="sub_mycontent">
-<div style=" border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;">
+<div class="header" style="font-size:15pt; margin: 1% 10%;">
 
-	<span>받은 메일함</span>
-	<span>${sessionScope.loginuser.member_userid}</span>
+	<div class="title">받은 메일함</div>
 </div>
 
 <div style="margin:0.1% 10%">
 	
-	<div style="float:left;"><button onclick="location.href='<%= ctxPath%>/mail/mailWrite'">메일쓰기</button></div>
-	<div style="float:right; margin-left:0.5%;"><button onclick="sendMailTrash()">삭제</button></div>
-	<div style="float:right;"><button onclick="sendMailStorage()">보관</button></div>
+	<div style="margin:0.2% 0.2%; float:left;"><button class="btnWrite" onclick="location.href='<%= ctxPath%>/mail/mailWrite'">메일쓰기</button></div>
+	<div style="float:right; margin-left:0.5%;"><button class="btnDel" onclick="sendMailTrash()">삭제</button></div>
 </div>
 
 
 <div id=Container;>
-	<div id="tableContainer" style="border:solid 1px red; margin: 1% 10%; width:80%;">
+	<div id="tableContainer" style="border:solid 0px red; margin: 1% 10%; width:80%;">
 
-		<table style="width: 100%; text-align:center;">
-			<thead style="border: solid 1px black; height:50px;">
+		<table class="table table-hover text-center"style="width: 100%; text-align:center;" id="tblReceived">
+			<thead class="bg-light" style="border: solid 0px black; height:50px;">
 				<tr>
 					<th style="width:10%">중요</th>
 					<th style="width:40%">제목</th>
 					<th style="width:20%">보낸사람</th>
-					<th style="width:30%">발신일시</th>			
+					<th style="width:30%">발신일시</th>
+					<th></th>			
 				</tr>	
 			</thead>
 			
@@ -255,21 +309,21 @@ function trclick(fk_mail_sent_no){
 				<c:if test="${not empty requestScope.mailReceiveList}">
 					<c:forEach items="${requestScope.mailReceiveList}" var="mrl" varStatus="status">
 						<tr onclick="">
-							<td style="border-bottom:solid 1px black; height:50px;"> <!-- <div id="starToggle"></div> -->
+							<td style="height:50px;"> <!-- <div id="starToggle"></div> -->
 								<button type="button" class="btnstar btn-link p-0 no-outline" data-important="${mrl.mail_sent_no}" data-important-status ="${mrl.mail_received_important}"							        
 							        style="font-size: 1rem; color: black; background-color: transparent; border: none; outline: none;"
 							        onclick="importantMail('${mrl.fk_mail_sent_no}', this)">
 							        <i class="fa fa-star-o" aria-hidden="true"></i>
 							    </button>			
 							</td>
-							<td onclick="trclick(${mrl.mail_sent_no})" style="border-bottom:solid 1px black">${mrl.mail_title}
+							<td onclick="trclick(${mrl.mail_sent_no})" style="">${mrl.mail_title}
 							<c:if test="${not empty mrl.MAIL_SENT_FILE }">
 								<i class="fa-solid fa-file"></i>
 							</c:if>
 							</td>
-							<td style="border-bottom:solid 1px black">${mrl.member_name}</td>
-							<td style="border-bottom:solid 1px black">${mrl.mail_sent_senddate}&nbsp;&nbsp;${mrl.timediff }</td>
-							<td style="border-bottom:solid 1px black"><input style="width:100px;"type="checkbox" class="mailCheckbox" data-mail-no="${mrl.mail_sent_no}"/></td>							
+							<td style="">${mrl.member_name}</td>
+							<td style="">${mrl.mail_sent_senddate}&nbsp;&nbsp;${mrl.timediff }</td>
+							<td style=""><input style="width:100px;"type="checkbox" class="mailCheckbox" data-mail-no="${mrl.mail_sent_no}"/></td>							
 						</tr>
 						<input type="hidden" value="${mrl.mail_received_important}" />						
 					</c:forEach>
@@ -287,7 +341,7 @@ function trclick(fk_mail_sent_no){
 		</table>
 
 		
-		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 	    	${requestScope.pageBar}
 	    </div>
 	</div>
