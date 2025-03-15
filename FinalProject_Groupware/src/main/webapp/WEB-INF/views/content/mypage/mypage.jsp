@@ -10,6 +10,11 @@
 <jsp:include page="../../header/header1.jsp" />
 
 <style type="text/css">
+div.manag_h3 {
+	border-bottom: solid 2px gray;
+	margin: 30px;
+}
+
 div.mypage_container > form > table{
 	/* border: solid 1px gray; */
 	margin: auto;
@@ -250,6 +255,11 @@ $("button#mypage_edit").click(function() {
 });
 </script>
 <div id="sub_mycontent">
+
+		<div class="manag_h3">
+			<h3>마이페이지</h3>
+		</div>
+		
 	<div class="mypage_container">
 		<form name="mypageEdit" enctype="multipart/form-data">
 	    <table>

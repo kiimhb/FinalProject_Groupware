@@ -7,7 +7,44 @@
 String ctxPath = request.getContextPath();
 //     /myspring
 %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>마포아삭병원</title>
+<link rel="icon" href="<%=ctxPath%>/image/Favicon_logo.png" type="image/png">
 <style type="text/css">
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: url("<%=ctxPath%>/image/서울아산병원.jpg") no-repeat center center fixed;
+  background-size: cover;
+  transition: background-image 15s ease-in-out;
+}
+
+/* 배경 애니메이션 */
+@keyframes backgroundAnimation {
+  0% {
+    background-image: url("<%=ctxPath%>/image/서울아산병원.jpg");
+  }
+  100% {
+    background-image: url("<%=ctxPath%>/image/서울아산병원.jpg");
+  }
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom, white, rgba(255, 255, 255, 0));
+  z-index: -1;
+}
+
+
 div.logo-container {
 	display: flex;
 	align-items: center;
@@ -39,6 +76,7 @@ span.main_logo2 {
 
 div>div.login_container {
 	/* border: solid 1px maroon; */
+	border-radius:5px;
 	padding:5px;
 	background-color:white;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -131,6 +169,7 @@ $(document).ready(function(){
 </script>
 
 
+</head>
 
 <div class="login_main_container">
 

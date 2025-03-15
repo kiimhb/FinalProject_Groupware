@@ -8,45 +8,111 @@
 
 
 	<resultMap type="HashMap" id="commute_countMAP">
+		<result property="click" column="click" javaType="String" />
 		<result property="late" column="late" javaType="String" />
 		<result property="leave" column="leave" javaType="String" />
 		<result property="absent" column="absent" javaType="String" />
 		<result property="total_count" column="total_count" javaType="String" />
 		<result property="day_leave_cnt" column="day_leave_cnt" javaType="String" />
+		<result property="member_yeoncha" column="member_yeoncha" javaType="String" />
 	</resultMap>
-	<select id="get_commute_count" resultMap="commute_countMAP"
-		parameterType="HashMap">
-		WITH
-		A AS 
-		(
-		    SELECT 
-		    M.member_userid, 
-		    NVL(L.day_leave_cnt, 0) AS day_leave_cnt, 
-		    M.member_yeoncha
-		    FROM tbl_member M 
-		    LEFT JOIN tbl_draft D ON M.member_userid = D.fk_member_userid AND D.draft_status = '승인완료' 
-		    LEFT JOIN tbl_day_leave L ON D.draft_no = L.fk_draft_no
-		),
-		b AS
-		(
-		    SELECT
-		    member_userid,
-		    count(case when work_startstatus = 0 or work_endstatus = 0 then work_recorddate end) as click,
-		    count(case when work_startstatus = 1 then 1 end) as late,
-		    count(case when work_endstatus = 1 then 1 end) as leave,
-		    count(case when work_startstatus = 2 or work_endstatus = 2 then work_recorddate end) as absent,
-		    (count(case when work_startstatus = 1 then 1 end) +
-		    count(case when work_endstatus = 1 then 1 end) +
-		    count(case when work_startstatus = 2 or work_endstatus = 2 then 1 end)) as total_count
-		    from tbl_work w join tbl_member m
-		    on w.fk_member_userid = m.member_userid
-		    group by m.member_userid
-		)
-		SELECT  b.click, b.late, b.leave, b.absent, b.total_count, COALESCE(SUM(day_leave_cnt), 0)  AS day_leave_cnt
-		from A join B
-		ON A.member_userid = b.member_userid 
-		WHERE a.member_userid = #{member_userid} 
-		GROUP BY b.click, b.late, b.leave, b.absent, b.total_count
+	<select id="get_commute_count" resultMap="commute_countMAP" parameterType="HashMap">
+    WITH
+    A AS 
+    (
+        SELECT 
+        M.member_userid, 
+        NVL(L.day_leave_cnt, 0) AS day_leave_cnt, 
+        M.member_yeoncha
+        FROM tbl_member M 
+        LEFT JOIN tbl_draft D ON M.member_userid = D.fk_member_userid AND D.draft_status = '승인완료' 
+        LEFT JOIN tbl_day_leave L ON D.draft_no = L.fk_draft_no
+    ),
+    B AS
+    (
+        SELECT
+        member_userid,
+        COUNT(CASE WHEN work_startstatus = 0 OR work_endstatus = 0 THEN 1 END) AS click,
+        COUNT(CASE WHEN work_startstatus = 1 THEN 1 END) AS late,
+        COUNT(CASE WHEN work_endstatus = 1 THEN 1 END) AS leave,
+        COUNT(CASE WHEN work_startstatus = 2 OR work_endstatus = 2 THEN 1 END) AS absent,
+        (
+           COUNT(CASE WHEN work_startstatus = 1 THEN 1 END) +
+           COUNT(CASE WHEN work_endstatus = 1 THEN 1 END) +
+           COUNT(CASE WHEN work_startstatus = 2 OR work_endstatus = 2 THEN 1 END)
+        ) AS total_count
+        FROM tbl_work W 
+        JOIN tbl_member M ON W.fk_member_userid = M.member_userid
+        GROUP BY M.member_userid
+    )
+    SELECT  
+        B.click, B.late, B.leave, B.absent, B.total_count, 
+        COALESCE(SUM(A.day_leave_cnt), 0) AS day_leave_cnt,
+        a.member_yeoncha
+    FROM A 
+    JOIN B ON A.member_userid = B.member_userid 
+    WHERE A.member_userid = #{member_userid} 
+    GROUP BY B.click, B.late, B.leave, B.absent, B.total_count, A.member_userid, a.member_yeoncha
 	</select>
+	
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">
+	SELECT COUNT(DISTINCT to_char(work_recorddate, 'yyyy-mm-dd') || to_char(work_starttime, 'hh24:mi:ss') || to_char(work_endtime, 'hh24:mi:ss')) AS total_count
+	FROM tbl_work a 
+	JOIN tbl_member b ON a.fk_member_userid = b.member_userid
+	WHERE a.fk_member_userid = #{member_userid}
+	AND a.work_endstatus IS NOT NULL
+	<choose>
+        <when test='searchType == "userid" and searchWord != ""'>
+            and lower(m.member_userid) like '%' || lower(#{searchWord}) || '%'
+        </when>
+        <when test='searchType == "name" and searchWord != ""'>
+            and lower(m.member_name) like '%' || lower(#{searchWord}) || '%'
+        </when>
+    </choose>
+	</select>
+	
+	
+	<resultMap type="HashMap" id="get_work_countMAP">
+		<result property="work_recorddate" column="work_recorddate" javaType="String" />
+		<result property="work_starttime" column="work_starttime" javaType="String" />
+		<result property="work_startstatus" column="work_startstatus" javaType="String" />
+		<result property="work_endtime" column="work_endtime" javaType="String" />
+		<result property="work_endstatus" column="work_endstatus" javaType="String" />
+	</resultMap>
+	<select id="get_work_count" resultMap="get_work_countMAP" parameterType="HashMap">
+	SELECT *
+	FROM (
+	    SELECT 
+	        ROW_NUMBER() OVER (ORDER BY work_recorddate DESC) AS rno, 
+	        to_char(work_recorddate, 'yyyy-mm-dd') AS work_recorddate, 
+	        to_char(work_starttime, 'hh24:mi:ss') AS work_starttime, 
+	        work_startstatus,
+	        to_char(work_endtime, 'hh24:mi:ss') AS work_endtime,
+	        work_endstatus
+	    FROM (
+	        SELECT DISTINCT 
+	            a.work_recorddate, 
+	            a.work_starttime,
+	            a.work_startstatus,
+	            a.work_endtime,
+	            a.work_endstatus
+	        FROM tbl_work a 
+	        JOIN tbl_member b ON a.fk_member_userid = b.member_userid
+	        WHERE a.fk_member_userid = #{member_userid}
+	        <choose>
+	        <when test='searchType == "userid" and searchWord != ""'>
+	            and lower(m.member_userid) like '%' || lower(#{searchWord}) || '%'
+	        </when>
+	        <when test='searchType == "name" and searchWord != ""'>
+	            and lower(m.member_name) like '%' || lower(#{searchWord}) || '%'
+	        </when>
+	    	</choose>
+	        AND a.work_endstatus IS NOT NULL
+	    ) distinct_work_records
+	    ORDER BY work_recorddate DESC
+	) numbered_results
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+
 
 </mapper>

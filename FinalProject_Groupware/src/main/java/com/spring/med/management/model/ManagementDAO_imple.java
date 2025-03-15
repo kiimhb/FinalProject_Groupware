@@ -33,7 +33,7 @@ public class ManagementDAO_imple implements ManagementDAO {
 		return childDeptJSON;
 	}
 
-	//사원등록 폼
+	//인사괸리 - 사원등록 폼
 	@Override
 	public int manag_form(ManagementVO_ga managementVO_ga) {
 		int n = sqlmanag.insert("management_ga.manag_form", managementVO_ga);
@@ -49,7 +49,7 @@ public class ManagementDAO_imple implements ManagementDAO {
 		
 	}
 
-	//사원 전체조회
+	//사원 - 전체조회
 	@Override
 	public List<ManagementVO_ga> Manag_List(Map<String, String> paraMap) {
 		List<ManagementVO_ga> Manag_List = sqlmanag.selectList("management_ga.Manag_List", paraMap);
@@ -70,25 +70,47 @@ public class ManagementDAO_imple implements ManagementDAO {
 		return wordList;
 	}
 
-	// 인사관리 사원수정 한명의 멤버 조회 
+	// 인사관리 - 사원수정 한명의 멤버 조회 
 	@Override
 	public ManagementVO_ga getView_member_one(Map<String, String> paraMap) {
 		ManagementVO_ga member_one = sqlmanag.selectOne("management_ga.getView_member_one", paraMap);
 		return member_one;
 	}
 
-	// 인사관리 사원퇴사
+	// 인사관리 - 사원퇴사
 	@Override
 	public int management_one_delete(String member_userid) {
 		int n = sqlmanag.update("management_ga.management_one_delete", member_userid);
 		return n;
 	}
 
-	// 인사관리 사원정보수정
+	// 인사관리 - 사원정보수정
 	@Override
 	public int Management_one_update(ManagementVO_ga managementVO_ga) {
 		int n = sqlmanag.update("management_ga.Management_one_update", managementVO_ga);
 		return n;
+	}
+	
+	//인사관리 - 근태내역집계 총사원수
+	@Override
+	public int get_commuteList_TotalCount(Map<String, String> paraMap) {
+		int totalCount = sqlmanag.selectOne("management_ga.get_commuteList_TotalCount", paraMap);
+		return totalCount;
+	}
+
+	//인사관리 - 근태내역집계
+	@Override
+	public List<Map<String, String>> manag_commuteList(Map<String, String> paraMap) {
+		List<Map<String, String>> manag_commuteList = sqlmanag.selectList("management_ga.manag_commuteList", paraMap);
+		return manag_commuteList;
+	}
+
+	
+	//인사관리 - 근태내역집계 차트
+	@Override
+	public List<Map<String, String>> management_chart() {
+		List<Map<String, String>> management_chart = sqlmanag.selectList("management_ga.management_chart");
+		return management_chart;
 	}
 
 	

@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+div.manag_h3 {
+	border-bottom: solid 2px gray;
+	margin: 30px;
+}
+
+div.sub_leave_count{
+	border: solid 1px #eee;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 95%;
+	margin: auto;
+	padding: 10px;
+}

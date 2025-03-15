@@ -68,7 +68,7 @@ $(document).ready(function(){
 							   
 							       const len = $("input[name='searchWord']").val().length; 
 								   
-							       const result = word.substring(0, idx) + "<span style='color:purple;'>"+word.substring(idx, idx+len)+"</span>" + word.substring(idx+len); 
+							       const result = word.substring(0, idx) + "<span style='color:#006769;'>"+word.substring(idx, idx+len)+"</span>" + word.substring(idx+len); 
 							       
 								   v_html += `<span style='cursor:pointer;' class='result'>\${result}</span><br>`;
 								   
@@ -742,6 +742,7 @@ function delete_member_userid(e, member_userid) {
 		<td>${managementVO_ga.member_position}</td>
 		<td><button type="button" id="EditView1" onclick="goEdit('${managementVO_ga.member_userid}')">정보수정</button> </td>
 		<td><button type="button" id="EditView2" onclick="goQuit('${managementVO_ga.member_userid}')">퇴사처리</button> </td>
+		</tr>
 		</c:forEach>
 		</c:if>
 		  
@@ -750,26 +751,27 @@ function delete_member_userid(e, member_userid) {
 		  </c:if>
 			</tbody>
 	    </table>
-	</div>    
+	</div>
+	    
 		<div id="EditModal"></div>
 	    <div id="QuitModal"></div>
 	    
 	<div>
 	   <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">${requestScope.pageBar}</div>
-	   
-	    
 	</div>
+	
+	
 		<form name="searchFrm">
 			<select name="searchType" style="height: 26px;">
 				<option value="userid">사번명</option>
 				<option value="position">직급명</option>
 				<option value="name">사원명</option>
-			</select> <input type="text" name="searchWord" size="10" autocomplete="off" />
+			</select> <input type="text"  class="searchFrm_input" name="searchWord" size="10" autocomplete="off" />
 			<input type="text" style="display: none;" />
-			<button type="button" onclick="goSearch()" style="border:none; padding: 3px; width: 55px; ">검색</button>
+			<button type="button" class="searchFrm_button"  onclick="goSearch()" style="border:none; padding: 3px; width: 55px; ">검색</button>
 	
-			<div id="displayList"></div>
-		</form>
+			
+		</form><div id="displayList"></div>
 	</div>
 </div>
 

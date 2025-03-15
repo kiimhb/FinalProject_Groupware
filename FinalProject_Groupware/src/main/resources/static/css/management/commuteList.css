@@ -1,0 +1,111 @@
+@charset "UTF-8";
+
+div.manag_h3 {
+	border-bottom: solid 2px gray;
+	margin: 30px;
+}
+
+div#sub_chart {
+	display: flex;
+	border: solid 1px #eee;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 95%;
+	margin: auto;
+}
+
+div#chart_container {
+	width: 50%;
+}
+
+div#sub_commuteList {
+	border: solid 1px #eee;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 95%;
+	margin: 40px auto;
+	padding: 10px;
+}
+
+div.commuteList {
+	height: 230px;
+	margin: auto;
+}
+
+div#sub_mycontent>div#sub_commuteList>div.commuteList>table.commuteListTable{
+	margin: auto;
+	border: solid 1px #eee;
+}
+
+div#sub_mycontent>div#sub_commuteList>div.commuteList>table.commuteListTable th,td {
+	padding: 8px;
+	text-align: center;
+	border: solid 1px #dedede;
+}
+
+div#sub_mycontent>div#sub_commuteList>div.commuteList>table.commuteListTable th{
+	/* 	border-bottom: 1px solid;  */
+	margin-top: 20px;
+	padding: 10px;
+}
+
+div#sub_mycontent>div#sub_commuteList>div.commuteList>table.commuteListTable  thead{
+	background-color: #eee;
+	font-size: 18px;
+}
+
+#sub_commuteList > div.commuteList > table > thead > tr > th:nth-child(10),
+#sub_commuteList > div.commuteList > table > thead > tr > th:nth-child(15),
+#sub_commuteList > div.commuteList > table > tbody > tr> td:nth-child(10),
+#sub_commuteList > div.commuteList > table > tbody > tr > td:nth-child(15){
+	background-color: #d6d6d6;
+}
+
+div#sub_mycontent>div#sub_commuteList>form[name=searchFrm] {
+	margin-left: 30px;
+}
+
+div#pageBar a {
+	color: #509d9c;
+	cursor: pointer;
+}
+
+#pageBar>ul>li {
+	color: #006769;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+input {
+	/* background: #f0f0f0;  */
+	width: 20%;
+	color: #006769;
+	border: none;
+	border-bottom: 1px solid #999999;
+	padding: 9px;
+	margin: 7px;
+}
+
+input:placeholder {
+	color: rgba(255, 255, 255, 1);
+	font-weight: 100;
+}
+
+input:focus {
+	color: #006769;
+	outline: none;
+	border-bottom: 1.3px solid #006769;
+	transition: .8s all ease;
+}
+
+input:focus::placeholder {
+	opacity: 0;
+}
+
+form[name=searchFrm] >button.searchFrm_btn {
+	background-color: #006769;
+	color: white;
+	width: 100px;
+	height: 30px;
+	display: inline-block;
+	align-items: center;
+	justify-content: center;
+}

@@ -18,8 +18,7 @@ div.subContent>div.manageList {
 }
 
 div.subContent>div.manageList>table.manageListTable {
-	/* border: solid 1px aqua;
- */
+	/* border: solid 1px aqua;*/
 	width: 95%;
 	margin: auto;
 	border: solid 1px #eee;
@@ -46,12 +45,68 @@ div.subContent>div.manageList>table.manageListTable  thead {
 	font-size: 18px;
 }
 
-form[name="searchFrm"] {
-	/* border: solid 1px aqua; */
-	width: 240px;
-	margin-left: 23px;
-	transform: translateY(-60px);
+div#pageBar a {
+	color: #509d9c;
+	cursor: pointer;
 }
+#pageBar > ul > li {
+	color: #006769;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+input.searchFrm_input {
+	/* background: #f0f0f0;  */
+  	width: 20%;
+  	color: #006769;
+  	border: none;
+  	border-bottom: 1px solid #999999; 
+  	padding: 9px;
+}
+
+input.searchFrm_input:placeholder {
+  	color: rgba(255, 255, 255, 1);
+  	font-weight: 100;
+}
+
+input.searchFrm_input:focus {
+  	color: #006769;
+  	outline: none;
+  	border-bottom: 1.3px solid #006769; 
+  	transition: .8s all ease;
+}
+
+input.searchFrm_input:focus::placeholder {
+  	opacity: 0;
+}
+
+form[name=searchFrm] > button.searchFrm_button {
+	width: 100px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #006769;
+	color:white; 
+}
+
+form[name=searchFrm] {
+	margin-left:30px;
+	display: flex;
+	align-items: center;
+}
+
+div#displayList {
+	border: solid 1px gray;
+	border-top: 0px;
+	height: 40px;
+	margin-left: 9.4%;
+	margin-top: -3px;
+	overflow: auto;
+}
+
+
+
 
 button#EditView1, button#EditView2{
 	border-radius: 5px;
@@ -66,6 +121,10 @@ button#EditView2{
 	background-color: #CB4154;
 	color: white;
 }
+
+
+
+
 
 /* 사원 수정 css  */
 .form-container {
@@ -125,16 +184,9 @@ button#EditView2{
 }
 
 
-/* 사원 삭제 css  */
-div#displayList {
-	border: solid 1px gray;
-	border-top: 0px;
-	height: 40px;
-	margin-left: 30.8%;
-	margin-top: -1px;
-	overflow: auto;
-}
 
+
+/* 사원 삭제 css  */
 div.delete_member {
 	display: flex;
 	align-items: center;

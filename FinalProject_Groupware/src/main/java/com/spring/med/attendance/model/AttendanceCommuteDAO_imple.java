@@ -20,4 +20,17 @@ public class AttendanceCommuteDAO_imple implements AttendanceCommuteDAO {
 		return commute_count;
 	}
 
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount  = sqlsession.selectOne("AttendanceCommute_ga.getTotalCount",paraMap);
+		return totalCount;
+	}
+
+	@Override
+	public List<Map<String, String>> get_work_count(Map<String, String> paraMap) {
+		List<Map<String, String>> work_count = sqlsession.selectList("AttendanceCommute_ga.get_work_count", paraMap);
+		return work_count;
+	}
+
+
 }

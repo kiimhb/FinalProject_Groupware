@@ -262,7 +262,7 @@ $(document).ready(function () {
             </div>
              
 
-      <button type="button" class="nav_button_css" ><i class="fa-solid fa-comments nav_i_css2" onclick="location.href='<%=ctxPath%>/chatting/chat'"></i></button>
+      <button type="button" class="nav_button_css" ><i class="fa-solid fa-message nav_i_css2" onclick="location.href='<%=ctxPath%>/chatting/chat'"></i></button>
       </div>
       
    </nav>

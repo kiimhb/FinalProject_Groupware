@@ -621,8 +621,8 @@ window.onload = getWeatherForecast;
 	
 <!-- 일정관리 시작 -->	
 	<div class="box_schedule">
+		<a class="main_h6" href="<%=ctxPath%>/schedule/scheduleManagement"  style="margin-left: 9px;">일정관리</a>
 		<div>
-		<a class="main_h6" href="<%=ctxPath%>/schedule/scheduleManagement" >일정관리</a>
 			<div id="wrapper1">
 				<input type="hidden" value="${sessionScope.loginuser.member_userid}"
 					id="fk_member_userid" />

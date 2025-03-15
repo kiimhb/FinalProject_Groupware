@@ -19,5 +19,23 @@ public class AttendanceCommuteService_imple implements AttendanceCommuteService 
 		List<Map<String, String>> commute_count = dao.get_commute_count(member_userid);
 		return commute_count;
 	}
+	
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount = dao.getTotalCount(paraMap);
+		return totalCount;
+	}
+
+	@Override
+	public List<Map<String, String>> get_work_count(Map<String, String> paraMap) {
+		List<Map<String, String>> work_count = dao.get_work_count(paraMap);
+		return work_count;
+	}
+
+	
+
+	
+
+	
 
 }

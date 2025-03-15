@@ -209,7 +209,7 @@ span.main_logo2 {
 /* meun 알림창*/
 div.navbar_menu {
 	padding: 7px;
-	margin-right: 150px;
+	margin-right: 80px;
 }
 
 button.nav_button_css {
@@ -221,6 +221,7 @@ button.nav_button_css {
 
 i.nav_i_css1, i.nav_i_css2 {
 	font-size: 30px;
+	color: #90A4AE;
 }
 
 i.nav_i_css1 {
@@ -241,7 +242,7 @@ div.Alarm_box {
 	display: none;
 	position: absolute;
 	top: 70px;
-	right: 120px;
+	right: 90px;
 	border: 1px solid #ccc;
 	background-color: #FAFAFA;
 	padding: 10px;
