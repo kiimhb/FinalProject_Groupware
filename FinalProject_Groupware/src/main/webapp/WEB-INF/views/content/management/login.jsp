@@ -12,38 +12,36 @@ String ctxPath = request.getContextPath();
 <head>
 <meta charset="UTF-8">
 <title>마포아삭병원</title>
-<link rel="icon" href="<%=ctxPath%>/image/Favicon_logo.png" type="image/png">
+<link rel="icon" href="<%=ctxPath%>/image/Favicon_logo.png"
+	type="image/png">
 <style type="text/css">
 body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: url("<%=ctxPath%>/image/서울아산병원.jpg") no-repeat center center fixed;
-  background-size: cover;
-  transition: background-image 15s ease-in-out;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100vh;
+	position: relative;
+	background-image: linear-gradient(to bottom, white 17%, rgba(255, 255, 255, 0.1)
+		50%, rgba(255, 255, 255, 0.5) 100%),
+		url("<%=ctxPath%>/image/서울아산병원.jpg");
+	background-position: center center;
+	background-size: cover;
+	background-attachment: fixed;
+	overflow: hidden;
+	transition: background-image 15s ease-in-out;
 }
 
-/* 배경 애니메이션 */
-@keyframes backgroundAnimation {
-  0% {
-    background-image: url("<%=ctxPath%>/image/서울아산병원.jpg");
-  }
-  100% {
-    background-image: url("<%=ctxPath%>/image/서울아산병원.jpg");
-  }
-}
-
+/* 불투명 블랙 레이어 */
 body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 20%;
-  background: linear-gradient(to bottom, white, rgba(255, 255, 255, 0));
-  z-index: -1;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	z-index: 0;
 }
-
 
 div.logo-container {
 	display: flex;
@@ -209,4 +207,3 @@ $(document).ready(function(){
 
 
 </div>
-
