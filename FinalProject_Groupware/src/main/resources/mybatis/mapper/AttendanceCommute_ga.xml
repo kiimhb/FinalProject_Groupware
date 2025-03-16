@@ -17,59 +17,64 @@
 		<result property="member_yeoncha" column="member_yeoncha" javaType="String" />
 	</resultMap>
 	<select id="get_commute_count" resultMap="commute_countMAP" parameterType="HashMap">
-    WITH
-    A AS 
-    (
+    WITH A AS (
         SELECT 
-        M.member_userid, 
-        NVL(L.day_leave_cnt, 0) AS day_leave_cnt, 
-        M.member_yeoncha
+            M.member_userid, 
+            COALESCE(L.day_leave_cnt, 0) AS day_leave_cnt, 
+            M.member_yeoncha
         FROM tbl_member M 
-        LEFT JOIN tbl_draft D ON M.member_userid = D.fk_member_userid AND D.draft_status = '승인완료' 
+        LEFT JOIN tbl_draft D ON M.member_userid = D.fk_member_userid 
+            AND D.draft_status = '승인완료' 
         LEFT JOIN tbl_day_leave L ON D.draft_no = L.fk_draft_no
     ),
-    B AS
-    (
+    B AS (
         SELECT
-        member_userid,
-        COUNT(CASE WHEN work_startstatus = 0 OR work_endstatus = 0 THEN 1 END) AS click,
-        COUNT(CASE WHEN work_startstatus = 1 THEN 1 END) AS late,
-        COUNT(CASE WHEN work_endstatus = 1 THEN 1 END) AS leave,
-        COUNT(CASE WHEN work_startstatus = 2 OR work_endstatus = 2 THEN 1 END) AS absent,
-        (
-           COUNT(CASE WHEN work_startstatus = 1 THEN 1 END) +
-           COUNT(CASE WHEN work_endstatus = 1 THEN 1 END) +
-           COUNT(CASE WHEN work_startstatus = 2 OR work_endstatus = 2 THEN 1 END)
-        ) AS total_count
-        FROM tbl_work W 
-        JOIN tbl_member M ON W.fk_member_userid = M.member_userid
+            M.member_userid,
+            COALESCE(COUNT(CASE WHEN work_startstatus = 0 OR work_endstatus = 0 THEN 1 END), 0) AS click,
+            COALESCE(COUNT(CASE WHEN work_startstatus = 1 THEN 1 END), 0) AS late,
+            COALESCE(COUNT(CASE WHEN work_endstatus = 1 THEN 1 END), 0) AS leave,
+            COALESCE(COUNT(CASE WHEN work_startstatus = 2 OR work_endstatus = 2 THEN 1 END), 0) AS absent,
+            (
+                COALESCE(COUNT(CASE WHEN work_startstatus = 1 THEN 1 END), 0) +
+                COALESCE(COUNT(CASE WHEN work_endstatus = 1 THEN 1 END), 0) +
+                COALESCE(COUNT(CASE WHEN work_startstatus = 2 OR work_endstatus = 2 THEN 1 END), 0)
+            ) AS total_count
+        FROM tbl_member M
+        LEFT JOIN tbl_work W ON W.fk_member_userid = M.member_userid
         GROUP BY M.member_userid
     )
     SELECT  
-        B.click, B.late, B.leave, B.absent, B.total_count, 
+        COALESCE(B.click, 0) AS click, 
+        COALESCE(B.late, 0) AS late, 
+        COALESCE(B.leave, 0) AS leave, 
+        COALESCE(B.absent, 0) AS absent, 
+        COALESCE(B.total_count, 0) AS total_count, 
         COALESCE(SUM(A.day_leave_cnt), 0) AS day_leave_cnt,
-        a.member_yeoncha
+        A.member_yeoncha
     FROM A 
-    JOIN B ON A.member_userid = B.member_userid 
+    LEFT JOIN B ON A.member_userid = B.member_userid  
     WHERE A.member_userid = #{member_userid} 
-    GROUP BY B.click, B.late, B.leave, B.absent, B.total_count, A.member_userid, a.member_yeoncha
+    GROUP BY B.click, B.late, B.leave, B.absent, B.total_count, A.member_userid, A.member_yeoncha
 	</select>
+
 	
 	<select id="getTotalCount" parameterType="HashMap" resultType="int">
-	SELECT COUNT(DISTINCT to_char(work_recorddate, 'yyyy-mm-dd') || to_char(work_starttime, 'hh24:mi:ss') || to_char(work_endtime, 'hh24:mi:ss')) AS total_count
-	FROM tbl_work a 
-	JOIN tbl_member b ON a.fk_member_userid = b.member_userid
-	WHERE a.fk_member_userid = #{member_userid}
-	AND a.work_endstatus IS NOT NULL
-	<choose>
+    SELECT COUNT(DISTINCT 
+    TO_CHAR(a.work_recorddate, 'yyyy-mm-dd') || TO_CHAR(a.work_starttime, 'hh24:mi:ss') || TO_CHAR(a.work_endtime, 'hh24:mi:ss')) AS total_count
+    FROM tbl_work a 
+    JOIN tbl_member b ON a.fk_member_userid = b.member_userid
+    WHERE a.fk_member_userid = #{member_userid}
+    AND a.work_endstatus IS NOT NULL
+    <choose>
         <when test='searchType == "userid" and searchWord != ""'>
-            and lower(m.member_userid) like '%' || lower(#{searchWord}) || '%'
+            AND LOWER(b.member_userid) LIKE '%' || LOWER(#{searchWord}) || '%'
         </when>
         <when test='searchType == "name" and searchWord != ""'>
-            and lower(m.member_name) like '%' || lower(#{searchWord}) || '%'
+            AND LOWER(b.member_name) LIKE '%' || LOWER(#{searchWord}) || '%'
         </when>
     </choose>
 	</select>
+
 	
 	
 	<resultMap type="HashMap" id="get_work_countMAP">
@@ -113,6 +118,97 @@
 	) numbered_results
 	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<resultMap type="HashMap" id="myLeave_countMAP">
+		<result property="day_leave_cnt" column="day_leave_cnt" javaType="String" />
+		<result property="member_yeoncha" column="member_yeoncha" javaType="String" />
+	</resultMap>
+	<select id="get_myLeave_count" resultMap="myLeave_countMAP" parameterType="HashMap">
+	select 
+    m.member_userid, 
+    m.member_name, 
+    count(l.day_leave_cnt) as day_leave_cnt,
+    m.member_yeoncha
+	from tbl_member m 
+	left join tbl_draft d on m.member_userid = d.fk_member_userid and d.draft_status = '승인완료' 
+	left join tbl_day_leave l on d.draft_no = l.fk_draft_no
+	left join tbl_child_dept c on m.fk_child_dept_no = c.child_dept_no
+	where m.member_userid = #{member_userid} and m.member_last is null
+	group by m.member_userid, m.member_name, m.member_yeoncha
+	</select>
+	
+	
+	
+	<select id="get_myLeave_list_Total"  parameterType="HashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM tbl_member m 
+	LEFT JOIN tbl_draft d ON m.member_userid = d.fk_member_userid AND d.draft_status = '승인완료' 
+	LEFT JOIN tbl_day_leave l ON d.draft_no = l.fk_draft_no
+	WHERE m.member_userid = #{member_userid} AND m.member_last IS NULL
+	<choose>
+        <when test='searchType == "userid" and searchWord != ""'>
+            and lower(m.member_userid) like '%' || lower(#{searchWord}) || '%'
+        </when>
+        <when test='searchType == "name" and searchWord != ""'>
+            and lower(m.member_name) like '%' || lower(#{searchWord}) || '%'
+        </when>
+    </choose>
+	</select>
+	
+	
+	<resultMap type="HashMap" id="myLeave_listMAP">
+		<result property="day_leave_start" column="day_leave_start" javaType="String" />
+		<result property="day_leave_end" column="day_leave_end" javaType="String" />
+		<result property="day_leave_cnt" column="day_leave_cnt" javaType="String" />
+		<result property="draft_status" column="draft_status" javaType="String" />
+	</resultMap>
+	<select id="get_myLeave_list" resultMap="myLeave_listMAP" parameterType="HashMap">
+	select *
+	from (
+	    select 
+	        row_number() over (order by l.day_leave_start desc) as rno, 
+	        m.member_userid, 
+	        m.member_name, 
+	        c.child_dept_name,
+	        m.member_position,
+	        m.member_start,
+	        m.member_last,
+	        to_char(l.day_leave_start, 'yyyy-mm-dd') day_leave_start,
+        	to_char(l.day_leave_end, 'yyyy-mm-dd') day_leave_end,
+	        nvl(l.day_leave_cnt, 0) as day_leave_cnt, 
+	        d.draft_status,
+	        m.member_yeoncha
+	    from tbl_member m 
+	    left join tbl_draft d on m.member_userid = d.fk_member_userid and d.draft_status = '승인완료' 
+	    left join tbl_day_leave l on d.draft_no = l.fk_draft_no
+	    left join tbl_child_dept c on m.fk_child_dept_no = c.child_dept_no
+	    where m.member_userid = #{member_userid} and m.member_last is null
+	    <choose>
+        <when test='searchType == "userid" and searchWord != ""'>
+            and lower(m.member_userid) like '%' || lower(#{searchWord}) || '%'
+        </when>
+        <when test='searchType == "name" and searchWord != ""'>
+            and lower(m.member_name) like '%' || lower(#{searchWord}) || '%'
+        </when>
+    </choose>
+	)
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	
+	
+	
 
 
 </mapper>

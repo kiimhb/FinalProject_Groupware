@@ -10,5 +10,56 @@
 	where member_userid = #{member_userid}
 </select>
 
+<!-- === 인사관리 회원수정 한명의 멤버 조회 === -->
+	<resultMap id="mypageoneMAP" type="ManagementVO_ga">
+    <!-- 기본 필드 매핑 -->
+     <result property="fk_child_dept_no" column="fk_child_dept_no"/>
+    <result property="member_pro_filename" column="member_pro_filename"/>
+    <result property="member_pro_orgfilename" column="member_pro_orgfilename"/>
+    <result property="member_pro_filesize" column="member_pro_filesize"/>
+    <result property="member_sign_filename" column="member_sign_filename"/>
+    <result property="member_sign_orgfilename" column="member_sign_orgfilename"/>
+    <result property="member_sign_filesize" column="member_sign_filesize"/>
+    <result property="member_userid" column="member_userid"/>
+    <result property="member_name" column="member_name"/>
+    <result property="member_position" column="member_position"/>
+    <result property="member_mobile" column="member_mobile"/>
+    <result property="member_birthday" column="member_birthday"/>
+    <result property="member_gender" column="member_gender"/>
+    <result property="member_email" column="member_email"/>
+    <result property="member_start" column="member_start"/>
+    <result property="member_last" column="member_last"/>
+    <result property="member_grade" column="member_grade"/>
+    <result property="member_yeoncha" column="member_yeoncha"/>
+	<result property="member_workingTime" column="member_workingTime"/>
+
+
+    <!-- Child_deptVO_ga 매핑 -->
+    <association property="ChildVO" javaType="Child_deptVO_ga">
+        <result property="child_dept_no" column="child_dept_no"/>
+        <result property="child_dept_name" column="child_dept_name"/>
+        <result property="fk_parent_dept_no" column="fk_parent_dept_no"/>
+    </association>
+
+    <!-- Parent_deptVO_ga 매핑 -->
+    <association property="ParentVO" javaType="Parent_deptVO_ga">
+        <result property="parent_dept_no" column="parent_dept_no"/>
+        <result property="parent_dept_name" column="parent_dept_name"/>
+    </association>
+	</resultMap>
+	
+	<select id="getView_mypageone" resultMap="mypageoneMAP" parameterType="HashMap">
+	    SELECT member_pro_filename, member_pro_orgfilename, member_pro_filesize,
+		member_userid, m.fk_child_dept_no, child_dept_name, fk_parent_dept_no, parent_dept_name,
+		member_name, member_mobile, member_email, member_birthday,
+		member_gender, member_start, member_last, 
+		member_yeoncha, member_grade, member_workingTime, member_position,
+		member_sign_filename,member_sign_orgfilename,member_sign_filesize
+		FROM tbl_member m
+		JOIN TBL_CHILD_DEPT c ON m.fk_CHILD_DEPT_NO = c.CHILD_DEPT_NO
+		JOIN TBL_PARENT_DEPT p ON c.FK_PARENT_DEPT_NO = p.PARENT_DEPT_NO
+	    WHERE member_userid = #{member_userid}
+	</select>
+
 
 </mapper>

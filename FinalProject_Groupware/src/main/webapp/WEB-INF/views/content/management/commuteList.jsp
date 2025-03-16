@@ -123,6 +123,55 @@ $(document).ready(function () {
               alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
           }
       });
+    
+});  
+    
+$(document).ready(function () {    
+    $.ajax({
+        url: "<%= ctxPath%>/management/management_chart2",  
+        dataType: "json",
+        success: function (json) {
+           // console.log(JSON.stringify(json));
+
+            let categories = []; 
+            let leaveCounts = []; 
+
+            json.forEach(item => {
+            	
+                categories.push(item.child_dept);
+                leaveCounts.push({
+                    name: item.child_dept, // 부서명
+                    y: parseFloat(item.child_leave_cnt) || 0 ,  // 연차 사용량
+                    deptCount: parseInt(item.child_dept_count) || 0 // 부서 직원 수
+                });
+            });
+            
+            //console.log("연차 사용량 데이터:", leaveCounts);
+
+            Highcharts.chart('chart_container2', {
+                chart: {
+                    type: 'pie'  // 원형 차트
+                },
+                title: {
+                    text: '부서별 연차 사용량 비율'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b><br>연차 사용: <b>{point.y}일</b><br>부서 직원 수: <b>{point.deptCount}명</b>',
+                },
+                colors: [ '#fee4c6' ,'#ffff7d','#b3d6d2', '#f68b1f', '#4c4d4f',  '#f334c6',   '#006769',  '#8ac2bd' , '#857c7a' ,'#509d9c'],
+                series: [{
+                    name: '연차 사용량',
+                    colorByPoint: true,
+                    data: leaveCounts
+                }]
+            });
+        },
+        error: function (request, status, error) {
+            alert("code: " + request.status + "\nmessage: " + request.responseText + "\nerror: " + error);
+        }
+    });
+
+    
   });
 
 </script>
@@ -140,6 +189,8 @@ $(document).ready(function () {
 	<div id="sub_chart">
 	
 	<div id="chart_container"></div>
+	
+	<div id="chart_container2"></div>
 	
 	</div>
 	

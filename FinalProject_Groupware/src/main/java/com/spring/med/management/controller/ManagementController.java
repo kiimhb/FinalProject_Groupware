@@ -160,7 +160,7 @@ public class ManagementController {
 		n = managService.manag_form(managementVO_ga, paraMap);
 
 		if (n == 1) {
-	        mav.setViewName("content/management/managFormDetail");
+	        mav.setViewName("redirect:/management/ManagementList");
 		} else {
 		    mav.setViewName("content/management/managementForm");
 		}
@@ -183,12 +183,6 @@ public class ManagementController {
 	    return sb.toString();
 	}
 	
-	@GetMapping("managFormDetail")
-	public String managFormDetail(ManagementVO_ga managementVO_ga, HttpServletRequest request) {
-		
-		return "content/management/managFormDetail";	
-	}
-	// === 사원등록 폼 페이지 요청 끝 === //
 	
 	
 	// === 메인페이지 이전 로그인 폼 페이지 요청 시작 === //
@@ -623,6 +617,13 @@ public class ManagementController {
 	public List<Map<String, String>> management_chart() {
 		List<Map<String, String>> management_chart = managService.management_chart();
 		return management_chart;
+	}
+	
+	@GetMapping("management_chart2")
+	@ResponseBody
+	public List<Map<String, String>> management_chart2() {
+		List<Map<String, String>> management_chart2 = managService.management_chart2();
+		return management_chart2;
 	}
 
 

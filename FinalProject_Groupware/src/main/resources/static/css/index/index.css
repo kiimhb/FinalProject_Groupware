@@ -45,7 +45,9 @@ div#mycontent {
 	/*  border: solid 1px red; */
 }
 
-div#sub_mycontent {
+div#sub_mycontent  {
+	flex:1;
+	align-items: center; 
 	width: 88%;
 	min-height: 960px;
 	margin: auto;
@@ -54,21 +56,12 @@ div#sub_mycontent {
 	margin-top: 16px;
 	margin-bottom: 8px;
 	padding: 8px;
+	align-items: center;
 }
 
 #mycontent.full {
 	margin-left: 50px; /* 사이드바가 접히면 margin-left를 적절히 조정 */
 }
-
-/* div#sub_mycontent {
-	border: solid 1px #D3D3D3;
-	border-radius: 5px;
-	width: 95%;
-	min-height: 960px;
-	margin: auto;
-	margin-top: 25px;
-	margin-bottom: 25px;
-} */
 
 /* 네비 메뉴바 */
 #myheader>nav>div.navbar_menu {
@@ -209,7 +202,7 @@ span.main_logo2 {
 /* meun 알림창*/
 div.navbar_menu {
 	padding: 7px;
-	margin-right: 80px;
+	margin-right: 65px;
 }
 
 button.nav_button_css {
@@ -242,7 +235,7 @@ div.Alarm_box {
 	display: none;
 	position: absolute;
 	top: 70px;
-	right: 90px;
+	right: 80px;
 	border: 1px solid #ccc;
 	background-color: #FAFAFA;
 	padding: 10px;

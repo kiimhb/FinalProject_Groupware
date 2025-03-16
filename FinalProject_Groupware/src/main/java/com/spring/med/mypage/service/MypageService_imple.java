@@ -1,5 +1,7 @@
 package com.spring.med.mypage.service;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,12 @@ public class MypageService_imple implements MypageService {
 		
 		int n = dao.mypageEdit_update(managementVO_ga);
 		return n;
+	}
+
+	@Override
+	public ManagementVO_ga getView_mypageone(Map<String, String> paramMap) {
+		 ManagementVO_ga mypageone = dao.getView_mypageone(paramMap);
+		return mypageone;
 	}
 
 

@@ -187,6 +187,14 @@ public class ManagementService_imple implements ManagementService {
 		return management_chart;
 	}
 
+	
+	// === 인사관리 근태내역집계 차트2 === //
+	@Override
+	public List<Map<String, String>> management_chart2() {
+		List<Map<String, String>> management_chart2 = manaDAO.management_chart2();
+		return management_chart2;
+	}
+
 
 
 

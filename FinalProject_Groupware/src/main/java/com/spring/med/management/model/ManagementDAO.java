@@ -47,4 +47,7 @@ public interface ManagementDAO {
 
 	// 인사관리 - 근태내역집계 차트
 	List<Map<String, String>> management_chart();
+
+	// 인사관리 - 근태내역집계 차트2
+	List<Map<String, String>> management_chart2();
 }
