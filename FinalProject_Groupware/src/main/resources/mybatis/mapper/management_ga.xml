@@ -293,10 +293,10 @@
 	    WHERE a.member_last IS NULL
 	    <choose>
         <when test='searchType == "userid" and searchWord != ""'>
-            and lower(m.member_userid) like '%' || lower(#{searchWord}) || '%'
+            and lower(a.member_userid) like '%' || lower(#{searchWord}) || '%'
         </when>
         <when test='searchType == "name" and searchWord != ""'>
-            and lower(m.member_name) like '%' || lower(#{searchWord}) || '%'
+            and lower(a.member_name) like '%' || lower(#{searchWord}) || '%'
         </when>
     </choose>
 	    GROUP BY a.member_userid, a.member_name, a.child_dept_name, a.member_position, 

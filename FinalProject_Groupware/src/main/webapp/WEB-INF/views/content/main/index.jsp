@@ -20,7 +20,42 @@
 
 <jsp:include page="../../header/header1.jsp" />
 
+<style type="text/css">
+.fc-daygrid-day[data-event-class="event-hospitalize"] .fc-daygrid-more-link {
+	background-color: #509d9c !important;
+}
+.fc-daygrid-day[data-event-class="event-surgery"] .fc-daygrid-more-link {
+	background-color: #b3d6d2 !important;
+}
+.fc-daygrid-day[data-event-class="event-order"] .fc-daygrid-more-link {
+	background-color: #f68b1f !important;
+}
+/* 캘린더 평일 */
+a, 
+a:hover, 
+.fc-daygrid {
+    color: #000;
+    text-decoration: none;
+    background-color: transparent;
+    cursor: pointer;
+}
 
+/* 주말 날짜 색 */
+.fc-day-sun a {
+  color: red;
+  text-decoration: none;
+}
+.fc-day-sat a {
+  color: blue;
+  text-decoration: none;
+}
+
+.fc-button {
+	font-size: 10pt !important;
+	background-color: #4c4d4f !important;
+	border: none !important; 
+}
+</style>
 <script type="text/javascript">
 
 <!-- 일정관리 시작 -->

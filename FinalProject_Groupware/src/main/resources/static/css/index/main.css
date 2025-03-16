@@ -194,35 +194,11 @@ div.box_schedule {
 	flex: 1 1 640px;
 }
 
-div.box_schedule > a, a:hover, .fc-daygrid {
-    color: #000;
-    text-decoration: none;
-    background-color: transparent;
-    cursor: pointer;
-} 
-
 div#calendar {
 	margin: 10px auto;
 	box-sizing: border-box;
 	width: 630px;
 	height: 400px;
-}
-
-a.fc-dom-24, a.fc-dom-24:hover, .fc-daygrid {
-	color: #FF0000;
-	text-decoration: none;
-	background-color: transparent;
-	cursor: pointer;
-}
-
-.fc-sat {
-	color: #0000FF;
-} /* 토요일 */
-.fc-sun {
-	color: #FF0000;
-} /* 일요일 */
-ul {
-	list-style: none;
 }
 
 button.btn_edit {
