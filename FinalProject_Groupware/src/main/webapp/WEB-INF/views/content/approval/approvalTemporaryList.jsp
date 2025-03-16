@@ -199,7 +199,7 @@ function goSearch() {
 
 <%-- ===================================================================== --%>
 <div id="sub_mycontent"> 
-	<div class="tempListContainer">
+
 		<h2><a href="<%= ctxPath%>/approval/approvalTemporaryList" style="text-decoration: none; color: inherit; ">임시저장함</a></h2>
 		
 		<div id="topSearch">
@@ -282,7 +282,7 @@ function goSearch() {
 			<input type="hidden" name="draft_no" />
 		</form>
 		
-	</div>
+
 </div>
 
 <jsp:include page="../../footer/footer1.jsp" />    
