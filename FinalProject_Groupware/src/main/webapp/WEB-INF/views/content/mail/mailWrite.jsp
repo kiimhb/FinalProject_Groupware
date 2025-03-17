@@ -570,7 +570,13 @@ color:black;
    		        	<input type="text" name="mail_title" size="100" maxlength="200" />
    		        </td>
    		     </tr>
-   		     
+   		      <%-- === #145. 파일첨부 타입 추가하기 === --%>
+			 <tr>
+			    <th style="width: 15%; background-color: #b3d6d2;">파일첨부</th>
+			    <td>
+			        <input type="file" name="attach" />
+			    </td>
+			 </tr>
    		     <tr>
 				<th style="width: 15%; background-color: #b3d6d2;">내용</th> 
 				<td>
@@ -578,13 +584,7 @@ color:black;
 				</td>
 			 </tr>
 			 
-			 <%-- === #145. 파일첨부 타입 추가하기 === --%>
-			 <tr>
-			    <th style="width: 15%; background-color: #b3d6d2;">파일첨부</th>
-			    <td>
-			        <input type="file" name="attach" />
-			    </td>
-			 </tr>
+			
 
    		</table>
    		

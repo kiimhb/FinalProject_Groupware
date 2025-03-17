@@ -263,11 +263,12 @@ div#pageBar a {
 li.nav{
 
 color:black;
-
+font-weight:bold;
 }
 
 a.nav-link{
 
+font-weight:bold;
 color:black;
 
 }
@@ -323,8 +324,8 @@ color:white;
 
 
 
-	<ul class="nav nav-tabs" style="margin:0.1% 5%;">
-			  <li class="nav-item">
+	<ul class="nav nav-tabs" style="border:none; margin:0.1% 5%;">
+			  <li class="nav-item" >
 			    <a class="nav-link active" data-toggle="tab" href="#sent">보낸메일함</a>
 			  </li>
 			  <li class="nav-item">
@@ -337,8 +338,8 @@ color:white;
 
 <div class="tab-pane container-fluid active" style="border:solid 0px red;" id="sent">
 
-		<div style="float:right;"><button class="btnRes"onclick="sentMailRestore()">복구</button></div>
-		<div style="float:right; margin-right:0.5%;"><button class="btnDel" onclick="sentMailDelete()">삭제</button></div>	
+		<div style="float:right; margin-bottom:0.2%;"><button class="btnRes"onclick="sentMailRestore()">복구</button></div>
+		<div style="float:right; margin-right:0.5%; margin-bottom:0.2%;"><button class="btnDel" onclick="sentMailDelete()">삭제</button></div>	
 
 	<table class="table table-hover" style="width:100%; text-align:center;">
 		<thead class="bg-light" style="border: solid 0px black; height:50px;">

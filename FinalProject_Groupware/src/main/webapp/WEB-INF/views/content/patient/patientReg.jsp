@@ -70,7 +70,7 @@ $(document).ready(function(){
 						    ,"searchWord":$("input[name='searchWord']").val()},
 					   dataType:"json",
 					   success:function(json){
-							console.log(JSON.stringify(json));
+							console.log("이거임?", JSON.stringify(json));
 
 						   
 						   <%-- === #93. 검색어 입력시 자동글 완성하기 7 === --%>
@@ -442,6 +442,44 @@ color:white;
 color:white;
 }
 
+
+.submitNcheck{
+
+background-color:#006769;
+border-radius: 10px;
+border: none;
+width: 120px;
+height:35px;
+color:white;
+
+}
+
+.submitNcheck:hover{
+
+
+color:black;
+
+}
+
+.submitClose{
+
+background-color:#f68b1f;
+border-radius: 10px;
+border: none;
+width: 120px;
+height:35px;
+color:white;
+
+}
+
+.submitClose:hover{
+
+
+color:black;
+
+}
+
+
 </style>
 
 
@@ -544,8 +582,8 @@ color:white;
 							</tbody>
 						</table>						
 						<div class="row justify-content-around mt-3"; style="margin-left: 1%;">						
-							<input type="button" class="btn btn-outline-success btn-lg col-3" value="등록 및 접수" onclick="submitNcheck()" } />
-							<input type="button" class="btn btn-outline-danger btn-lg col-3" value="등록 취소" id="regNewModalClose" />												
+							<input class="submitNcheck" type="button" class="btn btn-outline-success btn-lg col-3" value="등록 및 접수" onclick="submitNcheck()" } />
+							<input class="submitClose" type="button" class="btn btn-outline-danger btn-lg col-3" value="등록 취소" id="regNewModalClose" />												
 						</div>		
 				</div>		
 			</form>		
@@ -601,8 +639,8 @@ color:white;
 							 
 
 						<div style="position:relative; z-index: 2;" class="row justify-content-around">						
-							<input type="button" class="btn btn-outline-success btn-lg col-3" value="등록 및 접수" id="submitNcheck2" />
-							<input type="button" class="btn btn-outline-danger btn-lg col-3" value="등록 취소" id="regExistModalClose" />												
+							<input class="submitNcheck" type="button" class="btn btn-outline-success btn-lg col-3" value="등록 및 접수" id="submitNcheck2" />
+							<input class="submitClose" type="button" class="btn btn-outline-danger btn-lg col-3" value="등록 취소" id="regExistModalClose" />												
 						</div>
 			
 					</div>

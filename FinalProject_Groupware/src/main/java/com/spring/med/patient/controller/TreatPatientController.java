@@ -180,9 +180,13 @@ public class TreatPatientController {
 	@ResponseBody
 	public List<Map<String, String>> wordSearchShow(@RequestParam Map<String, String> paraMap) {
 		
+		System.out.println("파라맵나오니 : "+paraMap);
+		
 		List<String> wordList = service.wordSearchShow(paraMap); 
 		
 		List<Map<String, String>> mapList = new ArrayList<>();
+		System.out.println("워드리스트 나오니 : "+wordList);
+		System.out.println("맵리스트나오니 : "+mapList);
 		
 		if(wordList != null) {
 			for(String word : wordList) {

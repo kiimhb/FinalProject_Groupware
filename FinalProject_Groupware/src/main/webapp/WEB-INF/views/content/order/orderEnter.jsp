@@ -31,6 +31,15 @@
 <script type="text/javascript">
 
 
+const orderYN = confirm("진료 정보 입력을 위해 오더를 생성하시겠습니까?")
+
+if(orderYN == false){
+	goWaiting();
+}
+else{
+	
+}
+
 
 $(document).ready(function(){
 	
@@ -221,14 +230,7 @@ $(document).ready(function(){
 			
 		});
 	
-	const orderYN = confirm("진료 정보 입력을 위해 오더를 생성하시겠습니까?")
-	
-		if(orderYN == false){
-			goWaiting();
-		}
-		else{
-			
-		}
+
 	
 	
 	<%--// === 질병 검색시 자동 완성하기 1 === // --%>
@@ -1188,7 +1190,7 @@ input:focus::placeholder {
 					<table style="text-align:center; width:100%; border:solid 0px green;" >
 						<tr>
 							<td style="">기본진료</td>
-							<td style="">5,000원</td>
+							<td style="">5000원</td>
 						</tr>
 						
 						<tr id="surgeryName">

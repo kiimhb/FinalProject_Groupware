@@ -279,12 +279,12 @@ color:white;
 <jsp:include page="../../header/header1.jsp" /> 
 
 <div id="sub_mycontent">
-<div class="header" style="font-size:15pt; margin: 1% 10%;">
+<div class="header" style="font-size:15pt; margin: 1% 5%;">
 
 	<div class="title">받은 메일함</div>
 </div>
 
-<div style="margin:0.1% 10%">
+<div style="margin:0.1% 5%">
 	
 	<div style="margin:0.2% 0.2%; float:left;"><button class="btnWrite" onclick="location.href='<%= ctxPath%>/mail/mailWrite'">메일쓰기</button></div>
 	<div style="float:right; margin-left:0.5%;"><button class="btnDel" onclick="sendMailTrash()">삭제</button></div>
@@ -292,7 +292,7 @@ color:white;
 
 
 <div id=Container;>
-	<div id="tableContainer" style="border:solid 0px red; margin: 1% 10%; width:80%;">
+	<div id="tableContainer" style="border:solid 0px red; margin: 0% 5%; width:90%;">
 
 		<table class="table table-hover text-center"style="width: 100%; text-align:center;" id="tblReceived">
 			<thead class="bg-light" style="border: solid 0px black; height:50px;">
@@ -341,7 +341,7 @@ color:white;
 		</table>
 
 		
-		<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		<div align="center" id="pageBar" style="border: solid 0px gray; width: 100%; margin: auto;">
 	    	${requestScope.pageBar}
 	    </div>
 	</div>

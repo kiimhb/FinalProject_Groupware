@@ -144,7 +144,7 @@ div#pageBar a {
 			<form name="patientGoToOrder">
 				<c:if test="${not empty requestScope.patientList}">
 				<c:forEach var="pvo" items="${requestScope.patientList}">
-					<tr onclick="trclick(${pvo.patient_no})" style="border:solid 0px black;">
+					<tr onclick="trclick(${pvo.patient_no})" style="border:none;">
 						<td>${pvo.rno}</td>
 						<td>${pvo.patient_name}</td>
 						<td>${pvo.patient_gender}</td>
@@ -156,7 +156,7 @@ div#pageBar a {
 				</c:if>
 				<c:if test="${empty requestScope.patientList}">
 					<tr style="">
-						<td style="border:solid 1px black;"colspan="6">해당된 환자가 없습니다.</td>
+						<td style="border:solid 0px black;"colspan="6">해당된 환자가 없습니다.</td>
 					</tr>
 				</c:if>
 				<input type="hidden" name="nameClickPatient_no" id="idClickPatient_no"/>				
