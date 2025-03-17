@@ -144,13 +144,12 @@ let arr_approvalLineMembers = [];	// 결재선에 추가된 멤버
 let arr_referenceMembers = [];		// 참조자에 추가된 멤버
 	
 $(document).ready(function(){
-	
 
 	if(${empty requestScope.approvalvo}) {
 		<%-- 첫 페이지에서 휴가신청서 보이기 --%>
 		  $.ajax({
 		     url: "<%= ctxPath%>/approval/writeDraft",
-		     data: {"typeSelect":"휴가신청서"},
+		     data: {"typeSelect":"근무 변경 신청서"},
 		     type: "get",
 		     success: function(draftForm) {
 		        
@@ -162,6 +161,13 @@ $(document).ready(function(){
 		        swal('양식 불러오기 실패!',"다시 시도해주세요",'error');
 		     }
 		  });
+	}
+	
+	const hideChangeDraft = "${requestScope.hideChangeDraft}";
+	
+	<%-- 임시저장에서 보이는 양식은 결재양식 변경 버튼 숨기기 --%>
+	if(hideChangeDraft == 1) {
+		$("button#btnType").hide();
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////
@@ -187,9 +193,7 @@ $(document).ready(function(){
 												<select name="typeSelect" class="form-control">						
 													<option value="">양식 선택</option>
 													<option value="휴가신청서">휴가신청서</option>
-													<option value="지출결의서">지출결의서</option>
 													<option value="근무 변경 신청서">근무 변경 신청서</option>
-													<option value="출장신청서">출장신청서</option>
 												</select>
 											</form>
 										</div>
@@ -226,14 +230,8 @@ $(document).ready(function(){
 					case "휴가신청서":
 						draftFormExample.load("<%= ctxPath%>/approval/dayLeaveForm");
 						break;
-					case "지출결의서":
-						draftFormExample.load("<%= ctxPath%>/approval/expenseReportForm");
-						break;
 					case "근무 변경 신청서":
 						draftFormExample.load("<%= ctxPath%>/approval/workChangeForm");
-						break;
-					case "출장신청서":
-						draftFormExample.load("<%= ctxPath%>/approval/businessTripForm");
 						break;
 				}
 			}
@@ -313,24 +311,29 @@ $(document).ready(function(){
 				        }
 				        else {
 				            $("input:radio[id='allDay']").prop("checked", true); // 연차
-							
 							$("div#halfDay").css({"display":"none"});
 							$("div#allDay").css({"display":"block"});	
-							
+
 							$("input[name='allDay_leave_start']").val("${requestScope.approvalvo.day_leave_start}");  // 연차시작일
 							$("input[name='allDay_leave_end']").val("${requestScope.approvalvo.day_leave_end}");	  // 연차종료일
-							//$("input[name='allDay_leave_end']").trigger("change");
+							$("input[name='allDay_leave_end']").trigger("change");
 							
+							$("span#allDay_day_leave_cnt").text("${requestScope.approvalvo.day_leave_cnt}");
 				        }
 				    }, 0);
 					
-					//$("span#day_leave_cnt").text("${requestScope.approvalvo.day_leave_cnt}");
-					//$("input[name='allDay_leave_end']").off("change", calc_day_leave_cnt); 
-					//console.log("${requestScope.approvalvo.day_leave_cnt}");
-					
 					const temp_day_leave_reason = "${requestScope.approvalvo.day_leave_reason}";
 					$("textarea[name='day_leave_reason']").text(temp_day_leave_reason.replace(/<br\s*\/?>/gi, '\n'));	// 휴가사유
-					$('textarea').trigger('keyup');	// 글자수 세는 함수를 불러오기 위함
+
+				}
+				
+				if(${requestScope.approvalvo.draft_form_type eq "근무 변경 신청서"}) {				
+					$("input[name='work_change_start']").val("${requestScope.approvalvo.work_change_start}");  // 근무변경 시작일
+					$("input[name='work_change_end']").val("${requestScope.approvalvo.work_change_end}");	   // 근무변경 종료일
+					$("select[name='work_change_member_workingTime']").val("${requestScope.approvalvo.work_change_member_workingTime}");	   // 근무변경 시간
+					
+					const work_change_reason = "${requestScope.approvalvo.work_change_reason}";
+					$("textarea[name='work_change_reason']").text(work_change_reason.replace(/<br\s*\/?>/gi, '\n'));	// 근무변경 사유
 				}
 				
 				// 기존 첨부파일 가져오기
@@ -1108,14 +1111,19 @@ function func_goTempAndSubmitDraft(btnType) {
 	let day_leave_reason;	// 휴가사유
 	let day_leave_type;		// 반차 구분
 	const dayLeaveType = ($("input:radio[name='dayLeaveType']:checked").val()); // 연차, 반차 중 어느 것인지 구분을 위한 변수
-	
+
+	let work_change_start;		// 근무변경 시작일
+	let work_change_end;		// 근무변경 종료일
+	let work_change_reason;		// 근무변경 사유
+	let work_change_member_workingTime;	// 근무변경 시간
+
 	if(draft_form_type == "휴가신청서") {
 		
 		if(dayLeaveType == "연차") {
 			day_leave_start = $("input[name='allDay_leave_start']").val();	// 연차시작일
 			day_leave_end = $("input[name='allDay_leave_end']").val();		// 연차종료일
-			day_leave_cnt = $("span#day_leave_cnt").text();					// 연차사용일
-			
+			day_leave_cnt = $("span#allDay_day_leave_cnt").text();			// 연차사용일
+			day_leave_type = 'DAY';
 		}
 		else if (dayLeaveType == "오전반차" || dayLeaveType == "오후반차") {
 			day_leave_end = $("input[name='halfDay_leave_end']").val();			// 반차시작일
@@ -1134,10 +1142,15 @@ function func_goTempAndSubmitDraft(btnType) {
 		day_leave_reason = day_leave_reason.replace(/(?:\r\n|\r|\n)/g,'<br/>');		// 줄바꿈을 문자열로 바꾸어주기
 			
 	}
-	else if (draft_form_type == "근무변경") {
+	else if (draft_form_type == "근무 변경 신청서") {
 			
+		work_change_start = $("input[name='work_change_start']").val();	
+		work_change_end = $("input[name='work_change_end']").val();
+		work_change_reason = $("textarea[name='work_change_reason']").val();
+		work_change_reason = work_change_reason.replace(/(?:\r\n|\r|\n)/g,'<br/>');
+		work_change_member_workingTime = $("select[name='work_change_member_workingTime']").val();
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ==== >>> 유효성 검사 <<< ==== //
 	if (btnType == "임시저장") {
@@ -1173,18 +1186,17 @@ function func_goTempAndSubmitDraft(btnType) {
 			return;
 		}
 
-		if(day_leave_reason == "") {
-			// 휴가사유를 입력하지 않은 경우
-			Swal.fire({
-				icon: 'info',
-			    title: '휴가사유를 입력해주세요.',
-			    text: '다시 시도해주세요.'
-			});
-			return;
-		}
-	
 		if(draft_form_type == "휴가신청서") {
 			
+			if(day_leave_reason == "") {
+				// 휴가사유를 입력하지 않은 경우
+				Swal.fire({
+					icon: 'info',
+				    title: '휴가사유를 입력해주세요.',
+				    text: '다시 시도해주세요.'
+				});
+				return;
+			}	
 			if(dayLeaveType == "연차") {			
 				if (day_leave_start == "") {
 					// 연차시작일을 입력하지 않은 경우
@@ -1194,8 +1206,7 @@ function func_goTempAndSubmitDraft(btnType) {
 					    text: '다시 시도해주세요.'
 					});
 					return;
-				}
-				
+				}		
 				if (day_leave_end == "") {
 					// 연차종료일을 입력하지 않은 경우
 					Swal.fire({
@@ -1219,6 +1230,46 @@ function func_goTempAndSubmitDraft(btnType) {
 			}
 		}// end of if(draft_form_type == "휴가신청서") {}-----------------------------
 		
+		else if (draft_form_type == "근무 변경 신청서") {
+			
+			if(work_change_reason == "") {
+				// 근무 변경 사유를 입력하지 않은 경우
+				Swal.fire({
+					icon: 'info',
+				    title: '근무변경사유를 입력해주세요.',
+				    text: '다시 시도해주세요.'
+				});
+				return;
+			}	
+			if (work_change_start == "") {
+				// 근무변경시작일을 입력하지 않은 경우
+				Swal.fire({
+					icon: 'info',
+				    title: '근무변경 시작일을 입력해주세요.',
+				    text: '다시 시도해주세요.'
+				});
+				return;
+			}		
+			if (work_change_end == "") {
+				// 근무변경종료일을 입력하지 않은 경우
+				Swal.fire({
+					icon: 'info',
+				    title: '근무변경 종료일을 입력해주세요.',
+				    text: '다시 시도해주세요.'
+				});
+				return;
+			}
+			if (work_change_member_workingTime == "") {
+				// 근무변경 시간을 입력하지 않은 경우
+				Swal.fire({
+					icon: 'info',
+				    title: '근무변경 시간을 입력해주세요.',
+				    text: '다시 시도해주세요.'
+				});
+				return;
+			}
+						
+		}// end of if(draft_form_type == "근무 변경 신청서") {}-----------------------------
 	}
 
 
@@ -1226,8 +1277,6 @@ function func_goTempAndSubmitDraft(btnType) {
 	let titleText = '';
     let messageText = '';
 
-    
-    
 	// 접근 경로 및 작업에 따라 service 단에서 다르게 처리하기 위한 용도
 	if (draftMode == "update") {
 		if(btnType == "임시저장") {
@@ -1276,7 +1325,12 @@ function func_goTempAndSubmitDraft(btnType) {
 	formData.append("day_leave_cnt", day_leave_cnt);
 	formData.append("day_leave_reason", day_leave_reason);
 	formData.append("day_leave_type", day_leave_type);
+	formData.append("work_change_start", work_change_start);
+	formData.append("work_change_end", work_change_end);
+	formData.append("work_change_reason", work_change_reason);
+	formData.append("work_change_member_workingTime", work_change_member_workingTime);
 	
+		
 	// 파일데이터가 있다면 파일데이터도 추가
 	var fileInput = $("input[type='file']")[0];
 	var file = fileInput.files[0];
@@ -1286,7 +1340,7 @@ function func_goTempAndSubmitDraft(btnType) {
 	}
 	
 
-	<%-- 임시저장 ajax 요청 --%>
+	<%-- 기안문 저장 ajax 요청 --%>
 	$.ajax({
 		url:"<%= ctxPath%>/approval/insertToTemporaryStored",
 		data: formData,
@@ -1302,10 +1356,10 @@ function func_goTempAndSubmitDraft(btnType) {
 				    text: messageText
 				}).then((result) => {
 					
-					if (draftMode == "update") {
+					if (draftMode == "update" || titleText == "임시 저장 완료") {
 						window.location.href = "<%= ctxPath%>/approval/approvalTemporaryList";
 					}
-					else if (draftMode == "insert") {
+					else {
 						window.location.href = "<%= ctxPath%>/approval/approvalRequestList";
 					}
 				});;
@@ -1359,7 +1413,7 @@ function func_referMember() {
 
 <%-- ===================================================================== --%>
 <div id="sub_mycontent"> 
-	<div class="writeContainer">
+
 		<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">기안문작성</h2>
 		
 		<button type="button" id="btnType" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">결재양식선택</button>
@@ -1375,7 +1429,7 @@ function func_referMember() {
 		
 		<div id="draft" style="margin: auto;"></div>
 		
-	</div>
+
 </div>
 
 

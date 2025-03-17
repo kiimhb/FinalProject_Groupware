@@ -126,10 +126,11 @@ $.ajax({
     	        <tr>
     	            <th>휴대전화</th>
     	            <td>
-    	                <input type="text" name="hp1" id="hp1" maxlength="3" size="6" value="010" readonly /> -
-    	                <input type="text" name="hp2" id="hp2" maxlength="4" size="6" value="\${json.member_mobile.substring(4,8)}" /> -
-    	                <input type="text" name="hp3" id="hp3" maxlength="4" size="6" value="\${json.member_mobile.substring(9)}" />
-    	           		<span class="error" id="hp_error">전화번호를 정확하게 입력해 주세요.</span>
+    	            <input type="text" name="hp1" id="hp1" maxlength="3" value="010" readonly />
+                    <span>-</span>
+                    <input type="text" name="hp2" id="hp2" maxlength="4" value="\${json.member_mobile.substring(4,8)}" />
+                    <span>-</span>
+                    <input type="text" name="hp3" id="hp3" maxlength="4" value="\${json.member_mobile.substring(9)}" />
     	            </td>
     	        </tr>
     	        <tr>
@@ -142,7 +143,7 @@ $.ajax({
     	        </tr>
     	        <tr>
     	            <th>성별</th>
-    	            <td><input type="text" name="member_gender" value="\${json.member_grade == '남' ? '남자' : '여자'}" readonly /></td>
+    	            <td><input type="text" name="member_gender" value="\${json.member_gender == '남' ? '남자' : '여자'}" readonly /></td>
     	        </tr>
     	        <tr>
     	            <th>근무시간</th>
@@ -308,6 +309,8 @@ $(document).ready(function(){
         $('#member_mobile').val(member_mobile); 
         
         /*  console.log(frm); */
+        
+        console.log(member_mobile);
         
         frm.method = "post";
         frm.action = "<%= ctxPath%>/mypage/mypageEdit";

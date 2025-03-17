@@ -85,7 +85,15 @@ button.btn:hover {
 }
 
 
-
+/* 주말 날짜 색 */
+.fc-day-sun a {
+  color: red;
+  text-decoration: none;
+}
+.fc-day-sat a {
+  color: blue;
+  text-decoration: none;
+}
 
 .fc .fc-button-primary {
     color: var(--fc-button-text-color, #fff);

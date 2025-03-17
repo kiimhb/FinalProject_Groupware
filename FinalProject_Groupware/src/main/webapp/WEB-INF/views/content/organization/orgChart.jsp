@@ -123,6 +123,7 @@
 	}
 	
 	button#mailBtn {
+		margin-left: auto;
 		width: 13%;
 		height: 40px;
 	}
@@ -370,7 +371,7 @@ function jsTreeView(jsonData) {
 			<div id="memberInfoBorder" style="border: solid 0px gray; margin: 8%; border-radius: 3px;">
 				<div id="memberInfo" ></div>
 				<div id="memberBtns">
-					<button type="button" id="chatBtn" class="btn" style="background-color: #4c4d4f; color:white;"><i class="fa-regular fa-comments fa-xl"></i></button>
+					<!-- <button type="button" id="chatBtn" class="btn" style="background-color: #4c4d4f; color:white;"><i class="fa-regular fa-comments fa-xl"></i></button> -->
 					<button type="button" id="mailBtn" class="btn" style="background-color: #4c4d4f; color:white;"><i class="fa-regular fa-envelope fa-xl"></i></button>
 				</div>
 			</div>

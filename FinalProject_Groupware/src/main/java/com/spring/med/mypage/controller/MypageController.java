@@ -179,9 +179,9 @@ public class MypageController {
 				}
 			}else {
 			    
-			    String current_sign_Filename = managementVO_ga.getMember_sign_filename();
-			    String current_sign_OriginalFilename = managementVO_ga.getMember_sign_orgfilename();
-			    String current_sign_FileSize = managementVO_ga.getMember_sign_filesize(); 
+			    String current_sign_Filename = "";
+			    String current_sign_OriginalFilename = "";
+			    String current_sign_FileSize = "";
 			    
 			    managementVO_ga.setMember_sign_filename(current_sign_Filename);  
 			    managementVO_ga.setMember_sign_orgfilename(current_sign_OriginalFilename);  

@@ -82,12 +82,6 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	 console.log("이벤트전" +$("span#day_leave_cnt").text());
-
-	 $("span#day_leave_cnt").on('click', function(e){
-		 alert( $("span#day_leave_cnt").text());
-	 });
-	
 	 
 	$("input:radio[id='amDay']").prop("checked", true);
 	
@@ -212,7 +206,7 @@ $(document).ready(function(){
 	$("input[name='allDay_leave_start']").on("change", function(){
 		$("input[name='allDay_leave_end']").val("");
 	});// end of $("input[name='allDay_leave_start']").on("click", function(){})-------------------
-	
+
 	
 	<%-- 연차일수 계산 이벤트 --%>
 	$("input[name='allDay_leave_end']").on("change", function(){
@@ -226,25 +220,6 @@ $(document).ready(function(){
 /////////////////////////////////
 // >>>> **** 함수 정의 **** <<<< //
 ////////////////////////////////
-
-//===== 휴가사유 글자수를 세주는 함수 ===== //
-function charCount(text, limit) {
-    // 텍스트의 줄바꿈을 포함하여 글자 수 계산
-    var text_value = text.value;
-    
-    // 줄바꿈을 2글자씩으로 처리하기 위해, 줄바꿈 문자 개수만큼 1을 더해줌
-    var char_count = text_value.length + (text_value.match(/\n/g) || []).length;
-
-    if (char_count > limit) {
-       // 글자 수가 제한을 초과한 경우
-        document.getElementById("char_count").innerHTML = "글자 수가 " + limit + "자를 초과했습니다. 현재 글자 수: " + char_count;
-
-    } else {
-        // 글자 수가 제한을 초과하지 않은 경우
-        document.getElementById("char_count").innerHTML = char_count + " / " + limit;
-    }
-}// end of function charCount(text, length){}---------------------------
-
 
 //===== 연차일수 계산 이벤트 ===== //
 function calc_day_leave_cnt() {
@@ -263,7 +238,9 @@ function calc_day_leave_cnt() {
 	
 	// 두 날짜 간의 차이를 밀리초로 계산 및 일로 변환
 	let day_leave_cnt = ((end_date.getTime() - start_date.getTime()) / (1000 * 60 * 60 * 24)) + 1 ;
-	console.log("이벤트후" +day_leave_cnt);
+	
+	
+	
 	if(day_leave_cnt < 1) {
 		// 시작날짜가 종료날짜 이후인 경우
 		$("input[name='allDay_leave_start']").val("");
@@ -290,7 +267,7 @@ function calc_day_leave_cnt() {
 	}
 	else {
 		
-		$("span#day_leave_cnt").html(day_leave_cnt);
+		$("span#allDay_day_leave_cnt").text(day_leave_cnt);
 	}
 }
 
@@ -300,7 +277,7 @@ function calc_day_leave_cnt() {
 <%-- ===================================================================== --%>
 <body>
 	<div class="draftContainer" style="height: 650px; overflow: auto;">
-		<input type="hidden" id="draftMode" value="insert" /> 
+		<input type="hidden" name="draftMode" id="draftMode" value="insert" /> 
 		<h2 id="draftSubject" style="text-align: center;">휴가신청서</h2>
 
 		<form action="">
@@ -387,22 +364,21 @@ function calc_day_leave_cnt() {
 			<div class="input_margin">
 				<div>
 					<div class="draftInfo" style="display: inline-block;">휴가사유</div>
-					<span id="char_count" class="form-text text-muted" style="display: inline-block; float: right;">0 / 2000</span>
 				</div>
-				<textarea class="form-control" name="day_leave_reason" style="width: 100%; height: 150px;" onkeyup="charCount(this,2000)"></textarea>
+				<textarea class="form-control" name="day_leave_reason" style="width: 100%; height: 150px;"></textarea>
 			</div>
 			
 			<div id="halfDay" class="input_margin" style="padding: 10px 0;">
 				<div class="draftInfo">신청기간</div>
 				<input type="date" name="halfDay_leave_end" class="form-control" style="width: 150px; display: inline-block;"/> 
-				<div style="display: inline-block;">총 <span id="day_leave_cnt">0.5</span>일 (잔여연차: ${requestScope.paraMap.member_yeoncha}일)</div>
+				<div style="display: inline-block;">총 <span id="halfDay_day_leave_cnt">0.5</span>일 (잔여연차: <span id="writer_yeoncha">${requestScope.paraMap.member_yeoncha}</span>일)</div>
 			</div>
 			
 			<div id="allDay" class="input_margin" style="padding: 10px 0; display: none;">
 				<div class="draftInfo">신청기간</div>
 				<input type="date" name="allDay_leave_start" class="form-control" style="width: 150px; display: inline-block;"/> 부터
 				<input type="date" name="allDay_leave_end" class="form-control" style="width: 150px; display: inline-block; margin-left: 10px;"/> 까지
-				<div style="display: inline-block;">총 <span id="day_leave_cnt"></span>일 (잔여연차: ${requestScope.paraMap.member_yeoncha}일)</div>
+				<div style="display: inline-block;">총 <span id="allDay_day_leave_cnt"></span>일 (잔여연차: <span id="writer_yeoncha">${requestScope.paraMap.member_yeoncha}</span>일)</div>
 			</div>
 			
 			<div class="input_margin">

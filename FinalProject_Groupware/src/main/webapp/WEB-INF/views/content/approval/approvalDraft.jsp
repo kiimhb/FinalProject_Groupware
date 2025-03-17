@@ -71,13 +71,13 @@
 	}
 	
 	<%-- input 요소들 disable 후 배경색 변경 --%>
-	input:disabled, textarea:disabled {
+	input:disabled, textarea:disabled, select:disabled {
 	    background-color: white !important; 
 	    color: black !important; 
     	border-color: #ccc !important; 
   	}
 
-  	input[type="checkbox"]:disabled, input[type="radio"]:disabled {
+  	input[type="checkbox"]:disabled, input[type="radio"]:disabled, input[type="select"]:disabled {
     	background-color: white !important;
     	color: black !important;
   	}
@@ -130,18 +130,22 @@ $(document).ready(function(){
 			$("div#feedback").css({"display":"block"});
 			
 			// >>> 기존의 값 기안문에 채워넣기 및 결재자 시점에서 disable <<< //
-			// 1. 문서정보
-			$("td#member_name").text("${requestScope.approvalvo.member_name}");					// 기안자
+			// 1-1. 문서정보
+			$("td#member_name").html(`<span style="display:none;" id="writer_userid">${requestScope.approvalvo.fk_member_userid}</span>${requestScope.approvalvo.member_name}`);	// 기안자
 			$("td#parent_dept_name").text("${requestScope.approvalvo.parent_dept_name}");		// 부문
 			$("td#child_dept_name").text("${requestScope.approvalvo.child_dept_name}");			// 부서
 			$("td#member_position").text("${requestScope.approvalvo.member_position}");			// 직책
 			$("td#draft_no").text("${requestScope.approvalvo.draft_no}");						// 문서번호
+
 			
 			// 2. 문서 내용
 			$("input[name='draft_subject']").val("${requestScope.approvalvo.draft_subject}").prop("disabled", true); // 제목
 			
 			if(${requestScope.approvalvo.draft_urgent eq "1"}) {	
 				$("input[name='draft_urgent']").prop("checked", true).prop("disabled", true);	// 긴급여부
+			}
+			else {
+				$("input[name='draft_urgent']").prop("disabled", true);
 			}
 			
 			if(${requestScope.approvalvo.draft_form_type eq "휴가신청서"}) {
@@ -168,14 +172,30 @@ $(document).ready(function(){
 									
 						$("input[name='allDay_leave_start']").val("${requestScope.approvalvo.day_leave_start}").prop("disabled", true);  // 연차시작일
 						$("input[name='allDay_leave_end']").val("${requestScope.approvalvo.day_leave_end}").prop("disabled", true);	  // 연차종료일
+						
+						$("span#allDay_day_leave_cnt").text("${requestScope.approvalvo.day_leave_cnt}");
 			        }
 			    }, 0);
-				
+
+				// 기안자 연차
+				$("span#writer_yeoncha").empty().text("${requestScope.approvalvo.member_yeoncha}"); // 기안자 연차
 				
 				const temp_day_leave_reason = "${requestScope.approvalvo.day_leave_reason}";
 				$("textarea[name='day_leave_reason']").text(temp_day_leave_reason.replace(/<br\s*\/?>/gi, '\n')).prop("disabled", true);	// 휴가사유
 				$('textarea').trigger('keyup');	// 글자수 세는 함수를 불러오기 위함
 			}
+			
+			if(${requestScope.approvalvo.draft_form_type eq "근무 변경 신청서"}) {				
+				$("input[name='work_change_start']").val("${requestScope.approvalvo.work_change_start}").prop("disabled", true);;  // 근무변경 시작일
+				$("input[name='work_change_end']").val("${requestScope.approvalvo.work_change_end}").prop("disabled", true);;	   // 근무변경 종료일
+				$("select[name='work_change_member_workingTime']").val("${requestScope.approvalvo.work_change_member_workingTime}").prop("disabled", true);;	   // 근무변경 시간
+				
+				const work_change_reason = "${requestScope.approvalvo.work_change_reason}";
+				$("textarea[name='work_change_reason']").text(work_change_reason.replace(/<br\s*\/?>/gi, '\n')).prop("disabled", true);;	// 근무변경 사유
+				
+				$("div#dayCnt_workChange").hide();	// 결재자에게는 일수 보이지 않도록
+			}
+							
 			
 			// 3. 기존 첨부파일 가져오기
 			$("label#fileLabel").remove();
@@ -233,7 +253,7 @@ $(document).ready(function(){
 	
 	<%-- #1. 결재승인 버튼 클릭 이벤트 --%>
 	$("button#btnApprove").on("click",function(e){
-		
+
 		// 모달을 넣을 위치
 		const container = $("div#modalClickBtn");
 		
@@ -335,15 +355,32 @@ function goApprovalConfirm() {
 			
 			const fk_draft_no = "${requestScope.approvalvo.draft_no}";
 			const approval_feedback = $("input[name='approval_feedback']").val();
-			const fk_member_userid = $("span#member_userid").text();
-			const day_leave_cnt = $("span#day_leave_cnt").text();
+			const fk_member_userid = $("span#writer_userid").text();
+			const draft_form_type = "${requestScope.approvalvo.draft_form_type}";
 			
+			var day_leave_cnt ="";
+			
+			if(draft_form_type == "휴가신청서") {
+				// 연차 차감 횟수 전송
+				const dayLeaveType = ($("input:radio[name='dayLeaveType']:checked").val());
+						
+				if(dayLeaveType == "연차") {
+					day_leave_cnt = $("span#allDay_day_leave_cnt").text();
+				}
+				else if (dayLeaveType == "오전반차" || dayLeaveType == "오후반차") {
+					day_leave_cnt = $("span#halfDay_day_leave_cnt").text();
+				}
+			}
+
+
 			<%-- 결재의견 및 승인 처리 요청 --%>
 			$.ajax({
 				url:"<%= ctxPath%>/approval/goApprove",
 				data: {"fk_draft_no":fk_draft_no
+					  ,"draft_form_type":draft_form_type
 					  ,"approval_feedback":approval_feedback
-					  ,"write_member_userid":fk_member_userid},
+					  ,"write_member_userid":fk_member_userid
+				  	  ,"day_leave_cnt":day_leave_cnt},
 				type:"post",			
 				success:function(json){
 
@@ -577,7 +614,7 @@ function func_goAddLine() {
 							
 							if(item.approval_status == '승인' && item.member_sign_filename != 'noSign') {
 								
-								$("tr#approvalLine_5").append(`<td style="width: 120px;"><img width="50" height="50" style="border-radius: 50%;" src="<%= ctxPath%>/resources/profile/\${item.member_sign_filename}" / </td>`);
+								$("tr#approvalLine_5").append(`<td style="width: 120px;"><img width="80" height="80" style="border-radius: 50%;" src="<%= ctxPath%>/resources/sign/\${item.member_sign_filename}" / </td>`);
 							}
 							else if (item.approval_status == '승인' && item.member_sign_filename == 'noSign') {
 								$("tr#approvalLine_5").append(`<td style="width: 120px; padding: 2%;">
@@ -707,12 +744,12 @@ function func_goAddLine() {
 <%-- ===================================================================== --%>
 <div id="sub_mycontent"> 
 
-	<div class="writeContainer">
+
 		<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">결재안</h2>
 	
 		<span id="btnRight">
-			<button type="button" id="btnApprove">결재승인</button>
-			<button type="button" id="btnSendBack">결재반려</button>
+			<button type="button" id="btnApprove" style="background-color: #f68b1f; padding: 5px; border-color: #f68b1f; border-radius: 5px; color: white;">결재승인</button>
+			<button type="button" id="btnSendBack" style="background-color: #006769; padding: 5px; border-color: #006769; border-radius: 5px; color: white;">결재반려</button>
 			<button type="button" id="btnGoBackList" onclick="window.location.href='<%= ctxPath%>/approval/approvalPendingList'" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">목록</button>
 		</span>
 	
@@ -722,7 +759,7 @@ function func_goAddLine() {
 		
 		<div id="draft" style="margin: auto;"></div>
 		
-	</div>
+
 
 </div>
 
