@@ -98,7 +98,7 @@ public class ApprovalService_imple implements ApprovalService {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// *** 임시저장함 ***
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== // 
+	// ==== 첨부파일이 없는 경우 기안문 저장하기 ==== // 
 	@Override
 	@Transactional(value="transactionManager_final_orauser4" , propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class}) // 오류가 발생하면 무조건 rollback
 	public int insertToTemporaryStored(Map<String, Object> paraMap) {
@@ -127,7 +127,7 @@ public class ApprovalService_imple implements ApprovalService {
 		//////////////////////////////////////////////////////////
 		// >>> 2. 기안문 양식 테이블에 insert <<<
 		String draft_form_type = (String) paraMap.get("draft_form_type");
-		
+		System.out.println("work_change_member_workingTime" + paraMap.get("work_change_member_workingTime"));
 		if(n1 == 1) {
 			
 			if("휴가신청서".equals(draft_form_type)) {
@@ -139,6 +139,18 @@ public class ApprovalService_imple implements ApprovalService {
 				else if ("update".equals(draftMode) || "update_Submit".equals(draftMode)) {
 					// [휴가신청서] 테이블에 update
 					n2 = mapper_approvalDAO.updateToTemporaryStored_TBL_DAY_LEAVE(paraMap);
+					System.out.println("~~~~확인용 n2 : " + n2);
+				}
+			}
+			else if ("근무 변경 신청서".equals(draft_form_type)) {
+				
+				if("insert".equals(draftMode) || "insert_Submit".equals(draftMode)) {
+					// [근무변경신청서] 테이블에 insert
+					n2 = mapper_approvalDAO.insertToTemporaryStored_TBL_WORK_CHANGE(paraMap);
+				}
+				else if ("update".equals(draftMode) || "update_Submit".equals(draftMode)) {
+					// [근무변경신청서] 테이블에 update
+					n2 = mapper_approvalDAO.updateToTemporaryStored_TBL_WORK_CHANGE(paraMap);
 					System.out.println("~~~~확인용 n2 : " + n2);
 				}
 			}
@@ -277,7 +289,20 @@ public class ApprovalService_imple implements ApprovalService {
 					System.out.println("~~~~확인용 n2 : " + n2);
 				}
 			}
+			else if ("근무 변경 신청서".equals(draft_form_type)) {
+				
+				if("insert".equals(draftMode) || "insert_Submit".equals(draftMode)) {
+					// [근무변경신청서] 테이블에 insert
+					n2 = mapper_approvalDAO.insertToTemporaryStored_TBL_WORK_CHANGE(paraMap);
+				}
+				else if ("update".equals(draftMode) || "update_Submit".equals(draftMode)) {
+					// [근무변경신청서] 테이블에 update
+					n2 = mapper_approvalDAO.updateToTemporaryStored_TBL_WORK_CHANGE(paraMap);
+					System.out.println("~~~~확인용 n2 : " + n2);
+				}
+			}
 		}
+		
 		//////////////////////////////////////////////////////////
 		// >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert <<<
 		//Object approvalLineMember = paraMap.get("approvalLineMember");
@@ -469,8 +494,13 @@ public class ApprovalService_imple implements ApprovalService {
 		}
 		
 		// >>> 4. (TBL_MEMBER) 기안문이 "휴가신청서" 일 경우 연차[member_yeoncha] 를 차감 <<<
+		System.out.println("확인111");
 		if("휴가신청서".equals(map.get("draft_form_type"))) {
-			mapper_approvalDAO.updateToApprovalYeoncha_TBL_MEMBER(map);
+			System.out.println("yeoncha_cnt : " + map.get("day_leave_cnt"));
+			System.out.println("yeoncha_cnt : " + map.get("write_member_userid"));
+			
+			int yeoncha_cnt = mapper_approvalDAO.updateToApprovalYeoncha_TBL_MEMBER(map);
+			System.out.println("yeoncha_cnt : " + yeoncha_cnt);
 		}
 		
 	
