@@ -107,7 +107,7 @@ $(document).ready(function(){
 			  					<td>${hvo.child_dept_name}</td>
 			  					<td>${hvo.patient_name}</td>
 			  					<td>${hvo.patient_gender}</td>
-			  					<td>${hvo.patient_jubun}</td>
+			  					<td>${fn:substring(hvo.patient_jubun, 0, 8)}******</td>
 								<td><button type="button" class="btn" onclick="location.href='<%= ctxPath%>/register/hospitalization/${hvo.order_no}'"><span>예약</span></button></td>		  					</tr>
 		  				</c:forEach>
 					</c:if>
