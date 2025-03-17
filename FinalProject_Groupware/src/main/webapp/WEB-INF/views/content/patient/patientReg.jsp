@@ -70,7 +70,7 @@ $(document).ready(function(){
 						    ,"searchWord":$("input[name='searchWord']").val()},
 					   dataType:"json",
 					   success:function(json){
-							console.log(JSON.stringify(json));
+							console.log("이거임?", JSON.stringify(json));
 
 						   
 						   <%-- === #93. 검색어 입력시 자동글 완성하기 7 === --%>
@@ -422,31 +422,90 @@ function submitNcheck(){
 }
 
 
+/* 상단 타이틀 */
+.header > div.title {
+   border-left: 5px solid #006769;   
+   padding-left: 1%;
+   font-size: 20px;
+   margin-bottom: 1%;
+   color: #4c4d4f;
+   font-weight: bold;
+}
+
+
+#regNewModalOpen:hover {
+
+color:white;
+}
+
+#regExistModalOpen:hover{
+color:white;
+}
+
+
+.submitNcheck{
+
+background-color:#006769;
+border-radius: 10px;
+border: none;
+width: 120px;
+height:35px;
+color:white;
+
+}
+
+.submitNcheck:hover{
+
+
+color:black;
+
+}
+
+.submitClose{
+
+background-color:#f68b1f;
+border-radius: 10px;
+border: none;
+width: 120px;
+height:35px;
+color:white;
+
+}
+
+.submitClose:hover{
+
+
+color:black;
+
+}
+
+
 </style>
 
 
 <jsp:include page="../../header/header1.jsp" />
 
 <div id="sub_mycontent">  
-<div style=" border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;">
+<div class="header" style="border-radius:10px; font-size:15pt; margin: 1% 5%; ">
 
-	<span>환자 등록</span>
-
+	<div class="title">
+		환자 등록
+	</div>
+	<div style="" id="clock"></div>
 </div>
-<div style="text-align:center;" id="clock"></div>
-
-<div id="container">
 
 
+<div id="container" style="position:relative;">
+	<img style="object-fit: cover; opacity: 0.5; z-index: -1; float:center; width:700px; height:700px; position:absolute; position: absolute; top: 50%; left: 51%; transform: translate(-50%, -50%);" class="logo-img" src="<%=ctxPath%>/image/main_logo.png">
 	<div id="patinetRegSelectBoxes" class="row justify-content-around" style="margin:12% 10%;">
-	
-		<div class="col-3" style="background-color:#b3d6d2; text-align:center; line-height:300px; border-radius:20px; height:300px;">
-			<a style="cursor: pointer;" data-toggle="modal" data-target="#patientRegNew" data-dismiss="modal"><span id="regNewModalOpen" style="font-size:15pt; font-weight:bold">신규환자 등록</span></a>
+		
+		<div class="col-3" style="text-align:center; line-height:300px; height:300px;">
+			<button style="background-color:#b3d6d2; font-size:15pt; font-weight: bold; border:solid 0px; border-radius:20px; width:300px;"type="button" id="regNewModalOpen">신규 환자 등록</button>
 		</div>
-
-		<div class="col-3" style="background-color:#b3d6d2; text-align:center; line-height:300px; border-radius:20px; height:300px;">
-			<a style="cursor: pointer;" data-toggle="modal" data-target="#patientRegRe" data-dismiss="modal"><span id="regExistModalOpen" style="font-size:15pt; font-weight:bold">기존환자 조회 및 접수</span></a>
-		</div>		
+		
+		<div class="col-3" style="text-align:center; line-height:300px; height:300px;">
+			<button style="background-color:#b3d6d2; font-size:15pt; font-weight: bold; border:solid 0px; border-radius:20px; width:300px;"type="button" id="regExistModalOpen">기존환자 조회 및 접수</button>
+		</div>	
 	</div>	
 </div>
 
@@ -456,7 +515,7 @@ function submitNcheck(){
 <!-- 신규환자 등록 모달 -->
 <div id="modalContainer" class="hidden" >
 	<div id="modalContent">
-	  <div style="border-radius:10px; font-size:15pt; text-align:center; margin: 1% 5%; background-color:#b3d6d2;"><span>신규환자 등록</span></div>
+	  <div class="header" style="border-radius:10px; font-size:15pt; margin: 1% 5%;"><div class="title">신규환자 등록</div></div>
 		<div style="">
 			<form name="registerFrm">	
 				<div style="margin:1% 5%;">
@@ -522,9 +581,9 @@ function submitNcheck(){
 								</tr>
 							</tbody>
 						</table>						
-						<div class="row justify-content-around mt-3">						
-							<input type="button" class="btn btn-outline-success btn-lg col-3" value="등록 및 접수" onclick="submitNcheck()" } />
-							<input type="button" class="btn btn-outline-danger btn-lg col-3" value="등록 취소" id="regNewModalClose" />												
+						<div class="row justify-content-around mt-3"; style="margin-left: 1%;">						
+							<input class="submitNcheck" type="button" class="btn btn-outline-success btn-lg col-3" value="등록 및 접수" onclick="submitNcheck()" } />
+							<input class="submitClose" type="button" class="btn btn-outline-danger btn-lg col-3" value="등록 취소" id="regNewModalClose" />												
 						</div>		
 				</div>		
 			</form>		
@@ -535,7 +594,7 @@ function submitNcheck(){
 <!-- 기존환자 등록 및 접수 모달 -->
 <div id="modalContainer2" class="hidden" >
 	<div id="modalContent2">
-	  <div style=" border-radius: 10px; font-size:15pt; text-align:center; margin: 1% 5%; background-color:#b3d6d2;"><span>기존환자 등록 및 접수</span></div>
+	  <div class="header" style="font-size:15pt; margin: 1% 5%;"><div class="title">기존환자 등록 및 접수</div></div>
 
 			<div style="">
 				<form name="patientSearchFrm">	
@@ -580,8 +639,8 @@ function submitNcheck(){
 							 
 
 						<div style="position:relative; z-index: 2;" class="row justify-content-around">						
-							<input type="button" class="btn btn-outline-success btn-lg col-3" value="등록 및 접수" id="submitNcheck2" />
-							<input type="button" class="btn btn-outline-danger btn-lg col-3" value="등록 취소" id="regExistModalClose" />												
+							<input class="submitNcheck" type="button" class="btn btn-outline-success btn-lg col-3" value="등록 및 접수" id="submitNcheck2" />
+							<input class="submitClose" type="button" class="btn btn-outline-danger btn-lg col-3" value="등록 취소" id="regExistModalClose" />												
 						</div>
 			
 					</div>

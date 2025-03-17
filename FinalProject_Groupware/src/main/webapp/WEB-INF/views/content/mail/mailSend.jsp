@@ -9,7 +9,7 @@
     //     /myspring
 %>
 
-
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
 
 <script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
@@ -47,7 +47,7 @@ $(document).ready(function(){
 	            //console.log("아이콘 선택 확인:", icon); // 아이콘이 선택되는지 확인
 
 	            if (isImportant) {
-	                icon.removeClass("fa-star-o").addClass("fa-star").css("color", "black");
+	                icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#4c4d4f");
 	                //console.log("⭐ 중요 메일로 변경됨!");
 	            } else {
 	                icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
@@ -93,7 +93,7 @@ function importantMail(mail_sent_no, button) {
             	if (currentStatus === "0") {
             		
             		// 일반메일 => 중요메일로 변경 (색상 회색 -> 검정)
-                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "black");
+                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#4c4d4f");
 
                 } else {
                     // 중요메일 => 일반메일로 변경 (색상 검정 -> 회색)                    
@@ -117,7 +117,7 @@ function importantMail(mail_sent_no, button) {
                     icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
                 } else {
                     // 일반메일 => 중요메일로 변경 (색상 회색 -> 검정)
-                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "black");
+                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#4c4d4f");
                 }
             		
             		currentStatus = (currentStatus === "1") ? "0" : "1"; 
@@ -186,31 +186,88 @@ function trclick(mail_sent_no){
 
 </script>
 
+<style type="text/css">
+/* 페이지바 */
+div#pageBar a {
+   color: #509d9c;
+   cursor: pointer;
+}
+#pageBar > ul > li {
+   color: #006769;
+   font-weight: bold;
+   cursor: pointer;
+}
+
+/* 상단 타이틀 */
+.header > div.title {
+   border-left: 5px solid #006769;   
+   padding-left: 1%;
+   font-size: 20px;
+   margin-bottom: 1%;
+   color: #4c4d4f;
+   font-weight: bold;
+}
+
+.btnWrite{
+
+background-color:#006769;
+border-radius: 10px;
+border: none;
+width: 80px;
+height:35px;
+color:white;
+}
+
+.btnDel{
+
+background-color:#f68b1f;
+border-radius: 10px;
+border: none;
+width: 70px;
+height:35px;
+color:white;
+
+}
+
+.fa-file{
+
+color:#4c4d4f;
+}
+
+#tblSent{
+	box-shadow: 0 2px 5px rgba(0,0,0,.25); 
+	border-radius: 5px;
+
+}
+
+</style>
+
 <jsp:include page="../../header/header1.jsp" /> 
 
 <div id="sub_mycontent">
-<div style=" border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;">
+<div class="header" style="font-size:15pt;  margin: 1% 5%; ">
 
-	<span>보낸 메일함</span>
-	<span>${sessionScope.loginuser.member_userid}</span>
+	<div class="title">보낸 메일함</div>
+	
 </div>
 
-<div style="margin:0.1% 10%">
-	<div style="float:left;"><button onclick="location.href='<%= ctxPath%>/mail/mailWrite'">메일쓰기</button></div>
-	<div style="float:right; margin-left:0.5%;"><button onclick="sendMailTrash()">삭제</button></div>
+<div style="margin:0% 5%">
+	<div style="margin:0.2% 0%; float:left;"><button class="btnWrite" onclick="location.href='<%= ctxPath%>/mail/mailWrite'">메일쓰기</button></div>
+	<div style="float:right; margin-left:0.5%;"><button class="btnDel" onclick="sendMailTrash()">삭제</button></div>
 </div>
 
 
 <div id=Container;>
-	<div id="tableContainer" style="border:solid 1px red; margin: 1% 10%; width:80%;">
+	<div id="tableContainer" style="border:solid 0px red; margin: 1% 5%; width:90%;">
 
-		<table style="width: 100%; text-align:center;">
-			<thead  style="border: solid 1px black; height:50px;">
+		<table class="table table-hover text-center" style="width: 100%; text-align:center;" id="tblSent">
+			<thead class="btn-light" style="border: solid 0px black; height:50px;">
 				<tr>
 					<th style="width:10%">중요</th>
 					<th style="width:40%">제목</th>
 					<th style="width:20%">수신자</th>
-					<th style="width:30%">발신일시</th>			
+					<th style="width:30%">발신일시</th>
+					<th></th>			
 				</tr>	
 			</thead>
 			
@@ -219,22 +276,22 @@ function trclick(mail_sent_no){
 				<c:if test="${not empty requestScope.mailSentList}">
 					<c:forEach items="${requestScope.mailSentList}" var="msl" varStatus="status">
 						<tr>
-							<td style="border-bottom:solid 1px black; height:50px;"> <!-- <div id="starToggle"></div> -->
+							<td style="border-bottom:solid 0px black; height:50px;"> <!-- <div id="starToggle"></div> -->
 								<button type="button" class="btnstar btn-link p-0 no-outline" data-important="${msl.mail_sent_no}" data-important-status ="${msl.mail_sent_important}"							        
 							        style="font-size: 1rem; color: black; background-color: transparent; border: none; outline: none;"
 							        onclick="importantMail('${msl.mail_sent_no}', this)">
 							        <i class="fa fa-star-o" aria-hidden="true"></i>
 							    </button>			
 							</td>
-							<td onclick="trclick(${msl.mail_sent_no})" style="border-bottom:solid 1px black">${msl.mail_title}
+							<td onclick="trclick(${msl.mail_sent_no})" style="">${msl.mail_title}
 							<c:if test="${not empty msl.mail_sent_file }">
 								<i class="fa-solid fa-file"></i>
 							</c:if>
 							
 							</td>
-							<td style="border-bottom:solid 1px black">${msl.member_name}</td>
-							<td style="border-bottom:solid 1px black">${msl.mail_sent_senddate}&nbsp;&nbsp;${msl.timediff}</td>
-							<td style="border-bottom:solid 1px black"><input style="width:100px;"type="checkbox" class="mailCheckbox" data-mail-no="${msl.mail_sent_no}"/></td>
+							<td style="">${msl.member_name}</td>
+							<td style="">${msl.mail_sent_senddate}&nbsp;&nbsp;${msl.timediff}</td>
+							<td style=""><input style="width:100px;"type="checkbox" class="mailCheckbox" data-mail-no="${msl.mail_sent_no}"/></td>
 						</tr>
 						<input type="hidden" value="${msl.mail_sent_important}" />
 					</c:forEach>
@@ -251,7 +308,7 @@ function trclick(mail_sent_no){
 			</tbody>
 		</table>
 		
-		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 	    	${requestScope.pageBar}
 	    </div>
 	</div>
