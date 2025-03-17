@@ -44,9 +44,7 @@ public interface ApprovalDAO {
 	// >>> 2. 기안문 양식 테이블에 insert <<<
 	// [휴가신청서] 테이블에 insert
 	int insertToTemporaryStored_TBL_DAY_LEAVE(Map<String, Object> paraMap);
-	// [근무변경신청서] 테이블에 insert
-	int insertToTemporaryStored_TBL_WORK_CHANGE(Map<String, Object> paraMap);
-	
+
 	// >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert <<<
 	// 결재선 목록에 추가한 유저 insert
 	int insertToTemporaryStored_approvalLine1_TBL_APPROVAL(Map<String, String> approvalLineMap);
@@ -75,8 +73,6 @@ public interface ApprovalDAO {
 	// >>> 2. 기안문 양식 테이블에 update <<<
 	// [휴가신청서] 테이블에 update
 	int updateToTemporaryStored_TBL_DAY_LEAVE(Map<String, Object> paraMap);
-	// [근무변경신청서] 테이블에 update
-	int updateToTemporaryStored_TBL_WORK_CHANGE(Map<String, Object> paraMap);
 	
 	// >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert <<<
 	// 기존 결재선 및 참조자 삭제 
@@ -132,7 +128,7 @@ public interface ApprovalDAO {
 	int updateToApprovalThird_TBL_DRAFT_end(Map<String, String> map);
 	
 	// >>> 4. (TBL_MEMBER) 기안문이 "휴가신청서" 일 경우 연차[member_yeoncha] 를 차감 <<<
-	int updateToApprovalYeoncha_TBL_MEMBER(Map<String, String> map);
+	void updateToApprovalYeoncha_TBL_MEMBER(Map<String, String> map);
 	/////////////////////////////////////////////////	
 
 	// >>> 1. (TBL_APPROVAL) 현재 결재자 상태 "반려'로 update <<<
@@ -155,10 +151,6 @@ public interface ApprovalDAO {
 
 	// ==== 참조문서함 총 게시물 건수 구하기 ==== //
 	int getTotalCount_referenceApproval(Map<String, String> paraMap);
-
-
-
-
 
 
 

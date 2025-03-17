@@ -125,10 +125,10 @@ public class ApprovalController {
 		}
 		else if(typeSelect.equals("지출결의서")) {
 			
-			mav.setViewName("/content/approval/draftExamples/workChange");
+			mav.setViewName("/content/approval/draftExamples/dayLeave");
 		}
 		else if(typeSelect.equals("근무 변경 신청서")) {
-			mav.setViewName("/content/approval/draftExamples/workChange");			
+			mav.setViewName("/content/approval/draftExamples/dayLeave");			
 		}
 		else if(typeSelect.equals("출장신청서")) {
 			mav.setViewName("/content/approval/draftExamples/dayLeave");
@@ -206,7 +206,7 @@ public class ApprovalController {
 	}
 
 	
-	// ==== 기안문 저장하기 ==== // 
+	// ==== 기안문 임시저장하기 ==== // 
 	@PostMapping("insertToTemporaryStored")
 	@ResponseBody
 	public int insertToTemporaryStored(MultipartHttpServletRequest mtp_request) {
@@ -225,14 +225,15 @@ public class ApprovalController {
 		paraMap.put("day_leave_cnt", mtp_request.getParameter("day_leave_cnt"));
 		paraMap.put("day_leave_reason", mtp_request.getParameter("day_leave_reason"));
 		paraMap.put("day_leave_type", mtp_request.getParameter("day_leave_type"));
-		paraMap.put("work_change_start", mtp_request.getParameter("work_change_start"));
-		paraMap.put("work_change_end", mtp_request.getParameter("work_change_end"));
-		paraMap.put("work_change_reason", mtp_request.getParameter("work_change_reason"));
-		paraMap.put("work_change_member_workingTime", mtp_request.getParameter("work_change_member_workingTime"));
-
+		
+		System.out.println("확인용 day_leave_cnt : " + mtp_request.getParameter("day_leave_cnt"));
+		
 		try {
 			String mtp_approvalLineMember = mtp_request.getParameter("approvalLineMember");
 			String mtp_referMember = mtp_request.getParameter("referMember");
+			
+			System.out.println(mtp_approvalLineMember);
+			System.out.println(mtp_referMember);
 			
 			// >>> JSON 문자열을 Map 으로 변환 <<<
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -300,11 +301,11 @@ public class ApprovalController {
 		
 		int result = 0;
 
-		// ==== 첨부파일이 없는 경우 기안문 저장하기 ==== //
+		// ==== 첨부파일이 없는 경우 기안문 임시저장하기 ==== //
 		if(attachFile == null) {
 			result = approvalService.insertToTemporaryStored(paraMap);
 		}
-		// ==== 첨부파일이 있는 경우 기안문 저장하기 ==== //
+		// ==== 첨부파일이 있는 경우 기안문 임시저장하기 ==== //
 		else if(attachFile != null) {
 			result = approvalService.insertToTemporaryStored_withFile(paraMap);
 		}
@@ -524,7 +525,6 @@ public class ApprovalController {
 	
 		HashMap<String, String> approvalvo = approvalService.approvalTemporaryDetail(draft_no);
 		mav.addObject("approvalvo", approvalvo);
-		mav.addObject("hideChangeDraft","1");
 		mav.setViewName("/content/approval/write");
 		
 		return mav;
@@ -576,7 +576,7 @@ public class ApprovalController {
 			mav.setViewName("/content/approval/draftExamples/dayLeave");
 		}
 		else if(typeSelect.equals("근무 변경 신청서")) {
-			mav.setViewName("/content/approval/draftExamples/workChange");			
+			mav.setViewName("/content/approval/draftExamples/dayLeave");			
 		}
 		else if(typeSelect.equals("출장신청서")) {
 			mav.setViewName("/content/approval/draftExamples/dayLeave");
@@ -787,7 +787,6 @@ public class ApprovalController {
 	@PostMapping("goApprove")
 	@ResponseBody
 	public int goApprove(@RequestParam String approval_feedback
-						,@RequestParam String draft_form_type
 						,@RequestParam String fk_draft_no
 						,@RequestParam String write_member_userid
 						,@RequestParam String day_leave_cnt
@@ -800,13 +799,10 @@ public class ApprovalController {
 				
 		Map<String, String> map = new HashMap<>();
 		map.put("approval_feedback", approval_feedback);
-		map.put("draft_form_type", draft_form_type);
 		map.put("fk_draft_no", fk_draft_no);
 		map.put("member_userid", member_userid);
 		map.put("write_member_userid", write_member_userid);
 		map.put("day_leave_cnt", day_leave_cnt);
-		
-		System.out.println("day_leave_cnt : " + day_leave_cnt);
 		
 		int n = approvalService.goApprove(map);
 		
