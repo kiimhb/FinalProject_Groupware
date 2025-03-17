@@ -142,7 +142,7 @@ $.ajax({
     	        </tr>
     	        <tr>
     	            <th>성별</th>
-    	            <td><input type="text" name="member_gender" value="\${json.member_grade == '남' ? '남자' : '여자'}" readonly /></td>
+    	            <td><input type="text" name="member_gender" value="\${json.member_gender == '남' ? '남자' : '여자'}" readonly /></td>
     	        </tr>
     	        <tr>
     	            <th>근무시간</th>
