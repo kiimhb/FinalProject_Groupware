@@ -166,7 +166,6 @@
 		and fk_member_userid = #{member_userid} 
 		and small_category_name = #{small_category_name}
 	</select>
-	<!-- caltype 무엇 ? -->
 	
 	
 	<!-- (사내캘린더 또는 내캘린더)속의 소분류 카테고리인 서브캘린더 수정하기    -->

@@ -28,6 +28,8 @@ import com.spring.med.mail.domain.MailReceiveVO;
 import com.spring.med.mail.domain.MailSentVO;
 import com.spring.med.mail.service.MailService;
 import com.spring.med.management.domain.ManagementVO_ga;
+import com.spring.med.organization.domain.OrganVO;
+import com.spring.med.organization.service.OrganService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,6 +42,9 @@ public class MailController {
 	
 	@Autowired  // Type 에 따라 알아서 Bean 을 주입해준다.
 	private MailService service;
+	
+	@Autowired
+	private OrganService organService;
 
 	
 	// === #150. 파일업로드 및 파일다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) === 
@@ -277,7 +282,7 @@ public class MailController {
 			String pageBar = "<ul style='list-style:none;'>";
 			String url = "mailReceive";
 			
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo=1'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo=1'><<</a></li>";
 			
 			if(pageNo != 1) {
 				pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>"; 
@@ -303,7 +308,7 @@ public class MailController {
 				pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
 			}
 			
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo="+totalPage+"'>>></a></li>";
 						
 			pageBar += "</ul>";	
 			
@@ -417,7 +422,7 @@ public class MailController {
 			String pageBar = "<ul style='list-style:none;'>";
 
 			
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo=1'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo=1'><<</a></li>";
 			
 			if(pageNo != 1) {
 				pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>"; 
@@ -443,7 +448,7 @@ public class MailController {
 				pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
 			}
 			
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+user_id+"?currentShowPageNo="+totalPage+"'>>></a></li>";
 						
 			pageBar += "</ul>";	
 			
@@ -737,7 +742,7 @@ public class MailController {
 			String pageBar = "<ul style='list-style:none;'>";
 			String url = "mailReceive";
 			
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo=1'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo=1'><<</a></li>";
 			
 			if(pageNo != 1) {
 				pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>"; 
@@ -763,7 +768,7 @@ public class MailController {
 				pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
 			}
 			
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo="+totalPage+"'>>></a></li>";
 						
 			pageBar += "</ul>";	
 			
@@ -831,7 +836,7 @@ public class MailController {
 			String pageBar1 = "<ul style='list-style:none;'>";
 			String url1 = "mailTrash";
 			
-			pageBar1 += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+userid1+"?currentShowPageNo=1'>[맨처음]</a></li>";
+			pageBar1 += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+userid1+"?currentShowPageNo=1'><<</a></li>";
 			
 			if(pageNo1 != 1) {
 				pageBar1 += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+userid1+"?currentShowPageNo="+(pageNo1-1)+"'>[이전]</a></li>"; 
@@ -857,7 +862,7 @@ public class MailController {
 				pageBar1 += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo="+pageNo1+"'>[다음]</a></li>"; 	
 			}
 			
-			pageBar1 += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo="+totalPage1+"'>[마지막]</a></li>";
+			pageBar1 += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+userid+"?currentShowPageNo="+totalPage1+"'>>></a></li>";
 						
 			pageBar1 += "</ul>";	
 			
@@ -1124,6 +1129,60 @@ public class MailController {
 		}
 		
 	}
+
+
+	
+	/* ====== 조직도 컨트롤러 ========== */
+	
+	// ==== 조직도 페이지 요청 ==== //
+		@GetMapping("orgChart")
+		public ModelAndView writeDraftForm(ModelAndView mav) {
+			mav.setViewName("/content/organization/orgChart");
+			
+			return mav;
+		}
+		
+		
+		// ==== 조직도 배열을 만들기 위해 전체 데이터 불러오기 ==== //
+		@GetMapping("selectAllOrg")
+		@ResponseBody
+		public List<OrganVO> selectAllOrg() {
+			List<OrganVO> allOrgList = organService.selectAllOrg();
+			return allOrgList;
+		}
+
+		
+		// ==== 조직도 상위 부서 불러오기 ==== //
+		@GetMapping("getparentDeptList")
+		@ResponseBody
+		public List<OrganVO> getparentDeptList() {
+			List<OrganVO> parentDeptList = organService.getparentDeptList();
+			return parentDeptList;
+		}
+		
+		
+		// ==== 조직도 하위 부서 불러오기 ==== //
+		@GetMapping("getchildDeptList")
+		@ResponseBody
+		public List<OrganVO> getchildDeptList(@RequestParam String fk_parent_dept_no) {
+			List<OrganVO> childDeptList = organService.getchildDeptList(fk_parent_dept_no);
+			return childDeptList;
+		}
+		
+		
+		// ==== 조직도에서 클릭한 직원의 상세정보 불러오기 ==== //
+		@PostMapping("selectOneMemberInfo")
+		@ResponseBody
+		public OrganVO selectOneMemberInfo(@RequestParam String member_userid) {
+			
+			OrganVO organMemInfo = organService.selectOneMemberInfo(member_userid);
+			
+			return organMemInfo;
+		}
+	
+	
+	
+	
 	
 	
 	/* 보관함 보류

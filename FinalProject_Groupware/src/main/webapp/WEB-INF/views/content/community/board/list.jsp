@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%
@@ -11,12 +13,15 @@
      
 <style type="text/css">
     
-  th {background-color: #e0eae6}
+th {background-color: #e0eae6}
  
+.subjectStyle {font-weight: bold;
+                   color: #006769;
+                   cursor: pointer; }
                  
-  a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없애기 */
+a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없애기 */
   
-  div.button {text-align: right;}
+div.button {text-align: right;}
 
 table {
 	  border: 1px #a39485 solid;
@@ -25,6 +30,7 @@ table {
 	  border-collapse: collapse;
 	  border-radius: 5px;
 	  overflow: hidden;
+	  font-weight: bold; 
 	}
 
 .header .title {
@@ -75,6 +81,21 @@ input[name='searchWord'] {
   	opacity: 0;
 }
 
+<%-- select 태그 --%>
+	.top_select {
+		padding: 5px;
+		font-size: 14px;
+		border-radius: 10px;
+		color: #006769;
+		border: solid 1px #8ac2bd;
+	}
+
+<%-- 상단 검색 버튼 등 --%>
+	div#topSearch {
+		text-align: right;
+		margin-right: 3%;
+	}
+
   
 
 /* 페이지바 */
@@ -87,6 +108,10 @@ div#pageBar_bottom a {
 	font-weight: bold;
 	cursor: pointer;
 }
+
+
+
+
 
 </style>
 
@@ -495,20 +520,20 @@ $(document).ready(function(){
 			${requestScope.pageBar}</div>
 
 		<%-- === #82. 글검색 폼 추가하기 : 글제목, 글내용, 글제목+글내용, 글쓴이로 검색을 하도록 한다. --%>
-		<form name="searchFrm" style="margin-top: 20px; text-align: center;">
-			<select name="searchType" style="height: 26px;">
-				<option value="board_subject">글제목</option>
-				<option value="board_content">글내용</option>
-				<option value="board_subject_board_content">글제목+글내용</option>
-				<option value="board_name">글쓴이</option>
-			</select> 
-			<input type="text" class="searchWord_input" name="searchWord" placeholder="검색어 입력를 입력하세요"/>
-			<input type="text" style="display: none;" />
-			<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
-			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
-
-		</form>
-
+		<div id="topSearch">
+			<form name="searchFrm" style="margin-top: 20px; text-align: center;">
+				<select name="searchType" class="topClass top_select" style="height: 38px;">
+					<option value="board_subject">글제목</option>
+					<option value="board_content">글내용</option>
+					<option value="board_subject_board_content">글제목+글내용</option>
+					<option value="board_name">글쓴이</option>
+				</select> 
+				<input type="text" class="searchWord_input" name="searchWord" placeholder="검색어 입력를 입력하세요"/>
+				<input type="text" style="display: none;" />
+				<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
+				<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
+			</form>
+		</div>
 
 		<%-- === #87. 검색어 입력시 자동글 완성하기 1 === --%>
 <%-- 		

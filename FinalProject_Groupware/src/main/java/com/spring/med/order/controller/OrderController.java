@@ -80,7 +80,7 @@ public class OrderController {
 			
 			Map<String, String> clickPatient = service.orderClickEnterandView(paraMap); // 클릭한 환자 정보 진료정보입력에 보여주기
 			
-			
+			mav.setViewName("content/order/orderEnter");
 			// 빈 오더 생성 시작 /////////////////////////////////////////////////////////////////////////////
 			
 			paraMap.put("fk_member_userid", loginuser.getMember_userid());
@@ -117,7 +117,7 @@ public class OrderController {
 			}
 			
 			mav.addObject("clickPatient", clickPatient);				
-			mav.setViewName("content/order/orderEnter");
+			
 			
 			// 환자 오더내역 보여주기								
 			List<Map<String, String>> orderList = service.orderList(paraMap);	
@@ -126,33 +126,7 @@ public class OrderController {
 			
 			mav.addObject("orderList", orderList);  
 			
-
 			
-		}
-		else {
-		
-		// 그냥 온거
-		Map<String, String> paraMap = new HashMap<>();
-			
-		Map<String,String> firstPatient = service.orderEnterandView(paraMap);
-		
-		String status = firstPatient.get("patient_status");
-		
-		// System.out.println("맞잖아:"+firstPatient);
-		
-		// status에 따른 초진재진 여부 if문
-		if(status.equals("1") ) {			
-			String Rejin = "재진";			
-			firstPatient.put("jin", Rejin);
-		} else {
-			String Chojin = "초진";
-			firstPatient.put("jin", Chojin);
-		}
-		
-		// System.out.println(firstPatient);
-		
-		mav.addObject("firstPatient", firstPatient);		
-		mav.setViewName("content/order/orderEnter");
 		}
 		
 		} // end of else

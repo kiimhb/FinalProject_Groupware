@@ -17,26 +17,29 @@
 <jsp:include page="../../../header/header1.jsp" /> 
 
 <style type="text/css">
-    th {background-color: #e0eae6}
-    .subjectStyle {
-        font-weight: bold;
-        color: navy;
-        cursor: pointer;
-    }
-    a {text-decoration: none !important;}
-    button.btn {
-        background-color: #006769;
-        color: white;
-    }
-    
-    .header .title {
-    border-left: 5px solid #006769;  /* 바 두께 증가 */
-    padding-left: 1.5%;  /* 왼쪽 여백 조정 */
-    font-size: 28px;  /* h2 크기와 유사하게 증가 */
-    margin-top: 2%;
-    margin-bottom: 2%;
-    color: #4c4d4f;
-    font-weight: bold;
+
+th {background-color: #e0eae6}
+
+.subjectStyle {font-weight: bold;
+               color: #006769;
+               cursor: pointer; 
+}
+               
+a {text-decoration: none !important;}
+
+button.btn {
+    background-color: #006769;
+    color: white;
+}
+
+.header .title {
+	border-left: 5px solid #006769;  /* 바 두께 증가 */
+	padding-left: 1.5%;  /* 왼쪽 여백 조정 */
+	font-size: 28px;  /* h2 크기와 유사하게 증가 */
+	margin-top: 2%;
+	margin-bottom: 2%;
+	color: #4c4d4f;
+	font-weight: bold;
 }
 
 table {
@@ -46,6 +49,7 @@ table {
 	  border-collapse: collapse;
 	  border-radius: 5px;
 	  overflow: hidden;
+	  font-weight: bold; 
 	}
 	
   /* 검색어 입력창 */
@@ -74,6 +78,21 @@ input[name='searchWord'] {
   	opacity: 0 !important;
 }
 
+
+<%-- select 태그 --%>
+	.top_select {
+		padding: 5px;
+		font-size: 14px;
+		border-radius: 10px;
+		color: #006769;
+		border: solid 1px #8ac2bd;
+	}
+
+<%-- 상단 검색 버튼 등 --%>
+	div#topSearch {
+		text-align: right;
+		margin-right: 3%;
+	}
   
 
 /* 페이지바 */
@@ -102,6 +121,8 @@ function goBookMarkView(board_no) {
 
 //즐겨찾기 추가/삭제 함수
 function importantboard(button, board_no) {
+	event.stopPropagation(); // 클릭 이벤트 전파 방지(이벤트가 부모 요소로 전달(전파)되는 것을 막는 기능)
+	
     let icon = $(button).find("i"); // 현재 클릭한 버튼의 아이콘
     let isBookmarked = icon.hasClass("fa-star"); // 현재 즐겨찾기 여부 확인
     let loggedInUserId = "${sessionScope.loginuser.member_userid}"; // 현재 로그인한 사용자 ID
@@ -293,10 +314,10 @@ $(document).ready(function(){
                 <c:choose>
                     <c:when test="${not empty bookmarkList}">
                         <c:forEach var="boardvo" items="${requestScope.bookmarkList}" varStatus="board_status">
-                            <tr>
+                            <tr onclick="goBookMarkView('${boardvo.board_no}')" style="cursor: pointer;"> 
                                 <td align="center">${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (board_status.index) }</td>
                                 <td>
-                                    <span class="board_subject" onclick="goBookMarkView('${boardvo.board_no}')">
+                                    <span class="board_subject">
                                         ${fn:length(boardvo.board_subject) > 30 ? fn:substring(boardvo.board_subject, 0, 28) + "..." : boardvo.board_subject}
                                     	
                                     	<!-- 첨부파일 아이콘 -->
@@ -333,7 +354,8 @@ $(document).ready(function(){
                 </c:choose>
             </tbody>
             
-            <div class="button">
+            <div class="button-container" style="display: flex; justify-content: space-between; align-items: center; width: 1200px; margin-bottom: 5px;"> 
+			    <p style="font-weight: bold; font-size: 16px; margin: 0;">총 게시글 수: ${totalCount}개</p>
 				<button type="button" class="btn btn ml-2"
 					onclick="javascript:location.href='<%=ctxPath%>/board/list'"
 					style="margin-bottom: 10px;">← 자유게시판</button>
@@ -347,19 +369,20 @@ $(document).ready(function(){
         </div>
         
         <%-- === #82. 글검색 폼 추가하기 : 글제목, 글내용, 글제목+글내용, 글쓴이로 검색을 하도록 한다. --%>
-		<form name="searchFrm" style="margin-top: 20px; text-align: center;">
-			<select name="searchType" style="height: 26px;">
-				<option value="board_subject">글제목</option>
-				<option value="board_content">글내용</option>
-				<option value="board_subject_board_content">글제목+글내용</option>
-				<option value="board_name">글쓴이</option>
-			</select> 
-			<input type="text" name="searchWord" size="28" autocomplete="off" placeholder="검색어을 입력하세요" />
-			<input type="text" style="display: none;" />
-			<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
-			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
-		</form>
-
+		<div id="topSearch">
+			<form name="searchFrm" style="margin-top: 20px; text-align: center;">
+				<select name="searchType" class="topClass top_select" style="height: 38px;">
+					<option value="board_subject">글제목</option>
+					<option value="board_content">글내용</option>
+					<option value="board_subject_board_content">글제목+글내용</option>
+					<option value="board_name">글쓴이</option>
+				</select> 
+				<input type="text" class="searchWord_input" name="searchWord" placeholder="검색어 입력를 입력하세요"/>
+				<input type="text" style="display: none;" />
+				<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
+				<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
+			</form>
+		</div>
     </div>
 </div>
 
