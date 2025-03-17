@@ -135,6 +135,7 @@ $.ajax({
               
                json.get_alarm_view.forEach(function(item) {
                   
+            	   //공지사항에서 맞는 상위부서에 맞춰서 보여주기 위해 처리했다. 
                   let notice_dept ='';
                  if (item.notice_dept == 0) {
                     notice_dept = '[전체]';
@@ -149,26 +150,25 @@ $.ajax({
                   let readClass = item.alarm_is_read == 1 ? "read" : "";
                  v_html += `
                  <div class="alarm_item \${readClass}" >
-                    <input type="hidden" value=\${item.alarm_no} id="alarm_no" />
-                    <input type="hidden" value=\${item.alarm_category} id="alarm_category" />
-                    <input type="hidden" value=\${item.alarm_is_read} id="alarm_is_read" />
-                    <input type="hidden" value=\${item.alarm_cateno} id="alarm_cateno" />
-                       <span class="alarm_category">[\${item.alarm_category}]</span>\${notice_dept}&nbsp;\${item.alarm_title}
-                       <div class="alarm_at"> \${item.alarm_at}</div>
+                    <input type="hidden" value=\${item.alarm_no} id="alarm_no" /> //알람 번호
+                    <input type="hidden" value=\${item.alarm_category} id="alarm_category" /> //알람 카테고리(결재/공지사항)
+                    <input type="hidden" value=\${item.alarm_is_read} id="alarm_is_read" /> //알람 읽음 여부
+                    <input type="hidden" value=\${item.alarm_cateno} id="alarm_cateno" />	//알람을 보낸 결재/공지사항의 번호
+                       <span class="alarm_category">[\${item.alarm_category}]</span>\${notice_dept}&nbsp;\${item.alarm_title} // [알람 카테고리] {공지사항 부서} 알람 제목
+                       <div class="alarm_at"> \${item.alarm_at}</div> //알람 생성시간
                </div>`;
                });
            }
-
            $("div.Alarm_main_box").html(v_html);
            
            new SimpleBar(document.querySelector("div.Alarm_main_box"), { autoHide: false });
            
             // 알림 총 건수 출력
-            let v_html2 = `읽지 않은 알림이 \${json.alarm_totalCount} 건 있습니다.`; 
+            let v_html2 = `읽지 않은 알림이 \${json.alarm_totalCount} 건 있습니다.`; //읽지 않은 알람 총 건수
             $("div.Alarm_sub_box").show().html(v_html2);
  
             
-            
+            //알람 이모티콘 위에 숫자를 나타내기 위해 설정 했다. 알람 갯수가 없을 시 알람건수 버튼을 없앤다.
             if (json.alarm_totalCount > 0) {
                $("span.alarm_count").text(json.alarm_totalCount).show();
             } else {
@@ -183,6 +183,7 @@ $.ajax({
     });
     
 $(document).ready(function () {
+	//알람 중 하나를 선택할 시 알람에 있는 정보를 넘겨준다.
     $(document).on("click", "div.alarm_item", function () { 
        const alarm_item = $(this).find("div.alarm_item");
        const alarm_no = $(this).find("input#alarm_no").val();
@@ -190,10 +191,11 @@ $(document).ready(function () {
        const alarm_is_read = $(this).find("input#alarm_is_read").val();
        const alarm_cateno = $(this).find("input#alarm_cateno").val(); 
        
-
+		//알람 읽음여부가 1일 시 바로 해당 링크로 갈 수 있는 함수로 넘겨준다.
        if (alarm_is_read == 1) {
           alarm_link(alarm_category, alarm_cateno);
         }
+		// 알람 읽음 여부가 0일 시 알람 읽음여부를 업데이트 해주기 위해 알람번호를 넘겨준다.
        else if (alarm_is_read == 0) {
           $.ajax({
                url: "<%= ctxPath%>/alarm/alarm_is_read_1",
@@ -201,13 +203,13 @@ $(document).ready(function () {
                data: { "alarm_no" : alarm_no },
                dataType: "json",
               success:function(json){   
-                 console.log(json);
+                 //console.log(json);
                  
+                 	//정상적으로 알람 읽음여부가 업데이트 됐을 시 해당링크로 넘어갈 수 있는 함수로 넘겨준다.
                      if(json.n == 1){
                        alarm_link(alarm_category, alarm_cateno);
-                   }else if(json.n == 0){
-                       alert("오류가 발생했습니다.");
                    }
+                     
                },
                error: function (xhr, status, error) {
                    alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error); 

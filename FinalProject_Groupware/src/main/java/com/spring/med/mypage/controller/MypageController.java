@@ -159,19 +159,14 @@ public class MypageController {
 				bytes = sign_attach.getBytes();
 			
 				String originalFilename = sign_attach.getOriginalFilename();
-				//System.out.println("~~~ 확인용 originalFilename => " + originalFilename); 
-				
+
 				newFileName = fileManager.doFileUpload(bytes, originalFilename, path);
 				
-				// === #151. BoardVO boardvo 에 fileName 값과 orgFilename 값과 fileSize 값을 넣어주기
 				managementVO_ga.setMember_sign_filename(newFileName);
-				// WAS(톰캣)에 저장된 파일명(2025020709291535243254235235234.png)
 				
 				managementVO_ga.setMember_sign_orgfilename(originalFilename);
-				// 게시판 페이지에서 첨부된 파일(강아지.png)을 보여줄 때 사용.
-				// 또한 사용자가 파일을 다운로드 할때 사용되어지는 파일명으로 사용.
 				
-				fileSize = sign_attach.getSize(); // 첨부파일의 크기(단위는 byte임)
+				fileSize = sign_attach.getSize(); 
 				managementVO_ga.setMember_sign_filesize(String.valueOf(fileSize));
 			    
 			} catch (Exception e) {
