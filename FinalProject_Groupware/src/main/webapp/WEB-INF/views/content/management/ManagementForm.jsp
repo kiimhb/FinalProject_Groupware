@@ -214,7 +214,7 @@ String ctxPath = request.getContextPath();
     	        const regExp_Name = /^[가-힣\s]{2,10}$/;
     	        if (name === "" || !regExp_Name.test(name)) {
     	            alert("이름을 올바르게 입력하세요.");
-    	            $("#name").focus();
+    	            $("#member_name").focus();
     	            return;
     	        }
 
@@ -238,7 +238,7 @@ String ctxPath = request.getContextPath();
 
     	        if ($("#member_email").val().trim() == "") {
     	            alert("이메일을 입력하세요.");
-    	            $("#email").focus();
+    	            $("#member_email").focus();
     	            return;
     	        }
     	        if ($("#hp2").val().trim() == "") {
@@ -323,7 +323,7 @@ String ctxPath = request.getContextPath();
 		
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">성명</th>
-				<td><input type="text" id="name" name="member_name" />
+				<td><input type="text" id="member_name" name="member_name" />
 				<span class="error">성명은 필수입력 사항입니다.</span></td>
 			</tr>
 			
@@ -356,7 +356,7 @@ String ctxPath = request.getContextPath();
 			
 			<tr>
 				<th style="width: 15%; background-color: #DDDDDD;">이메일</th>
-				<td><input type="text" name="member_email" id="email" size="25"/>
+				<td><input type="text" name="member_email" id="member_email" size="25"/>
 				 <span class="error">이메일 형식에 맞지 않습니다.</span></td>
 			</tr>
 			

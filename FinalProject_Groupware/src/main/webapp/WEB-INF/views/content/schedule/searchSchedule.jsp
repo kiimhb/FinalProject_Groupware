@@ -72,6 +72,35 @@
     box-shadow: none; /* 추가적인 파란색 그림자 제거 */
   }
   
+  
+  
+<%-- 검색어 입력 창 --%>
+input {
+	/* background: #f0f0f0;  */
+  	width: 20%;
+  	color: #006769;
+  	border: none;
+  	border-bottom: 1px solid #999999; 
+  	padding: 9px;
+  	margin: 7px;
+}
+
+input:placeholder {
+  	color: rgba(255, 255, 255, 1);
+  	font-weight: 100;
+}
+
+input:focus {
+  	color: #006769;
+  	outline: none;
+  	border-bottom: 1.3px solid #006769; 
+  	transition: .8s all ease;
+}
+
+input:focus::placeholder {
+  	opacity: 0;
+}
+  
   /* 페이지바 */
 div#pageBar_bottom a {
 	color: #509d9c !important;
@@ -81,6 +110,21 @@ div#pageBar_bottom a {
 	color: #006769 !important;
 	font-weight: bold;
 	cursor: pointer;
+}
+
+<%-- select 태그 --%>
+.top_select {
+	padding: 5px;
+	font-size: 14px;
+	border-radius: 10px;
+	color: #006769;
+	border: solid 1px #8ac2bd;
+}
+
+<%-- 상단 검색 버튼 등 --%>
+div#topSearch {
+	text-align: right;
+	margin-left: -5px; /* 버튼을 왼쪽으로 약간 이동 */
 }
 
 </style>
@@ -178,6 +222,8 @@ div#pageBar_bottom a {
 
 </script>
 
+<div id="sub_mycontent">
+
 <div style="margin-left: 80px; width: 88%;">
 	<div>
 		<div class="header">
@@ -187,33 +233,35 @@ div#pageBar_bottom a {
 	 &nbsp;&nbsp;<a href="<%= ctxPath%>/schedule/scheduleManagement"><span>◀캘린더로 돌아가기</span></a>
 
 		<div id="searchPart" style="float: right; margin-top: 50px;">
-			<form name="searchScheduleFrm">
-				<div>
-					<input type="text" id="fromDate" name="schedule_startdate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp; 
-	            -&nbsp;&nbsp; <input type="text" id="toDate" name="schedule_enddate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp;
-	            	<select id="fk_large_category_no" name="fk_large_category_no" style="height: 30px;">
-						<option value="">모든캘린더</option>
-						<option value="1">내 캘린더</option>
-						<option value="2">사내 캘린더</option>
-					</select>&nbsp;&nbsp;	
-					<select id="searchType" name="searchType" style="height: 30px;">
-						<option value="">검색대상선택</option>
-						<option value="schedule_subject">제목</option>
-						<option value="schedule_content">내용</option>
-						<option value="schedule_joinuser">공유자</option>
-					</select>&nbsp;&nbsp;	
-					<input type="text" id="searchWord" value="${requestScope.searchWord}" style="height: 30px; width:120px;" name="searchWord"/> 
-					&nbsp;&nbsp;
-					<select id="sizePerPage" name="sizePerPage" style="height: 30px;">
-						<option value="">보여줄개수</option>
-						<option value="10">10</option>
-						<option value="15">15</option>
-						<option value="20">20</option>
-					</select>&nbsp;&nbsp;
-					<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" /> 
-					<button type="button" class="btn ml-2" style="display: inline-block;" onclick="goSearch()">검색</button>
-				</div>
-			</form>
+			<div id="topSearch">
+				<form name="searchScheduleFrm">
+					<div>
+						<input type="text" id="fromDate" name="schedule_startdate" class="topClass top_select" style="width: 110px;" readonly="readonly">&nbsp;&nbsp; 
+		            -&nbsp;&nbsp; <input type="text" id="toDate" name="schedule_enddate" class="topClass top_select" style="width: 100px;" readonly="readonly">&nbsp;&nbsp;
+		            	<select id="fk_large_category_no" name="fk_large_category_no" class="topClass top_select" style="height: 30px;">
+							<option value="">모든캘린더</option>
+							<option value="1">내 캘린더</option>
+							<option value="2">사내 캘린더</option>
+						</select>&nbsp;&nbsp;	
+						<select id="searchType" name="searchType" class="topClass top_select" style="height: 30px;">
+							<option value="">검색대상선택</option>
+							<option value="schedule_subject">제목</option>
+							<option value="schedule_content">내용</option>
+							<option value="schedule_joinuser">공유자</option>
+						</select>&nbsp;&nbsp;	
+						<input type="text" id="searchWord" class="topClass" value="${requestScope.searchWord}" style="height: 30px; width:120px;" name="searchWord" /> 
+						&nbsp;&nbsp;
+						<select id="sizePerPage" name="sizePerPage" class="topClass top_select" style="height: 30px;">
+							<option value="">보여줄개수</option>
+							<option value="10">10</option>
+							<option value="15">15</option>
+							<option value="20">20</option>
+						</select>&nbsp;&nbsp;
+						<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" /> 
+						<button type="button" class="btn ml-2" style="display: inline-block;" onclick="goSearch()">검색</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	</div>
 	
@@ -261,5 +309,7 @@ div#pageBar_bottom a {
    <input type="hidden" name="schedule_no"/>
    <input type="hidden" name="listgobackURL_schedule" value="${requestScope.listgobackURL_schedule}"/>
 </form> 
+
+</div>
 
 <jsp:include page="../../footer/footer1.jsp" />

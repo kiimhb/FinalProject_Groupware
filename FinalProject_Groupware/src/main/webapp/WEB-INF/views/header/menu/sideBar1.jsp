@@ -65,8 +65,6 @@ $.ajax({
  
    <ul>
       <li><a class="sideBarCSS" href="<%=ctxPath%>"><i class="fa-solid fa-house-chimney sideBarICSS"></i> <span>홈화면</span></a>
-      
-      <li><a class="sideBarCSS" href="<%=ctxPath%>/management/login"> <span>로그인</span></a></li>
    
       <li><a class="sideBarCSS" href="<%=ctxPath%>/commuteRecord"><i class="fa-solid fa-clipboard-user sideBarICSS"></i> <span>출퇴근 관리</span></a></li>
    
@@ -91,7 +89,7 @@ $.ajax({
       <li><a href="#" class="menu-toggle sideBarCSS"> 
       <i class="fa-solid fa-user-clock sideBarICSS"></i> <span>근태관리</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>/attendance">휴가관리</a> 
+            <a class="dropdown-item" href="<%=ctxPath%>/attendance/myLeave">휴가관리</a> 
             <a class="dropdown-item" href="<%=ctxPath%>/attendance/commute">근태조회</a>
          </div></li>
 
@@ -135,14 +133,18 @@ $.ajax({
             <a class="dropdown-item" href="<%=ctxPath%>/memo/importantmemolist">중요메모</a>
             <a class="dropdown-item" href="<%=ctxPath%>/memo/trashlist">휴지통</a>
          </div></li>
-
+		
+	<c:if test="${sessionScope.loginuser.fk_child_dept_no == 13}">
       <li><a href="#" class="menu-toggle sideBarCSS">
       <i class="fa-solid fa-address-card sideBarICSS"></i> <span>인사관리</span> <i class="fa-solid fa-chevron-down sideBarICSS2"></i></a>
          <div class="submenu">
-            <a class="dropdown-item" href="<%=ctxPath%>/management/">근태내역집계</a>
+            <a class="dropdown-item" href="<%=ctxPath%>/management/commuteList">근태내역집계</a>
             <a class="dropdown-item" href="<%=ctxPath%>/management/ManagementList">사원목록</a>
             <a class="dropdown-item" href="<%=ctxPath%>/management/ManagementForm">사원등록</a>
          </div></li>
+    </c:if>
+    
+    
    </ul>
    
 </div>

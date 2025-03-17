@@ -7,7 +7,7 @@
     //     /myspring
 %>
 
-
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
 
 <script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
 <script type="text/javascript">
@@ -237,13 +237,74 @@ function receivedMailDelete() {
 
 <style type="text/css">
 
-.tab-content {
-    padding: 0 !important;
+
+/* 페이지바 */
+div#pageBar a {
+   color: #509d9c;
+   cursor: pointer;
+}
+#pageBar > ul > li {
+   color: #006769;
+   font-weight: bold;
+   cursor: pointer;
 }
 
-.tab-pane {
-    padding: 0 !important;
+/* 상단 타이틀 */
+.header > div.title {
+   border-left: 5px solid #006769;   
+   padding-left: 1%;
+   font-size: 20px;
+   margin-bottom: 1%;
+   color: #4c4d4f;
+   font-weight: bold;
 }
+
+
+li.nav{
+
+color:black;
+font-weight:bold;
+}
+
+a.nav-link{
+
+font-weight:bold;
+color:black;
+
+}
+
+#sent {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#received {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.btnRes{
+
+background-color:#006769;
+border-radius: 10px;
+border: none;
+width: 70px;
+height:35px;
+color:white;
+}
+
+.btnDel{
+
+background-color:#f68b1f;
+border-radius: 10px;
+border: none;
+width: 70px;
+height:35px;
+color:white;
+
+}
+
+
 </style>
 
 
@@ -252,19 +313,19 @@ function receivedMailDelete() {
 
 
 <div id="sub_mycontent">
-<div style=" border-radius:10px; font-size:15pt; text-align:center; margin: 1% 10%; background-color:#b3d6d2;">
+<div class="header" style="font-size:15pt; margin: 1% 5%; ">
 
-	<span>휴지통</span>
-	<span>${sessionScope.loginuser.member_userid}</span>
+	<div class="title">휴지통</div>
+	
 </div>
 
 
 
-<div id=Container;>
 
 
-	<ul class="nav nav-tabs" style="margin:0.1% 10%;">
-			  <li class="nav-item">
+
+	<ul class="nav nav-tabs" style="border:none; margin:0.1% 5%;">
+			  <li class="nav-item" >
 			    <a class="nav-link active" data-toggle="tab" href="#sent">보낸메일함</a>
 			  </li>
 			  <li class="nav-item">
@@ -273,15 +334,15 @@ function receivedMailDelete() {
 	</ul>
 
 <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@보낸메일함@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  -->
-<div class="tab-content" style="margin:0% 10%; border:solid 1px blue;">
+<div class="tab-content" style="margin:0% 5%; border:solid 0px blue;">
 
-<div class="tab-pane container active" style="border:solid 1px red;" id="sent">
-	<div style="">
-		<div style="float:right;"><button onclick="sentMailRestore()">복구</button></div>
-		<div style="float:right; margin-right:0.5%;"><button onclick="sentMailDelete()">삭제</button></div>	
-	</div>
-	<table style="width:100%; text-align:center;">
-		<thead style="border: solid 1px black; height:50px;">
+<div class="tab-pane container-fluid active" style="border:solid 0px red;" id="sent">
+
+		<div style="float:right; margin-bottom:0.2%;"><button class="btnRes"onclick="sentMailRestore()">복구</button></div>
+		<div style="float:right; margin-right:0.5%; margin-bottom:0.2%;"><button class="btnDel" onclick="sentMailDelete()">삭제</button></div>	
+
+	<table class="table table-hover" style="width:100%; text-align:center;">
+		<thead class="bg-light" style="border: solid 0px black; height:50px;">
 			<tr>					
 				<th style="width:50%">제목</th>
 				<th style="width:25%">수신자</th>
@@ -294,10 +355,10 @@ function receivedMailDelete() {
 			<c:if test="${not empty requestScope.mailSentTrashList}">
 				<c:forEach items="${requestScope.mailSentTrashList}" var="mtl" varStatus="status">
 					<tr onclick="">							
-						<td style="border-bottom:solid 1px black">${mtl.mail_title}</td>
-						<td style="border-bottom:solid 1px black">${mtl.member_name}</td>
-						<td style="border-bottom:solid 1px black">${mtl.mail_sent_senddate}</td>
-						<td style="border-bottom:solid 1px black; height:50px;"><input style="width:100px;"type="checkbox" class="mailCheckbox" data-mail-no="${mtl.mail_sent_no}"/></td>							
+						<td style="">${mtl.mail_title}</td>
+						<td style="">${mtl.member_name}</td>
+						<td style="">${mtl.mail_sent_senddate}</td>
+						<td style="height:50px;"><input style="width:100px;"type="checkbox" class="mailCheckbox" data-mail-no="${mtl.mail_sent_no}"/></td>							
 					</tr>						
 				</c:forEach>
 			</c:if>
@@ -309,21 +370,21 @@ function receivedMailDelete() {
 			</c:if>
 		</tbody>
 	</table>
-			<div style=""><span>휴지통에 있는 메일은 일주일 뒤에 삭제됩니다.</span></div>		
-		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+				
+		<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 	    	${requestScope.pageBar}
 	    </div>
 	</div>
 
 
 <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@받은메일함@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  -->
-<div class="tab-pane container" style="border:solid 1px red; margin: 1% 10%; width:80%;" id="received">
-	<div style="margin:0.05% 0">
-		<div style="float:right;"><button onclick="receivedMailRestore()">복구</button></div>
-		<div style="float:right; margin-right:0.5%;"><button onclick="receivedMailDelete()">삭제</button></div>	
-	</div>
-		<table style="width: 100%; text-align:center;">
-			<thead style="border: solid 1px black; height:50px;">
+<div class="tab-pane container-fluid" style="border:solid 0px red;" id="received">
+
+		<div style="float:right;"><button class="btnRes" onclick="receivedMailRestore()">복구</button></div>
+		<div style="float:right; margin-right:0.5%;"><button class="btnDel" onclick="receivedMailDelete()">삭제</button></div>	
+
+		<table class="table table-hover" style="width: 100%; text-align:center;">
+			<thead class="bg-light" style="border: solid 0px black; height:50px;">
 				<tr>					
 					<th style="width:50%">제목</th>
 					<th style="width:25%">발신자</th>
@@ -336,10 +397,10 @@ function receivedMailDelete() {
 				<c:if test="${not empty requestScope.mailReceivedTrashList}">
 					<c:forEach items="${requestScope.mailReceivedTrashList}" var="mrtl" varStatus="status">
 						<tr onclick="">							
-							<td style="border-bottom:solid 1px black">${mrtl.mail_title}</td>
-							<td style="border-bottom:solid 1px black">${mrtl.member_name}</td>
-							<td style="border-bottom:solid 1px black">${mrtl.mail_sent_senddate}</td>
-							<td style="border-bottom:solid 1px black; height:50px;"><input style="width:100px;"type="checkbox" class="mailCheckbox1" data-mail-no="${mrtl.mail_sent_no}"/></td>							
+							<td style="">${mrtl.mail_title}</td>
+							<td style="">${mrtl.member_name}</td>
+							<td style="">${mrtl.mail_sent_senddate}</td>
+							<td style="height:50px;"><input style="width:100px;"type="checkbox" class="mailCheckbox1" data-mail-no="${mrtl.mail_sent_no}"/></td>							
 						</tr>						
 					</c:forEach>
 				</c:if>
@@ -350,9 +411,8 @@ function receivedMailDelete() {
 						
 				</c:if>
 			</tbody>
-		</table>
-			<div style=""><span>휴지통에 있는 메일은 일주일 뒤에 삭제됩니다.</span></div>		
-		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		</table>	
+		<div align="center" id="pageBar" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 	    	${requestScope.pageBar1}
 	    </div>
 	</div>
@@ -361,7 +421,7 @@ function receivedMailDelete() {
 
 
 </div>
- </div>
+
 
 
 

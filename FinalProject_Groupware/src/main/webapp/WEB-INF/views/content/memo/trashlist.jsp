@@ -51,7 +51,8 @@ div.header {
 .memo-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    /* 자동으로 줄바꿈이 되는 이유 */
+    gap: 15px;  /* 카드 간 간격 */
     justify-content: center;
 }
 
@@ -182,10 +183,10 @@ $(document).on("click", "#memoDelete", function () {
                     alert("메모가 완전히 삭제되었습니다.");
                     location.reload();	// 새로고침
                     
-                 	// 💡 삭제된 메모를 화면에서 즉시 제거
+                 	// 삭제된 메모를 화면에서 즉시 제거
                     $(".memo-card[data-id='" + memo_no + "']").remove();
 
-                    // 💡 목록 다시 불러오기 (삭제된 데이터 반영)
+                    // 목록 다시 불러오기 (삭제된 데이터 반영)
                     loadMemoList();
 
                     // 모달 닫기
@@ -232,9 +233,9 @@ $(document).on("click", "#memoDelete", function () {
 			</div>
 
 			<!-- 5번째 요소마다 줄바꿈 -->
-			<c:if test="${(status.index + 1) % 5 == 0}">
+			<%-- <c:if test="${(status.index + 1) % 5 == 0}">
 				<div class="row-break"></div>
-			</c:if>
+			</c:if> --%>
 		</c:forEach>
 
 		<c:if test="${empty trash_list}">
@@ -243,7 +244,8 @@ $(document).on("click", "#memoDelete", function () {
 	</div>
 
 
-
+	<form name="memoFrm" >
+		<input type="hidden" id="memoDetailNo" name="fk_member_userid" value="${sessionScope.member_userid}" />
 
 	<!-- 메모 상세보기 모달 -->
 	<div class="modal fade" id="memoDetailModal" tabindex="-1"
@@ -280,7 +282,7 @@ $(document).on("click", "#memoDelete", function () {
 		</div>
 	</div>
 
-
+</form>
 </div>
 
 	<jsp:include page="../../footer/footer1.jsp" />
