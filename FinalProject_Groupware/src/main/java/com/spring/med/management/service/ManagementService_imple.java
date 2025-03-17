@@ -163,6 +163,37 @@ public class ManagementService_imple implements ManagementService {
 		int n =  manaDAO.Management_one_update(managementVO_ga);
 		return n;
 	}
+	
+	// === 인사관리 근태내역집계 총 사원수 === //
+	@Override
+	public int get_commuteList_TotalCount(Map<String, String> paraMap) {
+		int totalCount = manaDAO.get_commuteList_TotalCount(paraMap);
+		return totalCount;
+	}
+
+	// === 인사관리 근태내역집계 === //
+	@Override
+	public List<Map<String, String>> manag_commuteList(Map<String, String> paraMap) {
+		List<Map<String, String>> Management_commuteList = manaDAO.manag_commuteList(paraMap);
+		return Management_commuteList;
+	}
+
+	
+
+	// === 인사관리 근태내역집계 차트 === //
+	@Override
+	public List<Map<String, String>> management_chart() {
+		List<Map<String, String>> management_chart = manaDAO.management_chart();
+		return management_chart;
+	}
+
+	
+	// === 인사관리 근태내역집계 차트2 === //
+	@Override
+	public List<Map<String, String>> management_chart2() {
+		List<Map<String, String>> management_chart2 = manaDAO.management_chart2();
+		return management_chart2;
+	}
 
 
 

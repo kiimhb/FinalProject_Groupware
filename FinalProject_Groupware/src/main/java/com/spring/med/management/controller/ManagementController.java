@@ -27,6 +27,7 @@ import com.spring.med.management.domain.Parent_deptVO_ga;
 import com.spring.med.management.service.ManagementService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -159,7 +160,7 @@ public class ManagementController {
 		n = managService.manag_form(managementVO_ga, paraMap);
 
 		if (n == 1) {
-	        mav.setViewName("content/management/managFormDetail");
+	        mav.setViewName("redirect:/management/ManagementList");
 		} else {
 		    mav.setViewName("content/management/managementForm");
 		}
@@ -182,12 +183,6 @@ public class ManagementController {
 	    return sb.toString();
 	}
 	
-	@GetMapping("managFormDetail")
-	public String managFormDetail(ManagementVO_ga managementVO_ga, HttpServletRequest request) {
-		
-		return "content/management/managFormDetail";	
-	}
-	// === 사원등록 폼 페이지 요청 끝 === //
 	
 	
 	// === 메인페이지 이전 로그인 폼 페이지 요청 시작 === //
@@ -266,7 +261,7 @@ public class ManagementController {
 		int n_currentShowPageNo = 0; 
 		
 		// 총 게시물 건수 (totalCount)
-		totalCount = managService.getTotalCount(paraMap);
+		totalCount = managService.get_commuteList_TotalCount(paraMap);
 		//System.out.println("~~~ 확인용 totalCount : " + totalCount);
 		
 		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
@@ -501,6 +496,135 @@ public class ManagementController {
     
     return mav;
 }
+	
+	
+	@GetMapping("commuteList")
+	public ModelAndView commuteList(ModelAndView mav, HttpServletRequest request,              
+									 @RequestParam(defaultValue = "") String searchType, 		
+									 @RequestParam(defaultValue = "") String searchWord,
+									 @RequestParam(defaultValue = "1") String currentShowPageNo  
+									 ) {
+		List<Map<String, String>> commuteList = null;
+		
+		searchWord = searchWord.trim();
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		int totalCount = 0;  			
+		int sizePerPage = 5; 		 
+		int totalPage = 0;
+		
+		int n_currentShowPageNo = 0;
+		
+		totalCount = managService.getTotalCount(paraMap);
+		//System.out.println("~~~ 확인용 totalCount : " + totalCount);
+		
+		
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+		
+		try {
+			  n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+		
+			  if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+				  
+				  n_currentShowPageNo = 1;
+			  }
+			  
+		} catch(NumberFormatException e) {
+			n_currentShowPageNo = 1;
+		}
+		
+		 int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1; // 시작 행번호
+		 int endRno = startRno + sizePerPage - 1; // 끝 행번호 
+		 
+		 paraMap.put("startRno", String.valueOf(startRno)); 
+		 paraMap.put("endRno", String.valueOf(endRno));    
+		 
+		 paraMap.put("currentShowPageNo", currentShowPageNo);
+		 
+		 commuteList = managService.manag_commuteList(paraMap);
+		
+		 mav.addObject("commuteList", commuteList);
+		
+		 if("userid".equals(searchType) || "name".equals(searchType)) { 
+
+			 paraMap.put("searchType", searchType);
+			 paraMap.put("searchWord", searchWord);
+			 
+			 mav.addObject("paraMap", paraMap);	
+		 }
+		 int blockSize = 10;
+ 
+		 int loop = 1;
+		 
+		 int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
+			  
+		 String pageBar = "<ul style='list-style:none;'>";
+		 String url = "commuteList";
+			
+			// === [맨처음][이전] 만들기 === //
+			pageBar += "<li style='display:inline-block; width:70px; font-size:13pt;  '><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1' style='color:#006769; font-weight: bold;'> << </a></li>";
+			
+			if(pageNo != 1) {
+				pageBar += "<li style='display:inline-block; width:50px; font-size:13pt; '><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"' style='color:#006769; font-weight: bold;'> [이전] </a></li>"; 
+			}
+			
+			
+			while( !(loop > blockSize || pageNo > totalPage) ) {
+				
+				if(pageNo == Integer.parseInt(currentShowPageNo)) {
+					pageBar += "<li style='display:inline-block; width:30px; font-size:13pt; border:solid 1px gray; color:red; padding:2px 4px;' >"+pageNo+"</li>"; 
+				}
+				else {
+					pageBar += "<li style='display:inline-block; width:30px; font-size:13pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'  style='color:#006769; font-weight: bold;' >"+pageNo+"</a></li>"; 
+				}
+				
+				loop++;
+				pageNo++;
+			}// end of while-------------------------------
+			
+			
+			// === [다음][마지막] 만들기 === //
+			if(pageNo <= totalPage) {
+				pageBar += "<li style='display:inline-block; width:50px; font-size:13pt;  color:#006769;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"' style='color:#006769; font-weight: bold;'> [다음] </a></li>"; 	
+			}
+			
+			pageBar += "<li style='display:inline-block; width:70px; font-size:13pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"' style='color:#006769; font-weight: bold;'> >> </a></li>";
+						
+			pageBar += "</ul>";	
+			
+			mav.addObject("pageBar", pageBar);
+		
+			mav.addObject("totalCount", totalCount);   // 페이징 처리시 보여주는 순번을 나타내기 위한 것임.
+			mav.addObject("currentShowPageNo", currentShowPageNo); // 페이징 처리시 보여주는 순번을 나타내기 위한 것임.
+			mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것임.
+			
+			String currentURL = MyUtil.getCurrentURL(request);
+		//	System.out.println("~~~ 확인용 currentURL : " + currentURL);
+
+			mav.addObject("goBackURL", currentURL);
+
+		mav.setViewName("content/management/commuteList");
+		
+		return mav;
+	}
+	
+	
+	@GetMapping("management_chart")
+	@ResponseBody
+	public List<Map<String, String>> management_chart() {
+		List<Map<String, String>> management_chart = managService.management_chart();
+		return management_chart;
+	}
+	
+	@GetMapping("management_chart2")
+	@ResponseBody
+	public List<Map<String, String>> management_chart2() {
+		List<Map<String, String>> management_chart2 = managService.management_chart2();
+		return management_chart2;
+	}
 
 
 }

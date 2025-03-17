@@ -108,7 +108,7 @@ public class TreatPatientController {
 		String pageBar = "<ul style='list-style:none;'>";
 		String url = "patientWaiting";
 		
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1'>[맨처음]</a></li>";
+		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1'><<</a></li>";
 		
 		if(pageNo != 1) {
 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>"; 
@@ -134,7 +134,7 @@ public class TreatPatientController {
 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
 		}
 		
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"'>>></a></li>";
 					
 		pageBar += "</ul>";	
 		
@@ -180,9 +180,13 @@ public class TreatPatientController {
 	@ResponseBody
 	public List<Map<String, String>> wordSearchShow(@RequestParam Map<String, String> paraMap) {
 		
+		System.out.println("파라맵나오니 : "+paraMap);
+		
 		List<String> wordList = service.wordSearchShow(paraMap); 
 		
 		List<Map<String, String>> mapList = new ArrayList<>();
+		System.out.println("워드리스트 나오니 : "+wordList);
+		System.out.println("맵리스트나오니 : "+mapList);
 		
 		if(wordList != null) {
 			for(String word : wordList) {

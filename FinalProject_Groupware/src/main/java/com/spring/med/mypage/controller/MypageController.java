@@ -1,13 +1,17 @@
 package com.spring.med.mypage.controller;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,6 +43,48 @@ public class MypageController {
 	public String mypage(HttpServletRequest request) {
 		
 		return "content/mypage/mypage";
+	}
+	
+	@PostMapping("mypageone")
+	@ResponseBody
+	public String getMemberInfo(HttpServletRequest request, @RequestParam() String member_userid) {
+		
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+				
+	    Map<String, String> paramMap = new HashMap<>();
+	    paramMap.put("member_userid", loginuser.getMember_userid());
+
+	    ManagementVO_ga mypageone = service.getView_mypageone(paramMap);
+
+	    JSONObject jsonObj = new JSONObject();
+	    jsonObj.put("member_userid", mypageone.getMember_userid());
+
+	    jsonObj.put("member_pro_filename", mypageone.getMember_pro_filename());
+	    jsonObj.put("member_pro_orgfilename", mypageone.getMember_pro_orgfilename());
+	    jsonObj.put("member_pro_filesize", mypageone.getMember_pro_filesize());
+
+	    
+	    jsonObj.put("member_sign_filename", mypageone.getMember_sign_filename());
+	    jsonObj.put("member_sign_orgfilename", mypageone.getMember_sign_orgfilename());
+	    jsonObj.put("member_sign_filesize", mypageone.getMember_sign_filesize());
+	    
+	    jsonObj.put("member_name", mypageone.getMember_name());
+	    jsonObj.put("fk_child_dept_no", mypageone.getFk_child_dept_no());
+	    jsonObj.put("child_dept_name", mypageone.getChildVO().getChild_dept_name());
+	    jsonObj.put("fk_parent_dept_no", mypageone.getChildVO().getFk_parent_dept_no());
+	    jsonObj.put("parent_dept_name", mypageone.getParentVO().getParent_dept_name());
+	    jsonObj.put("member_position", mypageone.getMember_position());
+	    jsonObj.put("member_mobile", mypageone.getMember_mobile());
+	    jsonObj.put("member_birthday", mypageone.getMember_birthday());
+	    jsonObj.put("member_gender", mypageone.getMember_gender());
+	    jsonObj.put("member_email", mypageone.getMember_email());
+	    jsonObj.put("member_start", mypageone.getMember_start());
+	    jsonObj.put("member_grade", mypageone.getMember_grade());
+	    jsonObj.put("member_yeoncha", mypageone.getMember_yeoncha());
+	    jsonObj.put("member_workingTime", mypageone.getMember_workingTime());
+	    
+	    return jsonObj.toString();
 	}
 	
 	@PostMapping("mypageEdit")

@@ -29,20 +29,14 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		// ==== 로그인 여부 검사 ==== //		
 		HttpSession session = request.getSession();
 		
-		/*if(session.getAttribute("loginuser") == null) {
+		if(session.getAttribute("loginuser") == null) {
 			
-			// 로그인이 되지 않은 상태
-			String message = "먼저 로그인 하세요.";
-			String loc = request.getContextPath()+"/member/login";
+			String loc = request.getContextPath()+"/management/login";
 			
-			request.setAttribute("message", message);
-			request.setAttribute("loc", loc);
-			
-			RequestDispatcher dispatcher =  request.getRequestDispatcher("/WEB-INF/views/msg.jsp");
-			dispatcher.forward(request, response);
+			response.sendRedirect(loc); 
 			
 			return false;
-		}*/
+		}
 		
 		return true;
 	}

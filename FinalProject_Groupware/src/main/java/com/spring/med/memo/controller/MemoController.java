@@ -170,29 +170,46 @@ public class MemoController {
 
   
   
-  	// 메모 삭제 (휴지통으로 이동)
+  	// 메모 삭제 (휴지통으로 이동) => 일반메모+중요메모
 	@DeleteMapping("trash")
-	public ResponseEntity<Map<String, Object>> memoDelete(@RequestBody Map<String, Object> paraMap) {
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> moveToTrash(@RequestBody Map<String, Object> paraMap, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+
 		Map<String, Object> response = new HashMap<>();
+
+		// 로그인 여부 확인
+		if (loginuser == null) {
+			response.put("status", "fail");
+			response.put("message", "로그인이 필요합니다.");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+		}
 
 		// memo_no 검증
 		if (!paraMap.containsKey("memo_no") || paraMap.get("memo_no") == null) {
-//			response.put("status", "fail");
-//			response.put("message", "메모 번호가 없습니다.");
+			response.put("status", "fail");
+			response.put("message", "메모 번호가 없습니다.");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 
+		String member_userid = loginuser.getMember_userid();
 		int memo_no;
+
 		try {
 			memo_no = Integer.parseInt(String.valueOf(paraMap.get("memo_no")));
 		} catch (NumberFormatException e) {
-//			response.put("status", "fail");
-//			response.put("message", "잘못된 메모 번호 형식입니다.");
+			response.put("status", "fail");
+			response.put("message", "잘못된 메모 번호 형식입니다.");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 
-		// 메모를 휴지통으로 이동 (DB 상태 업데이트)
-		int result = service.trash(memo_no);
+		// DB 업데이트를 위한 Map 생성
+		paraMap.put("member_userid", member_userid);
+
+		// 메모 삭제 처리 (휴지통으로 이동)
+		int result = service.moveToTrash(paraMap);
 
 		if (result > 0) {
 			response.put("status", "success");
@@ -200,11 +217,12 @@ public class MemoController {
 			response.put("memo_no", memo_no);
 			return ResponseEntity.ok(response);
 		} else {
-//			response.put("status", "fail");
-//			response.put("message", "메모 이동 실패");
+			response.put("status", "fail");
+			response.put("message", "메모 이동 실패");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
+
 
 	
 	////////////////////////// 휴지통 시작 /////////////////////////////
@@ -308,14 +326,26 @@ public class MemoController {
           System.out.println(" 현재 중요 여부: " + importance);
 
           if ("0".equals(importance)) {
-              service.updateMemoImportance(paraMap, "1"); // 중요 메모(즐겨찾기)로 설정
-              resultMap.put("success", true);
-              resultMap.put("isBookmark", true); // 즐겨찾기 추가됨
-          } else {
-              service.updateMemoImportance(paraMap, "0"); // 일반 메모로 변경
-              resultMap.put("success", true);
-              resultMap.put("isBookmark", false); // 즐겨찾기 해제됨
-          }
+        	    service.updateMemoImportance(paraMap, "1"); // 중요 메모(즐겨찾기)로 설정
+        	    
+        	    // 업데이트 후 DB에서 다시 가져와 확인
+        	    String updatedImportance = service.getMemoImportance(paraMap);
+        	    System.out.println("업데이트 후 중요 여부: " + updatedImportance);
+        	    
+        	    resultMap.put("success", true);
+        	    resultMap.put("isBookmark", "1".equals(updatedImportance)); 
+        	} else {
+        	    service.updateMemoImportance(paraMap, "0"); // 일반 메모로 변경
+
+        	    // 업데이트 후 DB에서 다시 가져와 확인
+        	    String updatedImportance = service.getMemoImportance(paraMap);
+        	    System.out.println("업데이트 후 중요 여부: " + updatedImportance);
+        	    
+        	    resultMap.put("success", true);
+        	    resultMap.put("isBookmark", "1".equals(updatedImportance));
+        	}
+
+
       } else {
           resultMap.put("success", false);
       }
@@ -356,28 +386,5 @@ public class MemoController {
 	}
   
   
-/*  
-
-  //중요 메모(즐겨찾기) 목록 가져오기 
-  @GetMapping("selectmemomark")
-  @ResponseBody
-  public List<Map<String, String>> selectImportantMemo(HttpServletRequest request) {
-      
-      HttpSession session = request.getSession();
-      ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
-
-      String member_userid = loginuser.getMember_userid();
-
-      List<Map<String, String>> memoList = service.selectImportantMemo(member_userid);
-
-      System.out.println("확인용: " + memoList); // 콘솔 로그 확인용
-
-      return memoList;
-  }
-
-
-  
-  
- */ 
 }
 
