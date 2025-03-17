@@ -62,17 +62,11 @@ $(document).ready(function(){
 	        <!-- 약품명과 복용 방법이 세로로 나열되는 부분 -->
 	        <tr>
 	            <td style="font-weight: bold; vertical-align: top; text-align: center;">처방약</td>
-	            <td style="vertical-align: top;">
-					<c:forEach var="pvo" items="${requestScope.prescribe_list}">
-						<div style="display: block;">${pvo.prescribe_name}</div>
-					</c:forEach>
-	            </td>
-				<td style="font-weight: bold; vertical-align: top; text-align: center;">복용 방법</td>
-	            
-				<td style="vertical-align: top;">  
+
+				<td style="vertical-align: top;" colspan="3">  
 				<c:forEach var="pvo" items="${requestScope.prescribe_list}">
-				
 	               <div style="display: block;">
+					${pvo.prescribe_name}
 						<c:if test="${not empty pvo.prescribe_morning and pvo.prescribe_morning == 1}">
 							아침
 						</c:if>
@@ -92,8 +86,8 @@ $(document).ready(function(){
 							</c:when>
 						</c:choose> 
 					</div>
-					</c:forEach>
-					</td>
+				</c:forEach>
+				</td>
 				
 	        </tr>
 	
@@ -101,7 +95,24 @@ $(document).ready(function(){
 				<td style="font-weight: bold; vertical-align: top; text-align: center;">진단명</td>
 				<td>${requestScope.pay_patientInfo.order_desease_name}</td>
 				<td style="font-weight: bold; vertical-align: top; text-align: center;">처방금액</td>
-				<td><fmt:formatNumber value="${requestScope.pay_patientInfo.cost}" pattern="#,###"/>원</td>			
+				<td>
+					<c:forEach var="cvo" items="${requestScope.cost_list}">
+						<div style="display: block;">
+						${cvo.cost_item}
+						<fmt:formatNumber value="${cvo.cost}" pattern="#,###"/>원
+						</div>
+					</c:forEach>
+				</td>
+			</tr>
+			<tr>
+				<td style="font-weight: bold; vertical-align: top; text-align: center;">총 금액</td>
+				<td colspan="3">
+				<c:forEach var="cvo" items="${requestScope.cost_list}" varStatus="status">
+					<c:if test="${status.index == 0}">
+						<fmt:formatNumber value="${cvo.total_cost}" pattern="#,###"/>원
+					</c:if>
+				</c:forEach>
+				</td>
 			</tr>
 			<tr>
 				<td colspan="4" style="text-align: center; font-size: 20px; font-weight: bold;">상세내용</td>
@@ -109,7 +120,7 @@ $(document).ready(function(){
 			<tr>
 				<td colspan="4" rowspan="10" style="text-align: center; font-size: 20px; font-weight: bold; background-color: #f0f0f0; vertical-align: top;">
 	                <!-- 빈 내용: 공간을 차지하기 위해 사용 -->
-					<div style="height: 1000px; width: 100%;"></div>
+					<div style="height: 900px; width: 100%;"></div>
 	            </td>
 			</tr>
 			

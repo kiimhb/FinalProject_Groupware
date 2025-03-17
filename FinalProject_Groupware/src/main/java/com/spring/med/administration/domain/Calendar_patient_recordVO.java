@@ -7,15 +7,18 @@ public class Calendar_patient_recordVO {
 	// 진료관련
 	private String order_no;
 	private String order_createTime;
-	private String patient_symptom;
+	private String order_desease_name;
 	
 	// 입원관련
 	private String hospitalize_start_day;
 	private String hospitalize_end_day;
+	private String fk_hospitalizeroom_no;
 	
 	// 수술관련
 	private String surgery_day;
 	private String surgery_start_time;
+	private String surgery_end_time;
+	private String surgery_surgeryroom_name;
 	
 	
 	public String getOrder_no() {
@@ -54,14 +57,30 @@ public class Calendar_patient_recordVO {
 	public void setSurgery_start_time(String surgery_start_time) {
 		this.surgery_start_time = surgery_start_time;
 	}
-	public String getPatient_symptom() {
-		return patient_symptom;
+	public String getOrder_desease_name() {
+		return order_desease_name;
 	}
-	public void setPatient_symptom(String patient_symptom) {
-		this.patient_symptom = patient_symptom;
+	public void setOrder_desease_name(String order_desease_name) {
+		this.order_desease_name = order_desease_name;
 	}
-	
-	
-	
+	public String getSurgery_surgeryroom_name() {
+		return surgery_surgeryroom_name;
+	}
+	public void setSurgery_surgeryroom_name(String surgery_surgeryroom_name) {
+		this.surgery_surgeryroom_name = surgery_surgeryroom_name;
+	}
+	public String getSurgery_end_time() {
+		return surgery_end_time;
+	}
+	public void setSurgery_end_time(String surgery_end_time) {
+		this.surgery_end_time = surgery_end_time;
+	}
+	public String getFk_hospitalizeroom_no() {
+		return fk_hospitalizeroom_no;
+	}
+	public void setFk_hospitalizeroom_no(String fk_hospitalizeroom_no) {
+		this.fk_hospitalizeroom_no = fk_hospitalizeroom_no;
+	}
+
 	
 }

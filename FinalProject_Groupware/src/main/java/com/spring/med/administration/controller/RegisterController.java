@@ -236,21 +236,6 @@ public class RegisterController {
 	public List<String> okTime(@RequestParam int surgeryroom_no, 
 							   @RequestParam String surgery_day) {
 		
-		String surgery_surgeryroom_name = "";
-		
-		if(surgeryroom_no == 1) {
-			surgery_surgeryroom_name = "roomA";
-		}
-		else if(surgeryroom_no == 2) {
-			surgery_surgeryroom_name = "roomB";
-		}
-		if(surgeryroom_no == 3) {
-			surgery_surgeryroom_name = "roomC";
-		}
-		else if(surgeryroom_no == 4) {
-			surgery_surgeryroom_name = "roomD";
-		}
-		
 		Map<String, Object> paraMap = new HashMap<>();
 		paraMap.put("surgery_surgeryroom_name", surgeryroom_no);
 		paraMap.put("surgery_day", surgery_day);
@@ -259,7 +244,7 @@ public class RegisterController {
 		return service.oktime(paraMap);
 	}
 	
-	// 예약이 있는 시간 모두 가져오기
+	// 예약이 있는 시간 모두 가져오기 (종료시간을 선택하기 위함)
 	@PostMapping("reservedTime")
 	@ResponseBody
 	public List<Map<String, String>> reservedTime(@RequestParam int surgeryroom_no, 
@@ -269,9 +254,10 @@ public class RegisterController {
 		paraMap.put("surgery_surgeryroom_name", surgeryroom_no);
 		paraMap.put("surgery_day", surgery_day);
 		
+		// 선택한 수술날짜와 수술실의 예약 목록을 불러오는 것이다. 
 		List<Map<String, String>> reservedTime = service.reservedTime(paraMap);
-		// System.out.println("reservedTime"+reservedTime);
 		// reservedTime[{surgery_start_time=14:00, surgery_end_time=15:30}]
+			
 		return reservedTime;
 	}
 	
@@ -392,7 +378,7 @@ public class RegisterController {
 	public ResponseEntity<Map<String,String>> successreserve(@ModelAttribute HospitalizeVO hospitalizevo) {
 		
 		String jubun = service.jubunGet(hospitalizevo); // 중복 입원 확인을 위해 주민번호 알아오기
-		// System.out.println("jubun"+ jubun);
+
 		Map<String, String> response = new HashMap<>();
 		
 		try {

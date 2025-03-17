@@ -2,14 +2,14 @@
 
 .header, .content, .reservation {
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 }
 
 /* 상단 */
 .content {
 	/* border: 1px solid red; */
 	margin: 0 auto;
-	width: 80%;
+	width: 90%;
 	padding-top: 2%;
 	display: flex;
 	height:705px
@@ -70,10 +70,10 @@ div.div_surgerydate {
 	display: flex;
 }
 input.surgerydate {
-	width:47%;
+	width:49%;
 }
 select.surgeryStartdate {
-	width:47%;
+	width:49%;
 }
 div.form {
 	height: 600px;
@@ -83,7 +83,7 @@ div.form {
 	
 }
 select.surgeryenddate {
-	width:96.5%;
+	width:100%;
 }
 div#calendar {
 	/* border: 1px solid #ccc;  */

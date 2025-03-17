@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.med.administration.service.PayService;
+import com.spring.med.order.domain.CostVO;
 import com.spring.med.patient.domain.PrescribeVO;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -138,18 +139,22 @@ public class PayController {
 	public ModelAndView print_pay(@PathVariable String order_no,
 								  ModelAndView mav) {	
 		
-		// 환자정보 불러오기
+		// 환자 기본정보 불러오기
 		Map<String, String> pay_patientInfo = service.pay_patientInfo(order_no);
+		
+		// 수납 상새내역 불러오기
+		List<CostVO> cost_list = service.cost_list(order_no);
 		
 		// 처방약 정보 불러오기
 		List<PrescribeVO> prescribe_list = service.prescribe_list(order_no);
 		
 		mav.addObject("pay_patientInfo", pay_patientInfo);
 		mav.addObject("prescribe_list", prescribe_list);
+		mav.addObject("cost_list", cost_list);
 		
 		mav.setViewName("content/administration/payPrint");
 		return mav;
-	}	 
+	}
 
 	
 }

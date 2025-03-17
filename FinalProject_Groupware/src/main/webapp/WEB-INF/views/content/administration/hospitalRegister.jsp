@@ -22,7 +22,7 @@ a:hover,
 .fc-daygrid {
     color: #000;
     text-decoration: none ;
-    background-color: transparent ;
+    background-color: transparent;
     cursor: pointer;
 } 
 div.fc-daygrid-day-bottom > a {
@@ -244,6 +244,7 @@ $(document).ready(function(){
 							});
 							html += `</optgroup>`;
 					}
+					
 					roomSelect.append(html);
 					
 				},

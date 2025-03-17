@@ -179,7 +179,7 @@
 		with
 		a as 
 		(
-		    select fk_patient_no, order_no, order_createTime, patient_symptom
+		    select fk_patient_no, order_no, order_createTime, order_desease_name
 		    from tbl_order a join tbl_patient b
 		    on a.fk_patient_no = b.patient_no
 		    where fk_patient_no = #{patient_no}
@@ -187,18 +187,23 @@
 		),
 		b as 
 		(
-		    select fk_order_no, hospitalize_start_day, hospitalize_end_day
+		    select  fk_order_no, fk_hospitalizeroom_no,
+		    		to_char(hospitalize_start_day, 'yyyy-mm-dd') as hospitalize_start_day, 
+		       		to_char(hospitalize_end_day, 'yyyy-mm-dd') as hospitalize_end_day
 		    from tbl_hospitalize
 		),
 		c as 
 		(
-		    select fk_order_no, surgery_day, surgery_start_time
+		    select fk_order_no, 
+		    	   to_char(surgery_day, 'yyyy-mm-dd') as surgery_day, 
+		           to_char(surgery_start_time, 'hh24:mi:ss') as surgery_start_time, 
+		           to_char(surgery_end_time, 'hh24:mi:ss') as surgery_end_time,
+		     	   surgery_surgeryroom_name
 		    from tbl_surgery
 		)
-		select order_no, order_createTime, patient_symptom, 
-		       to_char(hospitalize_start_day, 'yyyy-mm-dd') as hospitalize_start_day, 
-		       to_char(hospitalize_end_day, 'yyyy-mm-dd') as hospitalize_end_day,
-		       surgery_day, surgery_start_time
+		select order_no, order_createTime, order_desease_name, 
+			   hospitalize_start_day, hospitalize_end_day, fk_hospitalizeroom_no,
+		       surgery_day, surgery_start_time, surgery_end_time, surgery_surgeryroom_name
 		from a left join b
 		on a.order_no = b.fk_order_no
 		left join c

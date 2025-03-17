@@ -81,11 +81,12 @@ function pay_success() {
 
 // 출력화면 띄우기
 function openAndPrint(url) {
-	
-	var newWindow = window.open(url, '_blank');
-	newWindow.onload = function() {
-		newWindow.print();
-	};
+	// `payPrint.jsp`를 새 창으로 열고 인쇄 대화상자를 띄운다
+   
+	var newWindow = window.open(url, '_blank', 'width=800,height=600'); // 새 팝업 창 크기 설정
+	   newWindow.onload = function() {
+	       newWindow.print(); // 팝업 창에서 자동으로 인쇄 대화상자 실행
+	   };
 }
 
 </script>
@@ -134,7 +135,6 @@ function openAndPrint(url) {
 					<th>주민등록번호</th>
 					<th>수납비용</th>
 					<th>처방전</th>
-					<th>수납</th>
 				</tr>
 			</c:if>
 			<c:if test="${empty requestScope.pay_list}">
@@ -146,7 +146,6 @@ function openAndPrint(url) {
 					<th>주민등록번호</th>
 					<th>수납비용</th>
 					<th>처방전</th>
-					<th>수납</th>
 				</tr>
 			</c:if>
 			</thead>
@@ -162,7 +161,6 @@ function openAndPrint(url) {
 						<td>${fn:substring(pvo.patient_jubun, 0, 8)}******</td>
 						<td><fmt:formatNumber value="${pvo.cost}" pattern="#,###"/>원</td>
 						<td><input type="button" value="출력" id="print" class="btn print" onclick="openAndPrint('<%= ctxPath%>/pay/print/${pvo.order_no}')"></td>
-						<td><input type="button" value="출력" id="print" class="btn print" onclick="window.print()"></td>
 					</tr>
 				</c:forEach>
 			</c:if>

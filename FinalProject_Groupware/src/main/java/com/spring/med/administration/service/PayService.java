@@ -3,6 +3,7 @@ package com.spring.med.administration.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.med.order.domain.CostVO;
 import com.spring.med.patient.domain.PrescribeVO;
 
 public interface PayService {
@@ -19,7 +20,12 @@ public interface PayService {
 	// 환자정보 불러오기
 	Map<String, String> pay_patientInfo(String order_no);
 
+	// 수납 상새내역 불러오기
+	List<CostVO> cost_list(String order_no);
+	
 	// 처방약 정보 불러오기
 	List<PrescribeVO> prescribe_list(String order_no);
+
+
 
 }

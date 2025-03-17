@@ -41,9 +41,9 @@ public class PatientController {
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("patientname", patientname);
 		
-		int totalCount = 0;          // 총 게시물 건수
+		int totalCount = 0;            // 총 게시물 건수
 		int sizePerPage = 10;        // 한 페이지당 보여줄 게시물 건수
-		int totalPage = 0;           // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
+		int totalPage = 0;             // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
 		int n_currentShowPageNo = 0;
 		
 		totalCount = service.getTotalCount(paraMap); // 진료기록이 있는 총 환자수 (totalCount)
@@ -176,7 +176,7 @@ public class PatientController {
 		
 		if(scheduleList != null && scheduleList.size() > 0) {
 			
-			for(Calendar_patient_recordVO cvo : scheduleList) {
+			for(Calendar_patient_recordVO cvo : scheduleList) {	
 				JSONObject jsObj = new JSONObject();
 				jsObj.put("order_no", cvo.getOrder_no());
 				jsObj.put("order_createTime", cvo.getOrder_createTime());
@@ -184,7 +184,10 @@ public class PatientController {
 				jsObj.put("hospitalize_end_day", cvo.getHospitalize_end_day());
 				jsObj.put("surgery_day", cvo.getSurgery_day());
 				jsObj.put("surgery_start_time", cvo.getSurgery_start_time());
-				jsObj.put("patient_symptom", cvo.getPatient_symptom());
+				jsObj.put("order_desease_name", cvo.getOrder_desease_name());
+				jsObj.put("surgery_surgeryroom_name", cvo.getSurgery_surgeryroom_name());
+				jsObj.put("surgery_end_time", cvo.getSurgery_end_time());
+				jsObj.put("fk_hospitalizeroom_no", cvo.getFk_hospitalizeroom_no());
 				jsArr.put(jsObj);
 			}// end of for-------------------------------------
 		}

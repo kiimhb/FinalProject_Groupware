@@ -27,5 +27,6 @@
       <typeAlias type="com.spring.med.mail.domain.MailSentVO" alias="MailSentVO"/>
       <typeAlias type="com.spring.med.mail.domain.MailReceiveVO" alias="MailReceiveVO"/>
       <typeAlias type="com.spring.med.patient.domain.PrescribeVO" alias="PrescribeVO"/>
+      <typeAlias type="com.spring.med.order.domain.CostVO" alias="CostVO"/>
    </typeAliases>     
 </configuration>

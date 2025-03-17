@@ -210,13 +210,13 @@ $(document).ready(function(){
 					 dataType: "json",
 		    	     success:function(availableTimes){
 		    	    	
-						let startTime = $("select#surgery_start_time")
+						let startTime = $("select#surgery_start_time");  // 수술 시작 시간 
 						
-						startTime.empty(); // 비우기
+						startTime.empty(); // 비우기 
 						
 						startTime.append('<option value="0">시작시간</option>');
 						
-						availableTimes.forEach(time => {
+						availableTimes.forEach(time => { // 수술 예약이 가능한 시간을 조회한다. 
 							startTime.append(`<option value="\${time}">\${time}</option>`);
 						});
 		    	     },
@@ -277,7 +277,7 @@ function getAvaliableEndTime(startTime, reservedTime) {
 	]; // 종료 예약이 가능한 모든 시간 출력하기 
 
 	let avaliabledEndTimes = []; // 종료 가능한 시간 담기 배열
-	let startIndex = allTimes.indexOf(startTime);
+	let startIndex = allTimes.indexOf(startTime); // 수술 시작 시간의 인덱스를 찾기 
 	
 	if(startIndex !== -1) {
 		let earliestReservedStart = null;
@@ -374,8 +374,8 @@ function registerSurgery() {
          contentType: false, // FormData 객체를 사용할 때는 contentType을 false로 설정
 		 dataType: "json",
 	     success:function(response){
-			alert(response.message);
-			window.location.href = "<%= ctxPath%>/register/list";
+			alert(response.message); // controller 에서 받은 메세지 출력 
+			window.location.href = "<%= ctxPath%>/register/list"; // 목록으로 돌아간다. 
 		 },
 	     error: function(error){
 			let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";

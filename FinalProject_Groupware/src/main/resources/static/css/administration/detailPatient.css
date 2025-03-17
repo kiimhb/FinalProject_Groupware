@@ -91,7 +91,9 @@ div.reservation2 {
 	width: 50%;
 	border: 1px solid #ccc;
 }
-
+div.reservation2 > table.surgerytable {
+	font-size: 10.5pt;
+}
 div.backbtn {
 	text-align: center;
 	padding: 1%;

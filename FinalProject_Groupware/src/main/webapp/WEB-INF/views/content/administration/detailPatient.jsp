@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"  %>
 
 <%
 	String ctxPath = request.getContextPath();
@@ -27,15 +27,6 @@ div.fc-daygrid-day-bottom > a {
 	border-radius:3px;
 	display: flex;
 	padding-left: 5%;
-}
-.fc-daygrid-day[data-event-class="event-hospitalize"] .fc-daygrid-more-link {
-	background-color: #509d9c !important;
-}
-.fc-daygrid-day[data-event-class="event-surgery"] .fc-daygrid-more-link {
-	background-color: #b3d6d2 !important;
-}
-.fc-daygrid-day[data-event-class="event-order"] .fc-daygrid-more-link {
-	background-color: #f68b1f !important;
 }
 /* 캘린더 평일 */
 a, 
@@ -93,7 +84,7 @@ $(document).ready(function(){
     }
 	
 	var calendarEl = document.getElementById('calendar'); // div#calendar 위치 (보여줄 위치임)
-	
+
 	/* 캘린더 띄움 시작 */
 	calendar = new FullCalendar.Calendar(calendarEl, {
 		
@@ -106,10 +97,11 @@ $(document).ready(function(){
 	    	center: '',
 	    	end: 'today prev,next'
 	    },
-	    dayMaxEventRows: 0, // 
-	    views: {
+		displayEventTime: false,
+		dayMaxEventRows: 2, // 기본적으로 모든 이벤트는 제한 없음
+		views: {
 	      timeGrid: {
-	        dayMaxEventRows: 1 // adjust to 6 only for timeGridWeek/timeGridDay
+	        dayMaxEventRows: 2 
 	      }
 	    },
 	    // ===================== DB 와 연동하는 법 시작 ===================== //
@@ -120,49 +112,76 @@ $(document).ready(function(){
                  data:{"patient_no":$("input[name='patient_no']").val()},
                  dataType: "json",
                  success:function(json) {
-					 
+										 
                 	 // console.log(JSON.stringify(json));
-                	 
+
                 	 var events = [];
 
                 	 // 가져온 데이터를 FullCalendar의 events 배열 형식으로 변환
                      json.forEach(function(item) {
+
+						 let surgery_surgeryroom_name = "";
+											                     	 
+	                 	 if(item.surgery_surgeryroom_name == 1) {
+	                 		 surgery_surgeryroom_name = "RoomA";
+	                 	 }
+	                 	 else if(item.surgery_surgeryroom_name == 2) {
+	                 		 surgery_surgeryroom_name = "RoomB";
+	                 	 }
+	                 	 else if(item.surgery_surgeryroom_name == 3) {
+	                 		 surgery_surgeryroom_name = "RoomC";
+	                 	 }
+	                 	 else {
+	                 		 surgery_surgeryroom_name = "RoomD";
+	                 	 }
+						                	 
+
                          if (item.hospitalize_start_day && item.hospitalize_end_day) {
                              events.push({
-                                 title: "입원일자: ",
-                                 start: item.hospitalize_start_day,
-                                 end: item.hospitalize_end_day,
-                                 color: "lightblue",
-                               	 className: "event-hospitalize" // 입원 이벤트 클래스 추가
+								title: item.fk_hospitalizeroom_no + "호",
+                                start: item.hospitalize_start_day,
+                                end: item.hospitalize_end_day,
+								color: "lightblue"
                              });
                          }
-                         if (item.surgery_day && item.surgery_start_time) {
-                        	 var startDateTime = item.surgery_day + "T" + item.surgery_start_time;  // "2025-03-18T11:30:00"
-                             var endDateTime = item.surgery_day + "T" + item.surgery_end_time;  // "2025-03-18T15:00:00"	 
-								
-                             events.push({
-                                 title: surgery_surgeryroom_name + ' (' + item.surgery_start_time.substring(0,5) + ' - ' + item.surgery_end_time.substring(0,5) + ')',
-                                 start: startDateTime,
-                                 end: endDateTime,
-                                 color: "lightcoral"
-                             });
-                         }
+                         
                          if (item.order_createTime) {
                              events.push({
-                                 title: "진료" + item.patient_symptom,
+                                 title: "진료",
                                  start: item.order_createTime,
-                                 color: "lightcoral",
-                                 className: "event-order" // 입원 이벤트 클래스 추가
+                                 color: "lightgreen"
                              });
                          }
+						 
+						 if (item.surgery_day && item.surgery_start_time && item.surgery_surgeryroom_name && item.surgery_end_time) {
+                         	  var startDateTime = item.surgery_day + "T" + item.surgery_start_time;  // "2025-03-18T11:30:00"
+                              var endDateTime = item.surgery_day + "T" + item.surgery_end_time;  // "2025-03-18T15:00:00"	 
+ 							  // console.log("수술일정들어옴" + item.surgery_surgeryroom_name + ' (' + item.surgery_start_time.substring(0,5) + ' - ' + item.surgery_end_time.substring(0,5) + ')');
+                              events.push({
+                                  title: '수술 ' + '(' + item.surgery_start_time.substring(0,5) + ')',
+                                  start: startDateTime,
+                                  end: endDateTime,
+                                  color: "lightcoral"
+                              });
+                          }
+						  
                      });
                     	successCallback(events); 
 	    	 		},
 			    	error: function(request, status, error){
-				            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				    }	
 	    	 }); // end of  $.ajax
 	    },
+		eventContent: function(info) {
+			var customTitle = info.event.title;  // title은 이미 수술실 이름만 들어가 있음
+
+		    return {
+		        html: '<div style="background-color: #509d9c; color: white; padding: 3px 3px; border-radius: 5px; font-size:8pt; width:100%; white-space: nowrap; overflow: hidden; word-wrap: break-word;">'
+		                   + customTitle +
+		               '</div>'
+		    };
+		},
 	    // ===================== DB 와 연동하는 법 끝 ===================== //
 	 	// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정에 대한 간단한 설명문 보여줌)
      	dateClick: function(info) {
@@ -176,8 +195,7 @@ $(document).ready(function(){
 	});
 	/* 캘린더 띄움 끝 */
 	
-	calendar.render();  // 풀캘린더 보여주기
-	
+	calendar.render();	
 	
 	// ****** 예약 가능한 시간선택 옵션 시작 ******//
 	// 수술실과 날짜를 고려한 수술 가능한 시간 구하기
@@ -578,7 +596,7 @@ function hospitalizeUpdate() {
 						<c:forEach var="pvo" items="${requestScope.order_list}">
 		  					<tr class="trlist" data-id="${pvo.order_no}" onclick="trlist('${pvo.order_symptom_detail}',${pvo.order_no})">
 		  						<td>${pvo.order_createTime}</td>
-								<td>${pvo.patient_symptom}</td>
+								<td>${fn:substring(pvo.order_symptom_detail, 0, 8)}...</td>
 		  						<td>${pvo.child_dept_name}</td>
 		  					</tr>
 						</c:forEach>
@@ -595,7 +613,6 @@ function hospitalizeUpdate() {
 	  		<div id="calendar">
 	  			
 	  		</div>
-	  		
 	  	</div>
 
 	  </div>
@@ -624,7 +641,7 @@ function hospitalizeUpdate() {
 				<c:set var="today" value="<%= new java.text.SimpleDateFormat(\"yyyy-MM-dd\").format(new java.util.Date()) %>" />
 			
 		  		<div class="reservation2">
-		  			<table class="table">
+		  			<table class="table surgerytable">
 		  				<thead class="bg-light">
 		  					<tr>
 			  					<th>선택</th>
@@ -640,8 +657,6 @@ function hospitalizeUpdate() {
 							<c:if test="${not empty requestScope.surgery_list}">
 							
 								<c:set var="pastRecordSurgery" value="false" />	
-								
-								
 								
 								<c:forEach var="svo" items="${requestScope.surgery_list}">
 								
@@ -723,11 +738,11 @@ function hospitalizeUpdate() {
 				
 		  			<div class="input">
 		  				<div class="text">환자명</div>
-		  				<input type="text" name="patient_name" class="patientinput name" value="" style="background-color:#eee;" disabled/>
+		  				<input type="text" name="patient_name" class="patientinput name" value="" disabled/>
 		  			</div>
 		  			<div class="input">
 		  				<div class="text">예약변경일자</div>
-		  				<input type="text" name="surgery_reserve_date" class="patientinput surgeryupdateday" value="" style="background-color:#eee;" disabled/>
+		  				<input type="text" name="surgery_reserve_date" class="patientinput surgeryupdateday" value="" disabled/>
 		  			</div>
 		  			<div class="input">
 		  				<div class="text">수술실</div>

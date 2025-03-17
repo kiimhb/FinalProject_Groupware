@@ -44,7 +44,7 @@ $(document).ready(function(){
 					 }
 					 
 				 }, error: function(error){
-					let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";
+					let errorMessage = error.responseJSON?.message || "삭제 중 오류가 발생했습니다.";
 			   		alert(errorMessage);
 			 	 }
 			});
@@ -122,11 +122,11 @@ $(document).ready(function(){
 				dataType: "json",
 			    success:function(response){	
 			        	
-			    	if(response.status == "success") {
+			    	if(response.status == "success") { // controller 에서 수정이 성공된 상태를 나타낸다. 
 						 alert(response.message);
 						 window.location.href = `<%= ctxPath%>/notice/detail/\${notice_no}`;
 					 }
-					 else {
+					 else { // controller 에서 수정이 실패된 상태를 나타낸다. 
 						 alert(response.message);
 					 }
 			    	

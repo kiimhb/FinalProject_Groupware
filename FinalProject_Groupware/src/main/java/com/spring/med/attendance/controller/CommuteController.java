@@ -98,35 +98,26 @@ public class CommuteController {
 	public ResponseEntity<Map<String,String>> check_in(@RequestParam String member_userid,
 													   @RequestParam String work_starttime,
 													   HttpServletRequest request) {
-			
-		/*
-		String clintIp = request.getRemoteAddr();
-		System.out.println("clintIp"+clintIp); 
-		*/
 		
 		Map<String, String> response = new HashMap<>();
 		
-		//if(isCompanyIp(clintIp)) {
-			String work_startstatus = "";	
-			
-			Map<String, String> paraMap = new HashMap<>();
-			paraMap.put("fk_member_userid", member_userid);
-			paraMap.put("work_starttime", work_starttime);
-			paraMap.put("work_startstatus", work_startstatus);
+		String work_startstatus = "";	
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("fk_member_userid", member_userid);
+		paraMap.put("work_starttime", work_starttime);
+		paraMap.put("work_startstatus", work_startstatus);
 
-			try {
-				service.check_in(paraMap); // 예약하기 insert
-				response.put("message", "출근 기록 성공! 오늘도 파이팅★");
-				return ResponseEntity.ok(response);
-			} catch(RuntimeException e) {
-				e.printStackTrace();
-				response.put("message", e.getMessage()); // service 단의 예외 메시지 그대로 반환해준다. 
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			}
-		//} else {
-		//	response.put("message", "회사 컴퓨터에서만 출근이 가능합니다."); 
-		//	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		// }
+		try {
+			service.check_in(paraMap); // 예약하기 insert
+			response.put("message", "출근 기록 성공! 오늘도 파이팅★");
+			return ResponseEntity.ok(response);
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+			response.put("message", e.getMessage()); // service 단의 예외 메시지 그대로 반환해준다. 
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	
 	}
 	
 	

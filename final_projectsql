@@ -741,3 +741,18 @@ delete tbl_cost;
 commit;
 
 delete tbl_patient;
+
+select *
+from tbl_surgery;
+
+select *
+from tbl_patient;
+
+delete tbl_patient
+where patient_no = 41;
+
+delete tbl_hospitalize;
+
+delete tbl_surgery;
+
+

@@ -66,7 +66,7 @@ $(document).ready(function(){
 	// 출근하기 버튼 
 	$("button.sbtn").on("click", function(){
 
-		const member_userid = $(this).val();	// 사번알아오기
+		const member_userid = $(this).val(); 	// 사번알아오기
 		const work_starttime = nowtime(); 		// 지금시간
 		
 		$.ajax({
@@ -76,12 +76,12 @@ $(document).ready(function(){
 				  "work_starttime":work_starttime},
 	        dataType: "json",
 	        success:function(response){	
-	        	alert(response.message);
-	        	$("button.sbtn").attr("disabled", true); 
-	        	location.reload(true);
+	        	alert(response.message); // controller 에서 전달받은 메세지 출력 
+	        	$("button.sbtn").attr("disabled", true); // 버튼 비활성화  
+	        	location.reload(true); // 새로고침 
 	        },
  	    	error: function(error){
-   	    		let errorMessage = error.responseJSON?.message || "예약 중 오류가 발생했습니다.";
+   	    		let errorMessage = error.responseJSON?.message || "등록 중 오류가 발생했습니다.";
  	   	   		alert(errorMessage);
 		    }
 		

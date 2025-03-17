@@ -9,17 +9,43 @@
 	<!-- 수납상태와 검색어에 따른 총 수납개수 -->
 	<select id="getTotalCount" parameterType="HashMap" resultType="int">
 		select count(*)
-		from
+		from 
 		(
-		    select order_no, order_createTime, fk_patient_no, cost
-		    from tbl_order a join tbl_cost b
-		    on a.order_no = b.fk_order_no
-		    where order_status = #{order_status}
-		) a join tbl_patient b
-		on a.fk_patient_no = b.patient_no
+		    with
+		    a as
+		    (
+		         select  fk_order_no, 
+		                 sum(cost) as total_cost       
+		         from tbl_cost
+		         group by fk_order_no
+		    ), 
+		    b as 
+		    (
+		        select order_no,
+		               to_char(order_createTime, 'yyyy-mm-dd') as order_createTime, 
+		               fk_patient_no
+		        from tbl_order a join tbl_cost b
+		        on a.order_no = b.fk_order_no
+		        where order_status = #{order_status}
+		        order by order_createTime asc
+		    ),
+		    c as 
+		    (
+		        select patient_no, patient_name, patient_jubun, patient_gender
+		        from tbl_patient
+		    )
+		    select  patient_no, patient_name, patient_jubun, patient_gender, 
+		            order_no, order_createTime, fk_patient_no, total_cost
+		    from a join b
+		    on a.fk_order_no = b.order_no
+		    join c
+		    on c.patient_no = b.fk_patient_no
+		    group by order_no, order_createTime, fk_patient_no, total_cost, patient_no, patient_name, patient_jubun, patient_gender
+		    order by order_createTime
+		)
 		<choose>
 		    <when test='patientname != ""  '>
-		    	where patient_name like '%'|| #{patientname} ||'%' 
+		    	and patient_name like '%'|| #{patientname} ||'%'  
 	    	</when>
     	</choose>
 	</select>
@@ -35,25 +61,48 @@
 	     <result property="patient_gender"  	column="patient_gender" 	javaType="String" />
 	</resultMap>
 	<select id="pay_list" parameterType="HashMap" resultMap="pay_list_map">
-		select rno, order_no, order_createTime, fk_patient_no, cost,
-       		   patient_name, patient_jubun, patient_gender
-		from
+		select *
+		from 
 		(
-		    select rownum as rno, order_no, 
-		    to_char(order_createTime, 'yyyy-mm-dd') as order_createTime, fk_patient_no, cost
-		    from tbl_order a join tbl_cost b
-		    on a.order_no = b.fk_order_no
-		    where order_status = #{order_status}
-		    order by order_createTime asc
-		) a join tbl_patient b
-		on a.fk_patient_no = b.patient_no
+		    with
+		    a as
+		    (
+		         select  row_number() over (partition by fk_order_no order by fk_order_no) as rno, 
+		                 fk_order_no, 
+		                 sum(cost) as cost      
+		         from tbl_cost
+		         group by fk_order_no
+		    ), 
+		    b as 
+		    (
+		        select order_no,
+		               to_char(order_createTime, 'yyyy-mm-dd') as order_createTime, 
+		               fk_patient_no
+		        from tbl_order a join tbl_cost b
+		        on a.order_no = b.fk_order_no
+		        where order_status = #{order_status}
+		        order by order_createTime asc
+		    ),
+		    c as 
+		    (
+		        select patient_no, patient_name, patient_jubun, patient_gender
+		        from tbl_patient
+		    )
+		    select  rno, patient_no, patient_name, patient_jubun, patient_gender, 
+		            order_no, order_createTime, fk_patient_no, cost
+		    from a join b
+		    on a.fk_order_no = b.order_no
+		    join c
+		    on c.patient_no = b.fk_patient_no
+		    group by rno, order_no, order_createTime, fk_patient_no, cost, patient_no, patient_name, patient_jubun, patient_gender
+		    order by rno, order_createTime
+		)
 		where rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 		<choose>
 		    <when test='patientname != ""  '>
 		    	and patient_name like '%'|| #{patientname} ||'%'  
 	    	</when>
     	</choose>
-		
 	</select>
 	
 	<!-- 수납처리하기 -->
@@ -62,7 +111,7 @@
 		where order_no = #{order_no}
 	</update>
 	
-	<!--처방전 환자정보 불러오기 -->
+	<!--처방전 환자정보 불러오기 
 	<resultMap id="pay_patientInfo_map" type="HashMap">
 	 	<result property="order_no" 			column="order_no" 			javaType="String" />
 	 	<result property="patient_no" 			column="patient_no" 		javaType="String" />
@@ -74,7 +123,7 @@
 	 	<result property="cost" 				column="cost" 				javaType="String" />
 	</resultMap>
 	<select id="pay_patientInfo" parameterType="String" resultMap="pay_patientInfo_map">
-		select order_no, patient_no, patient_name, patient_jubun, order_desease_name, 
+		select order_no, patient_no, patient_name, patient_jubun, order_desease_name,
                cost_item, cost_item_name, cost
 		from
 		(
@@ -84,6 +133,27 @@
 		    where order_no = #{order_no}
 		) a join tbl_cost b
 		on a.order_no = b.fk_order_no
+	</select>
+	-->
+	<resultMap id="pay_patientInfo_map" type="HashMap">
+	 	<result property="order_no" 			column="order_no" 			javaType="String" />
+	 	<result property="patient_no" 			column="patient_no" 		javaType="String" />
+	 	<result property="patient_name" 		column="patient_name" 		javaType="String" />
+	 	<result property="patient_jubun" 		column="patient_jubun" 		javaType="String" />
+	 	<result property="order_desease_name" 	column="order_desease_name" javaType="String" />
+	</resultMap>
+	<select id="pay_patientInfo" parameterType="String" resultMap="pay_patientInfo_map">
+	    select order_no, patient_no, patient_name, patient_jubun, order_desease_name
+	    from tbl_order a join tbl_patient b
+	    on a.fk_patient_no = b.patient_no
+	    where order_no = #{order_no}
+	</select>
+	
+	<select id="cost_list" parameterType="String" resultType="CostVO">
+		select cost_item, cost_item_name, cost
+			   , (select sum(cost) from tbl_cost where fk_order_no = #{order_no}) as total_cost
+		from tbl_cost
+		where fk_order_no = #{order_no}
 	</select>
 	
 	<!-- 처방약 정보 불러오기 -->

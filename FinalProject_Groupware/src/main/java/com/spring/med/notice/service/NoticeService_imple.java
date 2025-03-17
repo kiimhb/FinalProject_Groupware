@@ -130,6 +130,54 @@ public class NoticeService_imple implements NoticeService {
 	@Override
 	public int notice_file_write(NoticeVO noticevo) {
 		int n = dao.notice_file_write(noticevo);
+		String notice_title = noticevo.getNotice_title(); // 방금 작성한 공지사항 번호를 알아오기 위함
+
+		// 제목으로 공지사항 번호 알아오기 
+		String notice_no = dao.selectNoticeNo(notice_title);
+		
+		if(n == 1) { // 알림테이블 insert 하기
+
+			List<String> fk_child_dept_no = new ArrayList<>(); // 진료부 1 ~ 7 / 간호부 8 ~ 10 / 경영지원부 11 ~ 13
+			
+			int notice_dept = noticevo.getNotice_dept(); // 공지대상부서 0,1,2,3
+			
+			// ==== 부서번호 입력해주기 ==== //
+			if(notice_dept == 0) { // notice_dept 0 은 모든 부서이다.
+				for(int i=1; i<=13; i++) { 
+					fk_child_dept_no.add(String.valueOf(i)); // 1 부터 13 을 넣기  
+				}
+			}
+			else if(notice_dept == 1) { // notice_dept 1은 fk_child_dept_no 1~7 진료부이다.
+				for(int i=1; i<=7; i++) { 
+					fk_child_dept_no.add(String.valueOf(i)); // 1 부터 7 을 넣기  
+				}
+			}
+			else if(notice_dept == 2) { // notice_dept 2은 fk_child_dept_no 8~10 간호부이다.
+				for(int i=8; i<=10; i++) { 
+					fk_child_dept_no.add(String.valueOf(i)); // 8 부터 10 을 넣기  
+				}
+			}
+			else  { // notice_dept 3은 fk_child_dept_no 11~13 경영지원부이다.
+				for(int i=11; i<=13; i++) { 
+					fk_child_dept_no.add(String.valueOf(i)); // 11 부터 13 을 넣기  
+				}
+			}
+			
+			// 부서별 사원아이디 목록 알아오기
+			List<String> selectMemberIdList = dao.selectMemberId(fk_child_dept_no);
+			// System.out.println("selectMemberIdList" + selectMemberIdList);
+	
+			// 조회된 사원들에게 알림 입력하기 
+			for(String fk_member_userid :selectMemberIdList) {
+				Map<String, String> paraMap = new HashMap<>();
+				paraMap.put("fk_member_userid", fk_member_userid);
+				paraMap.put("notice_no", notice_no);
+				
+				dao.insertNoticeAlarm(paraMap); // 알람 넣기 
+			} // end of for(String fk_member_userid :selectMemberIdList)
+		}
+		
+		
 		return n;
 	}
 

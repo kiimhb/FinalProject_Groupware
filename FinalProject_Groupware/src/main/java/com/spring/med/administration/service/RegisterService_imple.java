@@ -91,8 +91,6 @@ public class RegisterService_imple  implements RegisterService {
 							  .noneMatch(reserved -> {
 							   String startStr = reserved.get("surgery_start_time");
 					           String endStr = reserved.get("surgery_end_time");
-					           //System.out.println("startStr"+startStr);
-					           //System.out.println("endStr"+endStr);
 					          
 					           if (startStr == null || endStr == null) {
 					        	   return false; // null 값이면 필터링에서 제외 (예약된 시간으로 간주 X)
@@ -141,7 +139,7 @@ public class RegisterService_imple  implements RegisterService {
 			throw new RuntimeException("동일한 날 다른 예약건이 존재합니다. 다른 예약일을 선택해 주세요.");
 		}
 		
-		// 2. 비관적락 사용해서 예약된 시간인지 확인하기 - 동시성확인 
+		// 2. 비관적락 사용해서 예약된 시간인지 확인하기 - 동시성처리 
 		SurgeryVO existingSurgery = dao.existingSurgery(paraMap);
 		
 		if(existingSurgery != null) { // 2-2. 예약이 되어있는 상태라면 오류 발생(동시성)

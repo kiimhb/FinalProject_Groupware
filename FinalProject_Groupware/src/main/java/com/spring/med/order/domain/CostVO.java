@@ -9,7 +9,8 @@ public class CostVO {
 	private String cost;				// 비용
 	
 	
-	
+	// select 용
+	private String total_cost; // 총금액
 	
 	
 	
@@ -38,7 +39,13 @@ public class CostVO {
 	public void setCost(String cost) {
 		this.cost = cost;
 	}
-
+	public String getTotal_cost() {
+		return total_cost;
+	}
+	public void setTotal_cost(String total_cost) {
+		this.total_cost = total_cost;
+	}
+	
 	
 	
 }

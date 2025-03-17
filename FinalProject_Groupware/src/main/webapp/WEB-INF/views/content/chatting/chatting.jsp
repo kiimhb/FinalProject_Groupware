@@ -33,10 +33,11 @@ $(document).ready(function(){
        }
     });
 	
+	
 	// 메시지 보내기 // 
 	let isOnlyOneDialog = false;
 	
-	$("button.submit").click(function() {
+	$(document).on("click", "button.submit", function() {
 		
 		if( $("input.submit").val() != "") {
 

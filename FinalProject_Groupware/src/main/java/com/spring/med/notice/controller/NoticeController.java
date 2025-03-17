@@ -79,7 +79,9 @@ public class NoticeController {
 
 		
 		Map<String, Object> paraMap = new HashMap<>();
-		List<Integer> parent_deptList = Arrays.asList(0, parent_dept_no); // 0 은 전체공지 , 나머지는 매번 바뀐다.
+		List<Integer> parent_deptList = Arrays.asList(0, parent_dept_no); 
+		// 0 은 전체공지 , 나머지는 로그인 유저에 따라 부서번호가 계속 바뀐다.
+		// 전체공지는 필수로 보여주고, 해당하는 부서에 대한 글을 보여주기 위해 list 에 담는다. 
 		
 		paraMap.put("parent_deptList", parent_deptList);
 			
@@ -111,11 +113,9 @@ public class NoticeController {
 		paraMap.put("startRno", String.valueOf(startRno));
 		paraMap.put("endRno", String.valueOf(endRno));
 		paraMap.put("currentShowPageNo", currentShowPageNo);
-		
-		// System.out.println("startRno"+startRno+"endRno"+endRno);
-		
+				
+		// 공지사항 목록 조회하기 (전체 및 해당부서 공지사항)
 		List<NoticeVO> notice_list = service.notice_list(paraMap);
-		// System.out.println(notice_list);
 		mav.addObject("notice_list", notice_list);
 		
 		// 페이지바 만들기 //
@@ -236,22 +236,17 @@ public class NoticeController {
 		
 		MultipartFile attach = noticevo.getAttach(); 
 		
-		if(attach != null) {
-			// attach(첨부파일)가 비어 있지 않으면(즉, 첨부파일이 있는 경우라면)
+		if(attach != null) { // attach(첨부파일)가 비어 있지 않으면(즉, 첨부파일이 있는 경우라면)
+			
 			HttpSession session = mrequest.getSession();
-			String root = session.getServletContext().getRealPath("/");
 			
-			String path = root + "resources" + File.separator + "noticefiles";
-			// 첨부파일이 저장될 was 의 폴더
+			String root = session.getServletContext().getRealPath("/");	
+			String path = root + "resources" + File.separator + "noticefiles"; // 첨부파일이 저장될 was 의 폴더
+			String newFileName = "";	// WAS(톰캣)의 디스크에 저장될 파일명
 			
-			String newFileName = "";
-			// WAS(톰캣)의 디스크에 저장될 파일명
-			
-			byte[] bytes = null;
-			// 첨부파일의 내용물을 담는 것
-			
-			long fileSize = 0;
-			// 첨부파일의 크기
+			byte[] bytes = null;	// 첨부파일의 내용물을 담는 것
+			long fileSize = 0;		// 첨부파일의 크기
+
 			
 			try {
 				bytes = attach.getBytes();
@@ -291,7 +286,6 @@ public class NoticeController {
 		if(n==1) {
 			mav.setViewName("redirect:/notice/list");
 			// 작성을 완료하면 공지사항 목록 페이지로 이동한다.
-			
 		}
 		
 		return mav;

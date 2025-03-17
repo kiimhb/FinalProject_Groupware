@@ -11,7 +11,7 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import jakarta.servlet.DispatcherType;
 
-/* ===== (#스프링보안05) Spring Security ===== */
+// ===== (#스프링보안05) Spring Security ===== 
 
 @Configuration        // Spring 컨테이너가 처리해주는 클래스로서, 클래스내에 하나 이상의 @Bean 메소드를 선언만 해주면 런타임시 해당 빈에 대해 정의되어진 대로 요청을 처리해준다. 
 @EnableWebSecurity    // SecurityConfig 클래스로 시큐리티를 제어하고 싶다면 @EnableWebSecurity 어노테이션을 해주어야 한다. 
@@ -49,5 +49,5 @@ public class SecurityConfig {
        strictHttpFirewall.setAllowUrlEncodedDoubleSlash(true);
        return strictHttpFirewall;
    }
-   
+  
 }
