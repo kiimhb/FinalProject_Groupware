@@ -18,14 +18,17 @@ div.main_container {
 	margin: auto;
 }
 
-a.main_h6, h4.main_h6 {
-	margin-top: 10px;
+a.main_h6, p.main_h6 {
+	border-left: 4px solid #006769;	
+	padding-left: 1%;
+	margin-top: 10px !important;
+	font-size:16px;
 	display: flex;
 	justify-content: flex-start;
 	color: black;
 }
 
-a.main_h6:hover {
+a.main_h6:hover , h4.main_h6:hover{
 	color: black;
 	border: none;
 }
@@ -156,6 +159,7 @@ div.box_payment {
 	flex: 1 1 690px;
 }
 
+
 div.box_payment>table {
 	width: 100%;
 	margin-top: 7px;
@@ -185,32 +189,16 @@ div.box_schedule {
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	/* border: solid 1px gray; */
 	width: 640px;
-	height: 450px;
+	height: 470px;
 	text-align: center;
 	flex: 1 1 640px;
 }
 
 div#calendar {
+	margin: 10px auto;
 	box-sizing: border-box;
-	width: 640px;
+	width: 630px;
 	height: 400px;
-}
-
-a.fc-dom-24, a.fc-dom-24:hover, .fc-daygrid {
-	color: #FF0000;
-	text-decoration: none;
-	background-color: transparent;
-	cursor: pointer;
-}
-
-.fc-sat {
-	color: #0000FF;
-} /* 토요일 */
-.fc-sun {
-	color: #FF0000;
-} /* 일요일 */
-ul {
-	list-style: none;
 }
 
 button.btn_edit {
@@ -220,10 +208,10 @@ button.btn_edit {
 
 /* 오늘의 날씨 */
 div.box_weather {
-	background: linear-gradient(to bottom, #81d4fa, #b3e5fc);
+	background: linear-gradient(to bottom, #B3D8FF, #E0F2FF);
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	width: 580px;
-	height: 450px;
+	height: 470px;
 	flex: 1 1 580px;
 	display: flex;
 	flex-direction: column;
@@ -254,6 +242,10 @@ div.weather-info {
 
 /* 5일 예보 아이템 */
 div.forecast-item {
+	background-color: #DDEEFF ;
+	width:200px;
+	height:400px;
+	border-radius: 5px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;

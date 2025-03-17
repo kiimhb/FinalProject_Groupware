@@ -467,6 +467,8 @@
 </script>
 
 
+<div id="sub_mycontent">
+
 <div style="margin-left: 80px; width: 88%;">
 <div class="header">
  		<div class="title">일정 수정하기</div>
@@ -559,6 +561,8 @@
     <button type="button" id="edit" class="btn ml-2 no-outline" style="background-color: #006769">완료</button>
     <button type="button" class="btn ml-2 no-outline" style="background-color: #509d9c;" onclick="javascript:location.href='<%= ctxPath%>${gobackURL_detailSchedule}'">취소</button> 
 </div>
+</div>
+
 </div>
 
 <jsp:include page="../../footer/footer1.jsp" />

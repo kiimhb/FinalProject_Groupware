@@ -368,6 +368,8 @@
 
 </script>
 
+<div id="sub_mycontent">
+
 <div style="margin-left: 80px; width: 88%;">
 <div class="header">
  		<div class="title">일정 등록</div>
@@ -456,6 +458,9 @@
 <div style="float: right;">
     <button type="button" id="register" class="btn ml-2 no-outline">등록</button>
     <button type="button" class="btn ml-2 no-outline" style="background-color: #509d9c;" onclick="javascript:location.href='<%= ctxPath%>/schedule/scheduleManagement'">취소</button>
+</div>
+
+</div>
 </div>
 
 
