@@ -201,6 +201,11 @@
 		insert into tbl_day_leave(DAY_LEAVE_NO, FK_DRAFT_NO, DAY_LEAVE_START, DAY_LEAVE_END, DAY_LEAVE_CNT, DAY_LEAVE_REASON, DAY_LEAVE_TYPE)
 		values(seq_day_leave_no.nextval, #{draft_no}, TO_DATE(#{day_leave_start}, 'YYYY/MM/DD'), TO_DATE(#{day_leave_end}, 'YYYY/MM/DD'), #{day_leave_cnt}, #{day_leave_reason}, #{day_leave_type})
 	</insert>
+	<!-- [근무변경신청서] 테이블에 insert -->
+	<insert id="insertToTemporaryStored_TBL_WORK_CHANGE" parameterType="HashMap">
+		insert into tbl_work_change(WORK_CHANGE_NO, FK_DRAFT_NO, WORK_CHANGE_START, WORK_CHANGE_END, WORK_CHANGE_REASON, WORK_CHANGE_MEMBER_WORKINGTIME)
+		values(seq_day_leave_no.nextval, #{draft_no}, TO_DATE(#{work_change_start}, 'YYYY/MM/DD'), TO_DATE(#{work_change_end}, 'YYYY/MM/DD'), #{work_change_reason}, #{work_change_member_workingTime})
+	</insert>
 	
 	<!-- >>> 3. (TBL_APPROVAL)기안결재 테이블에 insert <<< -->
 	<!-- 결재선 목록에 추가한 유저 insert -->
@@ -316,6 +321,16 @@
 			    DAY_LEAVE_CNT = #{day_leave_cnt},
 			    DAY_LEAVE_REASON = #{day_leave_reason},
 			    DAY_LEAVE_TYPE = #{day_leave_type}
+			WHERE FK_DRAFT_NO = #{draft_no}
+	</update>
+	<!-- [근무변경신청서] 테이블에 update -->
+	<update id="updateToTemporaryStored_TBL_WORK_CHANGE" parameterType="HashMap">
+		UPDATE tbl_work_change
+			SET 
+			    WORK_CHANGE_START = TO_DATE(#{work_change_start}, 'yyyy/mm/dd'),
+			    WORK_CHANGE_END = TO_DATE(#{work_change_end}, 'yyyy/mm/dd'),
+			    WORK_CHANGE_REASON = #{work_change_reason},
+			    WORK_CHANGE_MEMBER_WORKINGTIME = #{work_change_member_workingTime}
 			WHERE FK_DRAFT_NO = #{draft_no}
 	</update>
 	
@@ -469,7 +484,7 @@
 		    ),
 		    B as
 		    (
-		        select draft_no, draft_form_type
+		        select draft_no, draft_form_type, draft_write_date AS org_draft_write_date
 		             , case when length(draft_subject) > 20 then substr(draft_subject, 1, 17) || '...' else draft_subject end as draft_subject
 		             , to_char(draft_write_date, 'yyyy-mm-dd') as draft_write_date, draft_status, draft_urgent, draft_file_origin_name, draft_file_name, draft_file_size
 		             , member_name, parent_dept_name
@@ -502,7 +517,11 @@
 				</when>
 				<otherwise></otherwise>
 			</choose>
-		    order by draft_write_date desc
+		    order by case 
+			            when approval_status = '결재예정' and draft_urgent = 1 then 1  
+			            when approval_status = '결재예정' and draft_urgent = 0 then 2  
+			            else 3                                                    
+			        end, org_draft_write_date desc 
 		)
 		where rno between to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
@@ -576,13 +595,14 @@
 		<result property="parent_dept_name" 		column="parent_dept_name" 			javaType="String" />
 		<result property="child_dept_name" 			column="child_dept_name" 			javaType="String" />
 		<result property="member_position" 			column="member_position" 			javaType="String" />
+		<result property="member_yeoncha" 			column="member_yeoncha" 			javaType="String" />
 		<result property="login_user_approval_status" 			column="login_user_approval_status" 			javaType="String" />
 	</resultMap>
 	<select id="approvalPendingListDetail" resultMap="approvalPendingListDetail_Map" parameterType="String">
 		select draft_no, fk_member_userid, draft_form_type, draft_subject, draft_status, draft_urgent, draft_file_name, draft_file_origin_name, draft_file_size
 		     , day_leave_start, day_leave_end, day_leave_cnt, day_leave_reason
 		     , work_change_start, work_change_end, work_change_reason, work_change_member_workingTime
-		     , member_name, parent_dept_name, child_dept_name, member_position
+		     , member_name, parent_dept_name, child_dept_name, member_position, member_yeoncha
 		     , (select approval_status from tbl_approval where fk_draft_no = to_number(#{draft_no}) and fk_member_userid = to_number(#{member_userid})) as login_user_approval_status
 		from tbl_member M join
 		(
@@ -700,7 +720,7 @@
 	
 	<!-- >>> 4. (TBL_MEMBER) 기안문이 "휴가신청서" 일 경우 연차[member_yeoncha] 를 차감 <<< -->
 	<update id="updateToApprovalYeoncha_TBL_MEMBER" parameterType="HashMap">
-		update tbl_member set member_yeoncha = (to_number(member_yeoncha) - #{day_leave_cnt})
+		update tbl_member set member_yeoncha = (to_number(member_yeoncha) - to_number(#{day_leave_cnt}))
 		where member_userid = #{write_member_userid}
 	</update>
 	

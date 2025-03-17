@@ -204,7 +204,7 @@ function goSearch() {
 
 <%-- ===================================================================== --%>
 <div id="sub_mycontent"> 
-	<div class="tempListContainer">
+
 		<h2><a href="<%= ctxPath%>/approval/approvalPendingList" style="text-decoration: none; color: inherit; ">결재문서함</a></h2>
 		
 		<div id="topSearch">
@@ -243,169 +243,55 @@ function goSearch() {
 				</thead>
 				<tbody>
 					<c:if test="${not empty requestScope.pendingList}">			
-						<%-- ============ 긴급한 기안문 ============ --%>		
+						<%-- ============ 결재예정인 기안문 ============ --%>		
 						<c:forEach var="approvalvo" items="${requestScope.pendingList}" varStatus="pending_status"> 
-							<c:if test="${approvalvo.draft_urgent eq '1' && approvalvo.approval_status eq '결재예정'}">
-								<%-- 첨부파일 없는 경우 --%>
-								<c:if test="${empty approvalvo.draft_file_name}">
-									<tr>
-										<td>${approvalvo.draft_no}</td>
-										<td>${approvalvo.parent_dept_name}</td>
-										<td>${approvalvo.member_name}</td>
-										<td>${approvalvo.draft_form_type}</td>
-										<td style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}</td>
-										<td>
-											<c:if test="${approvalvo.draft_status == '진행중'}">
-												<span style="border: solid 1px #28a745; border-radius: 5px; padding: 6.5px; background-color: #28a745; color: white;">${approvalvo.draft_status}</span>
-											</c:if>	
-											<c:if test="${approvalvo.draft_status == '반려완료'}">
-												<span style="border: solid 1px #dc3545; border-radius: 5px; padding: 6.5px 13px; background-color: #dc3545; color: white;">반려</span>
-											</c:if>	
-											<c:if test="${approvalvo.draft_status == '승인완료'}">
-												<span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span>
-											</c:if>
-											<c:if test="${approvalvo.draft_status == '대기'}">
-												<span style="border: solid 1px #ffc107; border-radius: 5px; padding: 6.5px 13px; background-color: #ffc107; color: white;">대기</span>
-											</c:if>		
-										</td>
-										<td>${approvalvo.draft_write_date}</td>
-									</tr>
-								</c:if>	
-								<%-- 첨부파일 있는 경우 --%>
-								<c:if test="${not empty approvalvo.draft_file_name}">
-									<tr>
-										<td>${approvalvo.draft_no}</td>
-										<td>${approvalvo.parent_dept_name}</td>
-										<td>${approvalvo.member_name}</td>
-										<td>${approvalvo.draft_form_type}</td>
-										<td style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
-										<td>
-											<c:if test="${approvalvo.draft_status == '진행중'}">
-												<span style="border: solid 1px #28a745; border-radius: 5px; padding: 6.5px; background-color: #28a745; color: white;">${approvalvo.draft_status}</span>
-											</c:if>	
-											<c:if test="${approvalvo.draft_status == '반려완료'}">
-												<span style="border: solid 1px #dc3545; border-radius: 5px; padding: 6.5px 13px; background-color: #dc3545; color: white;">반려</span>
-											</c:if>	
-											<c:if test="${approvalvo.draft_status == '승인완료'}">
-												<span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span>
-											</c:if>	
-											<c:if test="${approvalvo.draft_status == '대기'}">
-												<span style="border: solid 1px #ffc107; border-radius: 5px; padding: 6.5px 13px; background-color: #ffc107; color: white;">대기</span>
-											</c:if>	
-										</td>
-										<td>${approvalvo.draft_write_date}</td>
-									</tr>
-								</c:if>	
+							
+							<c:if test="${approvalvo.approval_status eq '결재예정'}">
+								<tr>
 							</c:if>
+							<c:if test="${approvalvo.approval_status ne '결재예정'}">
+								<tr style="background-color: #f1f9f7;">
+							</c:if>
+								<td>${approvalvo.draft_no}</td>
+								<td>${approvalvo.parent_dept_name}</td>
+								<td>${approvalvo.member_name}</td>
+								<td>${approvalvo.draft_form_type}</td>
+								<td>
+									<c:if test="${approvalvo.draft_urgent eq '1'}">
+										<c:if test="${not empty approvalvo.draft_file_name}">
+											<span style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></span>
+										</c:if>
+										<c:if test="${empty approvalvo.draft_file_name}">
+											<span style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}</i></span>
+										</c:if>
+									</c:if>
+									<c:if test="${approvalvo.draft_urgent eq '0'}">
+										<c:if test="${not empty approvalvo.draft_file_name}">
+											<span style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></span>
+										</c:if>
+										<c:if test="${empty approvalvo.draft_file_name}">
+											<span style="text-align:left;">${approvalvo.draft_subject}</span>
+										</c:if>
+									</c:if>
+								</td>
+								<td>
+									<c:if test="${approvalvo.draft_status == '진행중'}">
+										<span style="border: solid 1px #28a745; border-radius: 5px; padding: 6.5px; background-color: #28a745; color: white;">${approvalvo.draft_status}</span>
+									</c:if>	
+									<c:if test="${approvalvo.draft_status == '반려완료'}">
+										<span style="border: solid 1px #dc3545; border-radius: 5px; padding: 6.5px 13px; background-color: #dc3545; color: white;">반려</span>
+									</c:if>	
+									<c:if test="${approvalvo.draft_status == '승인완료'}">
+										<span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span>
+									</c:if>
+									<c:if test="${approvalvo.draft_status == '대기'}">
+										<span style="border: solid 1px #ffc107; border-radius: 5px; padding: 6.5px 13px; background-color: #ffc107; color: white;">대기</span>
+									</c:if>		
+								</td>
+								<td>${approvalvo.draft_write_date}</td>
+							</tr>	
 						</c:forEach>
 						
-						<%-- ============ 일반 기안문 ============ --%>	
-						<c:forEach var="approvalvo" items="${requestScope.pendingList}" varStatus="pending_status"> 
-							<c:if test="${approvalvo.draft_urgent eq '0' || (approvalvo.draft_urgent eq '1' && approvalvo.approval_status ne '결재예정')}">
-								<%-- 첨부파일 없는 경우 --%>
-								<c:if test="${empty approvalvo.draft_file_name}">
-									<c:if test="${approvalvo.approval_status == '결재예정'}">
-										<tr>
-											<td>${approvalvo.draft_no}</td>
-											<td>${approvalvo.parent_dept_name}</td>
-											<td>${approvalvo.member_name}</td>
-											<td>${approvalvo.draft_form_type}</td>
-											<td style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}</td>
-											<td>
-												<c:if test="${approvalvo.draft_status == '진행중'}">
-													<span style="border: solid 1px #28a745; border-radius: 5px; padding: 6.5px; background-color: #28a745; color: white;">${approvalvo.draft_status}</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '반려완료'}">
-													<span style="border: solid 1px #dc3545; border-radius: 5px; padding: 6.5px 13px; background-color: #dc3545; color: white;">반려</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '승인완료'}">
-													<span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '대기'}">
-													<span style="border: solid 1px #ffc107; border-radius: 5px; padding: 6.5px 13px; background-color: #ffc107; color: white;">대기</span>
-												</c:if>	
-											</td>
-											<td>${approvalvo.draft_write_date}</td>
-										</tr>
-									</c:if>
-									<c:if test="${approvalvo.approval_status != '결재예정'}">
-										<tr style="background-color: #f1f9f7;">
-											<td>${approvalvo.draft_no}</td>
-											<td>${approvalvo.parent_dept_name}</td>
-											<td>${approvalvo.member_name}</td>
-											<td>${approvalvo.draft_form_type}</td>
-											<td style="text-align:left;"><i class="fa-solid fa-bell fa-shake" style="color: #f68b1f;"></i>&nbsp;&nbsp;${approvalvo.draft_subject}</td>
-											<td>
-												<c:if test="${approvalvo.draft_status == '진행중'}">
-													<span style="border: solid 1px #28a745; border-radius: 5px; padding: 6.5px; background-color: #28a745; color: white;">${approvalvo.draft_status}</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '반려완료'}">
-													<span style="border: solid 1px #dc3545; border-radius: 5px; padding: 6.5px 13px; background-color: #dc3545; color: white;">반려</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '승인완료'}">
-													<span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '대기'}">
-													<span style="border: solid 1px #ffc107; border-radius: 5px; padding: 6.5px 13px; background-color: #ffc107; color: white;">대기</span>
-												</c:if>	
-											</td>
-											<td>${approvalvo.draft_write_date}</td>
-										</tr>
-									</c:if>
-								</c:if>	
-								<%-- 첨부파일 있는 경우 --%>
-								<c:if test="${not empty approvalvo.draft_file_name}">
-									<c:if test="${approvalvo.approval_status == '결재예정'}">
-										<tr>
-											<td>${approvalvo.draft_no}</td>
-											<td>${approvalvo.parent_dept_name}</td>
-											<td>${approvalvo.member_name}</td>
-											<td>${approvalvo.draft_form_type}</td>
-											<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
-											<td>
-												<c:if test="${approvalvo.draft_status == '진행중'}">
-													<span style="border: solid 1px #28a745; border-radius: 5px; padding: 6.5px; background-color: #28a745; color: white;">${approvalvo.draft_status}</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '반려완료'}">
-													<span style="border: solid 1px #dc3545; border-radius: 5px; padding: 6.5px 13px; background-color: #dc3545; color: white;">반려</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '승인완료'}">
-													<span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '대기'}">
-													<span style="border: solid 1px #ffc107; border-radius: 5px; padding: 6.5px 13px; background-color: #ffc107; color: white;">대기</span>
-												</c:if>	
-											</td>
-											<td>${approvalvo.draft_write_date}</td>
-										</tr>
-									</c:if>	
-									<c:if test="${approvalvo.approval_status != '결재예정'}">
-										<tr style="background-color: #f1f9f7;">
-											<td>${approvalvo.draft_no}</td>
-											<td>${approvalvo.parent_dept_name}</td>
-											<td>${approvalvo.member_name}</td>
-											<td>${approvalvo.draft_form_type}</td>
-											<td style="text-align:left;">${approvalvo.draft_subject}&nbsp;<i class="fa-solid fa-paperclip" style="color: #cb2525;"></i></td>
-											<td>
-												<c:if test="${approvalvo.draft_status == '진행중'}">
-													<span style="border: solid 1px #28a745; border-radius: 5px; padding: 6.5px; background-color: #28a745; color: white;">${approvalvo.draft_status}</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '반려완료'}">
-													<span style="border: solid 1px #dc3545; border-radius: 5px; padding: 6.5px 13px; background-color: #dc3545; color: white;">반려</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '승인완료'}">
-													<span style="border: solid 1px #17a2b8; border-radius: 5px; padding: 6.5px 13px; background-color: #17a2b8; color: white;">승인</span>
-												</c:if>	
-												<c:if test="${approvalvo.draft_status == '대기'}">
-													<span style="border: solid 1px #ffc107; border-radius: 5px; padding: 6.5px 13px; background-color: #ffc107; color: white;">대기</span>
-												</c:if>	
-											</td>
-											<td>${approvalvo.draft_write_date}</td>
-										</tr>
-									</c:if>	
-								</c:if>	
-							</c:if>
-						</c:forEach>
 					</c:if>
 					<c:if test="${empty requestScope.pendingList}">	
 						<tr>
@@ -425,7 +311,7 @@ function goSearch() {
 		<form name="detailTempFrm">
 			<input type="hidden" name="draft_no" />
 		</form>
-	</div>
+
 </div>
 
 <jsp:include page="../../footer/footer1.jsp" />    
