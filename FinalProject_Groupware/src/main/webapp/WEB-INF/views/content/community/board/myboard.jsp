@@ -14,26 +14,28 @@
 
 <style type="text/css">
     
-    th {background-color: #e0eae6}
-    
-    .subjectStyle {font-weight: bold;
-                   color: navy;
-                   cursor: pointer; }
-                   
-    a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없애기 */
-    
-      button.btn {
+th {background-color: #e0eae6}
+   
+.subjectStyle {font-weight: bold;
+                  color: #006769;
+                  cursor: pointer; }
+                  
+a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없애기 */
+   
+button.btn {
 	background-color: #006769;
-	color:white;}
-	
-	table {
-	  border: 1px #a39485 solid;
-	  box-shadow: 0 2px 5px rgba(0,0,0,.25);
-	  width: 100%;
-	  border-collapse: collapse;
-	  border-radius: 5px;
-	  overflow: hidden;
-	}
+	color:white;
+}
+
+table {
+  border: 1px #a39485 solid;
+  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 5px;
+  overflow: hidden;
+  font-weight: bold; 
+}
 	
 	
 .header .title {
@@ -72,6 +74,21 @@ input[name='searchWord'] {
   	opacity: 0 !important;
 }
 
+
+<%-- select 태그 --%>
+.top_select {
+	padding: 5px;
+	font-size: 14px;
+	border-radius: 10px;
+	color: #006769;
+	border: solid 1px #8ac2bd;
+}
+
+<%-- 상단 검색 버튼 등 --%>
+div#topSearch {
+	text-align: right;
+	margin-right: 3%;
+}
   
 
 /* 페이지바 */
@@ -220,13 +237,10 @@ $(document).ready(function(){
 <div style="display: flex;">
 <div style="margin: auto; padding-left: 3%;">
 
-    <div class="header">
-		
+    <div class="header">		
 	  		<div class="title">내가 작성한 글</div>
 	 </div>
- 
 
-   
     <table style="width: 1200px" class="table table-hover">
         <thead>
             <tr>
@@ -240,12 +254,12 @@ $(document).ready(function(){
         <tbody>
             <c:if test="${not empty requestScope.myBoardList}">
                 <c:forEach var="boardvo" items="${requestScope.myBoardList}" varStatus="board_status">
-                    <tr>
+                    <tr onclick="goMyBoardView('${boardvo.board_no}')" style="cursor: pointer;">
                         <td align="center" id="pageBar">
                             ${ (requestScope.totalCount) - (requestScope.currentShowPageNo - 1) * (requestScope.sizePerPage) - (board_status.index) }
                         </td>
                        <td>
-						    <span class="board_subject" onclick="goMyBoardView('${boardvo.board_no}')">
+						    <span class="board_subject">
 						        ${fn:length(boardvo.board_subject) > 30 ? fn:substring(boardvo.board_subject, 0, 28) + "..." : boardvo.board_subject}
 						    
 						    <!-- 첨부파일 아이콘 -->
@@ -273,7 +287,8 @@ $(document).ready(function(){
             </c:if>
         </tbody>
 
-			<div class="button-container" style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+			<div class="button-container" style="display: flex; justify-content: space-between; align-items: center; width: 1200px; margin-bottom: 5px;"> 
+			    <p style="font-weight: bold; font-size: 16px; margin: 0;">총 게시글 수: ${totalCount}개</p>
 			    <button type="button" class="btn btn ml-2"
 			        onclick="javascript:location.href='<%=ctxPath%>/board/add'">글쓰기
 			    </button>
@@ -281,7 +296,7 @@ $(document).ready(function(){
 
     </table>
 
-</div>
+
 
     <%-- === 페이지바 === --%>
 		<div align="center" id="pageBar_bottom"
@@ -290,22 +305,24 @@ $(document).ready(function(){
 
      
   <%-- === #82. 글검색 폼 추가하기 : 글제목, 글내용, 글제목+글내용, 글쓴이로 검색을 하도록 한다. --%>
-		<form name="searchFrm" style="margin-top: 20px; text-align: center;">
-			<select name="searchType" style="height: 26px;">
-				<option value="board_subject">글제목</option>
-				<option value="board_content">글내용</option>
-				<option value="board_subject_board_content">글제목+글내용</option>
-				<option value="board_name">글쓴이</option>
-			</select> <input type="text" name="searchWord" size="28" autocomplete="off" placeholder="검색어을 입력하세요" />
-			<input type="text" style="display: none;" />
-			<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
-			<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
-
-		</form>
+		<div id="topSearch">
+			<form name="searchFrm" style="margin-top: 20px; text-align: center;">
+				<select name="searchType" class="topClass top_select" style="height: 38px;">
+					<option value="board_subject">글제목</option>
+					<option value="board_content">글내용</option>
+					<option value="board_subject_board_content">글제목+글내용</option>
+					<option value="board_name">글쓴이</option>
+				</select> 
+				<input type="text" class="searchWord_input" name="searchWord" placeholder="검색어 입력를 입력하세요"/>
+				<input type="text" style="display: none;" />
+				<%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
+				<button type="button" class="btn ml-2" onclick="goSearch()" id="btnWrite">검색</button>
+			</form>
+		</div>
 		
-		 
+		</div>
   </div>
-
+ </div>  
  
  <form name="goMyBoardViewFrm">
     <input type="hidden" name="board_no" /> 
@@ -315,6 +332,6 @@ $(document).ready(function(){
 	<input type="hidden" name="myboard_val" />
 </form>
  
- </div>  
+
 
   <jsp:include page="../../../footer/footer1.jsp" />

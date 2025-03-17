@@ -744,19 +744,19 @@
        from tbl_board b
        join tbl_bookmark bm on b.board_no = bm.fk_board_no
        where bm.fk_member_userid = #{member_userid}
-       <if test="searchtype != '' and searchword != ''">
-           <if test="searchtype == 'board_subject'">
-               and b.board_subject like '%' || #{searchword} || '%'
+       <if test="searchType != '' and searchWord != ''">
+           <if test="searchType == 'board_subject'">
+               and b.board_subject like '%' || #{searchWord} || '%'
            </if>
-           <if test="searchtype == 'board_content'">
-               and b.board_content like '%' || #{searchword} || '%'
+           <if test="searchType == 'board_content'">
+               and b.board_content like '%' || #{searchWord} || '%'
            </if>
-           <if test="searchtype == 'board_name'">
-               and b.board_name like '%' || #{searchword} || '%'
+           <if test="searchType == 'board_name'">
+               and b.board_name like '%' || #{searchWord} || '%'
            </if>
-           <if test="searchtype == 'board_subject_board_content'">
-               and (b.board_subject like '%' || #{searchword} || '%' 
-                   or b.board_content like '%' || #{searchword} || '%')
+           <if test="searchType == 'board_subject_board_content'">
+               and (b.board_subject like '%' || #{searchWord} || '%' 
+                   or b.board_content like '%' || #{searchWord} || '%')
            </if>
        </if>
    </select>

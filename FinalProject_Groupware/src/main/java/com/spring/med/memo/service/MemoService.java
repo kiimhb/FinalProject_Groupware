@@ -24,11 +24,13 @@ public interface MemoService {
 	
 
 	// ================== 휴지통 시작 =================== //
-	int trash(int memo_no); 				// 메모를 휴지통으로 이동
+//	int trash(int memo_no); 						// 일반메모를 휴지통으로 이동
 	
-    int restoreMemo(int memo_no);        	// 휴지통에서 복원
+	int moveToTrash(Map<String, Object> paraMap); 	// 일반메모, 중요메모 삭제 시 휴지통으로 이동
+	
+    int restoreMemo(int memo_no);        			// 휴지통에서 복원
     
-    int deleteTrash(int memo_no);   			// 완전 삭제
+    int deleteTrash(int memo_no);   				// 휴지통에서 완전 삭제
     
     // 30일 이상 지난 메모 자동 삭제
     void deleteOldTrashMemos();  // 스케줄러는 컨트롤러에서 x
@@ -45,15 +47,16 @@ public interface MemoService {
 	String getMemoImportance(Map<String, String> paraMap);
 	
 	// 중요 메모(즐겨찾기) 업데이트
-	void updateMemoImportance(Map<String, String> paraMap, String string);
-
-	// 중요 메모(즐겨찾기) 목록 가져오기 
-//	List<Map<String, String>> selectImportantMemo(String member_userid);
-	
+	int updateMemoImportance(Map<String, String> paraMap, String status);
 	
 	// 중요 메모(즐겨찾기) 목록 가져오기 
 	List<MemoVO> getImportantMemoList(String member_userid);
 	// ================== 즐겨찾기 끝 =================== //
+
+	
+
+
+
 
     
     

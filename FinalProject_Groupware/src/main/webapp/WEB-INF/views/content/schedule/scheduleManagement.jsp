@@ -102,7 +102,54 @@ button.btn:hover {
 	background-color: var(--fc-button-bg-color,#509d9c);
 }
 
+.fc-button-group {
+	display:flex;
+	gap:6px;
+}
 
+<%-- 검색어 입력 창 --%>
+	input {
+		/* background: #f0f0f0;  */
+	  	width: 20%;
+	  	color: #006769;
+	  	border: none;
+	  	border-bottom: 1px solid #999999; 
+	  	padding: 9px;
+	  	margin: 7px;
+	}
+	
+	input:placeholder {
+	  	color: rgba(255, 255, 255, 1);
+	  	font-weight: 100;
+	}
+	
+	input:focus {
+	  	color: #006769;
+	  	outline: none;
+	  	border-bottom: 1.3px solid #006769; 
+	  	transition: .8s all ease;
+	}
+	
+	input:focus::placeholder {
+	  	opacity: 0;
+	}
+
+<%-- select 태그 --%>
+.top_select {
+	padding: 5px;
+	font-size: 14px;
+	border-radius: 10px;
+	color: #006769;
+	border: solid 1px #8ac2bd;
+}
+
+<%-- 상단 검색 버튼 등 --%>
+div#topSearch {
+	text-align: right;
+	margin-left: -5px; /* 버튼을 왼쪽으로 약간 이동 */
+}
+	
+	
 	
 </style>
 
@@ -282,7 +329,7 @@ $(document).ready(function(){
         selectable: true,
 	    editable: false,
 	    headerToolbar: {
-	    	  left: 'prev,next today',
+	    	  left: 'prev,today,next',
 	          center: 'title',
 	          right: 'dayGridMonth dayGridWeek dayGridDay'
 	    },
@@ -812,28 +859,30 @@ function goSearch() {
 	
 	<div id="wrapper2">
 		<div id="searchPart" style="float: right;">
-			<form name="searchScheduleFrm">
-				<div>
-					<input type="text" id="fromDate" name="schedule_startdate" style="width: 110px;" readonly="readonly">&nbsp;&nbsp; 
-	            -&nbsp;&nbsp; <input type="text" id="toDate" name="schedule_enddate" style="width: 110px;" readonly="readonly">&nbsp;&nbsp;
-					<select id="searchType" name="searchType" style="height: 30px;">
-						<option value="">검색대상선택</option>
-						<option value="schedule_subject">제목</option>
-						<option value="schedule_content">내용</option>
-						<option value="schedule_joinuser">공유자</option>
-					</select>&nbsp;&nbsp; 	
-					<input type="text" id="searchWord" value="" style="height: 30px; width:150px;" name="searchWord"/>
-					&nbsp;&nbsp;
-					<select id="sizePerPage" name="sizePerPage" style="height: 30px;">
-						<option value="">보여줄개수</option>
-						<option value="10">10</option>
-						<option value="15">15</option>
-						<option value="20">20</option>
-					</select>&nbsp;&nbsp;
-					<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" />
-					<button type="button" class="btn ml-2" style="display: inline-block;" onclick="goSearch()">검색</button>
-				</div>
-			</form>
+			<div id="topSearch">
+					<form name="searchScheduleFrm">
+						<div>
+							<input type="text" id="fromDate" name="schedule_startdate" class="topClass top_select" style="width: 110px;" readonly="readonly">&nbsp;&nbsp; 
+			            -&nbsp;&nbsp; <input type="text" id="toDate" name="schedule_enddate" class="topClass top_select" style="width: 110px;" readonly="readonly">&nbsp;&nbsp;
+							<select id="searchType" name="searchType" class="topClass top_select" style="height: 30px;">
+								<option value="">검색대상선택</option>
+								<option value="schedule_subject">제목</option>
+								<option value="schedule_content">내용</option>
+								<option value="schedule_joinuser">공유자</option>
+							</select>&nbsp;&nbsp; 	
+							<input type="text" id="searchWord" class="topClass" value="" style="height: 30px; width:150px;" name="searchWord" placeholder="검색어 입력"/>
+							&nbsp;&nbsp;
+							<select id="sizePerPage" name="sizePerPage" class="topClass top_select" style="height: 30px;">
+								<option value="">보여줄개수</option>
+								<option value="10">10</option>
+								<option value="15">15</option>
+								<option value="20">20</option>
+							</select>&nbsp;&nbsp;
+							<input type="hidden" name="fk_member_userid" value="${sessionScope.loginuser.member_userid}" />
+							<button type="button" class="btn ml-2" style="display: inline-block;" onclick="goSearch()">검색</button>
+						</div>
+					</form>
+			</div>
 		</div>
 				
 	    <%-- 풀캘린더가 보여지는 엘리먼트  --%>
