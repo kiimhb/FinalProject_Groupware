@@ -131,7 +131,7 @@ $(document).ready(function(){
 			
 			// >>> 기존의 값 기안문에 채워넣기 및 결재자 시점에서 disable <<< //
 			// 1-1. 문서정보
-			$("td#member_name").html(`<span id="writer_userid">${requestScope.approvalvo.fk_member_userid}</span>${requestScope.approvalvo.member_name}`);	// 기안자
+			$("td#member_name").html(`<span style="display:none;" id="writer_userid">${requestScope.approvalvo.fk_member_userid}</span>${requestScope.approvalvo.member_name}`);	// 기안자
 			$("td#parent_dept_name").text("${requestScope.approvalvo.parent_dept_name}");		// 부문
 			$("td#child_dept_name").text("${requestScope.approvalvo.child_dept_name}");			// 부서
 			$("td#member_position").text("${requestScope.approvalvo.member_position}");			// 직책
