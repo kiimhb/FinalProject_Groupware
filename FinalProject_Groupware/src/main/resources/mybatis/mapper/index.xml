@@ -183,7 +183,7 @@
 	
 	<update id="alarm_is_read_1" parameterType="int">
 		update tbl_alarm set alarm_is_read = 1
-		where alarm_no = #{alarm_no} and approval_status != '대기'
+		where alarm_no = #{alarm_no} 
 	</update>
 	
 </mapper>

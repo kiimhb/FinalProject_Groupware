@@ -5,8 +5,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar/dist/simplebar.min.css">
-<script src="https://cdn.jsdelivr.net/npm/simplebar/dist/simplebar.min.js"></script>
+
 <%-- 
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %> <!-- Spring security taglib을 사용 --> 
 --%>
@@ -37,6 +36,8 @@
     // serverName : http://192.168.0.208:9090
 
 %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar/dist/simplebar.min.css">
+<script src="https://cdn.jsdelivr.net/npm/simplebar/dist/simplebar.min.js"></script>
 
 <%-- 직접 만든 CSS 1 --%>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/css/index/index.css" />
@@ -160,9 +161,13 @@ $.ajax({
 
            $("div.Alarm_main_box").html(v_html);
            
+           new SimpleBar(document.querySelector("div.Alarm_main_box"), { autoHide: false });
+           
             // 알림 총 건수 출력
             let v_html2 = `읽지 않은 알림이 \${json.alarm_totalCount} 건 있습니다.`; 
-            $("div.Alarm_sub_box").html(v_html2); 
+            $("div.Alarm_sub_box").show().html(v_html2);
+ 
+            
             
             if (json.alarm_totalCount > 0) {
                $("span.alarm_count").text(json.alarm_totalCount).show();
@@ -178,7 +183,7 @@ $.ajax({
     });
     
 $(document).ready(function () {
-    $("div.alarm_item").on("click", function () {
+    $(document).on("click", "div.alarm_item", function () { 
        const alarm_item = $(this).find("div.alarm_item");
        const alarm_no = $(this).find("input#alarm_no").val();
        const alarm_category = $(this).find("input#alarm_category").val();
@@ -196,10 +201,12 @@ $(document).ready(function () {
                data: { "alarm_no" : alarm_no },
                dataType: "json",
               success:function(json){   
-                 //console.log(json);
+                 console.log(json);
                  
                      if(json.n == 1){
                        alarm_link(alarm_category, alarm_cateno);
+                   }else if(json.n == 0){
+                       alert("오류가 발생했습니다.");
                    }
                },
                error: function (xhr, status, error) {
@@ -221,8 +228,6 @@ $(document).ready(function () {
 			frm.action = "<%= ctxPath%>/alarm/approvalPendingListDetail_tbl_alarm";
 			frm.submit();
 			
-
-          
        } else if (alarm_category == "공지사항") {
            window.location.href = `<%= ctxPath%>/notice/detail/\${alarm_cateno}`;
        }
