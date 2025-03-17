@@ -1356,7 +1356,7 @@ function func_goTempAndSubmitDraft(btnType) {
 				    text: messageText
 				}).then((result) => {
 					
-					if (draftMode == "update") {
+					if (draftMode == "update" || titleText == "임시 저장 완료") {
 						window.location.href = "<%= ctxPath%>/approval/approvalTemporaryList";
 					}
 					else {
@@ -1413,7 +1413,7 @@ function func_referMember() {
 
 <%-- ===================================================================== --%>
 <div id="sub_mycontent"> 
-	<div class="writeContainer">
+
 		<h2 style="border-left: 5px solid #006769; padding-left: 1%; color: #4c4d4f; font-weight: bold;">기안문작성</h2>
 		
 		<button type="button" id="btnType" style="background-color: #857c7a; padding: 5px; border-color: #857c7a; border-radius: 5px; color: white;">결재양식선택</button>
@@ -1429,7 +1429,7 @@ function func_referMember() {
 		
 		<div id="draft" style="margin: auto;"></div>
 		
-	</div>
+
 </div>
 
 
