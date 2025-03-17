@@ -2,14 +2,10 @@
 	pageEncoding="UTF-8"%>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<script
-	src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
-<script
-	src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -72,6 +68,7 @@ button#writeBtn {
 .memo-container {
     display: flex;
     flex-wrap: wrap;
+    /* 자동으로 줄바꿈이 되는 이유 */
     gap: 15px; /* 카드 간격 */
     justify-content: center; /* 가운데 정렬 */
 }
@@ -143,7 +140,7 @@ $(document).ready(function(){
 
     // 모달이 닫힐 때 aria-hidden="true" 추가 + 초기화
     $("#memoDetailModal").on('hidden.bs.modal', function () {
-    	$(this).attr('inert', ''); // 모달이 닫힐 때 다시 비활성화s
+    	$(this).attr('inert', ''); // 모달이 닫힐 때 다시 비활성화
         
         // 초기화 (readonly 및 버튼 상태 원래대로)
         $("#memoDetailTitle, #memoDetailContent").prop("readonly", true);
@@ -245,13 +242,13 @@ $(document).ready(function(){
             const memo_no = $("#memoDetailNo").val(); // hidden input에서 ID 가져오기
 
             $.ajax({
-                url: "<%= ctxPath%>/memo/trash", // 기존 `memodelete` 대신 `trash`로 변경
+                url: "<%= ctxPath%>/memo/trash",
                 type: "DELETE",
                 contentType: "application/json",
                 data: JSON.stringify({ memo_no: memo_no }),
                 success: function(response) {
                     if (response.status === "success") {
-                        alert(response.message); // ✅ "메모가 휴지통으로 이동되었습니다." 출력
+                        alert(response.message); // "메모가 휴지통으로 이동되었습니다." 출력
 
                         // 삭제된 메모를 `memolist`에서 제거
                         $(".memo-card[data-id='" + memo_no + "']").remove();
@@ -321,12 +318,18 @@ $(document).ready(function(){
 
 
 //중요 메모(즐겨찾기) 추가/삭제 함수
-
 function importantMemo(memo_no, button) {
-	event.stopPropagation(); // 
-	
+    event.stopPropagation(); // 클릭 이벤트 전파 방지(이벤트가 부모 요소로 전달(전파)되는 것을 막는 기능)
+	/*
+		stopPropagation();이 필요한 이유
+		=> 	 stopPropagation();이 없으면,
+			 .btnstar 버튼을 클릭할 때 부모 .memo-card에도 클릭 이벤트가 전달될 수 있음
+		  	 그러면 메모 카드를 클릭한 것처럼 동작해서 상세 모달이 열릴 가능성이 있음
+		  	 (즉, 단순히 즐겨찾기 버튼을 눌렀는데 메모 상세 보기 모달까지 같이 뜨는 문제가 발생)
+	*/
+    
+    
     let icon = $(button).find("i"); // 클릭한 버튼 내 아이콘 찾기
-    let isBookmarked = icon.hasClass("fa-star"); // 현재 즐겨찾기 여부 확인
 
     $.ajax({
         url: "<%= ctxPath%>/memo/memoMark",
@@ -334,17 +337,19 @@ function importantMemo(memo_no, button) {
         data: { "memo_no": memo_no },
         success: function (response) {
             if (response.success) {
-                if (!isBookmarked) {
-                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#f68b1f"); // 즐겨찾기 추가
-                } else {
-                    icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray"); // 즐겨찾기 삭제
-                }
+                let isNowBookmarked = response.isBookmark; // 서버에서 받은 최신 즐겨찾기 상태
 
-                // 동일한 메모의 즐겨찾기 상태 변경 (다른 페이지에도 적용)
+                icon.removeClass(isNowBookmarked ? "fa-star-o" : "fa-star")
+                    .addClass(isNowBookmarked ? "fa-star" : "fa-star-o")
+                    .css("color", isNowBookmarked ? "#f68b1f" : "gray");
+
+                // 동일한 메모의 즐겨찾기 상태 변경 (다른 페이지에서도 적용)
                 $(".btnstar[data-memo-no='" + memo_no + "'] i")
-                    .removeClass(isBookmarked ? "fa-star" : "fa-star-o")
-                    .addClass(isBookmarked ? "fa-star-o" : "fa-star")
-                    .css("color", isBookmarked ? "gray" : "#f68b1f");
+                    .removeClass(isNowBookmarked ? "fa-star-o" : "fa-star")
+                    .addClass(isNowBookmarked ? "fa-star" : "fa-star-o")
+                    .css("color", isNowBookmarked ? "#f68b1f" : "gray");
+            } else {
+                console.error("즐겨찾기 업데이트 실패: 서버 응답 오류");
             }
         },
         error: function () {
@@ -420,12 +425,12 @@ function importantMemo(memo_no, button) {
 	                <span>${memo.memo_title}</span>
 	                
 	                <!-- 중요 메모(즐겨찾기) 버튼 -->
-                <button type="button" class="btnstar btn-link p-0 no-outline" 
-                    data-memo-no="${memo.memo_no}"
-                    onclick="importantMemo('${memo.memo_no}', this)"
-                    style="font-size: 1.5rem; color: gray; background-color: transparent; border: none; outline: none;">
-                    <i class="fa ${memo.memo_importance == '1' ? 'fa-star' : 'fa-star-o'}" aria-hidden="true"></i>
-                </button>
+					<button type="button" class="btnstar btn-link p-0 no-outline" 
+					    data-memo-no="${memo.memo_no}"
+					    onclick="importantMemo('${memo.memo_no}', this)"
+					    style="font-size: 1.5rem; color: ${memo.memo_importance == '1' ? '#f68b1f' : 'gray'}; background-color: transparent; border: none; outline: none;">
+					    <i class="fa ${memo.memo_importance == '1' ? 'fa-star' : 'fa-star-o'}" aria-hidden="true"></i>
+					</button>
 	            </div>
 	            
 	            <div class="card-body text-dark">
@@ -435,10 +440,16 @@ function importantMemo(memo_no, button) {
 	        </div>
 	
 	        <!-- 5번째 요소마다 줄바꿈을 위한 새로운 행 추가 -->
-	        <c:if test="${(status.index + 1) % 5 == 0}">
+	        <%-- <c:if test="${(status.index + 1) % 5 == 0}">
 	            <div class="row-break"></div>
-	        </c:if>
+	        </c:if> --%>
 	    </c:forEach>
+	    
+	    <c:if test="${empty memo_list}">
+			<p class="text-center text-muted">메모가 없습니다.</p>
+		</c:if>
+	    
+	    
 	</div>
 </div>
 
@@ -456,7 +467,7 @@ function importantMemo(memo_no, button) {
             <div class="modal-body">
                 <div class="form-group">
                     <label class="font-weight-bold">내용</label>
-                    <textarea class="form-control border-0 bg-light" id="memoDetailContent" name="memo_contents" rows="5" readonly></textarea>
+                    <textarea class="form-control border-0 bg-light" id="memoDetailContent" name="memo_contents" rows="5" readonly> </textarea>
                 </div>
                 <p class="text-muted text-right small font-italic" id="memoDetailDate"></p>
             </div>

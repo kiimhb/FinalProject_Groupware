@@ -37,15 +37,23 @@
     
     
     
-    
-    
-    
-    <!-- 메모 삭제(휴지통으로 이동) -->
+<!-- ============================== 휴지통 시작 ============================== -->   
+<!--  일반 메모 삭제(휴지통으로 이동)
     <update id="trash" parameterType="int">
         update tbl_memo
 		set memo_deletestatus = 1, memo_trash_deleteday = sysdate
 		where memo_no = #{memo_no}
     </update>
+-->     
+
+    <!-- 일반메모, 중요메모 삭제 시 휴지통으로 이동 -->
+	<update id="moveToTrash" parameterType="map">
+	    update tbl_memo
+	    set memo_deletestatus = 1, 
+	        memo_trash_deleteday = sysdate
+	    where memo_no = #{memo_no}
+	    and fk_member_userid = #{member_userid}
+	</update>   
 
     <!-- 휴지통에서 복원 -->
     <update id="restoreMemo" parameterType="int">
@@ -68,7 +76,6 @@
 		order by memo_trash_deleteday desc
 	</select>
 
-
 	<!--  30일 이상 지난 메모 자동 삭제 (현재는 바로 다음 날 삭제 되는 걸로 했음 발표이후 30일 이후로 변경)-->
 	<delete id="deleteOldTrashMemos"> 
 		delete from tbl_memo 
@@ -76,31 +83,40 @@
 		and to_date(memo_trash_deleteday, 'yyyy-mm-dd') + 1 = to_date(sysdate, 'yyyy-mm-dd') 
 	</delete>
   
+<!-- ============================== 휴지통 끝 ============================== --> 
 
+
+
+
+
+<!-- ============================== 중요메모 시작 ============================== --> 
   
     <!-- 현재 메모의 중요 메모 여부 확인 -->
     <select id="getMemoImportance" parameterType="map" resultType="string">
-        SELECT memo_importance 
-        FROM tbl_memo 
-        WHERE memo_no = #{memo_no} AND fk_member_userid = #{member_userid}
+        select memo_importance 
+        from tbl_memo 
+        where memo_no = #{memo_no} and fk_member_userid = #{member_userid}
     </select>
    
-    <!-- 중요 메모(즐겨찾기) 업데이트 -->
-      
+    <!-- 중요 메모 상태 업데이트 -->
     <update id="updateMemoImportance" parameterType="map">
-        UPDATE tbl_memo
-        SET memo_importance = #{importance}
-        WHERE memo_no = #{memo_no} AND fk_member_userid = #{member_userid}
+        update tbl_memo
+        set memo_importance = #{importance}
+        where memo_no = #{memo_no} and fk_member_userid = #{member_userid}
     </update>
     
-     <!-- 중요 메모(즐겨찾기된 메모) 목록 조회 -->
-    <select id="selectImportantMemoList" parameterType="string" resultType="MemoVO">
-        SELECT memo_no, memo_title, memo_contents, memo_registerday 
-        FROM tbl_memo
-        WHERE fk_member_userid = #{member_userid} 
-        AND memo_importance = '1' 
-        ORDER BY memo_registerday DESC
-    </select>
+     <!-- 중요 메모 목록 조회 -->
+	<select id="selectImportantMemoList" parameterType="string" resultType="MemoVO">
+	    select memo_no, memo_title, memo_contents, memo_importance, memo_registerday 
+	    from tbl_memo
+	    where fk_member_userid = #{member_userid} 
+	    and memo_importance = '1' 
+	    and memo_deletestatus = 0 <!-- 휴지통에 있는 메모는 제외 -->
+	    order by memo_registerday desc
+	</select>
+
+<!-- ============================== 중요메모 끝 ============================== --> 
+
        
 
   

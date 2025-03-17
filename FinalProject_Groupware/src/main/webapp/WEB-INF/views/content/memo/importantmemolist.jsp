@@ -2,11 +2,14 @@
     pageEncoding="UTF-8"%>
     
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -26,11 +29,13 @@ a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없�
 .memo-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    /* 자동으로 줄바꿈이 되는 이유 */
+    gap: 15px; /* 카드 간 간격 */
     justify-content: center;
 }
 
 .memo-card {
+	font-weight: bold;
     width: 18%; /* 5개씩 배치 */
     min-width: 200px; /* 최소 너비 */
     background: white;
@@ -47,6 +52,7 @@ a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없�
 }
 
 .memo-card .card-header span {
+	font-weight: bold;
     display: inline-block;
     max-width: 85%; /* 버튼을 제외한 최대 너비 */
     white-space: nowrap;
@@ -164,6 +170,7 @@ button.btn {
 
 <script type="text/javascript">
 $(document).ready(function(){  
+	
     // 모달이 열릴 때 초기화 및 aria-hidden="false" 설정
     $("#memoDetailModal").on('show.bs.modal', function () {
         $(this).removeAttr('inert'); // 모달이 열릴 때 포커스 가능하도록 변경
@@ -178,7 +185,9 @@ $(document).ready(function(){
 
     // 메모 클릭 시 상세 모달 열기 (중요메모, 일반메모 통합)
     $(".memo-card").on("click", function () {
+    	
         const memo_no = $(this).data("id");
+        
         const memo_title = $(this).find(".card-header span").text();
         const memo_contents = $(this).find(".card-text").eq(0).text();
         const date = $(this).find(".card-text").eq(1).text();
@@ -207,6 +216,11 @@ $(document).ready(function(){
         const memo_title = $("#memoDetailTitle").val().trim();
         const memo_contents = $("#memoDetailContent").val().trim();
 
+        if (!memo_no) {
+            alert("메모 번호가 유효하지 않습니다.");
+            return;
+        }
+        
         if (!memo_title && !memo_contents) {  
             alert("제목 또는 내용을 입력하세요.");
             $("#memoDetailTitle").focus();
@@ -246,38 +260,57 @@ $(document).ready(function(){
         });
     });	
 
-    // 삭제 버튼 클릭 (휴지통 이동)
-    $("#memoDelete").on("click", function () {
-        if(confirm("정말 삭제하시겠습니까?")) {
-            const memo_no = $("#memoDetailNo").val();
+    
+    
+    
+    // 중요 메모 삭제 버튼 클릭 (휴지통 이동)
+   $("#memoDelete").on("click", function () {
+    const memo_no = $(this).data("id");
 
-            $.ajax({
-                url: "<%= ctxPath%>/memo/trash",
-                type: "DELETE",
-                contentType: "application/json",
-                data: JSON.stringify({ memo_no: memo_no }),
-                success: function(response) {
-                    if (response.status === "success") {
-                        alert(response.message);
-                        $(".memo-card[data-id='" + memo_no + "']").remove();
-                        $("#memoDetailModal").modal("hide");
-                    } else {
-                        alert("삭제 실패: " + response.message);
-                    }
-                },
-                error: function() {
-                    alert("삭제 요청 실패");
+    if (!memo_no) {
+        alert("메모 번호가 유효하지 않습니다.");
+        return;
+    }
+
+    if (confirm("정말 삭제하시겠습니까?")) {
+        $.ajax({
+            url: "<%= ctxPath%>/memo/trash", 
+            type: "DELETE",
+            contentType: "application/json",  
+            data: JSON.stringify({ memo_no: memo_no }),  
+            success: function (response) {
+                console.log(response); 
+
+                if (response.status === "success") {
+                    alert(response.message);
+                    $(".memo-card[data-id='" + memo_no + "']").remove();
+                    $("#memoDetailModal").modal("hide");
+                } else {
+                    alert("삭제 실패: " + response.message);
                 }
-            });
-        }
-    });
+            },
+            error: function () {
+                alert("삭제 요청 실패");
+            }
+        });
+    }
+});
 
+ 
     // 중요메모(즐겨찾기) 추가/삭제
     $(".btnstar").on("click", function (e) {
-        e.stopPropagation(); 
+    	event.stopPropagation(); // 클릭 이벤트 전파 방지(이벤트가 부모 요소로 전달(전파)되는 것을 막는 기능)
+    	/*
+    		stopPropagation();이 필요한 이유
+    		=> 	 stopPropagation();이 없으면,
+    			 .btnstar 버튼을 클릭할 때 부모 .memo-card에도 클릭 이벤트가 전달될 수 있음
+    		  	 그러면 메모 카드를 클릭한 것처럼 동작해서 상세 모달이 열릴 가능성이 있음
+    		  	 (즉, 단순히 즐겨찾기 버튼을 눌렀는데 메모 상세 보기 모달까지 같이 뜨는 문제가 발생)
+    	*/
+        
         const memo_no = $(this).data("memo-no");
         let icon = $(this).find("i");
-        let isBookmarked = icon.hasClass("fa-star");
+        let isBookmarked = icon.hasClass("fa-star");   // 현재 즐겨찾기 상태 확인
 
         $.ajax({
             url: "<%= ctxPath%>/memo/memoMark",
@@ -285,9 +318,11 @@ $(document).ready(function(){
             data: { "memo_no": memo_no },
             success: function(response) {
                 if (response.success) {
+                	let isNowBookmarked = response.isBookmark; // 최신 즐겨찾기 상태 반영
+
                     if (isBookmarked) {
                         icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
-                        $(".memo-card[data-id='" + memo_no + "']").remove();
+                        $(".memo-card[data-id='" + memo_no + "']");
                     } else {
                         icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#f68b1f");
                     }
@@ -314,7 +349,8 @@ $(document).ready(function(){
 <div id="importantMemoList" class="memo-container">
     <c:forEach var="memo" items="${importantMemoList}" varStatus="status">
     <div class="card border-info mb-3 memo-card" data-id="${memo.memo_no}">
-        <div class="card-header">
+
+        <div class="card-header" style="background-color: #ecf2f1">
             <span>${memo.memo_title}</span>
             
             <!-- 중요 메모(즐겨찾기) 버튼 -->
@@ -332,9 +368,16 @@ $(document).ready(function(){
     </div>
 </c:forEach>
 
+		<c:if test="${empty importantMemoList}">
+			<p class="text-center text-muted">중요메모가 없습니다.</p>
+		</c:if>
+
 </div>
 
 
+
+<form name="memoFrm" >
+	<input type="hidden" id="memoDetailNo" name="fk_member_userid" value="${sessionScope.member_userid}" />
 
 <!-- 메모 상세보기 모달 -->
 <div class="modal fade" id="memoDetailModal" tabindex="-1" role="dialog" aria-labelledby="memoDetailModalLabel" aria-hidden="true">
@@ -353,12 +396,14 @@ $(document).ready(function(){
                 <p class="text-muted text-right small font-italic" id="memoDetailDate"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn ml-2" style="background-color: #006769" id="memoDelete">삭제</button>
+                <button type="button" class="btn ml-2" style="background-color: #006769" id="memoDelete" data-id="${memo.memo_no}">삭제</button>
                 <button type="button" class="btn ml-2" style="background-color: #509d9c;" id="memoEdit">수정</button>
             </div>
         </div>
     </div>
 </div>
+
+</form>
 
 </div>
 

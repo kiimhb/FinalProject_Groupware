@@ -1596,6 +1596,26 @@ public class BoardController {
 		}
 		
 		
+		
+		// 즐겨찾기 한 게시물 조회(조회가 두 개인 이유는 내가 즐겨찾기한 게시물 표시가 다른 유저가 로그인했을 때도 보이기 때문에 그걸 방지하고자 만듦)
+		@GetMapping("selectbookmark")
+		@ResponseBody
+		public List<HashMap<String, String>> selectbookmark(HttpServletRequest request) {
+
+			HttpSession session = request.getSession();
+			ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
+
+			String member_userid = loginuser.getMember_userid();
+
+			List<HashMap<String, String>> boardnoList = service.selectBookmark(member_userid);
+//					System.out.println("확인용 " +boardnoList);
+			// mav.addObject("boardnoList",boardnoList);
+
+			return boardnoList;
+		}
+				
+		
+		
 		/////////////////////////////////////////////////////////////////////////////////////////////// 
 		///                                    즐겨찾기 끝
 		///////////////////////////////////////////////////////////////////////////////////////////////
@@ -1719,23 +1739,6 @@ public class BoardController {
 
 
 
-		// 즐겨찾기 한 게시물 조회
-		@GetMapping("selectbookmark")
-		@ResponseBody
-		public List<HashMap<String, String>> selectbookmark(HttpServletRequest request){
-			
-			HttpSession session = request.getSession();
-		    ManagementVO_ga loginuser = (ManagementVO_ga) session.getAttribute("loginuser");
-
-		    String member_userid = loginuser.getMember_userid();
-
-		    List<HashMap<String, String>> boardnoList = service.selectBookmark(member_userid);
-//			System.out.println("확인용 " +boardnoList);
-		    //mav.addObject("boardnoList",boardnoList);
-			
-			return boardnoList;
-		}
-		
 		
 		
 		

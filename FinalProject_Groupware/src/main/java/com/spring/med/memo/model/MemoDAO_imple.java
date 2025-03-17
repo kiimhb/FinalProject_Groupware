@@ -53,22 +53,29 @@ public class MemoDAO_imple implements MemoDAO{
 	
 	
 	// ================== 휴지통 시작 =================== //
+/*	
 	@Override
-    public int trash(int memo_no) {
+    public int trash(int memo_no) {   // 일반 메모에서 삭제할 경우
         return sqlsession.update("minji_memo.trash", memo_no);
     }
-
+*/
+	// 일반메모, 중요메모 삭제 시 휴지통으로 이동
+    public int moveToTrash(Map<String, Object> paraMap) {
+        return sqlsession.update("minji_memo.moveToTrash", paraMap);
+    }
+	
+    // 휴지통에서 메모 복원
     @Override
     public int restoreMemo(int memo_no) {
         return sqlsession.update("minji_memo.restoreMemo", memo_no);
     }
 
+    // 휴지통에서 메모 완전 삭제
     @Override
     public int deleteTrash(int memo_no) {
         return sqlsession.delete("minji_memo.deleteTrash", memo_no);
     }
-
-    
+  
     // 30일 이상 지난 메모 삭제
     @Override
 	public void deleteOldTrashMemos() {
@@ -95,26 +102,17 @@ public class MemoDAO_imple implements MemoDAO{
     }
 
 	// 중요 메모(즐겨찾기) 업데이트
-    @Override
-    public void updateMemoImportance(Map<String, String> paraMap) {
-        sqlsession.update("minji_memo.updateMemoImportance", paraMap);
-    }
+	public int updateMemoImportance(Map<String, String> paraMap) {
+	    return sqlsession.update("minji_memo.updateMemoImportance", paraMap);
+	}
+
 
     // 중요 메모(즐겨찾기) 목록 가져오기 
     @Override
     public List<MemoVO> selectImportantMemoList(String member_userid) {
         return sqlsession.selectList("minji_memo.selectImportantMemoList", member_userid);
     }
-	
-    // 중요 메모(즐겨찾기) 목록 가져오기 
-/*    
-    @Override
-    public List<Map<String, String>> selectImportantMemo(String member_userid) {
-        return sqlsession.selectList("minji_memo.selectImportantMemo", member_userid);
-    }
-*/	
-	
-	
+
 	// ================== 즐겨찾기 끝 =================== //
 	
 	

@@ -23,8 +23,15 @@ public interface MemoDAO {
 	
 	
 	// ================== 휴지통 시작 =================== //
-	int trash(int memo_no);
+//	int trash(int memo_no); // 일반매모 삭제
+	
+	// 일반메모, 중요메모 삭제 시 휴지통으로 이동
+	int moveToTrash(Map<String, Object> paraMap);
+	
+	// 휴지통에서 메모 복원
     int restoreMemo(int memo_no);
+    
+    // 휴지통에서 메모 완전 삭제
     int deleteTrash(int memo_no);
     
     // 30일 이상 지난 메모 삭제
@@ -41,15 +48,10 @@ public interface MemoDAO {
 	String getMemoImportance(Map<String, String> paraMap);
 
 	// 중요 메모(즐겨찾기) 업데이트
-	void updateMemoImportance(Map<String, String> paraMap);
-
-	// 중요 메모(즐겨찾기) 목록 가져오기 
-//	List<Map<String, String>> selectImportantMemo(String member_userid);
+	int updateMemoImportance(Map<String, String> paraMap);
 
 	// 중요 메모(즐겨찾기) 목록 가져오기 
 	List<MemoVO> selectImportantMemoList(String member_userid);
-
-
 
 	// ================== 즐겨찾기 끝 =================== //
 
