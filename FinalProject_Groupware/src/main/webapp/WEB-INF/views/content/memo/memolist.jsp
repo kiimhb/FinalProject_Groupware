@@ -339,14 +339,14 @@ function importantMemo(memo_no, button) {
             if (response.success) {
                 let isNowBookmarked = response.isBookmark; // 서버에서 받은 최신 즐겨찾기 상태
 
-                icon.removeClass(isNowBookmarked ? "fa-star-o" : "fa-star")
-                    .addClass(isNowBookmarked ? "fa-star" : "fa-star-o")
+                icon.removeClass(isNowBookmarked ? "far fa-star" : "fa-star")
+                    .addClass(isNowBookmarked ? "fa-star" : "far fa-star")
                     .css("color", isNowBookmarked ? "#f68b1f" : "gray");
 
                 // 동일한 메모의 즐겨찾기 상태 변경 (다른 페이지에서도 적용)
                 $(".btnstar[data-memo-no='" + memo_no + "'] i")
-                    .removeClass(isNowBookmarked ? "fa-star-o" : "fa-star")
-                    .addClass(isNowBookmarked ? "fa-star" : "fa-star-o")
+                    .removeClass(isNowBookmarked ? "far fa-star" : "fa-star")
+                    .addClass(isNowBookmarked ? "fa-star" : "far fa-star")
                     .css("color", isNowBookmarked ? "#f68b1f" : "gray");
             } else {
                 console.error("즐겨찾기 업데이트 실패: 서버 응답 오류");
@@ -429,7 +429,7 @@ function importantMemo(memo_no, button) {
 					    data-memo-no="${memo.memo_no}"
 					    onclick="importantMemo('${memo.memo_no}', this)"
 					    style="font-size: 1.5rem; color: ${memo.memo_importance == '1' ? '#f68b1f' : 'gray'}; background-color: transparent; border: none; outline: none;">
-					    <i class="fa ${memo.memo_importance == '1' ? 'fa-star' : 'fa-star-o'}" aria-hidden="true"></i>
+					    <i class="fa ${memo.memo_importance == '1' ? 'fa-star' : 'far fa-star'}" aria-hidden="true"></i>
 					</button>
 	            </div>
 	            
