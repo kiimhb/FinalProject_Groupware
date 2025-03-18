@@ -310,7 +310,7 @@ $(document).ready(function(){
         
         const memo_no = $(this).data("memo-no");
         let icon = $(this).find("i");
-        let isBookmarked = icon.hasClass("fa-star");   // 현재 즐겨찾기 상태 확인
+        let isBookmarked = icon.hasClass("fas fa-star");   // 현재 즐겨찾기 상태 확인
 
         $.ajax({
             url: "<%= ctxPath%>/memo/memoMark",
@@ -321,10 +321,10 @@ $(document).ready(function(){
                 	let isNowBookmarked = response.isBookmark; // 최신 즐겨찾기 상태 반영
 
                     if (isBookmarked) {
-                        icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray");
+                        icon.removeClass("fas fa-star").addClass("far fa-star").css("color", "gray");
                         $(".memo-card[data-id='" + memo_no + "']");
                     } else {
-                        icon.removeClass("fa-star-o").addClass("fa-star").css("color", "#f68b1f");
+                        icon.removeClass("far fa-star").addClass("fas fa-star").css("color", "#f68b1f");
                     }
                 }
             },

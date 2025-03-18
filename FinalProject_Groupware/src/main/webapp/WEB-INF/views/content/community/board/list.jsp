@@ -122,7 +122,7 @@ function importantboard(board_no, button) {
 	event.stopPropagation(); // 부모 요소(tr)로 이벤트 전파 방지
 	
     let icon = $(button).find("i"); // 클릭한 버튼 내 아이콘 요소 찾기
-    let isBookmarked = icon.hasClass("fa-star"); // 현재 즐겨찾기 여부 확인
+    let isBookmarked = icon.hasClass("fas fa-star"); // 현재 즐겨찾기 여부 확인
 
     $.ajax({
         url: "<%= ctxPath%>/board/bookmark",
@@ -131,17 +131,17 @@ function importantboard(board_no, button) {
         success: function (response) {
             if (response.success) {
                 if (!isBookmarked) {
-                    icon.removeClass("fa-star-o").addClass("fa-star").css("color", " #f68b1f"); // 즐겨찾기 추가
+                    icon.removeClass("far fa-star").addClass("fas fa-star").css("color", " #f68b1f"); // 즐겨찾기 추가
                     //localStorage.setItem("bookmark_" + board_no, "true"); // LocalStorage 저장
                 } else {
-                    icon.removeClass("fa-star").addClass("fa-star-o").css("color", "gray"); // 즐겨찾기 삭제
+                    icon.removeClass("fas fa-star").addClass("far fa-star").css("color", "gray"); // 즐겨찾기 삭제
                     //localStorage.removeItem("bookmark_" + board_no); // LocalStorage 삭제
                 }
 
                 // 모든 페이지에서 동일한 글의 아이콘 상태 변경
                 $(".btnstar[data-board-no='" + board_no + "'] i")
-                    .removeClass(isBookmarked ? "fa-star" : "fa-star-o")
-                    .addClass(isBookmarked ? "fa-star-o" : "fa-star")
+                    .removeClass(isBookmarked ? "fas fa-star" : "far fa-star")
+                    .addClass(isBookmarked ? "far fa-star" : "fas fa-star")
                     .css("color", isBookmarked ? "gray" : " #f68b1f");
             }
         },
@@ -202,7 +202,7 @@ $(document).ready(function(){
 	    			
 	        		if(star_btn == bookmark.fk_board_no) {
 	        			console.log($(btnitem).find("i"));
-	        			$(btnitem).find("i").removeClass("fa-star-o").addClass("fa-star").css("color", " #f68b1f");
+	        			$(btnitem).find("i").removeClass("far fa-star").addClass("fas fa-star").css("color", " #f68b1f");
 	        			return;
 	        		}
             	
@@ -489,7 +489,7 @@ $(document).ready(function(){
 							        data-board-no="${boardvo.board_no}"
 							        onclick="importantboard('${boardvo.board_no}', this)"
 							        style="font-size: 1.5rem; color: gray; margin-left: 8px; background-color: transparent; border: none; outline: none;">
-							        <i class="fa fa-star-o" aria-hidden="true"></i>
+							        <i class="fa far fa-star" aria-hidden="true"></i>
 							    </button>
 							</td>
 
