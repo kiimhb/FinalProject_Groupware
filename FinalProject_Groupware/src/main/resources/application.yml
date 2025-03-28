@@ -22,7 +22,7 @@ spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백�
     driver-class-name: oracle.jdbc.OracleDriver
    #url: jdbc:oracle:thin:@127.0.0.1:1521:xe
    #url: jdbc:oracle:thin:@//127.0.0.1:1521/xe  # oracle 12c 이후부터는 이렇게 하라고 함.
-    jdbcUrl: jdbc:oracle:thin:@211.238.142.186:1521:xe # 2개의 datasource 를 설정하려면 기본 스프링 부트 datasource 설정과는 다르게 url 로 되어있던 부분을 jdbcUrl 로 변경해야 한다. JavaConfig 를 통해 사용자가 직접 지정하여 데이터 소스를 구성할 경우 url 이 아닌 jdbcUrl 을 사용하기 때문이다.    
+    jdbcUrl: jdbc:oracle:thin:@13.125.225.187:1521:xe # 2개의 datasource 를 설정하려면 기본 스프링 부트 datasource 설정과는 다르게 url 로 되어있던 부분을 jdbcUrl 로 변경해야 한다. JavaConfig 를 통해 사용자가 직접 지정하여 데이터 소스를 구성할 경우 url 이 아닌 jdbcUrl 을 사용하기 때문이다.    
     username: final_orauser4
     password: gclass
     type: com.zaxxer.hikari.HikariDataSource
